@@ -1,0 +1,71 @@
+---
+description: Правила для работы с БД — Drizzle ORM, схемы, миграции.
+globs: server/db/**/*.ts, drizzle.config.ts
+---
+
+# Database Rules
+
+## Существующие таблицы (11)
+
+| Таблица | Файл | Ключевые поля |
+|---------|------|---------------|
+| `users` | `schema/users.ts` | id, email, name, role (admin/editor/viewer), lastLoginAt |
+| `sessions` | `schema/sessions.ts` | id, userId→users, token (SHA-256 hash), expiresAt |
+| `otp_codes` | `schema/otp-codes.ts` | id, email, code (6 цифр), attempts, expiresAt, usedAt |
+| `folders` | `schema/folders.ts` | id, name, parentId (self-ref), color, createdBy→users |
+| `qr_codes` | `schema/qr-codes.ts` | id, shortCode, title, type, status, destinationUrl, style (JSONB), utmParams (JSONB), folderId, createdBy, totalScans, uniqueScans |
+| `qr_destinations` | `schema/qr-destinations.ts` | id, qrCodeId→qr_codes, url, weight, label, clicks, isActive |
+| `scan_events` | `schema/scan-events.ts` | id, qrCodeId, destinationId, ipAddress, userAgent, country, city, deviceType, os, browser, isUnique, scannedAt |
+| `tags` | `schema/tags.ts` | id, name (unique), color |
+| `qr_tags` | `schema/qr-tags.ts` | qrCodeId, tagId — composite PK, CASCADE |
+| `allowed_domains` | `schema/allowed-domains.ts` | id, domain (unique), isActive |
+| `api_keys` | `schema/api-keys.ts` | id, userId→users, name, keyHash, keyPrefix, expiresAt |
+
+## Enums
+
+- `user_role`: 'admin' | 'editor' | 'viewer'
+- `qr_status`: 'active' | 'paused' | 'expired' | 'archived'
+- `qr_type`: 'dynamic' | 'static'
+
+## Правила создания новых таблиц
+
+```typescript
+import { pgTable, uuid, varchar, timestamp, index } from 'drizzle-orm/pg-core'
+
+export const newTable = pgTable('new_table', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  // ... поля ...
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  index('new_table_field_idx').on(table.fieldName),
+])
+```
+
+- Все id: `uuid('id').defaultRandom().primaryKey()`
+- Все timestamps: `timestamp('name', { withTimezone: true })`
+- FK: `.references(() => parentTable.id, { onDelete: 'cascade' | 'set null' })`
+- Добавить relations в `schema/index.ts`
+- После изменения схемы: `pnpm db:generate && pnpm db:migrate`
+
+## Relations (в schema/index.ts)
+
+Каждая новая таблица с FK должна иметь relation definition:
+
+```typescript
+export const newTableRelations = relations(newTable, ({ one, many }) => ({
+  parent: one(parentTable, {
+    fields: [newTable.parentId],
+    references: [parentTable.id],
+  }),
+  children: many(childTable),
+}))
+```
+
+## DB Client
+
+```typescript
+import { db } from '../db'  // server/db/index.ts
+import { tableName } from '../db/schema'  // server/db/schema/index.ts
+```
+
+Пул: max 20 соединений, idle timeout 30s.

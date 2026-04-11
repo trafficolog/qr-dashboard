@@ -1,0 +1,241 @@
+---
+description: Эпики 7–14 — план реализации после завершения MVP (Фазы 2–4).
+globs:
+---
+
+# Эпики 7–14: План реализации (Фазы 2–4)
+
+## Эпик 7: Папки и теги (Фаза 2, 2–3 дня)
+
+### Сервер
+
+Создать файлы:
+```
+server/api/folders/index.get.ts    — список + LEFT JOIN count QR
+server/api/folders/index.post.ts   — Zod: { name: string, parentId?: uuid, color?: string }
+server/api/folders/[id].put.ts     — rename, color, move (parentId)
+server/api/folders/[id].delete.ts  — DELETE folder, UPDATE qr_codes SET folder_id = NULL
+server/api/tags/index.get.ts       — все теги + count QR
+server/api/tags/index.post.ts      — Zod: { name: string, color?: string }
+```
+
+### Клиент
+
+Создать файлы:
+```
+app/composables/useFolders.ts      — CRUD composable
+app/pages/folders/index.vue        — grid карточек (цветная иконка, name, count)
+app/pages/folders/[id].vue         — QR в папке (reuse QrTable/QrCard)
+app/components/folders/FolderDialog.vue — UModal: name + color picker + parent select
+```
+
+Обновить:
+- `app/pages/qr/index.vue` — fetch реальных папок для dropdown фильтра
+- `app/pages/qr/create.vue` и `qr/[id]/edit.vue` — folder USelect + TagInput с реальными тегами
+
+---
+
+## Эпик 8: Расширенная кастомизация QR (Фаза 2, 3–4 дня)
+
+### 8.1 Градиенты
+
+Обновить `app/utils/qr-svg.ts`:
+- `gradientType: 'linear' | 'radial'` → SVG `<defs><linearGradient>` / `<radialGradient>`
+- Модули используют `fill="url(#qr-gradient)"` вместо plain color
+
+### 8.2 Лого Upload
+
+Создать `server/api/upload/logo.post.ts`:
+- Accept: PNG/JPG/SVG ≤2MB
+- `sharp` resize до max 500×500
+- Сохранить в `data/uploads/logos/`
+- Return: `{ url: '/uploads/logos/{filename}' }`
+
+Обновить `QrStyleEditor`:
+- Drag-and-drop зона для лого
+- Preview uploaded лого
+- Size slider (15–30%)
+- Auto error correction → H
+
+### 8.3 Рамки с CTA
+
+Обновить `app/utils/qr-svg.ts`:
+- 4 стиля: `banner-bottom`, `banner-top`, `rounded-box`, `tooltip`
+- SVG `<rect>` + `<text>` элементы вокруг QR
+
+Обновить `QrStyleEditor`:
+- Frame section: toggle on/off, style selector, text input, text color, bg color
+
+Синхронизировать `server/services/export.service.ts` с теми же рамками.
+
+---
+
+## Эпик 9: A/B-тестирование (Фаза 3, 2 дня)
+
+### Сервер
+
+```
+server/api/qr/[id]/destinations/index.post.ts    — { url, weight, label }
+server/api/qr/[id]/destinations/[destId].put.ts   — update url/weight
+server/api/qr/[id]/destinations/[destId].delete.ts
+```
+
+Валидация: сумма весов активных destinations = 100.
+
+### Клиент
+
+Создать `app/components/qr/AbTestConfig.vue`:
+- Список вариантов (url + label + weight slider)
+- Stacked bar визуализация распределения
+- «Добавить вариант» кнопка
+- Валидация: сумма = 100%
+
+Интегрировать в create/edit формы QR.
+Показать результаты A/B на detail page: таблица вариантов + clicks + %.
+
+---
+
+## Эпик 10: Массовое создание CSV (Фаза 3, 2–3 дня)
+
+### Сервер
+
+Создать `server/services/bulk.service.ts`:
+- `papaparse` для CSV
+- Маппинг: title, destination_url, folder, tags, utm_*
+- Валидация каждой строки
+- Batch insert в транзакции (до 500 строк)
+
+Создать `server/api/qr/bulk.post.ts` — multipart/form-data.
+
+### Клиент
+
+Создать `app/pages/qr/bulk.vue` — wizard 5 шагов:
+1. Upload CSV (drag-and-drop)
+2. Preview + маппинг колонок
+3. Валидация (зелёные/красные строки)
+4. Подтверждение
+5. Результат + download template
+
+Создать `app/composables/useBulk.ts`.
+
+---
+
+## Эпик 11: Управление командой (Фаза 3, 2 дня)
+
+### Сервер
+
+```
+server/api/team/index.get.ts     — requireAdmin, список users + QR count
+server/api/team/invite.post.ts   — { email, role } → create user + send invite email
+server/api/team/[id].put.ts      — change role (protect last admin)
+server/api/team/[id].delete.ts   — delete user (keep QR codes)
+```
+
+### Клиент
+
+```
+app/pages/settings/team.vue      — таблица users + invite modal (admin only)
+app/pages/settings/index.vue     — профиль (имя, аватар)
+app/pages/settings/domains.vue   — CRUD allowed_domains (admin only)
+```
+
+---
+
+## Эпик 12: API v1 и ключи (Фаза 4, 2 дня)
+
+### API-ключи
+
+Создать `server/api/integrations/api-key.post.ts`:
+- `sqr_live_` + crypto.randomBytes(32).toString('hex')
+- SHA-256 hash + prefix в api_keys
+- Показывается ONE TIME ONLY
+
+### API Key Middleware
+
+Создать `server/middleware/api-key.ts`:
+- Check `Authorization: Bearer sqr_live_...`
+- Lookup by hash → attach user
+- Rate limit: 100 req/min per key
+
+### V1 Endpoints
+
+```
+server/api/v1/qr/index.post.ts    — create
+server/api/v1/qr/index.get.ts     — list
+server/api/v1/qr/[id].get.ts      — details
+server/api/v1/qr/[id].put.ts      — update
+server/api/v1/qr/[id].delete.ts   — delete
+server/api/v1/qr/[id]/stats.get.ts — analytics
+```
+
+Создать `app/pages/api-docs/index.vue` — docs page с curl примерами.
+
+---
+
+## Эпик 13: Daily Aggregation (Фаза 3–4, 1–2 дня)
+
+### Новая таблица
+
+```typescript
+// server/db/schema/scan-daily-stats.ts
+pgTable('scan_daily_stats', {
+  date: date('date').notNull(),
+  qrCodeId: uuid('qr_code_id').notNull().references(() => qrCodes.id, { onDelete: 'cascade' }),
+  totalScans: integer('total_scans').notNull().default(0),
+  uniqueScans: integer('unique_scans').notNull().default(0),
+  countryBreakdown: jsonb('country_breakdown'),
+  deviceBreakdown: jsonb('device_breakdown'),
+}, (t) => [primaryKey({ columns: [t.date, t.qrCodeId] })])
+```
+
+### Cron
+
+Добавить `node-cron`. Создать `server/plugins/cron.ts`:
+```
+schedule('0 2 * * *', () => aggregationService.aggregateDay(yesterday))
+```
+
+### Обновить analytics.service
+
+Для периодов >30 дней → query `scan_daily_stats` вместо `scan_events`.
+
+---
+
+## Эпик 14: i18n, Dark Mode, Polish (Фаза 4, 2–3 дня)
+
+### i18n
+- Расширить ru.json и en.json ALL UI strings
+- Заменить все hardcoded → `$t()` / `t()`
+- Toggle в UserMenu
+
+### Dark Mode
+- `nuxt.config.ts`: `colorMode: { preference: 'system' }`
+- Проверить ВСЕ кастомные компоненты
+- QR Preview: checkerboard background
+- Toggle в Header
+
+### Sentry
+- `pnpm add @sentry/nuxt`
+- DSN из env
+- Client error boundaries + server tracking
+
+### E2E Tests
+- `pnpm add -D @playwright/test`
+- Auth flow: login → OTP → dashboard
+- QR CRUD: create → view → edit → delete
+- Redirect: scan → redirect → event recorded
+
+---
+
+## Рекомендованный порядок сессий
+
+```
+Сессия 1: Эпик 5   → redirect + scan + export (завершает redirect loop)
+Сессия 2: Эпик 6   → analytics (завершает MVP)
+Сессия 3: Эпик 7   → папки + теги (организация)
+Сессия 4: Эпик 8   → кастомизация (градиенты, лого, рамки)
+Сессия 5: Эпик 9   → A/B testing
+Сессия 6: Эпик 10+11 → CSV bulk + team
+Сессия 7: Эпик 12+13 → API v1 + aggregation
+Сессия 8: Эпик 14  → polish, i18n, dark mode, tests
+```

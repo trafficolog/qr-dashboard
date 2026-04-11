@@ -1,0 +1,62 @@
+---
+description: Главные правила проекта SPLAT QR Service. Применяются ко ВСЕМ файлам.
+globs:
+alwaysApply: true
+---
+
+# SPLAT QR Service — Project Rules
+
+## Обзор проекта
+
+SPLAT QR Service — внутрикорпоративный сервис управления QR-кодами. Стек: Nuxt 3 (fullstack SSR) + PostgreSQL 16 + Drizzle ORM. Язык — TypeScript (strict mode). UI — Nuxt UI v3 (Reka UI + Tailwind v4). Package manager — pnpm.
+
+## Статус реализации
+
+Завершены Эпики 1–4 (инфраструктура, auth, layout, CRUD QR). Следующие: Эпик 5 (redirect), 6 (аналитика), 7 (папки/теги), 8–14 (расширение).
+
+## Архитектурные принципы
+
+- **Бизнес-логика** — ТОЛЬКО в `server/services/*.service.ts`, никогда в API-хэндлерах
+- **API-хэндлеры** — тонкие: Zod-валидация → вызов сервиса → `apiSuccess(result)`
+- **Composables** — клиентская логика, один composable на сущность
+- **Компоненты** — granular, без бизнес-логики, переиспользуемые
+- **Типы** — общие в `types/`, используются на сервере и клиенте
+
+## Формат ответов API
+
+Все API-эндпоинты ОБЯЗАНЫ возвращать единый формат:
+
+```typescript
+// Успех
+apiSuccess(data)                    // → { data: T }
+apiSuccess(data, { total, page })   // → { data: T, meta: {...} }
+
+// Ошибка
+apiError('Сообщение', 400)          // → throw createError с { data: null, error: {...} }
+```
+
+## Безопасность
+
+- Валидация через Zod на КАЖДОМ API-эндпоинте
+- Никогда plaintext tokens — только SHA-256 хэши в БД
+- Cookie: httpOnly, secure, sameSite: 'lax'
+- Проверка владельца ресурса: `checkAccess(entity, user)` в каждом сервисе
+- Editor видит только свои данные, Admin — все
+
+## Именование
+
+- Файлы: `kebab-case` (qr-codes.ts, style-editor.vue)
+- Vue компоненты: `PascalCase` (StyleEditor.vue → `<QrStyleEditor />`)
+- JSON поля API: `camelCase`
+- БД колонки: `snake_case`
+- Drizzle schema: `camelCase` в TypeScript, маппится в `snake_case` в БД
+
+## Иконки
+
+Используй ТОЛЬКО Lucide через @nuxt/icon: `i-lucide-{name}`. Примеры:
+- `i-lucide-qr-code`, `i-lucide-plus`, `i-lucide-trash-2`
+- `i-lucide-folder`, `i-lucide-bar-chart-3`, `i-lucide-settings`
+
+## Локализация
+
+Все пользовательские строки через `$t('key')` или `t('key')`. Ключи в `locales/ru.json` и `locales/en.json`. Дефолтная локаль — русский.

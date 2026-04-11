@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "SPLAT QR Service"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "qrCodes": "QR Codes",
+    "folders": "Folders",
+    "analytics": "Analytics",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Sign In",
+    "loginSubtitle": "Enter your corporate email to receive a code",
+    "getCode": "Get Code",
+    "enterCode": "Enter Code",
+    "codeSentTo": "Code sent to",
+    "codeValid": "Code is valid for",
+    "resend": "Resend",
+    "resendIn": "Resend in {seconds}s",
+    "otherEmail": "Use another email",
+    "confirm": "Confirm",
+    "logout": "Sign Out",
+    "invalidEmail": "Enter a valid email",
+    "codeLength": "Code must be 6 digits"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search...",
+    "loading": "Loading...",
+    "noData": "No data",
+    "confirm": "Confirm",
+    "back": "Back"
+  }
+}

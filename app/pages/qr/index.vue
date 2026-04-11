@@ -1,0 +1,297 @@
+<template>
+  <div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">QR-коды</h1>
+      <UButton icon="i-lucide-plus" label="Создать QR" to="/qr/create" />
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap items-center gap-3 mb-4">
+      <UInput
+        v-model="filters.search"
+        placeholder="Поиск по названию..."
+        icon="i-lucide-search"
+        class="w-full sm:w-64"
+        size="sm"
+      />
+
+      <USelect
+        v-model="filters.status"
+        :items="statusOptions"
+        placeholder="Все статусы"
+        size="sm"
+        class="w-40"
+      />
+
+      <USelect
+        v-model="filters.folderId"
+        :items="folderOptions"
+        placeholder="Все папки"
+        size="sm"
+        class="w-40"
+      />
+
+      <div class="flex-1" />
+
+      <!-- View toggle -->
+      <div class="flex border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+        <button
+          :class="[
+            'p-2 transition-colors',
+            viewMode === 'table'
+              ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+              : 'text-gray-400 hover:text-gray-600',
+          ]"
+          @click="viewMode = 'table'"
+        >
+          <UIcon name="i-lucide-list" class="size-4" />
+        </button>
+        <button
+          :class="[
+            'p-2 transition-colors',
+            viewMode === 'grid'
+              ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+              : 'text-gray-400 hover:text-gray-600',
+          ]"
+          @click="viewMode = 'grid'"
+        >
+          <UIcon name="i-lucide-grid-3x3" class="size-4" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Bulk actions bar -->
+    <Transition name="slide-down">
+      <div
+        v-if="selectedIds.length > 0"
+        class="flex items-center gap-3 mb-4 p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800"
+      >
+        <span class="text-sm font-medium text-green-700 dark:text-green-300">
+          Выбрано: {{ selectedIds.length }}
+        </span>
+        <UButton
+          label="Снять выделение"
+          variant="link"
+          size="xs"
+          @click="selectedIds = []"
+        />
+        <div class="flex-1" />
+        <UButton
+          icon="i-lucide-trash-2"
+          label="Удалить"
+          color="error"
+          variant="outline"
+          size="sm"
+          @click="handleBulkDelete"
+        />
+      </div>
+    </Transition>
+
+    <!-- Loading skeleton -->
+    <div v-if="loading" class="space-y-3">
+      <USkeleton v-for="i in 5" :key="i" class="h-16 w-full rounded-lg" />
+    </div>
+
+    <!-- Empty state -->
+    <SharedEmptyState
+      v-else-if="qrList.length === 0"
+      icon="i-lucide-qr-code"
+      title="Нет QR-кодов"
+      :description="filters.search ? 'Ничего не найдено. Попробуйте изменить запрос.' : 'Создайте первый QR-код для начала работы.'"
+    >
+      <template #action>
+        <UButton
+          v-if="!filters.search"
+          icon="i-lucide-plus"
+          label="Создать QR"
+          to="/qr/create"
+        />
+      </template>
+    </SharedEmptyState>
+
+    <!-- Table view -->
+    <QrTable
+      v-else-if="viewMode === 'table'"
+      :items="qrList as any"
+      :selected-ids="selectedIds"
+      :all-selected="allSelected"
+      :sort-by="filters.sortBy"
+      :sort-order="filters.sortOrder"
+      @toggle-all="toggleAll"
+      @toggle-select="toggleSelect"
+      @sort="handleSort"
+      @edit="(id) => navigateTo(`/qr/${id}/edit`)"
+      @duplicate="handleDuplicate"
+      @delete="handleDelete"
+    />
+
+    <!-- Grid view -->
+    <div
+      v-else
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+    >
+      <QrCard
+        v-for="qr in qrList"
+        :key="qr.id"
+        :qr="qr as any"
+        @edit="(id) => navigateTo(`/qr/${id}/edit`)"
+        @duplicate="handleDuplicate"
+        @delete="handleDelete"
+      />
+    </div>
+
+    <!-- Pagination -->
+    <SharedPagination
+      v-if="qrList.length > 0"
+      :page="filters.page"
+      :limit="filters.limit"
+      :total="meta.total || 0"
+      :total-pages="meta.totalPages || 1"
+      @update:page="handlePageChange"
+    />
+
+    <!-- Delete confirmation -->
+    <SharedConfirmDialog
+      v-model:open="deleteDialogOpen"
+      title="Удалить QR-код"
+      message="QR-код и вся связанная аналитика будут удалены. Это действие нельзя отменить."
+      @confirm="confirmDelete"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+const toast = useToast()
+const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr } = useQr()
+
+// View mode (persisted)
+const viewMode = ref<'table' | 'grid'>('table')
+if (import.meta.client) {
+  const saved = localStorage.getItem('qr-view-mode') as 'table' | 'grid' | null
+  if (saved) viewMode.value = saved
+  watch(viewMode, (v) => localStorage.setItem('qr-view-mode', v))
+}
+
+// Selection
+const selectedIds = ref<string[]>([])
+const allSelected = computed(
+  () => qrList.value.length > 0 && selectedIds.value.length === qrList.value.length,
+)
+
+function toggleAll() {
+  if (allSelected.value) {
+    selectedIds.value = []
+  } else {
+    selectedIds.value = qrList.value.map((q) => q.id)
+  }
+}
+
+function toggleSelect(id: string) {
+  const idx = selectedIds.value.indexOf(id)
+  if (idx >= 0) {
+    selectedIds.value.splice(idx, 1)
+  } else {
+    selectedIds.value.push(id)
+  }
+}
+
+// Sorting
+function handleSort(field: string) {
+  if (filters.value.sortBy === field) {
+    filters.value.sortOrder = filters.value.sortOrder === 'asc' ? 'desc' : 'asc'
+  } else {
+    filters.value.sortBy = field
+    filters.value.sortOrder = 'desc'
+  }
+  fetchQrList()
+}
+
+// Pagination
+function handlePageChange(page: number) {
+  filters.value.page = page
+  fetchQrList()
+}
+
+// Actions
+async function handleDuplicate(id: string) {
+  try {
+    const qr = await duplicateQr(id)
+    toast.add({ title: `QR «${qr.title}» создан`, color: 'success' })
+    fetchQrList()
+  } catch {
+    toast.add({ title: 'Ошибка дублирования', color: 'error' })
+  }
+}
+
+const deleteDialogOpen = ref(false)
+const deleteTargetId = ref<string | null>(null)
+
+function handleDelete(id: string) {
+  deleteTargetId.value = id
+  deleteDialogOpen.value = true
+}
+
+async function confirmDelete() {
+  if (!deleteTargetId.value) return
+  try {
+    await deleteQr(deleteTargetId.value)
+    toast.add({ title: 'QR-код удалён', color: 'success' })
+    selectedIds.value = selectedIds.value.filter((id) => id !== deleteTargetId.value)
+    fetchQrList()
+  } catch {
+    toast.add({ title: 'Ошибка удаления', color: 'error' })
+  } finally {
+    deleteDialogOpen.value = false
+    deleteTargetId.value = null
+  }
+}
+
+async function handleBulkDelete() {
+  if (selectedIds.value.length === 0) return
+  try {
+    await bulkDeleteQr(selectedIds.value)
+    toast.add({ title: `Удалено QR-кодов: ${selectedIds.value.length}`, color: 'success' })
+    selectedIds.value = []
+    fetchQrList()
+  } catch {
+    toast.add({ title: 'Ошибка массового удаления', color: 'error' })
+  }
+}
+
+// Folder options (placeholder — will fetch from API in Epic 7)
+const folderOptions = ref([
+  { label: 'Все папки', value: '' },
+])
+
+const statusOptions = [
+  { label: 'Все статусы', value: '' },
+  { label: 'Активен', value: 'active' },
+  { label: 'Пауза', value: 'paused' },
+  { label: 'Истёк', value: 'expired' },
+  { label: 'Архив', value: 'archived' },
+]
+
+// Fetch on mount and when non-search filters change
+onMounted(() => fetchQrList())
+
+watch(
+  () => [filters.value.status, filters.value.folderId, filters.value.sortBy, filters.value.sortOrder],
+  () => {
+    filters.value.page = 1
+    fetchQrList()
+  },
+)
+</script>
+
+<style scoped>
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.2s ease;
+}
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+</style>

@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "SPLAT QR Service"
+  },
+  "nav": {
+    "dashboard": "Дашборд",
+    "qrCodes": "QR-коды",
+    "folders": "Папки",
+    "analytics": "Аналитика",
+    "settings": "Настройки"
+  },
+  "auth": {
+    "login": "Вход в систему",
+    "loginSubtitle": "Введите корпоративный email для получения кода",
+    "getCode": "Получить код",
+    "enterCode": "Введите код",
+    "codeSentTo": "Код отправлен на",
+    "codeValid": "Код действителен",
+    "resend": "Отправить повторно",
+    "resendIn": "Повторно через {seconds} сек",
+    "otherEmail": "Другой email",
+    "confirm": "Подтвердить",
+    "logout": "Выйти",
+    "invalidEmail": "Введите корректный email",
+    "codeLength": "Код должен содержать 6 цифр"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "create": "Создать",
+    "search": "Поиск...",
+    "loading": "Загрузка...",
+    "noData": "Нет данных",
+    "confirm": "Подтвердить",
+    "back": "Назад"
+  }
+}

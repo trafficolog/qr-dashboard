@@ -1,0 +1,133 @@
+---
+description: Эпик 6 — Аналитика. Dashboard, графики, метрики.
+globs: server/services/analytics.service.ts, server/api/analytics/**/*.ts, app/components/analytics/**/*.vue, app/composables/useAnalytics.ts, app/pages/dashboard/**/*.vue
+---
+
+# Эпик 6: Аналитика
+
+**Приоритет:** 🟠 High — завершает Фазу 1 MVP
+**Оценка:** 3–4 дня
+**Зависимости:** Эпики 1, 4, 5
+
+## Задача 6.1 — Analytics Service
+
+### Файл: `server/services/analytics.service.ts`
+
+```typescript
+import { db } from '../db'
+import { qrCodes, scanEvents } from '../db/schema'
+import { eq, and, gte, lte, count, sql, desc } from 'drizzle-orm'
+
+export const analyticsService = {
+  // 4 метрики + % change vs предыдущий период
+  async getOverview(userId: string, userRole: string, dateFrom: Date, dateTo: Date) {
+    // Вычислить previousFrom/previousTo (тот же интервал до dateFrom)
+    // Total QR (active): COUNT qr_codes WHERE status='active'
+    // Total scans: SUM(totalScans) или COUNT scan_events в dateRange
+    // Unique scans: COUNT scan_events WHERE isUnique AND scannedAt в dateRange
+    // Scans today: COUNT scan_events WHERE DATE(scannedAt) = TODAY
+    // Для editor: фильтр createdBy = userId
+    // change = ((current - previous) / previous) * 100
+  },
+
+  // Временные ряды с автоматической группировкой
+  async getScansTimeSeries(filters: {
+    qrCodeId?: string, dateFrom: Date, dateTo: Date, userId: string, userRole: string
+  }) {
+    // diff = dateTo - dateFrom
+    // ≤48h → DATE_TRUNC('hour')
+    // ≤90d → DATE()
+    // ≤365d → DATE_TRUNC('week')
+    // >365d → DATE_TRUNC('month')
+    //
+    // SELECT date_group, COUNT(*), COUNT(*) FILTER (WHERE is_unique)
+    // FROM scan_events WHERE ... GROUP BY 1 ORDER BY 1
+  },
+
+  // Top 10 QR по сканам
+  async getTopQrCodes(filters) {
+    // SELECT id, title, short_code, total_scans, unique_scans
+    // FROM qr_codes WHERE ... ORDER BY total_scans DESC LIMIT 10
+  },
+}
+```
+
+## Задача 6.2 — API-эндпоинты
+
+### `server/api/analytics/overview.get.ts`
+```
+Query: dateFrom, dateTo (ISO strings)
+→ analyticsService.getOverview(user.id, user.role, from, to)
+```
+
+### `server/api/analytics/scans.get.ts`
+```
+Query: qrCodeId? (uuid), dateFrom, dateTo
+→ analyticsService.getScansTimeSeries(...)
+```
+
+### `server/api/qr/[id]/analytics.get.ts`
+```
+Query: dateFrom, dateTo
+→ Объединяет scans time series для конкретного QR
+```
+
+## Задача 6.3 — Dashboard
+
+### Обновить: `app/pages/dashboard/index.vue`
+
+Заменить placeholder на реальные данные:
+- 4 StatCard с данными из overview
+- ScanChart с данными из scans time series
+- DateRangePicker для выбора периода
+- TopQrTable
+- Все запросы через Promise.all для параллельности
+
+### Создать: `app/composables/useAnalytics.ts`
+
+```typescript
+export function useAnalytics() {
+  // fetchOverview(dateRange) → AnalyticsOverview
+  // fetchScansTimeSeries(filters) → ScanTimeSeriesPoint[]
+  // fetchTopQr(filters) → TopQrCode[]
+}
+```
+
+### Создать: `app/components/analytics/StatCard.vue`
+
+```
+Props: icon, label, value (number|string), change (number), loading (boolean)
+Иконка в цветном круге, анимированное число, % change (зелёный ↑ / красный ↓)
+USkeleton при loading
+```
+
+### Создать: `app/components/analytics/ScanChart.vue`
+
+```
+Props: data (ScanTimeSeriesPoint[]), loading (boolean)
+vue-echarts LineChart. Две линии: total (green), unique (light green)
+Tooltip, responsive, skeleton при loading
+```
+
+### Создать: `app/components/analytics/DateRangePicker.vue`
+
+```
+Props: modelValue ({ from: string, to: string })
+Presets: Сегодня, 7д, 30д, 90д, Год, Custom
+Custom: два UInput type="date"
+```
+
+### Создать: `app/components/analytics/TopQrTable.vue`
+
+```
+Props: items (TopQrCode[]), loading (boolean)
+Колонки: title (link), scans, status badge. USkeleton при loading
+```
+
+## Критерии приёмки
+
+- [ ] Dashboard загружается <1 сек
+- [ ] 4 StatCard показывают реальные данные + % change
+- [ ] ScanChart отображает корректный time series
+- [ ] Смена периода → все виджеты обновляются
+- [ ] Пустой период → пустые данные, не ошибки

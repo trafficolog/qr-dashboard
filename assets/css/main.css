@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --color-splat-green: #2E7D32;
+  --color-splat-green-light: #4CAF50;
+  --color-splat-green-dark: #1B5E20;
+  --color-splat-accent: #FF6F00;
+}

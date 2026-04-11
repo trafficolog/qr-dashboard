@@ -1,0 +1,220 @@
+---
+description: Эпик 5 — Redirect-эндпоинт и сбор аналитики. Следующий к реализации.
+globs: server/routes/r/**/*.ts, server/services/redirect.service.ts, server/services/geo.service.ts, server/services/ab-test.service.ts, server/services/export.service.ts, server/api/qr/*/export.get.ts
+---
+
+# Эпик 5: Redirect-эндпоинт и сбор аналитики
+
+**Приоритет:** 🔴 Critical — завершает MVP redirect-loop
+**Оценка:** 2–3 дня
+**Зависимости:** Эпики 1, 4 (готовы)
+
+## Задача 5.1 — Redirect Handler (≤50ms)
+
+### Файл: `server/routes/r/[code].get.ts`
+
+Критический путь. Порядок обработки:
+
+```typescript
+import { LRUCache } from 'lru-cache'
+import { db } from '../../db'
+import { qrCodes, qrDestinations } from '../../db/schema'
+import { eq, and } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
+
+// --- LRU Cache ---
+interface QrCacheEntry {
+  id: string
+  destinationUrl: string
+  status: string
+  expiresAt: Date | null
+  utmParams: Record<string, string> | null
+  destinations: { id: string; url: string; weight: number }[]
+}
+
+const qrCache = new LRUCache<string, QrCacheEntry>({ max: 10000, ttl: 5 * 60 * 1000 })
+
+// Экспортировать для инвалидации из qr.service
+export function invalidateQrCache(shortCode: string) { qrCache.delete(shortCode) }
+
+export default defineEventHandler(async (event) => {
+  const code = getRouterParam(event, 'code')
+  if (!code) return sendRedirect(event, '/not-found', 302)
+
+  // 1. Cache lookup
+  let entry = qrCache.get(code)
+
+  // 2. Cache miss → DB
+  if (!entry) {
+    const qr = await db.query.qrCodes.findFirst({
+      where: eq(qrCodes.shortCode, code),
+      with: {
+        destinations: {
+          where: eq(qrDestinations.isActive, true),
+          columns: { id: true, url: true, weight: true },
+        },
+      },
+    })
+    if (!qr) return sendRedirect(event, '/not-found', 302)
+    entry = {
+      id: qr.id,
+      destinationUrl: qr.destinationUrl,
+      status: qr.status,
+      expiresAt: qr.expiresAt,
+      utmParams: qr.utmParams as Record<string, string> | null,
+      destinations: qr.destinations,
+    }
+    qrCache.set(code, entry)
+  }
+
+  // 3. Status check
+  if (entry.status !== 'active') return sendRedirect(event, '/not-found', 302)
+
+  // 4. Expiry check
+  if (entry.expiresAt && new Date(entry.expiresAt) < new Date()) {
+    return sendRedirect(event, '/expired', 302)
+  }
+
+  // 5. Determine destination URL
+  let destUrl = entry.destinationUrl
+  let destId: string | null = null
+  if (entry.destinations.length > 1) {
+    const selected = weightedRandom(entry.destinations)
+    destUrl = selected.url
+    destId = selected.id
+  }
+
+  // 6. Append UTM params
+  if (entry.utmParams) {
+    const url = new URL(destUrl)
+    for (const [k, v] of Object.entries(entry.utmParams)) {
+      if (v) url.searchParams.set(k, v)
+    }
+    destUrl = url.toString()
+  }
+
+  // 7. Async scan recording (non-blocking)
+  event.waitUntil(
+    redirectService.recordScanEvent({
+      qrCodeId: entry.id,
+      destinationId: destId,
+      ip: getClientIp(event),
+      userAgent: getRequestHeader(event, 'user-agent') || '',
+      referer: getRequestHeader(event, 'referer') || '',
+    })
+  )
+
+  // 8. Async counter increment
+  event.waitUntil(
+    db.update(qrCodes)
+      .set({ totalScans: sql`${qrCodes.totalScans} + 1` })
+      .where(eq(qrCodes.id, entry.id))
+  )
+
+  // 9. Redirect
+  return sendRedirect(event, destUrl, 302)
+})
+
+function weightedRandom<T extends { weight: number }>(items: T[]): T {
+  const total = items.reduce((s, i) => s + i.weight, 0)
+  let r = Math.random() * total
+  for (const item of items) {
+    r -= item.weight
+    if (r <= 0) return item
+  }
+  return items[items.length - 1]!
+}
+```
+
+**ВАЖНО:** Добавить вызов `invalidateQrCache(shortCode)` в `qr.service.ts` → `updateQr()` и `deleteQr()`.
+
+### Файл: `app/pages/not-found.vue`
+
+```vue
+<!-- layout: false. Логотип SPLAT, "QR-код не найден", кнопка на главную -->
+```
+
+### Файл: `app/pages/expired.vue`
+
+```vue
+<!-- layout: false. Логотип SPLAT, "Срок действия QR-кода истёк", кнопка на главную -->
+```
+
+## Задача 5.2 — Scan Recording
+
+### Файл: `server/services/redirect.service.ts`
+
+```typescript
+// Зависимости: ua-parser-js, server/services/geo.service.ts
+//
+// async recordScanEvent({ qrCodeId, destinationId, ip, userAgent, referer })
+//   1. Parse UA → deviceType, os, browser
+//   2. GeoIP lookup → country, city, region, lat, lng
+//   3. isUnique: проверить есть ли scan с таким IP за сегодня для этого QR
+//   4. INSERT scan_events
+//   5. Если isUnique → UPDATE qr_codes SET unique_scans = unique_scans + 1
+//   6. Если destinationId → UPDATE qr_destinations SET clicks = clicks + 1
+```
+
+### Файл: `server/services/geo.service.ts`
+
+```typescript
+import geoip from 'geoip-lite'
+
+export const geoService = {
+  lookup(ip: string) {
+    const geo = geoip.lookup(ip)
+    if (!geo) return null
+    return {
+      country: geo.country,
+      city: geo.city,
+      region: geo.region,
+      latitude: geo.ll?.[0] ?? null,
+      longitude: geo.ll?.[1] ?? null,
+    }
+  }
+}
+```
+
+### Файл: `server/services/ab-test.service.ts`
+
+```typescript
+// weightedRandom<T extends { weight: number }>(items: T[]): T
+// Уже реализован inline в redirect handler, вынести в отдельный файл
+```
+
+## Задача 5.3 — Export Service
+
+### Файл: `server/services/export.service.ts`
+
+```typescript
+// generateQrSvg(url, style) → SVG string
+//   ВАЖНО: Дублировать логику из app/utils/qr-svg.ts (сервер не видит app/utils)
+//   Или создать shared/ директорию
+//
+// generateQrPng(url, style, size) → Buffer
+//   const svgBuffer = Buffer.from(svgString)
+//   return sharp(svgBuffer).resize(size, size).png().toBuffer()
+//
+// generateQrPdf(url, style, title?) → Buffer
+//   PDFDocument, embed PNG, center on A4
+```
+
+### Файл: `server/api/qr/[id]/export.get.ts`
+
+```typescript
+// Query: format (png|svg|pdf), size (number, для png, default 1000)
+// requireAuth → getQrById → switch(format) → setHeaders → return buffer/string
+// Content-Disposition: attachment; filename="qr-{shortCode}.{ext}"
+```
+
+## Критерии приёмки
+
+- [ ] `/r/ValidCode` → 302 redirect за ≤50ms (cache hit)
+- [ ] `/r/InvalidCode` → красивая 404 страница
+- [ ] `/r/ExpiredCode` → страница «Срок истёк»
+- [ ] Scan event записывается с geo, device, browser, os
+- [ ] isUnique корректно: первый скан за сутки = true, повторный = false
+- [ ] totalScans и uniqueScans инкрементируются
+- [ ] Export SVG/PNG/PDF — QR сканируется
+- [ ] Cache инвалидируется при update/delete QR
