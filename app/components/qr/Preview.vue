@@ -32,8 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { generateQrSvg } from '~/app/utils/qr-svg'
-import type { QrStyle } from '~/types/qr'
+import { generateQrSvg } from '~/utils/qr-svg'
+import type { QrStyle } from '~/../types/qr'
 
 const props = withDefaults(
   defineProps<{

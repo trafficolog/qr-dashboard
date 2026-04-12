@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { generateQrSvg } from '~/app/utils/qr-svg'
+import { generateQrSvg } from '~/utils/qr-svg'
 
 const props = defineProps<{
   url: string
