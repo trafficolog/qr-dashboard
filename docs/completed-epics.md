@@ -54,11 +54,11 @@ users, sessions, otp_codes, folders, qr_codes, qr_destinations, scan_events, tag
 | `server/api/auth/me.get.ts` | API | Verify cookie → user |
 | `server/middleware/auth.ts` | Middleware | Protect /api/**, attach user to context |
 | `server/middleware/rate-limit.ts` | Middleware | LRU: auth 5/15min, redirect 1000/min |
-| `app/composables/useAuth.ts` | Composable | login, verify, logout, fetchUser, user, isAuthenticated |
+| `app/composables/useAuth.ts` | Composable | login, verify, logout, SSR cookie-aware fetchUser, authResolved, sync with Pinia |
 | `app/middleware/auth.global.ts` | Middleware | Client redirect: unauth→login, auth→dashboard |
 | `app/layouts/auth.vue` | Layout | Centered card + SPLAT logo |
-| `app/pages/auth/login.vue` | Page | Email input, validation, toast errors |
-| `app/pages/auth/verify.vue` | Page | PinInput 6 digits, timer 10min, resend 60s |
+| `app/pages/auth/login.vue` | Page | Единый auth-flow: email + OTP на одной странице, resend, inline errors |
+| `app/pages/auth/verify.vue` | Page | Совместимый redirect на `/auth/login?step=code` |
 | `app/stores/auth.ts` | Store | Pinia: user, isAuthenticated |
 
 ### API-эндпоинты
@@ -150,3 +150,58 @@ users, sessions, otp_codes, folders, qr_codes, qr_destinations, scan_events, tag
 ### Известные ограничения
 - Export API-эндпоинт (`/api/qr/[id]/export`) — UI готов, серверная часть в Эпике 5
 - Folder/Tag selectors на create/edit — placeholder, реальные данные в Эпике 7
+ 
+---
+ 
+## Хотфикс: Стили, Auth, Навигация, Docker (2026-04-13)
+ 
+### Исправленные файлы
+| Файл | Тип | Описание |
+|------|-----|----------|
+| `nuxt.config.ts` | Config | Добавлен глобальный CSS и `colorMode`; тема подключается из `~~/assets/css/main.css` |
+| `app.config.ts` | Config | Тема Nuxt UI переведена на SPLAT palette (`primary: splat`, `neutral: neutral`) |
+| `Dockerfile` | Infra | Исправлен: `npm ci` вместо `pnpm install`, добавлен stage `migrator`, порт 3000 |
+| `docker-compose.yml` | Infra | Добавлен сервис `migrate`; убран `profiles: ["app"]`; порт 3000; `app` depends_on `migrate` |
+| `server/services/auth.service.ts` | Service | Логика доменов: пустой список → все домены разрешены (открытый режим) |
+| `app/app.vue` | App Shell | Корневой Nuxt UI shell обёрнут в `UApp` для глобальной primary theme |
+| `app/composables/useAuth.ts` | Composable | SSR `fetchUser()` пробрасывает cookie headers; auth-state синхронизирован с Pinia |
+| `app/composables/useQr.ts` | Composable | Исправлены type imports и refetch списка при поиске с `page > 1` |
+| `app/middleware/auth.global.ts` | Middleware | Не перехватывает неизвестные маршруты, поэтому 404 рендерится через branded error page |
+| `app/pages/auth/login.vue` | Page | Auth переведён в один экран: email → OTP → redirect на dashboard |
+| `app/stores/auth.ts` | Store | Исправлен import shared type `User` из корневого `types/` |
+| `app/utils/qr-svg.ts` | Utility | Исправлен import shared type `QrStyle`, typecheck/lint приведены к зелёному состоянию |
+| `server/services/qr.service.ts` | Service | Исправлены shared-type imports, nullable `description`, lint/style issues |
+| `server/middleware/rate-limit.ts` | Middleware | `Retry-After` возвращается в ожидаемом типе |
+| `server/utils/auth.ts` | Utility | Исправлен import shared type `User` |
+| `i18n/locales/ru.json` | I18n | Добавлены строки для analytics placeholder, one-page auth и global error screen |
+| `i18n/locales/en.json` | I18n | Добавлены строки для analytics placeholder, one-page auth и global error screen |
+ 
+### Новые файлы
+| Файл | Тип | Описание |
+|------|-----|----------|
+| `server/db/migrations/migrate.ts` | Script | Standalone миграция через `drizzle-orm/migrator` (не требует drizzle-kit) |
+| `server/api/admin/domains/index.get.ts` | API | GET список доменов (admin) |
+| `server/api/admin/domains/index.post.ts` | API | POST добавить домен (admin) |
+| `server/api/admin/domains/[id].patch.ts` | API | PATCH toggle isActive (admin) |
+| `server/api/admin/domains/[id].delete.ts` | API | DELETE домен (admin) |
+| `app/pages/settings/index.vue` | Page | Обзор настроек (карточки по роли) |
+| `app/pages/settings/domains.vue` | Page | Управление белым списком доменов |
+| `app/error.vue` | Page | Универсальный branded экран для `404` и runtime errors |
+| `app/pages/analytics/index.vue` | Page | Placeholder для navigation target `/analytics` |
+| `app/pages/folders/index.vue` | Page | Placeholder для раздела папок до отдельного эпика |
+| `CHANGELOG.md` | Docs | История изменений |
+ 
+### Логика доменов
+```
+allowed_domains пустой (0 активных записей)
+  → ВСЕ домены разрешены (открытый режим — по умолчанию)
+ 
+allowed_domains содержит ≥1 активной записи
+  → Режим белого списка: принимаются только домены из таблицы
+```
+
+### Проверка хотфикса
+- `corepack pnpm typecheck` → 0 ошибок
+- `/dashboard`, `/qr`, `/folders`, `/analytics`, `/settings` → открываются после входа без ложного redirect на `/auth/login`
+- `/auth/login` для авторизованного пользователя → redirect на `/dashboard`
+- Неизвестный URL → branded `404` через `app/error.vue`

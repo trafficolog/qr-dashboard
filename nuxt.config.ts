@@ -1,7 +1,4 @@
 export default defineNuxtConfig({
-  future: { compatibilityVersion: 4 },
-  compatibilityDate: '2025-01-01',
-
   modules: [
     '@nuxt/ui',
     '@nuxt/icon',
@@ -12,11 +9,21 @@ export default defineNuxtConfig({
 
   ssr: true,
 
+  devtools: { enabled: true },
+
+  css: ['~~/assets/css/main.css'],
+
+  colorMode: {
+    preference: 'system',
+    fallback: 'light',
+    classSuffix: '',
+  },
+
   runtimeConfig: {
     // Server-only
     databaseUrl: process.env.DATABASE_URL || '',
     smtpHost: process.env.SMTP_HOST || '',
-    smtpPort: parseInt(process.env.SMTP_PORT || '587'),
+    smtpPort: Number.parseInt(process.env.SMTP_PORT || '587'),
     smtpUser: process.env.SMTP_USER || '',
     smtpPassword: process.env.SMTP_PASSWORD || '',
     smtpFrom: process.env.SMTP_FROM || '',
@@ -26,10 +33,13 @@ export default defineNuxtConfig({
 
     // Public (доступны на клиенте)
     public: {
-      appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3001',
       appName: process.env.NUXT_PUBLIC_APP_NAME || 'SPLAT QR Service',
     },
   },
+
+  future: { compatibilityVersion: 4 },
+  compatibilityDate: '2025-01-01',
 
   i18n: {
     defaultLocale: 'ru',
@@ -45,6 +55,4 @@ export default defineNuxtConfig({
   icon: {
     serverBundle: 'remote',
   },
-
-  devtools: { enabled: true },
 })

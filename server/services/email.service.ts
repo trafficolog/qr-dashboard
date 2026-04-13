@@ -7,6 +7,17 @@ interface EmailProvider {
   send(to: string, subject: string, html: string): Promise<void>
 }
 
+function isSmtpConfigured() {
+  const config = useRuntimeConfig()
+
+  return Boolean(
+    config.smtpHost
+    && config.smtpHost !== 'smtp.example.com'
+    && config.smtpUser
+    && config.smtpPassword,
+  )
+}
+
 class SmtpProvider implements EmailProvider {
   private transporter: Transporter
 
@@ -33,9 +44,14 @@ class SmtpProvider implements EmailProvider {
 class ConsoleProvider implements EmailProvider {
   async send(to: string, subject: string, html: string) {
     const plainText = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    const otpCode = plainText.match(/\b(\d{6})\b/u)?.[1]
+
     console.log(`\n📧 ─────────────────────────────────`)
     console.log(`   TO:      ${to}`)
     console.log(`   SUBJECT: ${subject}`)
+    if (otpCode) {
+      console.log(`   OTP:     ${otpCode}`)
+    }
     console.log(`   BODY:    ${plainText.substring(0, 200)}...`)
     console.log(`─────────────────────────────────────\n`)
   }
@@ -49,7 +65,7 @@ function getProvider(): EmailProvider {
   if (provider) return provider
 
   const config = useRuntimeConfig()
-  if (config.smtpHost && config.smtpUser) {
+  if (isSmtpConfigured()) {
     console.log('[Email] Using SMTP provider')
     provider = new SmtpProvider(
       config.smtpHost,
@@ -57,8 +73,9 @@ function getProvider(): EmailProvider {
       config.smtpUser,
       config.smtpPassword,
     )
-  } else {
-    console.warn('[Email] No SMTP configured — using console provider (dev mode)')
+  }
+  else {
+    console.warn('[Email] SMTP not configured — using console provider (dev mode)')
     provider = new ConsoleProvider()
   }
 
@@ -99,7 +116,8 @@ export const emailService = {
 
     try {
       await getProvider().send(email, subject, html)
-    } catch (error) {
+    }
+    catch (error) {
       console.error('[Email] Failed to send OTP:', error)
       throw createError({
         statusCode: 500,

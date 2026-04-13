@@ -1,9 +1,17 @@
 <template>
-  <USlideover v-model:open="isOpen" side="left" class="md:hidden">
+  <USlideover
+    v-model:open="isOpen"
+    side="left"
+    class="md:hidden"
+  >
     <template #header>
       <div class="flex items-center gap-3">
-        <img src="/splat-logo.svg" alt="SPLAT" class="h-8" />
-        <span class="font-semibold text-gray-900 dark:text-white">QR Service</span>
+        <img
+          src="/splat-logo.svg"
+          alt="SPLAT"
+          class="h-8"
+        >
+        <span class="font-semibold text-[color:var(--text-primary)]">QR Service</span>
       </div>
     </template>
 
@@ -14,27 +22,35 @@
           :key="item.route"
           :to="item.route"
           :class="[
-            'flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors',
+            'flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors',
             isActive(item.route)
-              ? 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
-              : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800',
+              ? 'bg-[color:var(--accent-light)] text-[color:var(--accent)]'
+              : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]',
           ]"
           @click="isOpen = false"
         >
-          <UIcon :name="item.icon" class="size-5" />
+          <UIcon
+            :name="item.icon"
+            class="size-5"
+          />
           {{ item.label }}
         </NuxtLink>
       </nav>
 
       <!-- User info at bottom -->
-      <div class="mt-auto border-t border-gray-200 dark:border-gray-800 p-4">
+      <div class="mt-auto border-t border-[color:var(--border)] p-4">
         <div class="flex items-center gap-3 mb-3">
-          <UAvatar :text="initials" size="sm" />
+          <UAvatar
+            :text="initials"
+            size="sm"
+          />
           <div class="min-w-0">
-            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+            <p class="truncate text-sm font-medium text-[color:var(--text-primary)]">
               {{ user?.name || user?.email }}
             </p>
-            <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
+            <p class="truncate text-xs text-[color:var(--text-muted)]">
+              {{ user?.email }}
+            </p>
           </div>
         </div>
         <UButton
@@ -57,6 +73,15 @@ const route = useRoute()
 const { user, logout } = useAuth()
 const { t } = useI18n()
 
+function getInitials(name: string) {
+  return name
+    .split(' ')
+    .map(part => part[0] ?? '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
 const navItems = computed(() => [
   { label: t('nav.dashboard'), icon: 'i-lucide-layout-dashboard', route: '/dashboard' },
   { label: t('nav.qrCodes'), icon: 'i-lucide-qr-code', route: '/qr' },
@@ -67,13 +92,9 @@ const navItems = computed(() => [
 
 const initials = computed(() => {
   if (user.value?.name) {
-    return user.value.name
-      .split(' ')
-      .map((s) => s[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
+    return getInitials(user.value.name)
   }
+
   return user.value?.email?.slice(0, 2).toUpperCase() || '??'
 })
 

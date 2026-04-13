@@ -2,17 +2,19 @@
   <div class="space-y-6">
     <!-- Colors -->
     <div>
-      <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Цвета</h4>
+      <h4 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
+        Цвета
+      </h4>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs text-gray-500 mb-1">Основной</label>
+          <label class="mb-1 block text-xs text-[color:var(--text-secondary)]">Основной</label>
           <div class="flex items-center gap-2">
             <input
               type="color"
               :value="style.foregroundColor || '#000000'"
-              class="w-8 h-8 rounded border border-gray-300 cursor-pointer"
+              class="h-8 w-8 cursor-pointer rounded border border-[color:var(--border)]"
               @input="updateStyle('foregroundColor', ($event.target as HTMLInputElement).value)"
-            />
+            >
             <UInput
               :model-value="style.foregroundColor || '#000000'"
               size="sm"
@@ -22,14 +24,14 @@
           </div>
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-1">Фон</label>
+          <label class="mb-1 block text-xs text-[color:var(--text-secondary)]">Фон</label>
           <div class="flex items-center gap-2">
             <input
               type="color"
               :value="style.backgroundColor || '#FFFFFF'"
-              class="w-8 h-8 rounded border border-gray-300 cursor-pointer"
+              class="h-8 w-8 cursor-pointer rounded border border-[color:var(--border)]"
               @input="updateStyle('backgroundColor', ($event.target as HTMLInputElement).value)"
-            />
+            >
             <UInput
               :model-value="style.backgroundColor || '#FFFFFF'"
               size="sm"
@@ -39,14 +41,14 @@
           </div>
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-1">Углы</label>
+          <label class="mb-1 block text-xs text-[color:var(--text-secondary)]">Углы</label>
           <div class="flex items-center gap-2">
             <input
               type="color"
               :value="style.cornerColor || style.foregroundColor || '#000000'"
-              class="w-8 h-8 rounded border border-gray-300 cursor-pointer"
+              class="h-8 w-8 cursor-pointer rounded border border-[color:var(--border)]"
               @input="updateStyle('cornerColor', ($event.target as HTMLInputElement).value)"
-            />
+            >
             <UInput
               :model-value="style.cornerColor || style.foregroundColor || '#000000'"
               size="sm"
@@ -60,7 +62,9 @@
 
     <!-- Module Style -->
     <div>
-      <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Стиль модулей</h4>
+      <h4 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
+        Стиль модулей
+      </h4>
       <div class="grid grid-cols-5 gap-2">
         <button
           v-for="ms in moduleStyles"
@@ -68,20 +72,25 @@
           :class="[
             'flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-colors',
             style.moduleStyle === ms.value
-              ? 'border-green-500 bg-green-50 dark:bg-green-950'
-              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300',
+              ? 'border-[color:var(--accent)] bg-[color:var(--accent-light)] text-[color:var(--accent)]'
+              : 'border-[color:var(--border)] text-[color:var(--text-secondary)] hover:border-[color:var(--accent)]/40 hover:bg-[color:var(--surface-2)]',
           ]"
           @click="updateStyle('moduleStyle', ms.value)"
         >
-          <div class="w-6 h-6" v-html="ms.icon" />
-          <span class="text-[10px] text-gray-500">{{ ms.label }}</span>
+          <div
+            class="w-6 h-6"
+            v-html="ms.icon"
+          />
+          <span class="text-[10px] text-[color:var(--text-secondary)]">{{ ms.label }}</span>
         </button>
       </div>
     </div>
 
     <!-- Corner Style -->
     <div>
-      <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Стиль углов</h4>
+      <h4 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
+        Стиль углов
+      </h4>
       <div class="grid grid-cols-4 gap-2">
         <button
           v-for="cs in cornerStyles"
@@ -89,20 +98,25 @@
           :class="[
             'flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-colors',
             style.cornerStyle === cs.value
-              ? 'border-green-500 bg-green-50 dark:bg-green-950'
-              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300',
+              ? 'border-[color:var(--accent)] bg-[color:var(--accent-light)] text-[color:var(--accent)]'
+              : 'border-[color:var(--border)] text-[color:var(--text-secondary)] hover:border-[color:var(--accent)]/40 hover:bg-[color:var(--surface-2)]',
           ]"
           @click="updateStyle('cornerStyle', cs.value)"
         >
-          <div class="w-6 h-6" v-html="cs.icon" />
-          <span class="text-[10px] text-gray-500">{{ cs.label }}</span>
+          <div
+            class="w-6 h-6"
+            v-html="cs.icon"
+          />
+          <span class="text-[10px] text-[color:var(--text-secondary)]">{{ cs.label }}</span>
         </button>
       </div>
     </div>
 
     <!-- Error Correction -->
     <div>
-      <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Коррекция ошибок</h4>
+      <h4 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
+        Коррекция ошибок
+      </h4>
       <USelect
         :model-value="style.errorCorrectionLevel || 'M'"
         :items="errorLevels"

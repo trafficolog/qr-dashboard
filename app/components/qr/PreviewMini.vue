@@ -1,7 +1,17 @@
 <template>
-  <div v-if="svgHtml" v-html="svgHtml" class="w-full h-full" />
-  <div v-else class="w-full h-full flex items-center justify-center">
-    <UIcon name="i-lucide-qr-code" class="size-4 text-gray-300" />
+  <div
+    v-if="svgHtml"
+    class="w-full h-full"
+    v-html="svgHtml"
+  />
+  <div
+    v-else
+    class="flex h-full w-full items-center justify-center"
+  >
+    <UIcon
+      name="i-lucide-qr-code"
+      class="size-4 text-[color:var(--text-muted)]/50"
+    />
   </div>
 </template>
 
@@ -16,7 +26,8 @@ const props = defineProps<{
 const svgHtml = computed(() => {
   try {
     return generateQrSvg(props.url, props.styleConfig || {})
-  } catch {
+  }
+  catch {
     return ''
   }
 })

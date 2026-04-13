@@ -1,5 +1,5 @@
 import QRCode from 'qrcode'
-import type { QrStyle } from '~/types/qr'
+import type { QrStyle } from '~~/types/qr'
 
 const DEFAULT_STYLE: Required<Pick<QrStyle, 'foregroundColor' | 'backgroundColor' | 'moduleStyle' | 'cornerStyle' | 'errorCorrectionLevel'>> = {
   foregroundColor: '#000000',
@@ -178,7 +178,7 @@ export function generateQrSvg(data: string, style: Partial<QrStyle> = {}): strin
 
   // Render finder patterns
   const eyes = [
-    { row: 0, col: 0 },       // Top-left
+    { row: 0, col: 0 }, // Top-left
     { row: 0, col: size - 7 }, // Top-right
     { row: size - 7, col: 0 }, // Bottom-left
   ]

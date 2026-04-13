@@ -2,31 +2,40 @@
   <div class="flex flex-col items-center">
     <!-- QR SVG -->
     <div
-      class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4 shadow-sm"
       :style="{ width: `${displaySize + 32}px` }"
     >
       <div
         v-if="svgHtml"
-        v-html="svgHtml"
         class="w-full aspect-square"
+        v-html="svgHtml"
       />
       <div
         v-else
-        class="w-full aspect-square flex items-center justify-center text-gray-300"
+        class="flex aspect-square w-full items-center justify-center text-[color:var(--text-muted)]/50"
       >
-        <UIcon name="i-lucide-qr-code" class="size-16" />
+        <UIcon
+          name="i-lucide-qr-code"
+          class="size-16"
+        />
       </div>
     </div>
 
     <!-- Redirect URL (copy on click) -->
     <div
       v-if="redirectUrl"
-      class="mt-3 flex items-center gap-2 text-sm text-gray-500 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+      class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-[color:var(--text-secondary)] transition-colors hover:text-[color:var(--accent)]"
       @click="copyUrl"
     >
-      <UIcon name="i-lucide-link" class="size-4 shrink-0" />
+      <UIcon
+        name="i-lucide-link"
+        class="size-4 shrink-0"
+      />
       <span class="truncate max-w-[240px]">{{ redirectUrl }}</span>
-      <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" class="size-4 shrink-0" />
+      <UIcon
+        :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+        class="size-4 shrink-0"
+      />
     </div>
   </div>
 </template>
@@ -68,7 +77,8 @@ const svgHtml = computed(() => {
   if (!qrData.value) return ''
   try {
     return generateQrSvg(qrData.value, props.style || {})
-  } catch {
+  }
+  catch {
     return ''
   }
 })

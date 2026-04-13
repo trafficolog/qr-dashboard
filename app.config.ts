@@ -1,18 +1,18 @@
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: 'green',
-      neutral: 'slate',
+      primary: 'splat',
+      neutral: 'neutral',
     },
   },
   brand: {
     name: 'SPLAT QR Service',
     logo: '/splat-logo.svg',
     colors: {
-      primary: '#2E7D32',
-      primaryLight: '#4CAF50',
-      primaryDark: '#1B5E20',
-      accent: '#FF6F00',
+      primary: '#BA0C2F',
+      primaryLight: '#FCE8ED',
+      primaryDark: '#FF5A78',
+      accent: '#BA0C2F',
     },
   },
 })

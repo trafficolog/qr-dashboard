@@ -11,14 +11,20 @@
             size="sm"
             to="/qr"
           />
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
             {{ qr.title }}
           </h1>
-          <UBadge :color="statusColor" variant="subtle">
+          <UBadge
+            :color="statusColor"
+            variant="subtle"
+          >
             {{ statusLabel }}
           </UBadge>
         </div>
-        <p v-if="qr.description" class="text-sm text-gray-500 ml-11">
+        <p
+          v-if="qr.description"
+          class="ml-11 text-sm text-[color:var(--text-secondary)]"
+        >
           {{ qr.description }}
         </p>
       </div>
@@ -31,7 +37,11 @@
           @click="exportOpen = true"
         />
         <UDropdownMenu :items="actions">
-          <UButton icon="i-lucide-more-horizontal" variant="outline" color="neutral" />
+          <UButton
+            icon="i-lucide-more-horizontal"
+            variant="outline"
+            color="neutral"
+          />
         </UDropdownMenu>
       </div>
     </div>
@@ -41,60 +51,72 @@
       <div class="lg:col-span-2 space-y-6">
         <!-- Stats cards -->
         <div class="grid grid-cols-3 gap-4">
-          <UCard>
+          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
             <div class="text-center">
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+              <p class="text-2xl font-bold text-[color:var(--text-primary)]">
                 {{ qr.totalScans.toLocaleString() }}
               </p>
-              <p class="text-xs text-gray-500 mt-1">Всего сканов</p>
+              <p class="mt-1 text-xs text-[color:var(--text-secondary)]">
+                Всего сканов
+              </p>
             </div>
           </UCard>
-          <UCard>
+          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
             <div class="text-center">
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+              <p class="text-2xl font-bold text-[color:var(--text-primary)]">
                 {{ qr.uniqueScans.toLocaleString() }}
               </p>
-              <p class="text-xs text-gray-500 mt-1">Уникальных</p>
+              <p class="mt-1 text-xs text-[color:var(--text-secondary)]">
+                Уникальных
+              </p>
             </div>
           </UCard>
-          <UCard>
+          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
             <div class="text-center">
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">
+              <p class="text-2xl font-bold text-[color:var(--text-primary)]">
                 {{ qr.type === 'dynamic' ? 'Дин.' : 'Стат.' }}
               </p>
-              <p class="text-xs text-gray-500 mt-1">Тип QR</p>
+              <p class="mt-1 text-xs text-[color:var(--text-secondary)]">
+                Тип QR
+              </p>
             </div>
           </UCard>
         </div>
 
         <!-- Details -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <span class="font-medium">Детали</span>
           </template>
           <div class="space-y-3 text-sm">
             <div class="flex items-center justify-between">
-              <span class="text-gray-500">URL назначения</span>
+              <span class="text-[color:var(--text-secondary)]">URL назначения</span>
               <a
                 :href="qr.destinationUrl"
                 target="_blank"
-                class="text-green-600 hover:underline truncate max-w-sm"
+                class="max-w-sm truncate text-[color:var(--accent)] hover:underline"
               >
                 {{ qr.destinationUrl }}
               </a>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-gray-500">Короткий код</span>
-              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+              <span class="text-[color:var(--text-secondary)]">Короткий код</span>
+              <code class="rounded bg-[color:var(--surface-2)] px-2 py-1 text-xs text-[color:var(--text-primary)]">
                 {{ qr.shortCode }}
               </code>
             </div>
-            <div v-if="qr.folder" class="flex items-center justify-between">
-              <span class="text-gray-500">Папка</span>
+            <div
+              v-if="qr.folder"
+              class="flex items-center justify-between"
+            >
+              <span class="text-[color:var(--text-secondary)]">Папка</span>
               <span>{{ qr.folder.name }}</span>
             </div>
-            <div v-if="qr.tags?.length" class="flex items-center justify-between">
-              <span class="text-gray-500">Теги</span>
+            <div
+              v-if="qr.tags?.length"
+              class="flex items-center justify-between"
+            >
+              <span class="text-[color:var(--text-secondary)]">Теги</span>
               <div class="flex gap-1">
                 <UBadge
                   v-for="tag in qr.tags"
@@ -107,25 +129,33 @@
               </div>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-gray-500">Создан</span>
+              <span class="text-[color:var(--text-secondary)]">Создан</span>
               <span>{{ formatDateTime(qr.createdAt) }}</span>
             </div>
-            <div v-if="qr.expiresAt" class="flex items-center justify-between">
-              <span class="text-gray-500">Срок действия</span>
+            <div
+              v-if="qr.expiresAt"
+              class="flex items-center justify-between"
+            >
+              <span class="text-[color:var(--text-secondary)]">Срок действия</span>
               <span>{{ formatDateTime(qr.expiresAt) }}</span>
             </div>
           </div>
         </UCard>
 
         <!-- Analytics placeholder -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <span class="font-medium">Аналитика</span>
           </template>
-          <div class="h-48 flex items-center justify-center text-gray-400">
+          <div class="flex h-48 items-center justify-center text-[color:var(--text-muted)]">
             <div class="text-center">
-              <UIcon name="i-lucide-bar-chart-3" class="size-10 mx-auto mb-2" />
-              <p class="text-sm">График сканирований — Эпик 6</p>
+              <UIcon
+                name="i-lucide-bar-chart-3"
+                class="size-10 mx-auto mb-2"
+              />
+              <p class="text-sm">
+                График сканирований — Эпик 6
+              </p>
             </div>
           </div>
         </UCard>
@@ -161,7 +191,10 @@
   </div>
 
   <!-- Loading -->
-  <div v-else-if="loadingQr" class="space-y-4">
+  <div
+    v-else-if="loadingQr"
+    class="space-y-4"
+  >
     <USkeleton class="h-8 w-64" />
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div class="lg:col-span-2 space-y-4">
@@ -174,25 +207,46 @@
 </template>
 
 <script setup lang="ts">
+import type { QrCode, QrStatus } from '~/../types/qr'
+
+interface QrDetails extends QrCode {
+  tags?: { id: string, name: string, color: string | null }[]
+  folder?: { id: string, name: string } | null
+}
+
 const route = useRoute()
 const toast = useToast()
 const { fetchQrById, deleteQr, duplicateQr } = useQr()
 
-const qr = ref<any>(null)
+const qr = ref<QrDetails | null>(null)
 const loadingQr = ref(true)
 const exportOpen = ref(false)
 const deleteOpen = ref(false)
 
 const id = computed(() => route.params.id as string)
 
-const statusColor = computed(() => {
-  const map: Record<string, string> = { active: 'success', paused: 'warning', expired: 'error', archived: 'neutral' }
-  return map[qr.value?.status] || 'neutral'
+type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
+
+const statusColor = computed<StatusBadgeColor>(() => {
+  const map: Record<QrStatus, StatusBadgeColor> = {
+    active: 'primary',
+    paused: 'warning',
+    expired: 'error',
+    archived: 'neutral',
+  }
+  const status = qr.value?.status
+  return status ? map[status] : 'neutral'
 })
 
 const statusLabel = computed(() => {
-  const map: Record<string, string> = { active: 'Активен', paused: 'Пауза', expired: 'Истёк', archived: 'Архив' }
-  return map[qr.value?.status] || ''
+  const map: Record<QrStatus, string> = {
+    active: 'Активен',
+    paused: 'Пауза',
+    expired: 'Истёк',
+    archived: 'Архив',
+  }
+  const status = qr.value?.status
+  return status ? map[status] : ''
 })
 
 const actions = computed(() => [
@@ -200,26 +254,26 @@ const actions = computed(() => [
     {
       label: 'Редактировать',
       icon: 'i-lucide-pencil',
-      click: () => navigateTo(`/qr/${id.value}/edit`),
+      onSelect: () => navigateTo(`/qr/${id.value}/edit`),
     },
     {
       label: 'Дублировать',
       icon: 'i-lucide-copy',
-      click: handleDuplicate,
+      onSelect: handleDuplicate,
     },
   ],
   [
     {
       label: qr.value?.status === 'active' ? 'Приостановить' : 'Активировать',
       icon: qr.value?.status === 'active' ? 'i-lucide-pause' : 'i-lucide-play',
-      click: handleToggleStatus,
+      onSelect: handleToggleStatus,
     },
   ],
   [
     {
       label: 'Удалить',
       icon: 'i-lucide-trash-2',
-      click: () => { deleteOpen.value = true },
+      onSelect: () => { deleteOpen.value = true },
     },
   ],
 ])
@@ -237,11 +291,13 @@ function formatDateTime(date: string | Date) {
 async function loadQr() {
   loadingQr.value = true
   try {
-    qr.value = await fetchQrById(id.value)
-  } catch {
+    qr.value = await fetchQrById(id.value) as QrDetails
+  }
+  catch {
     toast.add({ title: 'QR-код не найден', color: 'error' })
     navigateTo('/qr')
-  } finally {
+  }
+  finally {
     loadingQr.value = false
   }
 }
@@ -251,13 +307,17 @@ async function handleDuplicate() {
     const copy = await duplicateQr(id.value)
     toast.add({ title: `Копия «${copy.title}» создана`, color: 'success' })
     navigateTo(`/qr/${copy.id}`)
-  } catch {
+  }
+  catch {
     toast.add({ title: 'Ошибка дублирования', color: 'error' })
   }
 }
 
 async function handleToggleStatus() {
-  const newStatus = qr.value?.status === 'active' ? 'paused' : 'active'
+  if (!qr.value)
+    return
+
+  const newStatus: QrStatus = qr.value.status === 'active' ? 'paused' : 'active'
   try {
     await $fetch(`/api/qr/${id.value}`, {
       method: 'PUT',
@@ -265,7 +325,8 @@ async function handleToggleStatus() {
     })
     qr.value.status = newStatus
     toast.add({ title: `Статус изменён на ${newStatus}`, color: 'success' })
-  } catch {
+  }
+  catch {
     toast.add({ title: 'Ошибка', color: 'error' })
   }
 }
@@ -275,9 +336,11 @@ async function handleDelete() {
     await deleteQr(id.value)
     toast.add({ title: 'QR-код удалён', color: 'success' })
     navigateTo('/qr')
-  } catch {
+  }
+  catch {
     toast.add({ title: 'Ошибка удаления', color: 'error' })
-  } finally {
+  }
+  finally {
     deleteOpen.value = false
   }
 }

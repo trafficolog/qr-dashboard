@@ -1,5 +1,5 @@
-import type { QrCode, QrStyle, UtmParams } from '~/types/qr'
-import type { ApiMeta } from '~/types/api'
+import type { QrCode, QrStyle, UtmParams } from '~~/types/qr'
+import type { ApiMeta } from '~~/types/api'
 
 interface QrFilters {
   search: string
@@ -56,16 +56,18 @@ export function useQr() {
       if (filters.value.dateFrom) query.dateFrom = filters.value.dateFrom
       if (filters.value.dateTo) query.dateTo = filters.value.dateTo
 
-      const response = await $fetch<{ data: QrCode[]; meta: ApiMeta }>('/api/qr', {
+      const response = await $fetch<{ data: QrCode[], meta: ApiMeta }>('/api/qr', {
         query,
       })
 
       qrList.value = response.data
       meta.value = response.meta || {}
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to fetch QR list:', error)
       qrList.value = []
-    } finally {
+    }
+    finally {
       loading.value = false
     }
   }
@@ -127,7 +129,9 @@ export function useQr() {
   watch(debouncedSearch, () => {
     if (filters.value.page !== 1) {
       filters.value.page = 1
-    } else {
+      fetchQrList()
+    }
+    else {
       fetchQrList()
     }
   })

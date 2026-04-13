@@ -1,5 +1,5 @@
-import { eq, and, gt, isNull, desc, count } from 'drizzle-orm'
 import { randomInt, randomBytes } from 'node:crypto'
+import { eq, and, gt, isNull, desc, count } from 'drizzle-orm'
 import { db } from '../db'
 import { otpCodes, allowedDomains, users, sessions } from '../db/schema'
 import { hashToken } from '../utils/hash'
@@ -21,18 +21,30 @@ export const authService = {
       throw createError({ statusCode: 400, message: 'Некорректный email' })
     }
 
-    const allowed = await db.query.allowedDomains.findFirst({
-      where: and(
-        eq(allowedDomains.domain, domain),
-        eq(allowedDomains.isActive, true),
-      ),
-    })
+    // Если список допустимых доменов пуст — разрешаем все домены (открытый режим).
+    // Как только администратор добавляет хотя бы один активный домен,
+    // включается режим белого списка.
+    const activeDomainCount = await db
+      .select({ count: count() })
+      .from(allowedDomains)
+      .where(eq(allowedDomains.isActive, true))
 
-    if (!allowed) {
-      throw createError({
-        statusCode: 403,
-        message: 'Домен email не разрешён для входа',
+    const hasWhitelist = activeDomainCount[0]!.count > 0
+
+    if (hasWhitelist) {
+      const allowed = await db.query.allowedDomains.findFirst({
+        where: and(
+          eq(allowedDomains.domain, domain),
+          eq(allowedDomains.isActive, true),
+        ),
       })
+
+      if (!allowed) {
+        throw createError({
+          statusCode: 403,
+          message: 'Домен email не разрешён для входа',
+        })
+      }
     }
 
     // 2. Rate limit: не более 5 OTP за 15 мин

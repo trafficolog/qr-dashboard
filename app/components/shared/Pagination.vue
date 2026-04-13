@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between gap-4 pt-4">
-    <p class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+    <p class="whitespace-nowrap text-sm text-[color:var(--text-secondary)]">
       Показано {{ from }}–{{ to }} из {{ total }}
     </p>
     <div class="flex items-center gap-1">

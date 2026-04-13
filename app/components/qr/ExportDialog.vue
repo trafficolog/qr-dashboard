@@ -1,8 +1,8 @@
 <template>
   <UModal v-model:open="isOpen">
     <template #content>
-      <div class="p-6">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <div class="bg-[color:var(--surface-0)] p-6">
+        <h3 class="mb-4 text-lg font-semibold text-[color:var(--text-primary)]">
           Экспорт QR-кода
         </h3>
 
@@ -23,7 +23,10 @@
           </UFormField>
 
           <!-- Size (PNG only) -->
-          <UFormField v-if="format === 'png'" label="Размер (px)">
+          <UFormField
+            v-if="format === 'png'"
+            label="Размер (px)"
+          >
             <USelect
               v-model="size"
               :items="sizeOptions"
@@ -98,9 +101,11 @@ async function handleDownload() {
     URL.revokeObjectURL(url)
 
     isOpen.value = false
-  } catch {
+  }
+  catch {
     console.error('Download failed')
-  } finally {
+  }
+  finally {
     downloading.value = false
   }
 }

@@ -1,17 +1,36 @@
 <template>
   <UDropdownMenu :items="menuItems">
-    <UButton variant="ghost" color="neutral" class="gap-2">
-      <UAvatar :text="initials" size="sm" />
-      <span class="hidden lg:block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <UButton
+      variant="ghost"
+      color="neutral"
+      class="gap-2 text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
+    >
+      <UAvatar
+        :text="initials"
+        size="sm"
+      />
+      <span class="hidden text-sm font-medium text-[color:var(--text-primary)] lg:block">
         {{ displayName }}
       </span>
-      <UIcon name="i-lucide-chevron-down" class="size-4 text-gray-400 hidden lg:block" />
+      <UIcon
+        name="i-lucide-chevron-down"
+        class="hidden size-4 text-[color:var(--text-muted)] lg:block"
+      />
     </UButton>
   </UDropdownMenu>
 </template>
 
 <script setup lang="ts">
 const { user, logout } = useAuth()
+
+function getInitials(name: string) {
+  return name
+    .split(' ')
+    .map(part => part[0] ?? '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
 
 const displayName = computed(() => {
   if (user.value?.name) return user.value.name
@@ -21,23 +40,10 @@ const displayName = computed(() => {
 
 const initials = computed(() => {
   if (user.value?.name) {
-    return user.value.name
-      .split(' ')
-      .map((s) => s[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
+    return getInitials(user.value.name)
   }
-  return user.value?.email?.slice(0, 2).toUpperCase() || '??'
-})
 
-const roleBadge = computed(() => {
-  const roles: Record<string, string> = {
-    admin: 'Администратор',
-    editor: 'Редактор',
-    viewer: 'Наблюдатель',
-  }
-  return roles[user.value?.role || ''] || ''
+  return user.value?.email?.slice(0, 2).toUpperCase() || '??'
 })
 
 const menuItems = computed(() => [
@@ -59,7 +65,7 @@ const menuItems = computed(() => [
     {
       label: 'Выйти',
       icon: 'i-lucide-log-out',
-      click: () => logout(),
+      onSelect: async () => await logout(),
     },
   ],
 ])

@@ -2,8 +2,12 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Создание QR-кода</h1>
-        <p class="text-sm text-gray-500 mt-1">Настройте ссылку, стиль и параметры</p>
+        <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
+          Создание QR-кода
+        </h1>
+        <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
+          Настройте ссылку, стиль и параметры
+        </p>
       </div>
     </div>
 
@@ -11,16 +15,23 @@
       <!-- Left: Settings -->
       <div class="lg:col-span-2 space-y-6">
         <!-- URL Section -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-link" class="size-5 text-gray-500" />
+              <UIcon
+                name="i-lucide-link"
+                class="size-5 text-[color:var(--accent)]"
+              />
               <span class="font-medium">Ссылка</span>
             </div>
           </template>
 
           <div class="space-y-4">
-            <UFormField label="URL назначения" :error="urlError" required>
+            <UFormField
+              label="URL назначения"
+              :error="urlError"
+              required
+            >
               <UInput
                 v-model="form.destinationUrl"
                 placeholder="https://splat.ru/product"
@@ -31,7 +42,7 @@
             </UFormField>
 
             <div class="flex items-center gap-4">
-              <label class="text-sm text-gray-600 dark:text-gray-400">Тип:</label>
+              <label class="text-sm text-[color:var(--text-secondary)]">Тип:</label>
               <div class="flex gap-2">
                 <UButton
                   :variant="form.type === 'dynamic' ? 'solid' : 'outline'"
@@ -50,7 +61,7 @@
               </div>
             </div>
 
-            <p class="text-xs text-gray-400">
+            <p class="text-xs text-[color:var(--text-muted)]">
               {{ form.type === 'dynamic'
                 ? 'Динамический QR: ссылку можно изменить после создания'
                 : 'Статический QR: URL вшивается в QR-матрицу и не может быть изменён'
@@ -70,16 +81,32 @@
               <template #content>
                 <div class="grid grid-cols-2 gap-3 pt-3">
                   <UFormField label="Source">
-                    <UInput v-model="form.utmParams.utm_source" placeholder="qr-code" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_source"
+                      placeholder="qr-code"
+                      size="sm"
+                    />
                   </UFormField>
                   <UFormField label="Medium">
-                    <UInput v-model="form.utmParams.utm_medium" placeholder="packaging" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_medium"
+                      placeholder="packaging"
+                      size="sm"
+                    />
                   </UFormField>
                   <UFormField label="Campaign">
-                    <UInput v-model="form.utmParams.utm_campaign" placeholder="summer2025" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_campaign"
+                      placeholder="summer2025"
+                      size="sm"
+                    />
                   </UFormField>
                   <UFormField label="Content">
-                    <UInput v-model="form.utmParams.utm_content" placeholder="" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_content"
+                      placeholder=""
+                      size="sm"
+                    />
                   </UFormField>
                 </div>
               </template>
@@ -88,16 +115,22 @@
         </UCard>
 
         <!-- Info Section -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-info" class="size-5 text-gray-500" />
+              <UIcon
+                name="i-lucide-info"
+                class="size-5 text-[color:var(--accent)]"
+              />
               <span class="font-medium">Информация</span>
             </div>
           </template>
 
           <div class="space-y-4">
-            <UFormField label="Название" required>
+            <UFormField
+              label="Название"
+              required
+            >
               <UInput
                 v-model="form.title"
                 placeholder="Промо-акция на упаковке"
@@ -122,10 +155,13 @@
         </UCard>
 
         <!-- Style Section -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-palette" class="size-5 text-gray-500" />
+              <UIcon
+                name="i-lucide-palette"
+                class="size-5 text-[color:var(--accent)]"
+              />
               <span class="font-medium">Стиль</span>
             </div>
           </template>
@@ -163,7 +199,7 @@
           />
 
           <div class="text-center">
-            <p class="text-xs text-gray-400">
+            <p class="text-xs text-[color:var(--text-muted)]">
               Предварительный просмотр обновляется в реальном времени
             </p>
           </div>
@@ -174,7 +210,7 @@
 </template>
 
 <script setup lang="ts">
-import type { QrStyle } from '~/types/qr'
+import type { QrStyle } from '~/../types/qr'
 
 const toast = useToast()
 const { createQr } = useQr()
@@ -215,7 +251,8 @@ function validateUrl() {
   try {
     new URL(form.destinationUrl)
     urlError.value = ''
-  } catch {
+  }
+  catch {
     urlError.value = 'Введите корректный URL (https://...)'
   }
 }
@@ -243,13 +280,15 @@ async function handleCreate() {
 
     toast.add({ title: `QR «${qr.title}» создан`, color: 'success' })
     await navigateTo(`/qr/${qr.id}`)
-  } catch (error: unknown) {
-    const err = error as { data?: { message?: string }; statusMessage?: string }
+  }
+  catch (error: unknown) {
+    const err = error as { data?: { message?: string }, statusMessage?: string }
     toast.add({
       title: err?.data?.message || err?.statusMessage || 'Ошибка создания',
       color: 'error',
     })
-  } finally {
+  }
+  finally {
     saving.value = false
   }
 }

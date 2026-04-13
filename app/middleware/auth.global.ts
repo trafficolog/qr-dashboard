@@ -1,12 +1,18 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { isAuthenticated, fetchUser } = useAuth()
+  const { isAuthenticated, authResolved, fetchUser } = useAuth()
+  const isAuthPage = to.path.startsWith('/auth')
 
-  // Загружаем user если ещё не загружен (первый визит / SSR hydration)
-  if (!isAuthenticated.value) {
-    await fetchUser()
+  // Для неизвестных маршрутов отдаём управление Nuxt error.vue,
+  // чтобы показывать универсальную 404-страницу вместо redirect на login.
+  if (to.matched.length === 0) {
+    return
   }
 
-  const isAuthPage = to.path.startsWith('/auth')
+  // На SSR и при первом клиентском заходе синхронизируем auth-state,
+  // чтобы избежать мигания auth-страниц и рассинхрона после logout/login.
+  if (typeof window === 'undefined' || !authResolved.value) {
+    await fetchUser()
+  }
 
   // Неавторизованный → перенаправляем на login
   if (!isAuthenticated.value && !isAuthPage) {

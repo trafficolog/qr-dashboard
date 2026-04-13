@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
     const limiter = getLimiter(windowMs)
 
     if (!checkRateLimit(limiter, `auth:${ip}`, 5, windowMs)) {
-      setResponseHeader(event, 'Retry-After', '900')
+      setResponseHeader(event, 'Retry-After', 900)
       throw createError({
         statusCode: 429,
         message: 'Слишком много запросов. Попробуйте через 15 минут',
@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
     const limiter = getLimiter(windowMs)
 
     if (!checkRateLimit(limiter, 'redirect:global', 1000, windowMs)) {
-      setResponseHeader(event, 'Retry-After', '60')
+      setResponseHeader(event, 'Retry-After', 60)
       throw createError({
         statusCode: 429,
         message: 'Too many requests',

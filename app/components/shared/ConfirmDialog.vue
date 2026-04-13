@@ -1,16 +1,19 @@
 <template>
   <UModal v-model:open="isOpen">
     <template #content>
-      <div class="p-6">
+      <div class="bg-[color:var(--surface-0)] p-6">
         <div class="flex items-start gap-4">
-          <div class="p-2 rounded-full bg-red-50 dark:bg-red-950 shrink-0">
-            <UIcon :name="icon" class="size-5 text-red-600 dark:text-red-400" />
+          <div class="shrink-0 rounded-full bg-[color:var(--accent-light)] p-2">
+            <UIcon
+              :name="icon"
+              class="size-5 text-[color:var(--danger)]"
+            />
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
               {{ title }}
             </h3>
-            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <p class="mt-2 text-sm text-[color:var(--text-secondary)]">
               {{ message }}
             </p>
           </div>
@@ -36,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(
+withDefaults(
   defineProps<{
     title?: string
     message?: string

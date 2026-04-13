@@ -56,7 +56,7 @@
 |------|-----------|
 | `package.json` | 20 dependencies, 16 devDependencies, 10 npm-скриптов |
 | `nuxt.config.ts` | SSR mode, 5 модулей, runtimeConfig (9 server + 2 public) |
-| `app.config.ts` | Nuxt UI colors (primary: green, neutral: slate), SPLAT brand |
+| `app.config.ts` | Nuxt UI colors (primary: splat, neutral: neutral), SPLAT brand |
 | `tsconfig.json` | strict: true, noUncheckedIndexedAccess, forceConsistentCasingInFileNames |
 | `assets/css/main.css` | Tailwind v4 imports, 4 кастомных CSS-переменных бренда |
 | `.env.example` | 15 переменных окружения |
@@ -103,7 +103,7 @@
 
 **Файлы:** `docker-compose.yml`, `Dockerfile`, `.dockerignore`
 
-- **docker-compose:** 2 сервиса (app + postgres:16-alpine), healthcheck, 3 volumes (pgdata, uploads, geoip)
+- **docker-compose:** 3 сервиса (postgres + migrate + app), healthcheck, 3 volumes (pgdata, uploads, geoip)
 - **Dockerfile:** Multi-stage (base → deps → build → production), node:20-alpine + pnpm, финальный образ только `.output` + `data`
 
 ### 2.4 Задача 1.4 — Seed Data
@@ -199,10 +199,10 @@
 | Файл | Назначение |
 |------|-----------|
 | `app/layouts/auth.vue` | Центрированная карточка, логотип SPLAT, light/dark |
-| `app/pages/auth/login.vue` | UInput email, валидация, POST → redirect на verify |
-| `app/pages/auth/verify.vue` | UPinInput 6 цифр, таймер 10 мин, resend cooldown 60s, auto-submit on complete |
-| `app/composables/useAuth.ts` | `login()`, `verify()`, `logout()`, `fetchUser()`, reactive `user`, `isAuthenticated`, `isAdmin` |
-| `app/middleware/auth.global.ts` | Redirect неавторизованных → login, авторизованных с auth-страниц → dashboard |
+| `app/pages/auth/login.vue` | Единый двухшаговый auth-flow: email, OTP, resend, inline errors, query-sync шага |
+| `app/pages/auth/verify.vue` | Совместимый redirect на `/auth/login?step=code` для старых ссылок |
+| `app/composables/useAuth.ts` | `login()`, `verify()`, `logout()`, SSR cookie-aware `fetchUser()`, `authResolved`, sync `useState` + Pinia |
+| `app/middleware/auth.global.ts` | Redirect неавторизованных → login, auth → dashboard, unknown route не блокируется и уходит в `app/error.vue` |
 | `app/stores/auth.ts` | Pinia store: user, isAuthenticated, setUser, clear |
 
 ---
@@ -332,7 +332,7 @@
 ## 6. Структура проекта (текущая)
 
 ```
-splat-qr/ (90 файлов)
+splat-qr/ (актуальное состояние)
 ├── nuxt.config.ts
 ├── app.config.ts
 ├── drizzle.config.ts
@@ -359,9 +359,10 @@ splat-qr/ (90 файлов)
 │
 ├── app/
 │   ├── app.vue
+│   ├── error.vue         # Global branded 404 / error page
 │   ├── layouts/
 │   │   ├── default.vue  # Sidebar + Header + MobileNav
-│   │   └── auth.vue     # Centered card
+│   │   └── auth.vue     # Centered card + theme toggle
 │   ├── middleware/
 │   │   └── auth.global.ts
 │   ├── composables/
@@ -391,14 +392,18 @@ splat-qr/ (90 файлов)
 │   │       ├── ConfirmDialog.vue
 │   │       └── TagInput.vue
 │   └── pages/
-│       ├── index.vue         # → /dashboard redirect
-│       ├── auth/login.vue
-│       ├── auth/verify.vue
+│       ├── index.vue              # → /dashboard redirect
+│       ├── auth/login.vue         # Unified email + OTP auth flow
+│       ├── auth/verify.vue        # Redirect compatibility route
+│       ├── analytics/index.vue    # Placeholder screen
 │       ├── dashboard/index.vue
-│       ├── qr/index.vue      # Список
-│       ├── qr/create.vue     # Создание
-│       ├── qr/[id]/index.vue # Детали
-│       └── qr/[id]/edit.vue  # Редактирование
+│       ├── folders/index.vue      # Placeholder screen
+│       ├── qr/index.vue           # Список
+│       ├── qr/create.vue          # Создание
+│       ├── qr/[id]/index.vue      # Детали
+│       ├── qr/[id]/edit.vue       # Редактирование
+│       ├── settings/index.vue
+│       └── settings/domains.vue
 │
 ├── server/
 │   ├── plugins/db.ts
@@ -518,3 +523,11 @@ export function useEntity() {
 - Search на Header: placeholder модальное окно, полнотекстовый поиск — отдельная задача
 - Нет unit-тестов (запланированы в Эпике 14)
 - Нет E2E тестов (запланированы в Эпике 14)
+
+### 8.3 Хотфиксы после Эпиков 1–4
+
+- Root shell обёрнут в `UApp`, поэтому Nuxt UI-компоненты используют брендовый `primary: splat`, а не дефолтную палитру.
+- Добавлен `app/error.vue` для единого `404`/runtime error UX.
+- Добавлен `app/pages/analytics/index.vue`, чтобы навигация на `/analytics` не вела в пустой route.
+- SSR bootstrap в `app/composables/useAuth.ts` пробрасывает cookie в `/api/auth/me`, поэтому защищённые маршруты больше не редиректят на `/auth/login` после успешного входа.
+- `corepack pnpm typecheck` проходит без ошибок после исправления shared-type imports и QR/auth type mismatches.

@@ -10,7 +10,7 @@
             size="sm"
             :to="`/qr/${id}`"
           />
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
             Редактирование QR-кода
           </h1>
         </div>
@@ -21,10 +21,13 @@
       <!-- Left: Settings -->
       <div class="lg:col-span-2 space-y-6">
         <!-- URL Section -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-link" class="size-5 text-gray-500" />
+              <UIcon
+                name="i-lucide-link"
+                class="size-5 text-[color:var(--accent)]"
+              />
               <span class="font-medium">Ссылка</span>
             </div>
           </template>
@@ -46,20 +49,39 @@
             </UFormField>
 
             <UCollapsible>
-              <UButton variant="link" color="neutral" size="sm" icon="i-lucide-tag" label="UTM-параметры" class="-ml-2" />
+              <UButton
+                variant="link"
+                color="neutral"
+                size="sm"
+                icon="i-lucide-tag"
+                label="UTM-параметры"
+                class="-ml-2"
+              />
               <template #content>
                 <div class="grid grid-cols-2 gap-3 pt-3">
                   <UFormField label="Source">
-                    <UInput v-model="form.utmParams.utm_source" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_source"
+                      size="sm"
+                    />
                   </UFormField>
                   <UFormField label="Medium">
-                    <UInput v-model="form.utmParams.utm_medium" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_medium"
+                      size="sm"
+                    />
                   </UFormField>
                   <UFormField label="Campaign">
-                    <UInput v-model="form.utmParams.utm_campaign" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_campaign"
+                      size="sm"
+                    />
                   </UFormField>
                   <UFormField label="Content">
-                    <UInput v-model="form.utmParams.utm_content" size="sm" />
+                    <UInput
+                      v-model="form.utmParams.utm_content"
+                      size="sm"
+                    />
                   </UFormField>
                 </div>
               </template>
@@ -68,38 +90,56 @@
         </UCard>
 
         <!-- Info Section -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-info" class="size-5 text-gray-500" />
+              <UIcon
+                name="i-lucide-info"
+                class="size-5 text-[color:var(--accent)]"
+              />
               <span class="font-medium">Информация</span>
             </div>
           </template>
 
           <div class="space-y-4">
-            <UFormField label="Название" required>
+            <UFormField
+              label="Название"
+              required
+            >
               <UInput v-model="form.title" />
             </UFormField>
 
             <UFormField label="Описание">
-              <UTextarea v-model="form.description" :rows="2" />
+              <UTextarea
+                v-model="form.description"
+                :rows="2"
+              />
             </UFormField>
 
             <UFormField label="Статус">
-              <USelect v-model="form.status" :items="statusOptions" />
+              <USelect
+                v-model="form.status"
+                :items="statusOptions"
+              />
             </UFormField>
 
             <UFormField label="Срок действия">
-              <UInput v-model="form.expiresAt" type="datetime-local" />
+              <UInput
+                v-model="form.expiresAt"
+                type="datetime-local"
+              />
             </UFormField>
           </div>
         </UCard>
 
         <!-- Style Section -->
-        <UCard>
+        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
             <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-palette" class="size-5 text-gray-500" />
+              <UIcon
+                name="i-lucide-palette"
+                class="size-5 text-[color:var(--accent)]"
+              />
               <span class="font-medium">Стиль</span>
             </div>
           </template>
@@ -141,21 +181,29 @@
   </div>
 
   <!-- Loading -->
-  <div v-else class="space-y-4">
+  <div
+    v-else
+    class="space-y-4"
+  >
     <USkeleton class="h-8 w-64" />
     <USkeleton class="h-96 w-full rounded-lg" />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { QrStyle } from '~/types/qr'
+import type { QrCode, QrStyle, QrStatus } from '~/../types/qr'
+
+interface EditableQr extends QrCode {
+  tags?: { id: string, name: string, color: string | null }[]
+  folder?: { id: string, name: string } | null
+}
 
 const route = useRoute()
 const toast = useToast()
 const { fetchQrById, updateQr } = useQr()
 
 const id = computed(() => route.params.id as string)
-const qr = ref<any>(null)
+const qr = ref<EditableQr | null>(null)
 const saving = ref(false)
 const urlError = ref('')
 
@@ -165,7 +213,7 @@ const form = reactive({
   title: '',
   destinationUrl: '',
   description: '',
-  status: 'active',
+  status: 'active' as QrStatus,
   expiresAt: '',
   style: {} as Partial<QrStyle>,
   utmParams: {
@@ -190,14 +238,15 @@ function validateUrl() {
   try {
     new URL(form.destinationUrl)
     urlError.value = ''
-  } catch {
+  }
+  catch {
     urlError.value = 'Некорректный URL'
   }
 }
 
 async function loadQr() {
   try {
-    qr.value = await fetchQrById(id.value)
+    qr.value = await fetchQrById(id.value) as EditableQr
 
     // Populate form
     form.title = qr.value.title
@@ -217,7 +266,8 @@ async function loadQr() {
       form.utmParams.utm_campaign = utm.utm_campaign || ''
       form.utmParams.utm_content = utm.utm_content || ''
     }
-  } catch {
+  }
+  catch {
     toast.add({ title: 'QR-код не найден', color: 'error' })
     navigateTo('/qr')
   }
@@ -245,13 +295,15 @@ async function handleSave() {
 
     toast.add({ title: 'Изменения сохранены', color: 'success' })
     navigateTo(`/qr/${id.value}`)
-  } catch (error: unknown) {
-    const err = error as { data?: { message?: string }; statusMessage?: string }
+  }
+  catch (error: unknown) {
+    const err = error as { data?: { message?: string }, statusMessage?: string }
     toast.add({
       title: err?.data?.message || 'Ошибка сохранения',
       color: 'error',
     })
-  } finally {
+  }
+  finally {
     saving.value = false
   }
 }

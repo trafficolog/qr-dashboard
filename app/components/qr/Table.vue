@@ -2,38 +2,54 @@
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>
-        <tr class="border-b border-gray-200 dark:border-gray-800">
+        <tr class="border-b border-[color:var(--border)]">
           <th class="py-3 px-2 w-8">
             <input
               type="checkbox"
               :checked="allSelected"
-              class="rounded border-gray-300"
+              class="rounded border-[color:var(--border)] bg-[color:var(--surface-0)]"
               @change="$emit('toggleAll')"
-            />
+            >
           </th>
           <th class="py-3 px-2 w-12" />
           <th
-            class="py-3 px-3 text-left font-medium text-gray-500 cursor-pointer hover:text-gray-700"
+            class="cursor-pointer px-3 py-3 text-left font-medium text-[color:var(--text-secondary)] hover:text-[color:var(--accent)]"
             @click="$emit('sort', 'title')"
           >
             Название
-            <UIcon v-if="sortBy === 'title'" :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'" class="size-3 inline" />
+            <UIcon
+              v-if="sortBy === 'title'"
+              :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'"
+              class="size-3 inline"
+            />
           </th>
-          <th class="py-3 px-3 text-left font-medium text-gray-500 hidden lg:table-cell">URL</th>
-          <th class="py-3 px-3 text-left font-medium text-gray-500">Статус</th>
+          <th class="hidden px-3 py-3 text-left font-medium text-[color:var(--text-secondary)] lg:table-cell">
+            URL
+          </th>
+          <th class="px-3 py-3 text-left font-medium text-[color:var(--text-secondary)]">
+            Статус
+          </th>
           <th
-            class="py-3 px-3 text-right font-medium text-gray-500 cursor-pointer hover:text-gray-700"
+            class="cursor-pointer px-3 py-3 text-right font-medium text-[color:var(--text-secondary)] hover:text-[color:var(--accent)]"
             @click="$emit('sort', 'totalScans')"
           >
             Сканы
-            <UIcon v-if="sortBy === 'totalScans'" :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'" class="size-3 inline" />
+            <UIcon
+              v-if="sortBy === 'totalScans'"
+              :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'"
+              class="size-3 inline"
+            />
           </th>
           <th
-            class="py-3 px-3 text-left font-medium text-gray-500 hidden md:table-cell cursor-pointer hover:text-gray-700"
+            class="hidden cursor-pointer px-3 py-3 text-left font-medium text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] md:table-cell"
             @click="$emit('sort', 'createdAt')"
           >
             Создан
-            <UIcon v-if="sortBy === 'createdAt'" :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'" class="size-3 inline" />
+            <UIcon
+              v-if="sortBy === 'createdAt'"
+              :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'"
+              class="size-3 inline"
+            />
           </th>
           <th class="py-3 px-2 w-10" />
         </tr>
@@ -42,29 +58,35 @@
         <tr
           v-for="qr in items"
           :key="qr.id"
-          class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+          class="border-b border-[color:var(--surface-2)] transition-colors hover:bg-[color:var(--surface-2)]/60"
         >
           <td class="py-3 px-2">
             <input
               type="checkbox"
               :checked="selectedIds.includes(qr.id)"
-              class="rounded border-gray-300"
+              class="rounded border-[color:var(--border)] bg-[color:var(--surface-0)]"
               @change="$emit('toggleSelect', qr.id)"
-            />
+            >
           </td>
           <td class="py-3 px-2">
-            <div class="w-10 h-10 bg-white rounded border border-gray-200 p-0.5 overflow-hidden">
-              <QrPreviewMini :url="qr.destinationUrl" :style-config="qr.style as any" />
+            <div class="h-10 w-10 overflow-hidden rounded border border-[color:var(--border)] bg-[color:var(--surface-0)] p-0.5">
+              <QrPreviewMini
+                :url="qr.destinationUrl"
+                :style-config="qr.style as any"
+              />
             </div>
           </td>
           <td class="py-3 px-3">
             <NuxtLink
               :to="`/qr/${qr.id}`"
-              class="font-medium text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400"
+              class="font-medium text-[color:var(--text-primary)] hover:text-[color:var(--accent)]"
             >
               {{ qr.title }}
             </NuxtLink>
-            <div v-if="qr.tags?.length" class="flex gap-1 mt-1 flex-wrap">
+            <div
+              v-if="qr.tags?.length"
+              class="flex gap-1 mt-1 flex-wrap"
+            >
               <UBadge
                 v-for="tag in qr.tags?.slice(0, 3)"
                 :key="tag.id"
@@ -77,24 +99,33 @@
             </div>
           </td>
           <td class="py-3 px-3 hidden lg:table-cell">
-            <span class="text-gray-500 truncate max-w-[200px] block">
+            <span class="block max-w-[200px] truncate text-[color:var(--text-secondary)]">
               {{ qr.destinationUrl }}
             </span>
           </td>
           <td class="py-3 px-3">
-            <UBadge :color="statusColor(qr.status)" variant="subtle" size="sm">
+            <UBadge
+              :color="statusColor(qr.status)"
+              variant="soft"
+              size="sm"
+            >
               {{ statusLabel(qr.status) }}
             </UBadge>
           </td>
-          <td class="py-3 px-3 text-right font-medium text-gray-900 dark:text-white">
+          <td class="px-3 py-3 text-right font-medium text-[color:var(--text-primary)]">
             {{ qr.totalScans.toLocaleString() }}
           </td>
-          <td class="py-3 px-3 text-gray-500 hidden md:table-cell whitespace-nowrap">
+          <td class="hidden whitespace-nowrap px-3 py-3 text-[color:var(--text-secondary)] md:table-cell">
             {{ formatDate(qr.createdAt) }}
           </td>
           <td class="py-3 px-2">
             <UDropdownMenu :items="getActions(qr)">
-              <UButton icon="i-lucide-more-horizontal" variant="ghost" color="neutral" size="sm" />
+              <UButton
+                icon="i-lucide-more-horizontal"
+                variant="ghost"
+                color="neutral"
+                size="sm"
+              />
             </UDropdownMenu>
           </td>
         </tr>
@@ -112,7 +143,7 @@ interface QrItem {
   totalScans: number
   createdAt: string | Date
   style?: Record<string, unknown>
-  tags?: { id: string; name: string; color: string | null }[]
+  tags?: { id: string, name: string, color: string | null }[]
 }
 
 defineProps<{
@@ -132,9 +163,11 @@ const emit = defineEmits<{
   delete: [id: string]
 }>()
 
-function statusColor(status: string) {
-  const map: Record<string, string> = {
-    active: 'success',
+type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
+
+function statusColor(status: string): StatusBadgeColor {
+  const map: Record<string, StatusBadgeColor> = {
+    active: 'primary',
     paused: 'warning',
     expired: 'error',
     archived: 'neutral',
@@ -163,11 +196,11 @@ function getActions(qr: QrItem) {
   return [
     [
       { label: 'Открыть', icon: 'i-lucide-external-link', to: `/qr/${qr.id}` },
-      { label: 'Редактировать', icon: 'i-lucide-pencil', click: () => emit('edit', qr.id) },
-      { label: 'Дублировать', icon: 'i-lucide-copy', click: () => emit('duplicate', qr.id) },
+      { label: 'Редактировать', icon: 'i-lucide-pencil', onSelect: () => emit('edit', qr.id) },
+      { label: 'Дублировать', icon: 'i-lucide-copy', onSelect: () => emit('duplicate', qr.id) },
     ],
     [
-      { label: 'Удалить', icon: 'i-lucide-trash-2', click: () => emit('delete', qr.id) },
+      { label: 'Удалить', icon: 'i-lucide-trash-2', onSelect: () => emit('delete', qr.id) },
     ],
   ]
 }

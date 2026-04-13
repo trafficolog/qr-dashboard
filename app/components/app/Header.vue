@@ -1,6 +1,6 @@
 <template>
   <header
-    class="sticky top-0 z-20 h-16 flex items-center gap-4 px-4 md:px-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800"
+    class="glass sticky top-0 z-20 h-16 flex items-center gap-4 px-4 md:px-6 border-b border-[color:var(--border)]"
   >
     <!-- Mobile burger -->
     <UButton
@@ -21,7 +21,10 @@
     />
 
     <!-- Breadcrumbs -->
-    <UBreadcrumb :items="breadcrumbs" class="hidden md:flex" />
+    <UBreadcrumb
+      :items="breadcrumbs"
+      class="hidden md:flex"
+    />
 
     <div class="flex-1" />
 
@@ -30,12 +33,22 @@
       icon="i-lucide-search"
       variant="ghost"
       color="neutral"
-      class="hidden sm:flex text-gray-400"
+      class="hidden sm:flex text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]"
       @click="searchOpen = true"
     >
-      <span class="text-sm text-gray-400 mr-2">{{ $t('common.search') }}</span>
+      <span class="mr-2 text-sm text-[color:var(--text-muted)]">{{ $t('common.search') }}</span>
       <UKbd>⌘K</UKbd>
     </UButton>
+
+    <UButton
+      :icon="themeIcon"
+      :aria-label="themeLabel"
+      :title="themeLabel"
+      variant="ghost"
+      color="neutral"
+      class="text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
+      @click="toggleTheme"
+    />
 
     <!-- User menu -->
     <AppUserMenu />
@@ -50,7 +63,7 @@
             size="lg"
             autofocus
           />
-          <p class="text-sm text-gray-400 mt-4 text-center">
+          <p class="mt-4 text-center text-sm text-[color:var(--text-muted)]">
             Начните вводить для поиска QR-кодов...
           </p>
         </div>
@@ -66,16 +79,28 @@ defineEmits<{
 }>()
 
 const route = useRoute()
-const { t } = useI18n()
 const searchOpen = ref(false)
+const colorMode = useColorMode()
 
 // Cmd+K shortcut
-const { meta, k } = useMagicKeys()
+const magicKeys = useMagicKeys()
 whenever(
-  () => meta.value && k.value,
+  () => Boolean(magicKeys.meta?.value && magicKeys.k?.value),
   () => {
     searchOpen.value = true
   },
+)
+
+const themeIcon = computed(() =>
+  colorMode.value === 'dark'
+    ? 'i-lucide-sun'
+    : 'i-lucide-moon',
+)
+
+const themeLabel = computed(() =>
+  colorMode.value === 'dark'
+    ? 'Включить светлую тему'
+    : 'Включить тёмную тему',
 )
 
 const breadcrumbLabels: Record<string, string> = {
@@ -98,4 +123,8 @@ const breadcrumbs = computed(() => {
     to: '/' + segments.slice(0, idx + 1).join('/'),
   }))
 })
+
+function toggleTheme() {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+}
 </script>

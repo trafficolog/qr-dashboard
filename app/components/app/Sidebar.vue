@@ -1,17 +1,21 @@
 <template>
   <aside
     :class="[
-      'fixed top-0 left-0 h-screen flex flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all duration-200 z-30',
+      'fixed top-0 left-0 z-30 flex h-screen flex-col border-r border-[color:var(--border)] bg-[color:var(--surface-0)] transition-all duration-200',
       collapsed ? 'w-16' : 'w-60',
     ]"
   >
     <!-- Logo -->
-    <div class="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
-      <img src="/splat-logo.svg" alt="SPLAT" class="h-8 w-8 shrink-0" />
+    <div class="flex h-16 shrink-0 items-center border-b border-[color:var(--border)] px-4">
+      <img
+        src="/splat-logo.svg"
+        alt="SPLAT"
+        class="h-8 w-8 shrink-0"
+      >
       <Transition name="fade">
         <span
           v-if="!collapsed"
-          class="ml-3 font-semibold text-gray-900 dark:text-white truncate text-sm"
+          class="ml-3 truncate text-sm font-semibold text-[color:var(--text-primary)]"
         >
           QR Service
         </span>
@@ -25,21 +29,29 @@
         :key="item.route"
         :to="item.route"
         :class="[
-          'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group relative',
+          'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
           isActive(item.route)
-            ? 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
-            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800',
+            ? 'bg-[color:var(--accent-light)] text-[color:var(--accent)]'
+            : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]',
         ]"
       >
-        <UIcon :name="item.icon" class="size-5 shrink-0" />
+        <UIcon
+          :name="item.icon"
+          class="size-5 shrink-0"
+        />
         <Transition name="fade">
-          <span v-if="!collapsed" class="truncate">{{ item.label }}</span>
+          <span
+            v-if="!collapsed"
+            class="truncate"
+          >
+            {{ item.label }}
+          </span>
         </Transition>
 
         <!-- Tooltip when collapsed -->
         <div
           v-if="collapsed"
-          class="absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity z-50"
+          class="pointer-events-none absolute left-full z-50 ml-2 whitespace-nowrap rounded bg-[color:var(--text-primary)] px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
         >
           {{ item.label }}
         </div>
@@ -47,9 +59,9 @@
     </nav>
 
     <!-- Bottom -->
-    <div class="border-t border-gray-200 dark:border-gray-800 p-2 shrink-0">
+    <div class="shrink-0 border-t border-[color:var(--border)] p-2">
       <button
-        class="flex items-center justify-center w-full p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        class="flex w-full items-center justify-center rounded-lg p-2 text-[color:var(--text-muted)] transition-colors hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
         @click="$emit('toggle')"
       >
         <UIcon
@@ -58,7 +70,10 @@
         />
       </button>
       <Transition name="fade">
-        <p v-if="!collapsed" class="text-[10px] text-gray-400 text-center mt-1">
+        <p
+          v-if="!collapsed"
+          class="mt-1 text-center text-[10px] text-[color:var(--text-muted)]"
+        >
           v0.1.0
         </p>
       </Transition>

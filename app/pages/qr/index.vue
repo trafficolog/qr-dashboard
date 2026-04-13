@@ -2,8 +2,14 @@
   <div>
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">QR-коды</h1>
-      <UButton icon="i-lucide-plus" label="Создать QR" to="/qr/create" />
+      <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
+        QR-коды
+      </h1>
+      <UButton
+        icon="i-lucide-plus"
+        label="Создать QR"
+        to="/qr/create"
+      />
     </div>
 
     <!-- Filters -->
@@ -17,7 +23,7 @@
       />
 
       <USelect
-        v-model="filters.status"
+        v-model="selectedStatus"
         :items="statusOptions"
         placeholder="Все статусы"
         size="sm"
@@ -25,7 +31,7 @@
       />
 
       <USelect
-        v-model="filters.folderId"
+        v-model="selectedFolderId"
         :items="folderOptions"
         placeholder="Все папки"
         size="sm"
@@ -35,28 +41,34 @@
       <div class="flex-1" />
 
       <!-- View toggle -->
-      <div class="flex border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+      <div class="flex overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)]">
         <button
           :class="[
             'p-2 transition-colors',
             viewMode === 'table'
-              ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
-              : 'text-gray-400 hover:text-gray-600',
+              ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
+              : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
           ]"
           @click="viewMode = 'table'"
         >
-          <UIcon name="i-lucide-list" class="size-4" />
+          <UIcon
+            name="i-lucide-list"
+            class="size-4"
+          />
         </button>
         <button
           :class="[
             'p-2 transition-colors',
             viewMode === 'grid'
-              ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
-              : 'text-gray-400 hover:text-gray-600',
+              ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
+              : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
           ]"
           @click="viewMode = 'grid'"
         >
-          <UIcon name="i-lucide-grid-3x3" class="size-4" />
+          <UIcon
+            name="i-lucide-grid-3x3"
+            class="size-4"
+          />
         </button>
       </div>
     </div>
@@ -65,9 +77,9 @@
     <Transition name="slide-down">
       <div
         v-if="selectedIds.length > 0"
-        class="flex items-center gap-3 mb-4 p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800"
+        class="mb-4 flex items-center gap-3 rounded-lg border border-[color:var(--border)] bg-[color:var(--accent-light)] p-3"
       >
-        <span class="text-sm font-medium text-green-700 dark:text-green-300">
+        <span class="text-sm font-medium text-[color:var(--accent)]">
           Выбрано: {{ selectedIds.length }}
         </span>
         <UButton
@@ -89,8 +101,15 @@
     </Transition>
 
     <!-- Loading skeleton -->
-    <div v-if="loading" class="space-y-3">
-      <USkeleton v-for="i in 5" :key="i" class="h-16 w-full rounded-lg" />
+    <div
+      v-if="loading"
+      class="space-y-3"
+    >
+      <USkeleton
+        v-for="i in 5"
+        :key="i"
+        class="h-16 w-full rounded-lg"
+      />
     </div>
 
     <!-- Empty state -->
@@ -164,13 +183,15 @@
 <script setup lang="ts">
 const toast = useToast()
 const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr } = useQr()
+const ALL_STATUSES = '__all_statuses__'
+const ALL_FOLDERS = '__all_folders__'
 
 // View mode (persisted)
 const viewMode = ref<'table' | 'grid'>('table')
 if (import.meta.client) {
   const saved = localStorage.getItem('qr-view-mode') as 'table' | 'grid' | null
   if (saved) viewMode.value = saved
-  watch(viewMode, (v) => localStorage.setItem('qr-view-mode', v))
+  watch(viewMode, v => localStorage.setItem('qr-view-mode', v))
 }
 
 // Selection
@@ -182,8 +203,9 @@ const allSelected = computed(
 function toggleAll() {
   if (allSelected.value) {
     selectedIds.value = []
-  } else {
-    selectedIds.value = qrList.value.map((q) => q.id)
+  }
+  else {
+    selectedIds.value = qrList.value.map(q => q.id)
   }
 }
 
@@ -191,7 +213,8 @@ function toggleSelect(id: string) {
   const idx = selectedIds.value.indexOf(id)
   if (idx >= 0) {
     selectedIds.value.splice(idx, 1)
-  } else {
+  }
+  else {
     selectedIds.value.push(id)
   }
 }
@@ -200,7 +223,8 @@ function toggleSelect(id: string) {
 function handleSort(field: string) {
   if (filters.value.sortBy === field) {
     filters.value.sortOrder = filters.value.sortOrder === 'asc' ? 'desc' : 'asc'
-  } else {
+  }
+  else {
     filters.value.sortBy = field
     filters.value.sortOrder = 'desc'
   }
@@ -219,7 +243,8 @@ async function handleDuplicate(id: string) {
     const qr = await duplicateQr(id)
     toast.add({ title: `QR «${qr.title}» создан`, color: 'success' })
     fetchQrList()
-  } catch {
+  }
+  catch {
     toast.add({ title: 'Ошибка дублирования', color: 'error' })
   }
 }
@@ -237,11 +262,13 @@ async function confirmDelete() {
   try {
     await deleteQr(deleteTargetId.value)
     toast.add({ title: 'QR-код удалён', color: 'success' })
-    selectedIds.value = selectedIds.value.filter((id) => id !== deleteTargetId.value)
+    selectedIds.value = selectedIds.value.filter(id => id !== deleteTargetId.value)
     fetchQrList()
-  } catch {
+  }
+  catch {
     toast.add({ title: 'Ошибка удаления', color: 'error' })
-  } finally {
+  }
+  finally {
     deleteDialogOpen.value = false
     deleteTargetId.value = null
   }
@@ -254,23 +281,38 @@ async function handleBulkDelete() {
     toast.add({ title: `Удалено QR-кодов: ${selectedIds.value.length}`, color: 'success' })
     selectedIds.value = []
     fetchQrList()
-  } catch {
+  }
+  catch {
     toast.add({ title: 'Ошибка массового удаления', color: 'error' })
   }
 }
 
 // Folder options (placeholder — will fetch from API in Epic 7)
 const folderOptions = ref([
-  { label: 'Все папки', value: '' },
+  { label: 'Все папки', value: ALL_FOLDERS },
 ])
 
 const statusOptions = [
-  { label: 'Все статусы', value: '' },
+  { label: 'Все статусы', value: ALL_STATUSES },
   { label: 'Активен', value: 'active' },
   { label: 'Пауза', value: 'paused' },
   { label: 'Истёк', value: 'expired' },
   { label: 'Архив', value: 'archived' },
 ]
+
+const selectedStatus = computed({
+  get: () => filters.value.status || ALL_STATUSES,
+  set: (value: string) => {
+    filters.value.status = value === ALL_STATUSES ? '' : value
+  },
+})
+
+const selectedFolderId = computed({
+  get: () => filters.value.folderId || ALL_FOLDERS,
+  set: (value: string) => {
+    filters.value.folderId = value === ALL_FOLDERS ? '' : value
+  },
+})
 
 // Fetch on mount and when non-search filters change
 onMounted(() => fetchQrList())

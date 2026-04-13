@@ -1,8 +1,8 @@
-import { eq, and, or, like, inArray, gte, lte, desc, asc, count, sql } from 'drizzle-orm'
+import { eq, and, or, like, inArray, gte, lte, desc, asc, count } from 'drizzle-orm'
 import { db } from '../db'
-import { qrCodes, qrTags, tags } from '../db/schema'
+import { qrCodes, qrTags } from '../db/schema'
 import { generateShortCode } from '../utils/nanoid'
-import type { User } from '~/types/auth'
+import type { User } from '~~/types/auth'
 
 // --- Types ---
 
@@ -21,7 +21,7 @@ interface CreateQrData {
 interface UpdateQrData {
   title?: string
   destinationUrl?: string
-  description?: string
+  description?: string | null
   status?: 'active' | 'paused' | 'expired' | 'archived'
   style?: Record<string, unknown>
   utmParams?: Record<string, string>
@@ -118,7 +118,7 @@ export const qrService = {
     // Привязка тегов
     if (data.tagIds?.length && qr) {
       await db.insert(qrTags).values(
-        data.tagIds.map((tagId) => ({
+        data.tagIds.map(tagId => ({
           qrCodeId: qr.id,
           tagId,
         })),
@@ -178,7 +178,7 @@ export const qrService = {
         .from(qrTags)
         .where(inArray(qrTags.tagId, filters.tagIds))
 
-      tagFilterIds = [...new Set(taggedQrs.map((t) => t.qrCodeId))]
+      tagFilterIds = [...new Set(taggedQrs.map(t => t.qrCodeId))]
       if (tagFilterIds.length === 0) {
         return { data: [], total: 0, page, limit, totalPages: 0 }
       }
@@ -196,8 +196,10 @@ export const qrService = {
     const total = countResult!.count
 
     // Sort
-    const sortColumn = sortBy === 'title' ? qrCodes.title
-      : sortBy === 'totalScans' ? qrCodes.totalScans
+    const sortColumn = sortBy === 'title'
+      ? qrCodes.title
+      : sortBy === 'totalScans'
+        ? qrCodes.totalScans
         : qrCodes.createdAt
 
     const orderFn = sortOrder === 'asc' ? asc : desc
@@ -219,9 +221,9 @@ export const qrService = {
     })
 
     // Transform: flatten tags
-    const transformed = data.map((qr) => ({
+    const transformed = data.map(qr => ({
       ...qr,
-      tags: qr.qrTags.map((qt) => qt.tag),
+      tags: qr.qrTags.map(qt => qt.tag),
       qrTags: undefined,
     }))
 
@@ -253,7 +255,7 @@ export const qrService = {
 
     return {
       ...qr,
-      tags: qr.qrTags.map((qt) => qt.tag),
+      tags: qr.qrTags.map(qt => qt.tag),
       qrTags: undefined,
     }
   },
@@ -301,7 +303,7 @@ export const qrService = {
       await db.delete(qrTags).where(eq(qrTags.qrCodeId, id))
       if (data.tagIds.length > 0) {
         await db.insert(qrTags).values(
-          data.tagIds.map((tagId) => ({ qrCodeId: id, tagId })),
+          data.tagIds.map(tagId => ({ qrCodeId: id, tagId })),
         )
       }
     }
@@ -379,7 +381,7 @@ export const qrService = {
       style: original.style as Record<string, unknown>,
       utmParams: original.utmParams as Record<string, string> | undefined,
       folderId: original.folderId || undefined,
-      tagIds: original.qrTags.map((qt) => qt.tagId),
+      tagIds: original.qrTags.map(qt => qt.tagId),
     }
 
     return this.createQr(copyData, user)

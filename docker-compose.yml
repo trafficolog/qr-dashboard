@@ -1,27 +1,5 @@
 name: splat-qr-dashboard
 services:
-  app:
-    profiles: ["app"]
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: splat-qr:local
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    environment:
-        HOST: 0.0.0.0
-        DATABASE_URL: postgresql://${POSTGRES_USER:-splat_qr}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-splat_qr}
-        SMTP_HOST: ${SMTP_HOST:-}
-        SMTP_PORT: ${SMTP_PORT:-587}
-        SMTP_SECURE: ${SMTP_SECURE:-false}
-        SMTP_USER: ${SMTP_USER:-}
-        SMTP_PASS: ${SMTP_PASS:-}
-        SMTP_FROM: ${SMTP_FROM:-noreply@splatglobal.com}
-    volumes:
-      - uploads:/app/data/uploads
-      - geoip:/app/data
-
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -38,6 +16,44 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+      
+  migrate:
+    build:
+      context: .
+      target: migrator
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-splat_qr}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-splat_qr}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+ 
+  app:
+    build:
+      context: .
+      # defaults to last stage (runner)
+    image: splat-qr:local
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-splat_qr}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-splat_qr}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-noreply@splatglobal.com}
+    volumes:
+      - uploads:/app/data/uploads
+      - geoip:/app/data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
 
 volumes:
   pgdata:

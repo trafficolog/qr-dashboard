@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+  <div class="min-h-screen bg-[color:var(--surface-1)] text-[color:var(--text-primary)]">
     <!-- Sidebar (desktop/tablet) -->
     <AppSidebar
       :collapsed="sidebarCollapsed"
@@ -21,7 +21,7 @@
       />
 
       <!-- Page content -->
-      <main class="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-8">
+      <main class="flex-1 p-4 pb-20 md:p-6 md:pb-8 lg:p-8">
         <slot />
       </main>
     </div>
