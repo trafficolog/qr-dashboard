@@ -2,6 +2,8 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
+**Версия:** 0.2.0 — см. [CHANGELOG](./CHANGELOG.md).
+
 ## Стек
 
 | Компонент | Технология | Версия |
@@ -41,6 +43,21 @@ corepack pnpm dev
 
 Приложение будет доступно на `http://localhost:3001` с текущим `.env`
 или на порту из `APP_PORT`, если вы его измените.
+
+## Тема и цвета (SPLAT)
+
+- **`app.config.ts`**: для Nuxt UI задано `ui.colors.primary → 'splat'` и палитра
+  `neutral`; в `brand` лежат основные hex-цвета бренда.
+- **`assets/css/main.css`**: в директиве Tailwind v4 `@theme` описана шкала
+  `--color-splat-*` (красно-розовая) и **алиасы `--color-primary` /
+  `--color-primary-50`…`950` на те же значения**. Без алиасов утилиты Tailwind
+  (`text-primary`, `bg-primary`, `ring-primary/50` и т.д.) остаются на
+  зелёном primary по умолчанию, даже при `primary: 'splat'` в конфиге UI.
+- **`app/app.vue`**: корень обёрнут в `<UApp>`, чтобы тема Nuxt UI применялась
+  ко всему приложению.
+
+Светлая и тёмная схема: переменные `--surface-*`, `--text-*`, `--accent` в
+`:root` и `html.dark` в том же `main.css`.
 
 ## Docker (production)
  
@@ -102,6 +119,7 @@ docker compose up postgres -d
 
 - Авторизация переведена в единый экран `app/pages/auth/login.vue`: email и OTP живут на одной странице, а `app/pages/auth/verify.vue` сохранён как совместимый redirect.
 - Корневой shell обёрнут в `UApp`, поэтому Nuxt UI использует красную `splat`-палитру как primary theme.
+- В `@theme` в `assets/css/main.css` шкала Tailwind **`primary` привязана к `splat`**, чтобы `text-primary`, `bg-primary`, `ring-primary/*` и `color="primary"` у компонентов Nuxt UI не оставались зелёными (дефолт Tailwind).
 - Добавлены `app/error.vue` и `app/pages/analytics/index.vue`, поэтому навигация по `/analytics` и неизвестным URL больше не уходит в неоформленный дефолтный экран.
 - SSR-auth bootstrap в `app/composables/useAuth.ts` теперь пробрасывает cookie в `/api/auth/me`, из-за чего защищённые маршруты корректно открываются после входа.
  
