@@ -137,6 +137,22 @@
               />
             </UFormField>
 
+            <UFormField label="Папка">
+              <USelect
+                v-model="form.folderId"
+                :items="folderOptions"
+                placeholder="Без папки"
+              />
+            </UFormField>
+
+            <UFormField label="Теги">
+              <SharedTagInput
+                v-model="form.tagIds"
+                :available-tags="availableTags"
+                @create-tag="handleCreateTag"
+              />
+            </UFormField>
+
             <UFormField label="Описание">
               <UTextarea
                 v-model="form.description"
@@ -214,6 +230,7 @@ import type { QrStyle } from '~/../types/qr'
 
 const toast = useToast()
 const { createQr } = useQr()
+const route = useRoute()
 
 const saving = ref(false)
 const urlError = ref('')
@@ -224,6 +241,8 @@ const form = reactive({
   type: 'dynamic' as 'dynamic' | 'static',
   description: '',
   expiresAt: '',
+  folderId: (route.query.folderId as string) || '',
+  tagIds: [] as string[],
   style: {
     foregroundColor: '#000000',
     backgroundColor: '#FFFFFF',
@@ -238,6 +257,31 @@ const form = reactive({
     utm_content: '',
   },
 })
+
+// Folders & tags
+const { folders, fetchFolders } = useFolders()
+const folderOptions = computed(() => [
+  { label: 'Без папки', value: '' },
+  ...folders.value.map(f => ({ label: f.name, value: f.id })),
+])
+
+interface Tag { id: string, name: string, color: string | null }
+const allTags = ref<Tag[]>([])
+const availableTags = computed(() => allTags.value)
+
+async function loadTagsAndFolders() {
+  fetchFolders()
+  const res = await $fetch<{ data: Tag[] }>('/api/tags')
+  allTags.value = res.data
+}
+
+async function handleCreateTag(name: string) {
+  const res = await $fetch<{ data: Tag }>('/api/tags', { method: 'POST', body: { name } })
+  allTags.value.push(res.data)
+  form.tagIds.push(res.data.id)
+}
+
+onMounted(() => loadTagsAndFolders())
 
 const isValid = computed(() => {
   return form.title.trim() !== '' && form.destinationUrl.trim() !== '' && !urlError.value

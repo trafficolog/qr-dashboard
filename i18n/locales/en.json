@@ -7,57 +7,54 @@
     "qrCodes": "QR Codes",
     "folders": "Folders",
     "analytics": "Analytics",
+    "integrations": "Integrations",
     "settings": "Settings"
   },
-  "analytics": {
-    "title": "Analytics",
-    "subtitle": "The analytics section will be available in the next epic.",
-    "placeholderTitle": "Analytics screen is still in progress",
-    "placeholderDescription": "Event collection is already running, and visual reports will arrive after the analytics block is completed.",
-    "goDashboard": "Back to dashboard"
-  },
-  "auth": {
-    "login": "Sign In",
-    "loginSubtitle": "Enter your corporate email to receive a code",
-    "getCode": "Get Code",
-    "enterCode": "Enter Code",
-    "codeLabel": "Verification code",
-    "codeSentTo": "Code sent to",
-    "codeValid": "Code is valid for",
-    "resend": "Resend",
-    "resendIn": "Resend in {seconds}s",
-    "otherEmail": "Use another email",
-    "confirm": "Confirm",
-    "logout": "Sign Out",
-    "invalidEmail": "Enter a valid email",
-    "codeLength": "Code must be 6 digits",
-    "sendCodeError": "Failed to send code",
-    "invalidCode": "Invalid code",
-    "allowedDomainsNotice": "Access is limited to allowed domains.",
-    "contactAdminNotice": "Contact an administrator to request access."
-  },
-  "errors": {
-    "codeLabel": "Error code",
-    "notFoundTitle": "Page not found",
-    "notFoundDescription": "This page does not exist or was moved.",
-    "genericTitle": "Something went wrong",
-    "genericDescription": "The page could not be rendered correctly. Please try again.",
-    "requestedPath": "Requested path: {path}",
-    "goHome": "Go home",
-    "goLogin": "Go to login"
-  },
   "common": {
+    "search": "Search",
+    "darkTheme": "Dark theme",
+    "lightTheme": "Light theme",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
     "create": "Create",
-    "search": "Search...",
     "loading": "Loading...",
     "noData": "No data",
     "confirm": "Confirm",
-    "back": "Back",
-    "lightTheme": "Light theme",
-    "darkTheme": "Dark theme"
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+  "auth": {
+    "login": "Sign in",
+    "loginSubtitle": "Enter your email to receive a sign-in code",
+    "getCode": "Get code",
+    "enterCode": "Enter code",
+    "codeLabel": "Verification code",
+    "codeLength": "The code consists of 6 digits",
+    "codeSentTo": "Code sent to {email}",
+    "codeValid": "Code is valid for 10 minutes",
+    "confirm": "Confirm",
+    "otherEmail": "Use a different email",
+    "resend": "Resend",
+    "allowedDomainsNotice": "Sign in is only available for allowed domains",
+    "contactAdminNotice": "Contact your administrator to get access",
+    "invalidEmail": "Enter a valid email",
+    "invalidCode": "Invalid verification code",
+    "sendCodeError": "Error sending code. Please try again."
+  },
+  "errors": {
+    "codeLabel": "Error code",
+    "genericTitle": "Something went wrong",
+    "genericDescription": "An unexpected error occurred. Please try again later.",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The requested page does not exist or has been removed.",
+    "goHome": "Go home",
+    "goLogin": "Sign in"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Scan statistics for your QR codes"
   }
 }

@@ -1,9 +1,9 @@
-# SPLAT QR Service — Отчёт о реализации (Эпики 1–4)
+# SPLAT QR Service — Отчёт о реализации (Эпики 1–14)
 
-> **Дата:** 2026-04-07
-> **Фаза:** 1 (MVP) — частично завершена
-> **Файлов в проекте:** 90
-> **Статус:** Реализованы Эпики 1–4 (инфраструктура, аутентификация, layout, CRUD QR-кодов)
+> **Дата:** 2026-04-07 (обновлено 2026-04-13)
+> **Фаза:** 4 — завершена
+> **Файлов в проекте:** ~185
+> **Статус:** Реализованы Эпики 1–7, 9, 10, 11, 12, 13, 14
 
 ---
 
@@ -11,14 +11,23 @@
 
 ### 1.1 Покрытие задач
 
-| Эпик | Название | Статус | Задачи |
-|------|----------|--------|--------|
-| 1 | Инфраструктура и настройка | ✅ Завершён | 1.1–1.5 все выполнены |
-| 2 | Аутентификация (OTP) | ✅ Завершён | 2.1–2.5 все выполнены |
-| 3 | Layout и навигация | ✅ Завершён | 3.1 полностью |
-| 4 | CRUD QR-кодов | ✅ Завершён | 4.1–4.5 все выполнены |
-| 5 | Redirect и аналитика | ⏳ Не начат | — |
-| 6 | Аналитика (базовая) | ⏳ Не начат | — |
+| Эпик | Название | Статус | Релиз | Задачи |
+|------|----------|--------|-------|--------|
+| 1 | Инфраструктура и настройка | ✅ Завершён | v0.1.0 | 1.1–1.5 все выполнены |
+| 2 | Аутентификация (OTP) | ✅ Завершён | v0.1.0 | 2.1–2.5 все выполнены |
+| 3 | Layout и навигация | ✅ Завершён | v0.1.0 | 3.1 полностью |
+| 4 | CRUD QR-кодов | ✅ Завершён | v0.1.0 | 4.1–4.5 все выполнены |
+| Хотфиксы | Стили, Auth, Docker, Domains | ✅ Завершён | v0.2.0 | — |
+| 5 | Redirect и сбор аналитики | ✅ Завершён | v0.3.0 | 5.1–5.3 все выполнены |
+| 6 | Аналитика (базовая) | ✅ Завершён | v0.4.0 | 6.1–6.3 все выполнены |
+| 7 | Папки и теги | ✅ Завершён | v0.5.0 | 7.1–7.3 все выполнены |
+| 8 | Расширенная кастомизация QR | ⏳ Запланирован | — | — |
+| 9 | A/B-тестирование | ✅ Завершён | v0.6.0 | 9.1–9.3 все выполнены |
+| 10 | Массовое создание CSV | ✅ Завершён | v0.7.0 | 10.1–10.2 все выполнены |
+| 11 | Управление командой | ✅ Завершён | v0.8.0 | 11.1–11.2 все выполнены |
+| 12 | API v1 и ключи | ✅ Завершён | v0.9.0 | 12.1–12.2 все выполнены |
+| 13 | Daily Aggregation | ✅ Завершён | v0.10.0 | 13.1–13.4 все выполнены |
+| 14 | i18n, Dark Mode, Sentry, E2E | ✅ Завершён | v0.11.0 | 14.1–14.5 все выполнены |
 
 ### 1.2 Технологический стек (фактический)
 
@@ -43,6 +52,7 @@
 | User-Agent | ua-parser-js | ^1.0.0 |
 | Rate Limiting | lru-cache | ^11.0.0 |
 | Short IDs | nanoid | ^5.0.0 |
+| CSV Parsing | papaparse | ^5.4.0 |
 
 ---
 
@@ -367,7 +377,9 @@ splat-qr/ (актуальное состояние)
 │   │   └── auth.global.ts
 │   ├── composables/
 │   │   ├── useAuth.ts
-│   │   └── useQr.ts
+│   │   ├── useQr.ts
+│   │   ├── useAnalytics.ts
+│   │   └── useFolders.ts
 │   ├── stores/
 │   │   ├── auth.ts
 │   │   └── ui.ts
@@ -386,22 +398,32 @@ splat-qr/ (актуальное состояние)
 │   │   │   ├── Table.vue
 │   │   │   ├── Card.vue
 │   │   │   └── ExportDialog.vue
-│   │   └── shared/
-│   │       ├── Pagination.vue
-│   │       ├── EmptyState.vue
-│   │       ├── ConfirmDialog.vue
-│   │       └── TagInput.vue
+│   │   ├── shared/
+│   │   │   ├── Pagination.vue
+│   │   │   ├── EmptyState.vue
+│   │   │   ├── ConfirmDialog.vue
+│   │   │   └── TagInput.vue
+│   │   ├── analytics/
+│   │   │   ├── StatCard.vue
+│   │   │   ├── ScanChart.vue
+│   │   │   ├── DateRangePicker.vue
+│   │   │   └── TopQrTable.vue
+│   │   └── folders/
+│   │       └── FolderDialog.vue
 │   └── pages/
 │       ├── index.vue              # → /dashboard redirect
 │       ├── auth/login.vue         # Unified email + OTP auth flow
 │       ├── auth/verify.vue        # Redirect compatibility route
-│       ├── analytics/index.vue    # Placeholder screen
-│       ├── dashboard/index.vue
-│       ├── folders/index.vue      # Placeholder screen
-│       ├── qr/index.vue           # Список
-│       ├── qr/create.vue          # Создание
+│       ├── not-found.vue          # Брендированная страница «QR не найден» (layout: false)
+│       ├── expired.vue            # Брендированная страница «Срок истёк» (layout: false)
+│       ├── analytics/index.vue    # Полная страница аналитики (StatCard + ScanChart + TopQrTable)
+│       ├── dashboard/index.vue    # Дашборд с реальными данными из useAnalytics
+│       ├── folders/index.vue      # Grid карточек папок
+│       ├── folders/[id].vue       # QR-коды в папке
+│       ├── qr/index.vue           # Список (folder filter из API)
+│       ├── qr/create.vue          # Создание (folder + tag selectors)
 │       ├── qr/[id]/index.vue      # Детали
-│       ├── qr/[id]/edit.vue       # Редактирование
+│       ├── qr/[id]/edit.vue       # Редактирование (folder + tag prefill)
 │       ├── settings/index.vue
 │       └── settings/domains.vue
 │
@@ -427,7 +449,14 @@ splat-qr/ (актуальное состояние)
 │   ├── services/
 │   │   ├── auth.service.ts
 │   │   ├── email.service.ts
-│   │   └── qr.service.ts
+│   │   ├── qr.service.ts
+│   │   ├── redirect.service.ts    # Запись scan_events (UA, GeoIP, isUnique)
+│   │   ├── geo.service.ts         # Обёртка geoip-lite
+│   │   ├── ab-test.service.ts     # weightedRandom для A/B destinations
+│   │   ├── export.service.ts      # SVG/PNG(sharp)/PDF(pdfkit)
+│   │   ├── analytics.service.ts   # getOverview, getScansTimeSeries, getTopQrCodes
+│   │   ├── folder.service.ts      # CRUD папок с qrCount
+│   │   └── tag.service.ts         # CRUD тегов с qrCount
 │   ├── middleware/
 │   │   ├── auth.ts
 │   │   └── rate-limit.ts
@@ -437,12 +466,20 @@ splat-qr/ (актуальное состояние)
 │   │   ├── ip.ts
 │   │   ├── response.ts
 │   │   └── auth.ts
+│   ├── routes/
+│   │   └── r/[code].get.ts        # Redirect-обработчик с LRU-кэшем
 │   └── api/
 │       ├── auth/{login,verify,logout,me}.ts
+│       ├── admin/domains/{index,id}.ts
+│       ├── analytics/{overview,scans,top-qr}.get.ts
+│       ├── folders/{index.get,index.post,[id].get,[id].put,[id].delete}.ts
+│       ├── tags/{index.get,index.post}.ts
 │       └── qr/
 │           ├── index.{get,post}.ts
 │           ├── [id].{get,put,delete}.ts
+│           ├── [id]/analytics.get.ts
 │           ├── [id]/duplicate.post.ts
+│           ├── [id]/export.get.ts
 │           └── bulk-delete.post.ts
 │
 ├── data/
@@ -502,32 +539,39 @@ export function useEntity() {
 ### 7.5 Component Naming
 
 - `app/components/app/` — layout компоненты (Sidebar, Header, etc.)
-- `app/components/qr/` — QR-специфичные
-- `app/components/shared/` — переиспользуемые
-- `app/components/analytics/` — графики и виджеты (будет в Эпике 6)
-- `app/components/folders/` — папки (будет в Эпике 7)
+- `app/components/qr/` — QR-специфичные (Preview, StyleEditor, Table, Card, ExportDialog)
+- `app/components/shared/` — переиспользуемые (Pagination, EmptyState, ConfirmDialog, TagInput)
+- `app/components/analytics/` — виджеты дашборда (StatCard, ScanChart, DateRangePicker, TopQrTable)
+- `app/components/folders/` — управление папками (FolderDialog)
 
 ---
 
 ## 8. Известные ограничения и TODO
 
-### 8.1 Не реализовано в Эпике 4
-
-- Export API-эндпоинт (`server/api/qr/[id]/export.get.ts`) — UI готов, сервер нужен в Эпике 5
-- Folder selector на странице создания — загружает placeholder, реальные данные в Эпике 7
-- Tag fetch на странице списка — фильтр по тегам будет работать после Эпика 7
-
-### 8.2 Технический долг
-
-- QR Preview: import path `~/app/utils/qr-svg` может потребовать настройки alias в Nuxt 4 compatibility mode
-- Search на Header: placeholder модальное окно, полнотекстовый поиск — отдельная задача
-- Нет unit-тестов (запланированы в Эпике 14)
-- Нет E2E тестов (запланированы в Эпике 14)
-
-### 8.3 Хотфиксы после Эпиков 1–4
-
-- Root shell обёрнут в `UApp`, поэтому Nuxt UI-компоненты используют брендовый `primary: splat`, а не дефолтную палитру.
-- Добавлен `app/error.vue` для единого `404`/runtime error UX.
-- Добавлен `app/pages/analytics/index.vue`, чтобы навигация на `/analytics` не вела в пустой route.
-- SSR bootstrap в `app/composables/useAuth.ts` пробрасывает cookie в `/api/auth/me`, поэтому защищённые маршруты больше не редиректят на `/auth/login` после успешного входа.
-- `corepack pnpm typecheck` проходит без ошибок после исправления shared-type imports и QR/auth type mismatches.
+### 8.1 Решено в Эпиках 5–7 (было ограничением в Эпике 4)
+ 
+| Ограничение | Решено в | Как |
+|-------------|----------|-----|
+| Export API не реализован | Эпик 5 | `server/api/qr/[id]/export.get.ts` + `export.service.ts` |
+| Folder selector — placeholder | Эпик 7 | `useFolders` + `/api/folders` GET |
+| Tag input без реальных данных | Эпик 7 | `/api/tags` GET + POST |
+| `/folders` — заглушка | Эпик 7 | Полный UI с grid карточек и `/folders/:id` |
+| `/analytics` — заглушка | Эпик 6 | `useAnalytics` + StatCard + ScanChart + TopQrTable |
+| Dashboard — placeholder stats | Эпик 6 | Реальные данные из `/api/analytics/overview` |
+ 
+### 8.2 Текущий технический долг
+ 
+- **Поиск в Header**: placeholder модальное окно, полнотекстовый поиск — отдельная задача
+- **Unit-тесты**: не реализованы (запланированы в Эпике 14)
+- **E2E-тесты**: не реализованы (запланированы в Эпике 14)
+- **i18n**: hardcoded строки в компонентах Эпиков 5–7 (ждут Эпика 14)
+- **Dark mode**: не проверено в новых компонентах (Эпик 14)
+- **git push**: сломан proxy (403) — нужно исправить credentials локально
+ 
+### 8.3 Хотфиксы после Эпиков 1–4 (v0.2.0)
+ 
+- Root shell обёрнут в `UApp` — Nuxt UI-компоненты используют `primary: splat`
+- Добавлен `app/error.vue` для единого `404`/runtime error UX
+- Логика allowed_domains: пустой список → все домены разрешены (открытый режим)
+- SSR bootstrap в `useAuth.ts` пробрасывает cookie в `/api/auth/me`
+- Docker: исправлен `npm ci`, добавлен `migrate` сервис, выровнен порт 3000

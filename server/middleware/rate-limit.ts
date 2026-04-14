@@ -72,4 +72,21 @@ export default defineEventHandler(async (event) => {
       })
     }
   }
+
+  // Rate limit для API v1: 100 req / min per API key (по apiKeyId из контекста)
+  // auth.ts (a < r) выполняется раньше и устанавливает event.context.apiKeyId
+  if (path.startsWith('/api/v1/') && event.context.apiKeyId) {
+    const windowMs = 60 * 1000
+    const limiter = getLimiter(windowMs)
+    const key = `v1:${event.context.apiKeyId}`
+
+    if (!checkRateLimit(limiter, key, 100, windowMs)) {
+      setResponseHeader(event, 'Retry-After', 60)
+      setResponseHeader(event, 'X-RateLimit-Limit', 100)
+      throw createError({
+        statusCode: 429,
+        message: 'Rate limit exceeded. Maximum 100 requests per minute.',
+      })
+    }
+  }
 })

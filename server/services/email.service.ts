@@ -125,4 +125,46 @@ export const emailService = {
       })
     }
   },
+
+  async sendInviteEmail(email: string) {
+    const config = useRuntimeConfig()
+    const appName = config.public.appName
+    const appUrl = (config.public as Record<string, string>).appUrl || 'http://localhost:3000'
+
+    const subject = `Вас пригласили в ${appName}`
+    const html = `
+<!DOCTYPE html>
+<html>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px; background-color: #f9fafb;">
+  <div style="background: white; border-radius: 16px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="text-align: center; margin-bottom: 32px;">
+      <h2 style="color: #2E7D32; margin: 0; font-size: 22px;">${appName}</h2>
+    </div>
+    <p style="color: #333; font-size: 16px; margin-bottom: 8px;">Здравствуйте!</p>
+    <p style="color: #333; font-size: 16px; margin-bottom: 24px;">
+      Вас пригласили в команду <strong>${appName}</strong>.
+      Для входа введите свой email и получите код подтверждения.
+    </p>
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${appUrl}/auth/login"
+         style="display: inline-block; background-color: #2E7D32; color: white; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 600;">
+        Войти в ${appName}
+      </a>
+    </div>
+    <p style="color: #666; font-size: 14px;">Если вы не ожидали это приглашение, просто проигнорируйте письмо.</p>
+  </div>
+  <p style="color: #999; font-size: 12px; text-align: center; margin-top: 24px;">
+    ${appName} &bull; Это письмо отправлено автоматически
+  </p>
+</body>
+</html>`
+
+    try {
+      await getProvider().send(email, subject, html)
+    }
+    catch (error) {
+      // Non-critical: user is already created; log but don't throw
+      console.error('[Email] Failed to send invite:', error)
+    }
+  },
 }

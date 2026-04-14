@@ -6,6 +6,16 @@
     <div class="flex flex-col gap-2 max-w-md">
       <UButton
         v-if="isAdmin"
+        to="/settings/team"
+        variant="soft"
+        color="neutral"
+        icon="i-lucide-users"
+        block
+      >
+        Команда
+      </UButton>
+      <UButton
+        v-if="isAdmin"
         to="/settings/domains"
         variant="soft"
         color="neutral"
@@ -15,7 +25,7 @@
         Допустимые домены
       </UButton>
       <p
-        v-else
+        v-if="!isAdmin"
         class="text-sm text-[color:var(--text-secondary)]"
       >
         Доступных разделов нет

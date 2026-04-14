@@ -1,6 +1,6 @@
 {
   "name": "splat-qr",
-  "version": "0.2.0",
+  "version": "0.11.0",
   "private": true,
   "description": "SPLAT Global — QR Dashboard",
   "scripts": {
@@ -36,6 +36,8 @@
     "qrcode": "^1.5.0",
     "sharp": "^0.33.0",
     "pdfkit": "^0.16.0",
+    "@sentry/node": "^8.0.0",
+    "node-cron": "^3.0.0",
     "papaparse": "^5.4.0",
     "echarts": "^5.5.0",
     "vue-echarts": "^7.0.0"
@@ -55,6 +57,8 @@
     "@types/ua-parser-js": "^0.7.0",
     "@types/geoip-lite": "^1.4.0",
     "@types/qrcode": "^1.5.0",
+    "@playwright/test": "^1.48.0",
+    "@types/node-cron": "^3.0.0",
     "@types/pdfkit": "^0.13.0",
     "typescript": "^5.7.0"
   },

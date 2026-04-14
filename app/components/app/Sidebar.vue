@@ -98,6 +98,7 @@ const navItems = computed(() => [
   { label: t('nav.qrCodes'), icon: 'i-lucide-qr-code', route: '/qr' },
   { label: t('nav.folders'), icon: 'i-lucide-folder', route: '/folders' },
   { label: t('nav.analytics'), icon: 'i-lucide-bar-chart-3', route: '/analytics' },
+  { label: 'Интеграции', icon: 'i-lucide-plug', route: '/integrations' },
   { label: t('nav.settings'), icon: 'i-lucide-settings', route: '/settings' },
 ])
 

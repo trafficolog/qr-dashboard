@@ -298,6 +298,9 @@ export const qrService = {
 
     await db.update(qrCodes).set(updateData).where(eq(qrCodes.id, id))
 
+    // Инвалидация LRU-кэша
+    invalidateQrCache(existing.shortCode)
+
     // Update tags if provided
     if (data.tagIds !== undefined) {
       await db.delete(qrTags).where(eq(qrTags.qrCodeId, id))
@@ -317,7 +320,7 @@ export const qrService = {
   async deleteQr(id: string, user: User) {
     const existing = await db.query.qrCodes.findFirst({
       where: eq(qrCodes.id, id),
-      columns: { id: true, createdBy: true },
+      columns: { id: true, createdBy: true, shortCode: true },
     })
 
     if (!existing) {
@@ -327,6 +330,7 @@ export const qrService = {
     checkAccess(existing, user)
 
     await db.delete(qrCodes).where(eq(qrCodes.id, id))
+    invalidateQrCache(existing.shortCode)
     return { success: true }
   },
 

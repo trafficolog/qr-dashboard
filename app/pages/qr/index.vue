@@ -5,11 +5,19 @@
       <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
         QR-коды
       </h1>
-      <UButton
-        icon="i-lucide-plus"
-        label="Создать QR"
-        to="/qr/create"
-      />
+      <div class="flex items-center gap-2">
+        <UButton
+          icon="i-lucide-upload"
+          label="Массовое создание"
+          to="/qr/bulk"
+          variant="outline"
+        />
+        <UButton
+          icon="i-lucide-plus"
+          label="Создать QR"
+          to="/qr/create"
+        />
+      </div>
     </div>
 
     <!-- Filters -->
@@ -186,9 +194,9 @@ const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulk
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
 
-// View mode (persisted)
+// View mode (persisted; client-only — localStorage)
 const viewMode = ref<'table' | 'grid'>('table')
-if (import.meta.client) {
+if (typeof window !== 'undefined') {
   const saved = localStorage.getItem('qr-view-mode') as 'table' | 'grid' | null
   if (saved) viewMode.value = saved
   watch(viewMode, v => localStorage.setItem('qr-view-mode', v))
@@ -287,11 +295,12 @@ async function handleBulkDelete() {
   }
 }
 
-// Folder options (placeholder — will fetch from API in Epic 7)
-const folderOptions = ref([
+// Folder options — fetch from API
+const { folders, fetchFolders } = useFolders()
+const folderOptions = computed(() => [
   { label: 'Все папки', value: ALL_FOLDERS },
+  ...folders.value.map(f => ({ label: f.name, value: f.id })),
 ])
-
 const statusOptions = [
   { label: 'Все статусы', value: ALL_STATUSES },
   { label: 'Активен', value: 'active' },
@@ -315,7 +324,10 @@ const selectedFolderId = computed({
 })
 
 // Fetch on mount and when non-search filters change
-onMounted(() => fetchQrList())
+onMounted(() => {
+  fetchQrList()
+  fetchFolders()
+})
 
 watch(
   () => [filters.value.status, filters.value.folderId, filters.value.sortBy, filters.value.sortOrder],
