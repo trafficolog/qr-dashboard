@@ -56,5 +56,45 @@
   "analytics": {
     "title": "Analytics",
     "subtitle": "Scan statistics for your QR codes"
+  },
+  "forms": {
+    "errors": {
+      "required": "This field is required",
+      "url": "Enter a valid URL (e.g. https://example.com)",
+      "email": "Enter a valid email",
+      "domain": "Invalid domain format (e.g. company.com)",
+      "minLength": "Minimum {n} characters",
+      "maxLength": "Maximum {n} characters",
+      "generic": "Invalid value",
+      "serverGeneric": "Server error. Please try again."
+    },
+    "hints": {
+      "qrTitle": "Short name for internal reference",
+      "destinationUrl": "Where to redirect users when they scan the QR",
+      "utmCampaign": "Used for tracking in analytics platforms",
+      "domain": "Email domain without protocol (company.com)",
+      "expiresAt": "After this date the QR code will stop working",
+      "inviteEmail": "The user will receive a sign-in invitation email"
+    },
+    "unsaved": {
+      "title": "Unsaved changes",
+      "description": "You have unsaved changes. Leaving this page will discard them.",
+      "stay": "Stay on page",
+      "leave": "Leave without saving"
+    },
+    "draft": {
+      "restored": "Form draft restored",
+      "keep": "Restore",
+      "discard": "Discard",
+      "justNow": "Saved just now",
+      "minutesAgo": "Saved {n} min ago",
+      "savedAt": "Saved at {time}"
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "create": "Create",
+      "saving": "Saving…"
+    }
   }
 }

@@ -151,6 +151,7 @@
           <UFormField
             label="Email"
             :error="inviteErrors.email"
+            :hint="$t('forms.hints.inviteEmail')"
             required
           >
             <UInput
@@ -158,6 +159,7 @@
               type="email"
               placeholder="user@company.com"
               icon="i-lucide-mail"
+              :aria-invalid="!!inviteErrors.email"
               autofocus
             />
           </UFormField>
@@ -170,6 +172,7 @@
               v-model="inviteForm.role"
               :items="roleItems"
               class="w-full"
+              :aria-invalid="!!inviteErrors.role"
             />
           </UFormField>
 
@@ -238,6 +241,7 @@ interface TeamMember {
 
 const { user: currentUser } = useAuth()
 const toast = useToast()
+const { t } = useI18n()
 
 const loading = ref(true)
 const members = ref<TeamMember[]>([])
@@ -317,7 +321,7 @@ async function handleInvite() {
   inviteErrors.value = { email: '', role: '' }
 
   if (!inviteForm.value.email) {
-    inviteErrors.value.email = 'Email обязателен'
+    inviteErrors.value.email = t('forms.errors.required')
     return
   }
 
@@ -333,9 +337,28 @@ async function handleInvite() {
     inviteForm.value = { email: '', role: 'editor' }
   }
   catch (err: unknown) {
-    const e = err as { data?: { message?: string } }
-    const msg = e?.data?.message ?? 'Ошибка отправки приглашения'
-    inviteErrors.value.email = msg
+    const e = err as {
+      statusCode?: number
+      data?: {
+        message?: string
+        fieldErrors?: Record<string, string>
+      }
+    }
+    // 422 → server-side field errors
+    if (e?.statusCode === 422 && e.data?.fieldErrors) {
+      for (const [field, msg] of Object.entries(e.data.fieldErrors)) {
+        const translated = msg.startsWith('forms.')
+          ? t(msg)
+          : msg
+        if (field === 'email' || field === 'role') {
+          inviteErrors.value[field as 'email' | 'role'] = translated
+        }
+      }
+    }
+    else {
+      const msg = e?.data?.message ?? t('forms.errors.serverGeneric')
+      inviteErrors.value.email = msg
+    }
   }
   finally {
     inviting.value = false

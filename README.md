@@ -2,7 +2,7 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
-**Версия:** 0.2.0 — см. [CHANGELOG](./CHANGELOG.md).
+**Версия:** 0.12.0 — см. [CHANGELOG](./CHANGELOG.md).
 
 ## Стек
 
@@ -120,6 +120,9 @@ docker compose up postgres -d
 - [Инвентарь файлов](./docs/completed-epics.md)
 - [План разработки (Эпики 5–14)](./docs/splat-qr-cursor-plan.md)
 - [Code Review (Эпики 1–4)](./docs/reviews/epics-1-4-review.md)
+- [UX/UI ревизия v0.11.0](./docs/splat-qr-ux-ui-review.md) — снимок состояния интерфейса
+- [Планируемые EPIC 15–18](./docs/planned-epics-15-18.md) — дорожная карта UX/UI улучшений
+- [EPIC 15 — Forms UX Enhancement](./docs/epic-15-forms-ux.md) — детализация первого эпика итерации 1
 
 | Команда | Описание |
 |---------|----------|
@@ -135,7 +138,7 @@ docker compose up postgres -d
 | `corepack pnpm typecheck` | Проверка типов TypeScript |
 
 ## Актуальные хотфиксы
-
+ 
 - Авторизация переведена в единый экран `app/pages/auth/login.vue`: email и OTP живут на одной странице, а `app/pages/auth/verify.vue` сохранён как совместимый redirect.
 - Корневой shell обёрнут в `UApp`, поэтому Nuxt UI использует красную `splat`-палитру как primary theme.
 - В `@theme` в `assets/css/main.css` шкала Tailwind **`primary` привязана к `splat`**, чтобы `text-primary`, `bg-primary`, `ring-primary/*` и `color="primary"` у компонентов Nuxt UI не оставались зелёными (дефолт Tailwind).

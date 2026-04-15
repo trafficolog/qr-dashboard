@@ -6,11 +6,40 @@
 ---
  
 ## [Unreleased]
- 
-> Нет незарелиженных изменений
- 
+
 ---
- 
+
+## [0.12.0] — 2026-04-15
+
+### Added — EPIC 15: Forms UX Enhancement
+
+По дорожной карте [planned-epics-15-18.md](./docs/planned-epics-15-18.md) (итерация 1); детали — [epic-15-forms-ux.md](./docs/epic-15-forms-ux.md).
+
+- **`docs/splat-qr-ux-ui-review.md`** — снимок UX/UI состояния v0.11.0 с каталогом проблем
+- **`docs/planned-epics-15-18.md`** — дорожная карта двух итераций (EPIC 15–18)
+- **`docs/epic-15-forms-ux.md`** — детализация EPIC 15: задачи, файлы, критерии приёмки
+- **`app/composables/useUnsavedChanges.ts`** — guard для навигации при «грязной» форме (router + beforeunload)
+- **`app/composables/useFormValidation.ts`** — единый Zod-валидатор с reactive `errors`/`touched`, поддержкой server errors
+- **`app/composables/useFormDraft.ts`** — автосохранение черновика в `localStorage` с debounce
+- **`app/components/shared/UnsavedChangesDialog.vue`** — локализованный диалог подтверждения выхода
+- **`app/components/shared/DraftRestoredBanner.vue`** — баннер «Восстановлен черновик»
+- **`server/utils/zod-errors.ts`** — общий хелпер 422 + `fieldErrors` из `ZodError`
+
+### Changed
+
+- **`app/pages/qr/create.vue`** — подключены unsaved-guard, draft autosave, локализация строк
+- **`app/pages/qr/[id]/edit.vue`** — unsaved-guard, полноформатный skeleton при загрузке
+- **`app/pages/settings/team.vue`** — рендеринг server field errors для invite-формы
+- **`app/pages/settings/domains.vue`** — CSS-переменные вместо `gray-*`, server field errors
+- **`i18n/locales/ru.json`, `i18n/locales/en.json`** — секция `forms.*` (errors, hints, unsaved, draft, actions)
+- **`server/api/team/invite.post.ts`**, **`server/api/admin/domains/*.ts`** — 422 + field map через `validateBody()`
+
+### Примечание
+
+EPIC 16 (Interactive Shell & Settings Redesign) запланирован в той же итерации 1 — см. `docs/planned-epics-15-18.md`; отдельный релиз при появлении готового объёма.
+
+---
+
 ## [0.11.0] — 2026-04-13
  
 ### Added — Эпик 14: i18n, Dark Mode, Sentry, E2E
