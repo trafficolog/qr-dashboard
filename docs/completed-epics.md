@@ -671,3 +671,96 @@ UI: показывает modal с ключом + кнопка копирован
 - [ ] Страница `/integrations`: создание, one-time reveal, удаление ключа
 - [ ] Страница `/api-docs`: отображает все эндпоинты с параметрами и примерами cURL
 - [ ] Пункт «Интеграции» виден в сайдбаре для всех авторизованных пользователей
+
+---
+
+## Эпик 13 — Daily Aggregation (Завершён 2026-04-13, v0.10.0)
+
+### Созданные файлы
+| Файл | Тип | Описание |
+|------|-----|----------|
+| `server/db/schema/scan-daily-stats.ts` | Schema | Таблица `scan_daily_stats`: PK (date + qr_code_id), `total_scans`, `unique_scans`, `country_breakdown` / `device_breakdown` (jsonb), индексы |
+| `server/db/migrations/0001_add_scan_daily_stats.sql` | Migration | DDL для `scan_daily_stats` |
+| `server/services/aggregation.service.ts` | Service | `aggregateDay(date)`, `backfill(startDate)` — UPSERT агрегатов из `scan_events` |
+| `server/plugins/cron.ts` | Plugin | `node-cron` `0 2 * * *` UTC, только production |
+
+### Изменённые файлы
+| Файл | Изменение |
+|------|-----------|
+| `server/db/schema/index.ts` | Экспорт + `scanDailyStatsRelations` |
+| `server/services/analytics.service.ts` | `getScansTimeSeries`: для `week`/`month` и диапазона >90 дней — чтение из `scan_daily_stats` |
+| `package.json` | `node-cron`, `@types/node-cron` |
+
+### API-эндпоинты
+Прямых публичных эндпоинтов нет — агрегация по cron и использование в `analytics.service`.
+
+### Зависимости
+- Эпики 5, 6 (scan_events, аналитика)
+
+---
+
+## Эпик 14 — i18n, Dark Mode, Sentry, E2E (Завершён 2026-04-13, v0.11.0)
+
+### Созданные файлы
+| Файл | Тип | Описание |
+|------|-----|----------|
+| `locales/ru.json`, `locales/en.json` | i18n | Ключи app.*, nav.*, common.*, auth.*, errors.*, analytics.* (полный набор) |
+| `server/plugins/sentry.ts` | Plugin | `@sentry/node` из `runtimeConfig.sentryDsn` |
+| `playwright.config.ts` | E2E | Chromium + mobile Chrome, trace on retry |
+| `e2e/auth.spec.ts` | E2E | Редирект неавторизованного, форма входа, невалидный email |
+| `e2e/qr-list.spec.ts` | E2E | Кнопки «Создать QR», «Массовое создание» |
+| `e2e/analytics.spec.ts` | E2E | Страница аналитики, date range |
+
+### Изменённые файлы
+| Файл | Изменение |
+|------|-----------|
+| `app/components/app/UserMenu.vue` | Переключение языка через `useI18n().setLocale()` |
+| `app/components/app/Header.vue` | Breadcrumb-лейблы: integrations, api-docs, bulk |
+| `nuxt.config.ts` | Устранено дублирование ключа `css:` |
+| `package.json` | `@sentry/node`, `@playwright/test`, скрипт `test:e2e` |
+
+### API-эндпоинты
+Без изменений по сравнению с предыдущими эпиками (инфраструктура качества).
+
+---
+
+## Эпик 15 — Forms UX Enhancement (Завершён 2026-04-15, v0.12.0)
+
+Подробно: [epic-15-forms-ux.md](./epic-15-forms-ux.md), [CHANGELOG.md](../CHANGELOG.md) `[0.12.0]`.
+
+### Созданные файлы
+| Файл | Тип | Описание |
+|------|-----|----------|
+| `docs/splat-qr-ux-ui-review.md` | Docs | Снимок UX/UI v0.11.0 |
+| `docs/planned-epics-15-18.md` | Docs | Дорожная карта EPIC 15–18 |
+| `docs/epic-15-forms-ux.md` | Docs | Задачи и критерии EPIC 15 |
+| `app/composables/useUnsavedChanges.ts` | Composable | Guard: `onBeforeRouteLeave` + `beforeunload` |
+| `app/composables/useFormValidation.ts` | Composable | Zod + `errors`/`touched`, `setServerErrors` |
+| `app/composables/useFormDraft.ts` | Composable | Черновик в `localStorage` с debounce |
+| `app/components/shared/UnsavedChangesDialog.vue` | Component | Локализованный диалог выхода |
+| `app/components/shared/DraftRestoredBanner.vue` | Component | Баннер восстановления черновика |
+| `server/utils/zod-errors.ts` | Util | `zodToFieldErrors`, `validateBody` → 422 + `fieldErrors` |
+
+### Изменённые файлы
+| Файл | Изменение |
+|------|-----------|
+| `app/pages/qr/create.vue` | Unsaved guard, draft, локализация |
+| `app/pages/qr/[id]/edit.vue` | Unsaved guard, skeleton при загрузке |
+| `app/pages/settings/team.vue` | Ошибки полей invite с сервера |
+| `app/pages/settings/domains.vue` | Тематические CSS-переменные, field errors |
+| `i18n/locales/ru.json`, `en.json` | Секция `forms.*` |
+| `server/api/team/invite.post.ts` | 422 через `validateBody` |
+| `server/api/admin/domains/index.post.ts`, `[id].patch.ts` | 422 через `validateBody` |
+
+### API-эндпоинты
+| Метод | URL | Изменение |
+|-------|-----|-----------|
+| POST | `/api/team/invite` | При ошибке валидации — 422 + `data.fieldErrors` |
+| POST | `/api/admin/domains` | То же |
+| PATCH | `/api/admin/domains/:id` | То же |
+
+### Зависимости
+- Эпик 14 (i18n), формы QR (Эпик 4)
+
+### Известные ограничения
+- EPIC 16 (Interactive Shell) и эпики **17–21** описаны в отдельных `docs/epic-*.md`; сводный план — [planned-epics-15-18.md](./planned-epics-15-18.md), [splat-qr-cursor-plan.md](./splat-qr-cursor-plan.md). **EPIC 21** (security) — блокер production по спецификации.
