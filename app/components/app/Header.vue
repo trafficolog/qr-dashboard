@@ -5,6 +5,8 @@
     <!-- Mobile burger -->
     <UButton
       icon="i-lucide-menu"
+      :aria-label="t('a11y.actions.openMenu')"
+      :title="t('a11y.actions.openMenu')"
       variant="ghost"
       color="neutral"
       class="md:hidden"
@@ -14,6 +16,8 @@
     <!-- Desktop sidebar toggle -->
     <UButton
       icon="i-lucide-panel-left"
+      :aria-label="t('a11y.actions.toggleSidebar')"
+      :title="t('a11y.actions.toggleSidebar')"
       variant="ghost"
       color="neutral"
       class="hidden md:flex"
@@ -31,6 +35,8 @@
     <!-- Search trigger -->
     <UButton
       icon="i-lucide-search"
+      :aria-label="t('a11y.actions.openSearch')"
+      :title="t('a11y.actions.openSearch')"
       variant="ghost"
       class="hidden sm:flex text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]"
       data-testid="header-search-trigger"

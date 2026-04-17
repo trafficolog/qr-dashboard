@@ -9,17 +9,14 @@
             variant="ghost"
             color="neutral"
             size="sm"
+            aria-label="Назад к списку QR-кодов"
+            title="Назад к списку QR-кодов"
             to="/qr"
           />
           <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
             {{ qr.title }}
           </h1>
-          <UBadge
-            :color="statusColor"
-            variant="subtle"
-          >
-            {{ statusLabel }}
-          </UBadge>
+          <QrStatusBadge :status="qr.status" />
         </div>
         <p
           v-if="qr.description"
@@ -41,6 +38,8 @@
             icon="i-lucide-more-horizontal"
             variant="outline"
             color="neutral"
+            aria-label="Открыть действия для QR-кода"
+            title="Открыть действия для QR-кода"
           />
         </UDropdownMenu>
       </div>
@@ -252,6 +251,7 @@
             :url="qr.destinationUrl"
             :style="qr.style as any"
             :short-code="qr.shortCode"
+            :title="qr.title"
             :display-size="280"
           />
         </div>
@@ -310,7 +310,7 @@ interface QrDetails extends QrCode {
 }
 
 const route = useRoute()
-const toast = useToast()
+const toast = useA11yToast()
 const { fetchQrById, deleteQr, duplicateQr } = useQr()
 
 const qr = ref<QrDetails | null>(null)
@@ -353,30 +353,6 @@ async function loadStats() {
 }
 
 const id = computed(() => route.params.id as string)
-
-type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
-
-const statusColor = computed<StatusBadgeColor>(() => {
-  const map: Record<QrStatus, StatusBadgeColor> = {
-    active: 'primary',
-    paused: 'warning',
-    expired: 'error',
-    archived: 'neutral',
-  }
-  const status = qr.value?.status
-  return status ? map[status] : 'neutral'
-})
-
-const statusLabel = computed(() => {
-  const map: Record<QrStatus, string> = {
-    active: 'Активен',
-    paused: 'Пауза',
-    expired: 'Истёк',
-    archived: 'Архив',
-  }
-  const status = qr.value?.status
-  return status ? map[status] : ''
-})
 
 const actions = computed(() => [
   [

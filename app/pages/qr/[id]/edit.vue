@@ -180,6 +180,7 @@
               :url="form.destinationUrl || 'https://splat.ru'"
               :style="form.style"
               :short-code="qr.shortCode"
+              :title="form.title"
               :display-size="280"
             />
           </div>
@@ -237,7 +238,7 @@ interface EditableQr extends QrCode {
 }
 
 const route = useRoute()
-const toast = useToast()
+const toast = useA11yToast()
 const { t } = useI18n()
 const { fetchQrById, updateQr } = useQr()
 

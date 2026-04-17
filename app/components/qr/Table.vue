@@ -1,18 +1,29 @@
 <template>
   <div class="overflow-x-auto">
-    <table class="w-full text-sm">
+    <table
+      class="w-full text-sm"
+      role="table"
+    >
       <thead>
         <tr class="border-b border-[color:var(--border)]">
-          <th class="py-3 px-2 w-8">
+          <th
+            scope="col"
+            class="py-3 px-2 w-8"
+          >
             <input
               type="checkbox"
               :checked="allSelected"
+              :aria-label="t('a11y.actions.selectAllQrs')"
               class="rounded border-[color:var(--border)] bg-[color:var(--surface-0)]"
               @change="$emit('toggleAll')"
             >
           </th>
-          <th class="py-3 px-2 w-12" />
           <th
+            scope="col"
+            class="py-3 px-2 w-12"
+          />
+          <th
+            scope="col"
             class="cursor-pointer px-3 py-3 text-left font-medium text-[color:var(--text-secondary)] hover:text-[color:var(--accent)]"
             @click="$emit('sort', 'title')"
           >
@@ -23,13 +34,20 @@
               class="size-3 inline"
             />
           </th>
-          <th class="hidden px-3 py-3 text-left font-medium text-[color:var(--text-secondary)] lg:table-cell">
+          <th
+            scope="col"
+            class="hidden px-3 py-3 text-left font-medium text-[color:var(--text-secondary)] lg:table-cell"
+          >
             URL
           </th>
-          <th class="px-3 py-3 text-left font-medium text-[color:var(--text-secondary)]">
+          <th
+            scope="col"
+            class="px-3 py-3 text-left font-medium text-[color:var(--text-secondary)]"
+          >
             Статус
           </th>
           <th
+            scope="col"
             class="cursor-pointer px-3 py-3 text-right font-medium text-[color:var(--text-secondary)] hover:text-[color:var(--accent)]"
             @click="$emit('sort', 'totalScans')"
           >
@@ -41,6 +59,7 @@
             />
           </th>
           <th
+            scope="col"
             class="hidden cursor-pointer px-3 py-3 text-left font-medium text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] md:table-cell"
             @click="$emit('sort', 'createdAt')"
           >
@@ -51,7 +70,10 @@
               class="size-3 inline"
             />
           </th>
-          <th class="py-3 px-2 w-10" />
+          <th
+            scope="col"
+            class="py-3 px-2 w-10"
+          />
         </tr>
       </thead>
       <tbody>
@@ -64,6 +86,7 @@
             <input
               type="checkbox"
               :checked="selectedIds.includes(qr.id)"
+              :aria-label="t('a11y.actions.selectQr', { title: qr.title })"
               class="rounded border-[color:var(--border)] bg-[color:var(--surface-0)]"
               @change="$emit('toggleSelect', qr.id)"
             >
@@ -104,13 +127,7 @@
             </span>
           </td>
           <td class="py-3 px-3">
-            <UBadge
-              :color="statusColor(qr.status)"
-              variant="soft"
-              size="sm"
-            >
-              {{ statusLabel(qr.status) }}
-            </UBadge>
+            <QrStatusBadge :status="qr.status" />
           </td>
           <td class="px-3 py-3 text-right font-medium text-[color:var(--text-primary)]">
             {{ qr.totalScans.toLocaleString() }}
@@ -122,6 +139,8 @@
             <UDropdownMenu :items="getActions(qr)">
               <UButton
                 icon="i-lucide-more-horizontal"
+                :aria-label="t('a11y.actions.openQrActions', { title: qr.title })"
+                :title="t('a11y.actions.openQrActions', { title: qr.title })"
                 variant="ghost"
                 color="neutral"
                 size="sm"
@@ -163,27 +182,7 @@ const emit = defineEmits<{
   delete: [id: string]
 }>()
 
-type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
-
-function statusColor(status: string): StatusBadgeColor {
-  const map: Record<string, StatusBadgeColor> = {
-    active: 'primary',
-    paused: 'warning',
-    expired: 'error',
-    archived: 'neutral',
-  }
-  return map[status] || 'neutral'
-}
-
-function statusLabel(status: string) {
-  const map: Record<string, string> = {
-    active: 'Активен',
-    paused: 'Пауза',
-    expired: 'Истёк',
-    archived: 'Архив',
-  }
-  return map[status] || status
-}
+const { t } = useI18n()
 
 function formatDate(date: string | Date) {
   return new Date(date).toLocaleDateString('ru-RU', {

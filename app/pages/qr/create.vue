@@ -228,6 +228,7 @@
           <QrPreview
             :url="form.destinationUrl || 'https://splat.ru'"
             :style="form.style"
+            :title="form.title"
             :display-size="280"
           />
 
@@ -253,7 +254,7 @@ import type { QrStyle } from '~/../types/qr'
 import { useFormDraft } from '~/composables/useFormDraft'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
-const toast = useToast()
+const toast = useA11yToast()
 const { t } = useI18n()
 const { createQr } = useQr()
 const { user } = useAuth()

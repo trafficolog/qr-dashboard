@@ -149,6 +149,34 @@
       }
     }
   },
+  "qr": {
+    "status": {
+      "active": "Активен",
+      "paused": "Пауза",
+      "expired": "Истёк",
+      "archived": "Архив"
+    },
+    "preview": {
+      "alt": "Предпросмотр QR-кода для «{title}»"
+    }
+  },
+  "a11y": {
+    "actions": {
+      "openMenu": "Открыть меню",
+      "toggleSidebar": "Переключить боковую панель",
+      "openSearch": "Открыть поиск",
+      "expandSidebar": "Развернуть боковую панель",
+      "collapseSidebar": "Свернуть боковую панель",
+      "openUserMenu": "Открыть меню пользователя",
+      "selectAllQrs": "Выбрать все QR-коды",
+      "selectQr": "Выбрать QR-код «{title}»",
+      "openQrActions": "Открыть действия для QR-кода «{title}»",
+      "deleteMember": "Удалить участника «{name}»"
+    },
+    "labels": {
+      "userAvatar": "Аватар пользователя"
+    }
+  },
   "forms": {
     "errors": {
       "required": "Обязательное поле",

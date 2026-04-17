@@ -186,7 +186,7 @@ interface ApiKey {
   createdAt: string
 }
 
-const toast = useToast()
+const toast = useA11yToast()
 const { t } = useI18n()
 
 const loading = ref(true)
