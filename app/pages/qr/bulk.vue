@@ -693,7 +693,7 @@ async function handleCreate() {
   }
   catch (err: unknown) {
     const e = err as { data?: { message?: string } }
-    useToast().add({ title: e?.data?.message ?? 'Ошибка при создании', color: 'error' })
+    useA11yToast().add({ title: e?.data?.message ?? 'Ошибка при создании', color: 'error' })
   }
   finally {
     creating.value = false

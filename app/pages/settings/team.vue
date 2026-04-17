@@ -124,6 +124,8 @@
             variant="ghost"
             color="error"
             size="xs"
+            :aria-label="t('a11y.actions.deleteMember', { name: member.name || member.email })"
+            :title="t('a11y.actions.deleteMember', { name: member.name || member.email })"
             :disabled="member.id === currentUser?.id"
             :loading="deletingId === member.id"
             @click="handleDelete(member)"
@@ -234,7 +236,7 @@ interface TeamMember {
 }
 
 const { user: currentUser } = useAuth()
-const toast = useToast()
+const toast = useA11yToast()
 const { t } = useI18n()
 
 const loading = ref(true)

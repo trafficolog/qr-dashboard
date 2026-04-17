@@ -135,7 +135,7 @@
 import type { Folder } from '~/composables/useFolders'
 
 const route = useRoute()
-const toast = useToast()
+const toast = useA11yToast()
 const id = route.params.id as string
 
 // Folder meta

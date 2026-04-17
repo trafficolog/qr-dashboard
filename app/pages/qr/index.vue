@@ -191,7 +191,7 @@
 <script setup lang="ts">
 import type { QrCode } from '~~/types/qr'
 
-const toast = useToast()
+const toast = useA11yToast()
 const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr } = useQr()
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
