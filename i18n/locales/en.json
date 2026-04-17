@@ -53,6 +53,20 @@
     "goHome": "Go home",
     "goLogin": "Sign in"
   },
+  "breadcrumb": {
+    "dashboard": "Dashboard",
+    "qr": "QR Codes",
+    "create": "Create",
+    "edit": "Edit",
+    "folders": "Folders",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "team": "Team",
+    "domains": "Domains",
+    "general": "General",
+    "profile": "Profile",
+    "integrations": "Integrations"
+  },
   "analytics": {
     "title": "Analytics",
     "subtitle": "Scan statistics for your QR codes"

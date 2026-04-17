@@ -53,6 +53,20 @@
     "goHome": "На главную",
     "goLogin": "Войти"
   },
+  "breadcrumb": {
+    "dashboard": "Дашборд",
+    "qr": "QR-коды",
+    "create": "Создание",
+    "edit": "Редактирование",
+    "folders": "Папки",
+    "analytics": "Аналитика",
+    "settings": "Настройки",
+    "team": "Команда",
+    "domains": "Домены",
+    "general": "Общие",
+    "profile": "Профиль",
+    "integrations": "Интеграции"
+  },
   "analytics": {
     "title": "Аналитика",
     "subtitle": "Статистика сканирований ваших QR-кодов"

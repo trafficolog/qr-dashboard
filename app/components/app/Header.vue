@@ -67,6 +67,7 @@ defineEmits<{
 }>()
 
 const route = useRoute()
+const { t } = useI18n()
 const colorMode = useColorMode()
 const globalSearch = useGlobalSearch()
 
@@ -87,8 +88,8 @@ const themeIcon = computed(() =>
 
 const themeLabel = computed(() =>
   colorMode.value === 'dark'
-    ? 'Включить светлую тему'
-    : 'Включить тёмную тему',
+    ? t('common.lightTheme')
+    : t('common.darkTheme'),
 )
 
 const breadcrumbLabels: Record<string, string> = {

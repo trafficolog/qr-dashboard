@@ -17,7 +17,7 @@
           v-if="!collapsed"
           class="ml-3 truncate text-sm font-semibold text-[color:var(--text-primary)]"
         >
-          QR Service
+          {{ $t('app.name') }}
         </span>
       </Transition>
     </div>
@@ -74,7 +74,7 @@
           v-if="!collapsed"
           class="mt-1 text-center text-[10px] text-[color:var(--text-muted)]"
         >
-          v0.1.0
+          {{ $t('app.version') }}
         </p>
       </Transition>
     </div>
@@ -98,7 +98,7 @@ const navItems = computed(() => [
   { label: t('nav.qrCodes'), icon: 'i-lucide-qr-code', route: '/qr' },
   { label: t('nav.folders'), icon: 'i-lucide-folder', route: '/folders' },
   { label: t('nav.analytics'), icon: 'i-lucide-bar-chart-3', route: '/analytics' },
-  { label: 'Интеграции', icon: 'i-lucide-plug', route: '/integrations' },
+  { label: t('nav.integrations'), icon: 'i-lucide-plug', route: '/integrations' },
   { label: t('nav.settings'), icon: 'i-lucide-settings', route: '/settings' },
 ])
 
