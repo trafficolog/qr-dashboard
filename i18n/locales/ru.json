@@ -7,57 +7,214 @@
     "qrCodes": "QR-коды",
     "folders": "Папки",
     "analytics": "Аналитика",
+    "integrations": "Интеграции",
     "settings": "Настройки"
   },
-  "analytics": {
-    "title": "Аналитика",
-    "subtitle": "Раздел аналитики доступен в следующем эпике.",
-    "placeholderTitle": "Экран аналитики пока в разработке",
-    "placeholderDescription": "Сбор данных уже работает, а визуальные отчёты появятся после завершения блока аналитики.",
-    "goDashboard": "Вернуться в дашборд"
-  },
-  "auth": {
-    "login": "Вход в систему",
-    "loginSubtitle": "Введите корпоративный email для получения кода",
-    "getCode": "Получить код",
-    "enterCode": "Введите код",
-    "codeLabel": "Код подтверждения",
-    "codeSentTo": "Код отправлен на",
-    "codeValid": "Код действителен",
-    "resend": "Отправить повторно",
-    "resendIn": "Повторно через {seconds} сек",
-    "otherEmail": "Другой email",
-    "confirm": "Подтвердить",
-    "logout": "Выйти",
-    "invalidEmail": "Введите корректный email",
-    "codeLength": "Код должен содержать 6 цифр",
-    "sendCodeError": "Ошибка отправки кода",
-    "invalidCode": "Неверный код",
-    "allowedDomainsNotice": "Доступ ограничен разрешёнными доменами.",
-    "contactAdminNotice": "Обратитесь к администратору для получения доступа."
-  },
-  "errors": {
-    "codeLabel": "Код ошибки",
-    "notFoundTitle": "Страница не найдена",
-    "notFoundDescription": "Похоже, такой страницы не существует или она была перемещена.",
-    "genericTitle": "Произошла ошибка",
-    "genericDescription": "Не удалось корректно отобразить страницу. Попробуйте снова.",
-    "requestedPath": "Запрошенный путь: {path}",
-    "goHome": "На главную",
-    "goLogin": "Ко входу"
-  },
   "common": {
+    "search": "Поиск",
+    "darkTheme": "Тёмная тема",
+    "lightTheme": "Светлая тема",
     "save": "Сохранить",
     "cancel": "Отмена",
     "delete": "Удалить",
     "edit": "Редактировать",
     "create": "Создать",
-    "search": "Поиск...",
     "loading": "Загрузка...",
     "noData": "Нет данных",
     "confirm": "Подтвердить",
-    "back": "Назад",
-    "lightTheme": "Светлая тема",
-    "darkTheme": "Темная тема"
+    "close": "Закрыть",
+    "copy": "Копировать",
+    "copied": "Скопировано!"
+  },
+  "auth": {
+    "login": "Войти",
+    "loginSubtitle": "Введите email для получения кода входа",
+    "getCode": "Получить код",
+    "enterCode": "Введите код",
+    "codeLabel": "Код подтверждения",
+    "codeLength": "Код состоит из 6 цифр",
+    "codeSentTo": "Код отправлен на {email}",
+    "codeValid": "Код действителен 10 минут",
+    "confirm": "Подтвердить",
+    "otherEmail": "Использовать другой email",
+    "resend": "Отправить снова",
+    "allowedDomainsNotice": "Вход доступен только для разрешённых доменов",
+    "contactAdminNotice": "Обратитесь к администратору для получения доступа",
+    "invalidEmail": "Введите корректный email",
+    "invalidCode": "Неверный код подтверждения",
+    "sendCodeError": "Ошибка отправки кода. Попробуйте ещё раз."
+  },
+  "errors": {
+    "codeLabel": "Код ошибки",
+    "genericTitle": "Что-то пошло не так",
+    "genericDescription": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже.",
+    "notFoundTitle": "Страница не найдена",
+    "notFoundDescription": "Запрашиваемая страница не существует или была удалена.",
+    "goHome": "На главную",
+    "goLogin": "Войти"
+  },
+  "breadcrumb": {
+    "dashboard": "Дашборд",
+    "qr": "QR-коды",
+    "create": "Создание",
+    "edit": "Редактирование",
+    "folders": "Папки",
+    "analytics": "Аналитика",
+    "settings": "Настройки",
+    "team": "Команда",
+    "domains": "Домены",
+    "general": "Общие",
+    "profile": "Профиль",
+    "integrations": "Интеграции"
+  },
+  "analytics": {
+    "title": "Аналитика",
+    "subtitle": "Статистика сканирований ваших QR-кодов"
+  },
+  "search": {
+    "placeholder": "Поиск QR-кодов, папок, страниц...",
+    "noResults": "Ничего не найдено",
+    "recent": "Недавние",
+    "recentEmpty": "Начните вводить для поиска",
+    "clearHistory": "Очистить историю",
+    "categories": {
+      "qr": "QR-коды",
+      "folders": "Папки",
+      "pages": "Страницы"
+    },
+    "keybinds": {
+      "navigate": "навигация",
+      "select": "выбрать",
+      "close": "закрыть"
+    }
+  },
+  "settings": {
+    "nav": {
+      "label": "Разделы настроек",
+      "searchPlaceholder": "Поиск в настройках...",
+      "noResults": "Разделы не найдены"
+    },
+    "tabs": {
+      "general": "Общие",
+      "profile": "Профиль",
+      "team": "Команда",
+      "domains": "Домены",
+      "integrations": "Интеграции"
+    },
+    "general": {
+      "subtitle": "Тема, язык и часовой пояс",
+      "theme": {
+        "label": "Тема оформления"
+      },
+      "language": {
+        "label": "Язык интерфейса"
+      },
+      "timezone": {
+        "label": "Часовой пояс",
+        "auto": "Определён автоматически"
+      }
+    },
+    "profile": {
+      "subtitle": "Информация о вашем аккаунте",
+      "savedToast": "Профиль сохранён",
+      "info": {
+        "label": "Личные данные",
+        "name": "Имя",
+        "namePlaceholder": "Ваше имя",
+        "email": "Email",
+        "emailHint": "Email нельзя изменить — он используется для входа"
+      },
+      "account": {
+        "label": "Аккаунт",
+        "role": "Роль",
+        "memberId": "ID участника",
+        "roleAdmin": "Администратор",
+        "roleEditor": "Редактор",
+        "roleViewer": "Наблюдатель"
+      }
+    },
+    "integrations": {
+      "subtitle": "API-ключи и интеграции с внешними сервисами",
+      "apiKeys": {
+        "label": "API-ключи",
+        "create": "Создать ключ",
+        "nameLabel": "Название ключа",
+        "namePlaceholder": "Например: Production API",
+        "copyHint": "Сохраните ключ — он показывается один раз",
+        "empty": "Нет API-ключей. Создайте первый для работы с API.",
+        "deleted": "Ключ удалён"
+      },
+      "webhooks": {
+        "comingSoon": "Webhooks появятся в следующем релизе."
+      }
+    }
+  },
+  "qr": {
+    "status": {
+      "active": "Активен",
+      "paused": "Пауза",
+      "expired": "Истёк",
+      "archived": "Архив"
+    },
+    "preview": {
+      "alt": "Предпросмотр QR-кода для «{title}»"
+    }
+  },
+  "a11y": {
+    "actions": {
+      "openMenu": "Открыть меню",
+      "toggleSidebar": "Переключить боковую панель",
+      "openSearch": "Открыть поиск",
+      "expandSidebar": "Развернуть боковую панель",
+      "collapseSidebar": "Свернуть боковую панель",
+      "openUserMenu": "Открыть меню пользователя",
+      "selectAllQrs": "Выбрать все QR-коды",
+      "selectQr": "Выбрать QR-код «{title}»",
+      "openQrActions": "Открыть действия для QR-кода «{title}»",
+      "deleteMember": "Удалить участника «{name}»"
+    },
+    "labels": {
+      "userAvatar": "Аватар пользователя"
+    }
+  },
+  "forms": {
+    "errors": {
+      "required": "Обязательное поле",
+      "url": "Введите корректный URL (например, https://example.com)",
+      "email": "Введите корректный email",
+      "domain": "Некорректный формат домена (пример: company.com)",
+      "minLength": "Минимум {n} символов",
+      "maxLength": "Максимум {n} символов",
+      "generic": "Некорректное значение",
+      "serverGeneric": "Ошибка сервера. Попробуйте ещё раз."
+    },
+    "hints": {
+      "qrTitle": "Короткое название для внутренних целей",
+      "destinationUrl": "Куда перенаправлять пользователя при сканировании",
+      "utmCampaign": "Используется для трекинга в системах аналитики",
+      "domain": "Домен электронной почты без протокола (company.com)",
+      "expiresAt": "После указанной даты QR-код перестанет работать",
+      "inviteEmail": "Пользователь получит письмо с инструкцией по входу"
+    },
+    "unsaved": {
+      "title": "Несохранённые изменения",
+      "description": "Вы внесли изменения, которые ещё не сохранены. Если уйти со страницы, изменения будут потеряны.",
+      "stay": "Остаться на странице",
+      "leave": "Уйти без сохранения"
+    },
+    "draft": {
+      "restored": "Найден черновик формы",
+      "keep": "Восстановить",
+      "discard": "Удалить",
+      "justNow": "Сохранён только что",
+      "minutesAgo": "Сохранён {n} мин. назад",
+      "savedAt": "Сохранён в {time}"
+    },
+    "actions": {
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "create": "Создать",
+      "saving": "Сохранение…"
+    }
   }
 }

@@ -11,6 +11,15 @@
       </div>
     </div>
 
+    <SharedDraftRestoredBanner
+      v-if="draft.hasDraft.value"
+      :has-draft="draft.hasDraft.value"
+      :saved-at="draft.draftSavedAt.value"
+      class="mb-4"
+      @restore="draft.restore"
+      @discard="draft.discard"
+    />
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Left: Settings -->
       <div class="lg:col-span-2 space-y-6">
@@ -30,6 +39,7 @@
             <UFormField
               label="URL назначения"
               :error="urlError"
+              :hint="$t('forms.hints.destinationUrl')"
               required
             >
               <UInput
@@ -37,6 +47,8 @@
                 placeholder="https://splat.ru/product"
                 icon="i-lucide-globe"
                 size="lg"
+                :aria-invalid="!!urlError"
+                aria-describedby="qr-create-url-hint"
                 @blur="validateUrl"
               />
             </UFormField>
@@ -129,11 +141,31 @@
           <div class="space-y-4">
             <UFormField
               label="Название"
+              :hint="$t('forms.hints.qrTitle')"
+              :error="titleError"
               required
             >
               <UInput
                 v-model="form.title"
                 placeholder="Промо-акция на упаковке"
+                :aria-invalid="!!titleError"
+                @blur="validateTitle"
+              />
+            </UFormField>
+
+            <UFormField label="Папка">
+              <USelect
+                v-model="form.folderId"
+                :items="folderOptions"
+                placeholder="Без папки"
+              />
+            </UFormField>
+
+            <UFormField label="Теги">
+              <SharedTagInput
+                v-model="form.tagIds"
+                :available-tags="availableTags"
+                @create-tag="handleCreateTag"
               />
             </UFormField>
 
@@ -148,6 +180,7 @@
             <UFormField label="Срок действия">
               <UInput
                 v-model="form.expiresAt"
+                :hint="$t('forms.hints.expiresAt')"
                 type="datetime-local"
               />
             </UFormField>
@@ -180,7 +213,7 @@
             @click="handleCreate"
           />
           <UButton
-            label="Отмена"
+            :label="$t('forms.actions.cancel')"
             variant="outline"
             color="neutral"
             size="lg"
@@ -195,6 +228,7 @@
           <QrPreview
             :url="form.destinationUrl || 'https://splat.ru'"
             :style="form.style"
+            :title="form.title"
             :display-size="280"
           />
 
@@ -206,17 +240,29 @@
         </div>
       </div>
     </div>
+
+    <SharedUnsavedChangesDialog
+      v-model:open="unsaved.showDialog.value"
+      @confirm="unsaved.confirm"
+      @cancel="unsaved.cancel"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { QrStyle } from '~/../types/qr'
+import { useFormDraft } from '~/composables/useFormDraft'
+import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
-const toast = useToast()
+const toast = useA11yToast()
+const { t } = useI18n()
 const { createQr } = useQr()
+const { user } = useAuth()
+const route = useRoute()
 
 const saving = ref(false)
 const urlError = ref('')
+const titleError = ref('')
 
 const form = reactive({
   title: '',
@@ -224,6 +270,8 @@ const form = reactive({
   type: 'dynamic' as 'dynamic' | 'static',
   description: '',
   expiresAt: '',
+  folderId: (route.query.folderId as string) || '',
+  tagIds: [] as string[],
   style: {
     foregroundColor: '#000000',
     backgroundColor: '#FFFFFF',
@@ -239,13 +287,57 @@ const form = reactive({
   },
 })
 
+// Draft autosave — ключ уникален на пользователя
+const draftKey = computed(() => `qr-create:${user.value?.id ?? 'anon'}`)
+const draft = useFormDraft(draftKey.value, form, {
+  debounceMs: 1000,
+  // style — большой объект, не считаем черновиком
+  exclude: ['style', 'tagIds'] as (keyof typeof form)[],
+})
+
+// Unsaved changes guard — форма "грязная", если есть заполненные ключевые поля
+const isDirty = computed(() =>
+  form.title.trim() !== ''
+  || form.destinationUrl.trim() !== ''
+  || form.description.trim() !== '',
+)
+const unsaved = useUnsavedChanges(isDirty)
+
+// Folders & tags
+const { folders, fetchFolders } = useFolders()
+const folderOptions = computed(() => [
+  { label: 'Без папки', value: '' },
+  ...folders.value.map(f => ({ label: f.name, value: f.id })),
+])
+
+interface Tag { id: string, name: string, color: string | null }
+const allTags = ref<Tag[]>([])
+const availableTags = computed(() => allTags.value)
+
+async function loadTagsAndFolders() {
+  fetchFolders()
+  const res = await $fetch<{ data: Tag[] }>('/api/tags')
+  allTags.value = res.data
+}
+
+async function handleCreateTag(name: string) {
+  const res = await $fetch<{ data: Tag }>('/api/tags', { method: 'POST', body: { name } })
+  allTags.value.push(res.data)
+  form.tagIds.push(res.data.id)
+}
+
+onMounted(() => loadTagsAndFolders())
+
 const isValid = computed(() => {
-  return form.title.trim() !== '' && form.destinationUrl.trim() !== '' && !urlError.value
+  return form.title.trim() !== ''
+    && form.destinationUrl.trim() !== ''
+    && !urlError.value
+    && !titleError.value
 })
 
 function validateUrl() {
   if (!form.destinationUrl) {
-    urlError.value = ''
+    urlError.value = t('forms.errors.required')
     return
   }
   try {
@@ -253,12 +345,17 @@ function validateUrl() {
     urlError.value = ''
   }
   catch {
-    urlError.value = 'Введите корректный URL (https://...)'
+    urlError.value = t('forms.errors.url')
   }
+}
+
+function validateTitle() {
+  titleError.value = form.title.trim() === '' ? t('forms.errors.required') : ''
 }
 
 async function handleCreate() {
   validateUrl()
+  validateTitle()
   if (!isValid.value) return
 
   saving.value = true
@@ -279,12 +376,15 @@ async function handleCreate() {
     })
 
     toast.add({ title: `QR «${qr.title}» создан`, color: 'success' })
+    // Чистим черновик и снимаем unsaved-guard перед навигацией
+    draft.clear()
+    unsaved.markClean()
     await navigateTo(`/qr/${qr.id}`)
   }
   catch (error: unknown) {
     const err = error as { data?: { message?: string }, statusMessage?: string }
     toast.add({
-      title: err?.data?.message || err?.statusMessage || 'Ошибка создания',
+      title: err?.data?.message || err?.statusMessage || t('forms.errors.serverGeneric'),
       color: 'error',
     })
   }

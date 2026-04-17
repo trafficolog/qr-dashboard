@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { db } from '../../../db'
 import { allowedDomains } from '../../../db/schema'
+import { validateBody } from '../../../utils/zod-errors'
 
 const patchDomainSchema = z.object({
   isActive: z.boolean(),
@@ -18,7 +19,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'ID не указан' })
   }
 
-  const body = await readValidatedBody(event, patchDomainSchema.parse)
+  const body = await validateBody(event, patchDomainSchema)
 
   const [updated] = await db
     .update(allowedDomains)

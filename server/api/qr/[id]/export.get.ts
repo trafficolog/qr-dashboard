@@ -1,49 +1,44 @@
 import { z } from 'zod'
+import { requireAuth } from '../../../utils/auth'
 import { qrService } from '../../../services/qr.service'
-import { generateQrSvg, generateQrPng, generateQrPdf } from '../../../services/export.service'
+import { exportService } from '../../../services/export.service'
 import type { QrStyle } from '~~/types/qr'
 
 const querySchema = z.object({
   format: z.enum(['svg', 'png', 'pdf']).default('png'),
-  size: z.coerce.number().int().min(100).max(4096).default(1000),
+  size: z.coerce.number().int().min(100).max(3000).default(1000),
 })
 
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
-  const id = getRouterParam(event, 'id')
-
-  if (!id) {
-    throw createError({ statusCode: 400, message: 'ID обязателен' })
-  }
-
+  const id = getRouterParam(event, 'id')!
   const query = await getValidatedQuery(event, querySchema.parse)
-  const qr = await qrService.getQrById(id, user)
 
-  const destinationUrl = qr.destinationUrl
+  const qr = await qrService.getQrById(id, user)
   const style = (qr.style ?? {}) as Partial<QrStyle>
-  const shortCode = qr.shortCode
-  const title = qr.title
+  const data = qr.destinationUrl
+  const filename = `qr-${qr.shortCode}`
 
   switch (query.format) {
     case 'svg': {
-      const svgString = generateQrSvg(destinationUrl, style)
+      const svg = exportService.generateQrSvg(data, style)
       setHeader(event, 'Content-Type', 'image/svg+xml')
-      setHeader(event, 'Content-Disposition', `attachment; filename="qr-${shortCode}.svg"`)
-      return svgString
+      setHeader(event, 'Content-Disposition', `attachment; filename="${filename}.svg"`)
+      return svg
     }
 
     case 'png': {
-      const pngBuffer = await generateQrPng(destinationUrl, style, query.size)
+      const png = await exportService.generateQrPng(data, style, query.size)
       setHeader(event, 'Content-Type', 'image/png')
-      setHeader(event, 'Content-Disposition', `attachment; filename="qr-${shortCode}.png"`)
-      return pngBuffer
+      setHeader(event, 'Content-Disposition', `attachment; filename="${filename}.png"`)
+      return png
     }
 
     case 'pdf': {
-      const pdfBuffer = await generateQrPdf(destinationUrl, style, title)
+      const pdf = await exportService.generateQrPdf(data, style, qr.title)
       setHeader(event, 'Content-Type', 'application/pdf')
-      setHeader(event, 'Content-Disposition', `attachment; filename="qr-${shortCode}.pdf"`)
-      return pdfBuffer
+      setHeader(event, 'Content-Disposition', `attachment; filename="${filename}.pdf"`)
+      return pdf
     }
   }
 })

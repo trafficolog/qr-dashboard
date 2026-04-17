@@ -1,5 +1,8 @@
 <template>
-  <UModal v-model:open="isOpen">
+  <UModal
+    v-model:open="isOpen"
+    :close-on-escape="true"
+  >
     <template #content>
       <div class="bg-[color:var(--surface-0)] p-6">
         <div class="flex items-start gap-4">
@@ -39,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+
 withDefaults(
   defineProps<{
     title?: string
@@ -59,10 +64,16 @@ withDefaults(
 )
 
 const isOpen = defineModel<boolean>('open', { default: false })
+const focusReturn = createDialogFocusReturn()
 
 const emit = defineEmits<{
   confirm: []
 }>()
+
+watch(isOpen, (open) => {
+  if (open) focusReturn.save()
+  else focusReturn.restore()
+})
 
 function handleConfirm() {
   emit('confirm')

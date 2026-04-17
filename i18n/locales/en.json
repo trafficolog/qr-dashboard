@@ -7,57 +7,214 @@
     "qrCodes": "QR Codes",
     "folders": "Folders",
     "analytics": "Analytics",
+    "integrations": "Integrations",
     "settings": "Settings"
   },
-  "analytics": {
-    "title": "Analytics",
-    "subtitle": "The analytics section will be available in the next epic.",
-    "placeholderTitle": "Analytics screen is still in progress",
-    "placeholderDescription": "Event collection is already running, and visual reports will arrive after the analytics block is completed.",
-    "goDashboard": "Back to dashboard"
-  },
-  "auth": {
-    "login": "Sign In",
-    "loginSubtitle": "Enter your corporate email to receive a code",
-    "getCode": "Get Code",
-    "enterCode": "Enter Code",
-    "codeLabel": "Verification code",
-    "codeSentTo": "Code sent to",
-    "codeValid": "Code is valid for",
-    "resend": "Resend",
-    "resendIn": "Resend in {seconds}s",
-    "otherEmail": "Use another email",
-    "confirm": "Confirm",
-    "logout": "Sign Out",
-    "invalidEmail": "Enter a valid email",
-    "codeLength": "Code must be 6 digits",
-    "sendCodeError": "Failed to send code",
-    "invalidCode": "Invalid code",
-    "allowedDomainsNotice": "Access is limited to allowed domains.",
-    "contactAdminNotice": "Contact an administrator to request access."
-  },
-  "errors": {
-    "codeLabel": "Error code",
-    "notFoundTitle": "Page not found",
-    "notFoundDescription": "This page does not exist or was moved.",
-    "genericTitle": "Something went wrong",
-    "genericDescription": "The page could not be rendered correctly. Please try again.",
-    "requestedPath": "Requested path: {path}",
-    "goHome": "Go home",
-    "goLogin": "Go to login"
-  },
   "common": {
+    "search": "Search",
+    "darkTheme": "Dark theme",
+    "lightTheme": "Light theme",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
     "create": "Create",
-    "search": "Search...",
     "loading": "Loading...",
     "noData": "No data",
     "confirm": "Confirm",
-    "back": "Back",
-    "lightTheme": "Light theme",
-    "darkTheme": "Dark theme"
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+  "auth": {
+    "login": "Sign in",
+    "loginSubtitle": "Enter your email to receive a sign-in code",
+    "getCode": "Get code",
+    "enterCode": "Enter code",
+    "codeLabel": "Verification code",
+    "codeLength": "The code consists of 6 digits",
+    "codeSentTo": "Code sent to {email}",
+    "codeValid": "Code is valid for 10 minutes",
+    "confirm": "Confirm",
+    "otherEmail": "Use a different email",
+    "resend": "Resend",
+    "allowedDomainsNotice": "Sign in is only available for allowed domains",
+    "contactAdminNotice": "Contact your administrator to get access",
+    "invalidEmail": "Enter a valid email",
+    "invalidCode": "Invalid verification code",
+    "sendCodeError": "Error sending code. Please try again."
+  },
+  "errors": {
+    "codeLabel": "Error code",
+    "genericTitle": "Something went wrong",
+    "genericDescription": "An unexpected error occurred. Please try again later.",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The requested page does not exist or has been removed.",
+    "goHome": "Go home",
+    "goLogin": "Sign in"
+  },
+  "breadcrumb": {
+    "dashboard": "Dashboard",
+    "qr": "QR Codes",
+    "create": "Create",
+    "edit": "Edit",
+    "folders": "Folders",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "team": "Team",
+    "domains": "Domains",
+    "general": "General",
+    "profile": "Profile",
+    "integrations": "Integrations"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Scan statistics for your QR codes"
+  },
+  "search": {
+    "placeholder": "Search QR codes, folders, pages...",
+    "noResults": "Nothing found",
+    "recent": "Recent",
+    "recentEmpty": "Start typing to search",
+    "clearHistory": "Clear history",
+    "categories": {
+      "qr": "QR codes",
+      "folders": "Folders",
+      "pages": "Pages"
+    },
+    "keybinds": {
+      "navigate": "navigate",
+      "select": "select",
+      "close": "close"
+    }
+  },
+  "settings": {
+    "nav": {
+      "label": "Settings sections",
+      "searchPlaceholder": "Search settings...",
+      "noResults": "No sections found"
+    },
+    "tabs": {
+      "general": "General",
+      "profile": "Profile",
+      "team": "Team",
+      "domains": "Domains",
+      "integrations": "Integrations"
+    },
+    "general": {
+      "subtitle": "Theme, language and timezone",
+      "theme": {
+        "label": "Appearance"
+      },
+      "language": {
+        "label": "Language"
+      },
+      "timezone": {
+        "label": "Timezone",
+        "auto": "Detected automatically"
+      }
+    },
+    "profile": {
+      "subtitle": "Your account information",
+      "savedToast": "Profile saved",
+      "info": {
+        "label": "Personal info",
+        "name": "Name",
+        "namePlaceholder": "Your name",
+        "email": "Email",
+        "emailHint": "Email cannot be changed — it is used for sign in"
+      },
+      "account": {
+        "label": "Account",
+        "role": "Role",
+        "memberId": "Member ID",
+        "roleAdmin": "Administrator",
+        "roleEditor": "Editor",
+        "roleViewer": "Viewer"
+      }
+    },
+    "integrations": {
+      "subtitle": "API keys and external service integrations",
+      "apiKeys": {
+        "label": "API Keys",
+        "create": "Create key",
+        "nameLabel": "Key name",
+        "namePlaceholder": "E.g. Production API",
+        "copyHint": "Save the key — it is shown only once",
+        "empty": "No API keys. Create one to use the API.",
+        "deleted": "Key deleted"
+      },
+      "webhooks": {
+        "comingSoon": "Webhooks are coming in the next release."
+      }
+    }
+  },
+  "qr": {
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "expired": "Expired",
+      "archived": "Archived"
+    },
+    "preview": {
+      "alt": "QR preview for “{title}”"
+    }
+  },
+  "a11y": {
+    "actions": {
+      "openMenu": "Open menu",
+      "toggleSidebar": "Toggle sidebar",
+      "openSearch": "Open search",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar",
+      "openUserMenu": "Open user menu",
+      "selectAllQrs": "Select all QR codes",
+      "selectQr": "Select QR code “{title}”",
+      "openQrActions": "Open actions for QR code “{title}”",
+      "deleteMember": "Delete member “{name}”"
+    },
+    "labels": {
+      "userAvatar": "User avatar"
+    }
+  },
+  "forms": {
+    "errors": {
+      "required": "This field is required",
+      "url": "Enter a valid URL (e.g. https://example.com)",
+      "email": "Enter a valid email",
+      "domain": "Invalid domain format (e.g. company.com)",
+      "minLength": "Minimum {n} characters",
+      "maxLength": "Maximum {n} characters",
+      "generic": "Invalid value",
+      "serverGeneric": "Server error. Please try again."
+    },
+    "hints": {
+      "qrTitle": "Short name for internal reference",
+      "destinationUrl": "Where to redirect users when they scan the QR",
+      "utmCampaign": "Used for tracking in analytics platforms",
+      "domain": "Email domain without protocol (company.com)",
+      "expiresAt": "After this date the QR code will stop working",
+      "inviteEmail": "The user will receive a sign-in invitation email"
+    },
+    "unsaved": {
+      "title": "Unsaved changes",
+      "description": "You have unsaved changes. Leaving this page will discard them.",
+      "stay": "Stay on page",
+      "leave": "Leave without saving"
+    },
+    "draft": {
+      "restored": "Form draft restored",
+      "keep": "Restore",
+      "discard": "Discard",
+      "justNow": "Saved just now",
+      "minutesAgo": "Saved {n} min ago",
+      "savedAt": "Saved at {time}"
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "create": "Create",
+      "saving": "Saving…"
+    }
   }
 }

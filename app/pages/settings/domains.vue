@@ -1,21 +1,13 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="flex items-center gap-3 mb-6">
-      <UButton
-        icon="i-lucide-arrow-left"
-        variant="ghost"
-        color="neutral"
-        to="/settings"
-      />
-      <div>
-        <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-          Допустимые домены
-        </h1>
-        <p class="mt-0.5 text-sm text-[color:var(--text-secondary)]">
-          Управление белым списком email-доменов для авторизации
-        </p>
-      </div>
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
+        Допустимые домены
+      </h1>
+      <p class="text-sm text-[color:var(--text-secondary)] mt-0.5">
+        Управление белым списком email-доменов для авторизации
+      </p>
     </div>
 
     <!-- Info banner -->
@@ -31,9 +23,9 @@
     />
 
     <!-- Add domain form -->
-    <UCard class="mb-6 border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+    <UCard class="mb-6">
       <template #header>
-        <h2 class="font-medium text-[color:var(--text-primary)]">
+        <h2 class="font-medium text-gray-900 dark:text-white">
           Добавить домен
         </h2>
       </template>
@@ -65,11 +57,11 @@
     </UCard>
 
     <!-- Domains list -->
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+    <UCard>
       <template #header>
-        <h2 class="font-medium text-[color:var(--text-primary)]">
+        <h2 class="font-medium text-gray-900 dark:text-white">
           Список доменов
-          <span class="ml-2 text-sm font-normal text-[color:var(--text-secondary)]">({{ domains.length }})</span>
+          <span class="ml-2 text-sm font-normal text-gray-500">({{ domains.length }})</span>
         </h2>
       </template>
 
@@ -79,29 +71,27 @@
       >
         <UIcon
           name="i-lucide-loader-2"
-          class="size-6 animate-spin text-[color:var(--text-muted)]"
+          class="size-6 animate-spin text-gray-400"
         />
       </div>
 
       <div
         v-else-if="domains.length === 0"
-        class="py-8 text-center text-[color:var(--text-secondary)]"
+        class="py-8 text-center text-gray-500"
       >
         <UIcon
           name="i-lucide-globe"
-          class="mx-auto mb-2 size-10 text-[color:var(--text-muted)]/50"
+          class="size-10 mx-auto mb-2 text-gray-300"
         />
-        <p>
-          Домены не добавлены
-        </p>
-        <p class="mt-1 text-sm text-[color:var(--text-muted)]">
+        <p>Домены не добавлены</p>
+        <p class="text-sm text-gray-400 mt-1">
           Все email-домены разрешены для входа
         </p>
       </div>
 
       <ul
         v-else
-        class="divide-y divide-[color:var(--surface-2)]"
+        class="divide-y divide-gray-100 dark:divide-gray-800"
       >
         <li
           v-for="d in domains"
@@ -110,14 +100,14 @@
         >
           <div class="flex items-center gap-3">
             <UBadge
-              :color="d.isActive ? 'primary' : 'neutral'"
+              :color="d.isActive ? 'success' : 'neutral'"
               variant="soft"
               size="sm"
             >
               {{ d.isActive ? 'Активен' : 'Отключён' }}
             </UBadge>
-            <span class="font-medium text-[color:var(--text-primary)]">{{ d.domain }}</span>
-            <span class="text-xs text-[color:var(--text-muted)]">
+            <span class="font-medium text-gray-900 dark:text-white">{{ d.domain }}</span>
+            <span class="text-xs text-gray-400">
               {{ formatDate(d.createdAt) }}
             </span>
           </div>
@@ -132,6 +122,8 @@
               variant="ghost"
               color="error"
               size="sm"
+              :aria-label="`Удалить домен ${d.domain}`"
+              :title="`Удалить домен ${d.domain}`"
               @click="handleDelete(d)"
             />
           </div>
@@ -143,14 +135,17 @@
     <SharedConfirmDialog
       v-model:open="confirmOpen"
       title="Удалить домен?"
-      :message="`Домен «${deletingDomain?.domain}» будет удалён из белого списка.`"
+      :description="`Домен «${deletingDomain?.domain}» будет удалён из белого списка.`"
       confirm-label="Удалить"
+      confirm-color="error"
       @confirm="confirmDelete"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 definePageMeta({
   middleware: () => {
     const { user } = useAuth()
@@ -167,9 +162,8 @@ interface Domain {
   createdAt: string
 }
 
-const DOMAIN_INPUT_REGEX = /^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)+$/i
+const toast = useA11yToast()
 
-const toast = useToast()
 const loading = ref(true)
 const domains = ref<Domain[]>([])
 const newDomain = ref('')
@@ -198,10 +192,10 @@ async function handleAdd() {
   addError.value = ''
   const domain = newDomain.value.trim().toLowerCase()
 
-  if (!domain)
-    return
+  if (!domain) return
 
-  if (!DOMAIN_INPUT_REGEX.test(domain)) {
+  // Basic validation
+  if (!/^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+$/i.test(domain)) {
     addError.value = 'Некорректный формат домена (пример: company.com)'
     return
   }
@@ -217,8 +211,8 @@ async function handleAdd() {
     toast.add({ title: `Домен «${domain}» добавлен`, color: 'success' })
   }
   catch (error: unknown) {
-    addError.value
-      = getApiErrorMessage(error) || 'Ошибка добавления домена'
+    const err = error as { data?: { message?: string } }
+    addError.value = err?.data?.message || 'Ошибка добавления домена'
   }
   finally {
     adding.value = false
@@ -232,8 +226,7 @@ async function handleToggle(id: string, isActive: boolean) {
       body: { isActive },
     })
     const idx = domains.value.findIndex(d => d.id === id)
-    if (idx !== -1)
-      domains.value[idx] = res.data
+    if (idx !== -1) domains.value[idx] = res.data
     toast.add({
       title: isActive ? 'Домен включён' : 'Домен отключён',
       color: 'success',
@@ -250,8 +243,7 @@ function handleDelete(domain: Domain) {
 }
 
 async function confirmDelete() {
-  if (!deletingDomain.value)
-    return
+  if (!deletingDomain.value) return
   try {
     await $fetch(`/api/admin/domains/${deletingDomain.value.id}`, { method: 'DELETE' })
     domains.value = domains.value.filter(d => d.id !== deletingDomain.value!.id)
@@ -273,18 +265,8 @@ function formatDate(iso: string) {
   })
 }
 
-function getApiErrorMessage(error: unknown): string {
-  const e = error as {
-    data?: { error?: { message?: string }, message?: string }
-    statusMessage?: string
-  }
-  return (
-    e?.data?.error?.message
-    ?? e?.data?.message
-    ?? e?.statusMessage
-    ?? ''
-  )
-}
-
-onMounted(fetchDomains)
+// Initial load (no top-level await — TS + module "preserve")
+void (async () => {
+  await fetchDomains()
+})()
 </script>

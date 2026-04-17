@@ -1,4 +1,14 @@
 import { relations } from 'drizzle-orm'
+import { users } from './users'
+import { sessions } from './sessions'
+import { qrCodes } from './qr-codes'
+import { qrDestinations } from './qr-destinations'
+import { scanEvents } from './scan-events'
+import { folders } from './folders'
+import { tags } from './tags'
+import { qrTags } from './qr-tags'
+import { apiKeys } from './api-keys'
+import { scanDailyStats } from './scan-daily-stats'
 
 // --- Re-exports ---
 export * from './users'
@@ -12,18 +22,9 @@ export * from './tags'
 export * from './qr-tags'
 export * from './allowed-domains'
 export * from './api-keys'
+export * from './scan-daily-stats'
 
 // --- Relations ---
-import { users } from './users'
-import { sessions } from './sessions'
-import { qrCodes } from './qr-codes'
-import { qrDestinations } from './qr-destinations'
-import { scanEvents } from './scan-events'
-import { folders } from './folders'
-import { tags } from './tags'
-import { qrTags } from './qr-tags'
-import { apiKeys } from './api-keys'
-
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   qrCodes: many(qrCodes),
@@ -85,6 +86,13 @@ export const foldersRelations = relations(folders, ({ one, many }) => ({
   qrCodes: many(qrCodes),
 }))
 
+export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
+  user: one(users, {
+    fields: [apiKeys.userId],
+    references: [users.id],
+  }),
+}))
+
 export const tagsRelations = relations(tags, ({ many }) => ({
   qrTags: many(qrTags),
 }))
@@ -97,5 +105,12 @@ export const qrTagsRelations = relations(qrTags, ({ one }) => ({
   tag: one(tags, {
     fields: [qrTags.tagId],
     references: [tags.id],
+  }),
+}))
+
+export const scanDailyStatsRelations = relations(scanDailyStats, ({ one }) => ({
+  qrCode: one(qrCodes, {
+    fields: [scanDailyStats.qrCodeId],
+    references: [qrCodes.id],
   }),
 }))

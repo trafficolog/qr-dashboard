@@ -5,11 +5,19 @@
       <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
         QR-коды
       </h1>
-      <UButton
-        icon="i-lucide-plus"
-        label="Создать QR"
-        to="/qr/create"
-      />
+      <div class="flex items-center gap-2">
+        <UButton
+          icon="i-lucide-upload"
+          label="Массовое создание"
+          to="/qr/bulk"
+          variant="outline"
+        />
+        <UButton
+          icon="i-lucide-plus"
+          label="Создать QR"
+          to="/qr/create"
+        />
+      </div>
     </div>
 
     <!-- Filters -->
@@ -114,7 +122,7 @@
 
     <!-- Empty state -->
     <SharedEmptyState
-      v-else-if="qrList.length === 0"
+      v-else-if="displayList.length === 0"
       icon="i-lucide-qr-code"
       title="Нет QR-кодов"
       :description="filters.search ? 'Ничего не найдено. Попробуйте изменить запрос.' : 'Создайте первый QR-код для начала работы.'"
@@ -132,7 +140,7 @@
     <!-- Table view -->
     <QrTable
       v-else-if="viewMode === 'table'"
-      :items="qrList as any"
+      :items="displayList as any"
       :selected-ids="selectedIds"
       :all-selected="allSelected"
       :sort-by="filters.sortBy"
@@ -151,7 +159,7 @@
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
     >
       <QrCard
-        v-for="qr in qrList"
+        v-for="qr in displayList"
         :key="qr.id"
         :qr="qr as any"
         @edit="(id) => navigateTo(`/qr/${id}/edit`)"
@@ -162,7 +170,7 @@
 
     <!-- Pagination -->
     <SharedPagination
-      v-if="qrList.length > 0"
+      v-if="displayList.length > 0"
       :page="filters.page"
       :limit="filters.limit"
       :total="meta.total || 0"
@@ -172,23 +180,35 @@
 
     <!-- Delete confirmation -->
     <SharedConfirmDialog
-      v-model:open="deleteDialogOpen"
-      title="Удалить QR-код"
-      message="QR-код и вся связанная аналитика будут удалены. Это действие нельзя отменить."
-      @confirm="confirmDelete"
+      v-model:open="bulkDeleteDialogOpen"
+      title="Удалить выбранные QR-коды?"
+      :message="`Будет удалено ${pendingBulkIds.length} QR-кодов. Их можно будет отменить в течение 10 секунд.`"
+      @confirm="confirmBulkDelete"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-const toast = useToast()
+import type { QrCode } from '~~/types/qr'
+
+const toast = useA11yToast()
 const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr } = useQr()
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
 
-// View mode (persisted)
+// Local display list for optimistic UI (null = use qrList from composable)
+// qrList is DeepReadonly<QrCode[]> — cast to QrCode[] when copying
+const localList = ref<QrCode[] | null>(null)
+const displayList = computed<QrCode[]>(() => localList.value ?? ([...qrList.value] as QrCode[]))
+
+// Sync localList when fresh data arrives from API
+watch(qrList, () => {
+  localList.value = null
+})
+
+// View mode (persisted; client-only — localStorage)
 const viewMode = ref<'table' | 'grid'>('table')
-if (import.meta.client) {
+if (typeof window !== 'undefined') {
   const saved = localStorage.getItem('qr-view-mode') as 'table' | 'grid' | null
   if (saved) viewMode.value = saved
   watch(viewMode, v => localStorage.setItem('qr-view-mode', v))
@@ -197,7 +217,7 @@ if (import.meta.client) {
 // Selection
 const selectedIds = ref<string[]>([])
 const allSelected = computed(
-  () => qrList.value.length > 0 && selectedIds.value.length === qrList.value.length,
+  () => displayList.value.length > 0 && selectedIds.value.length === displayList.value.length,
 )
 
 function toggleAll() {
@@ -249,47 +269,98 @@ async function handleDuplicate(id: string) {
   }
 }
 
-const deleteDialogOpen = ref(false)
-const deleteTargetId = ref<string | null>(null)
-
+// Single delete with Undo (optimistic UI)
 function handleDelete(id: string) {
-  deleteTargetId.value = id
-  deleteDialogOpen.value = true
+  const current: QrCode[] = localList.value ?? ([...qrList.value] as QrCode[])
+  const snapshot = current.find(q => q.id === id)
+  if (!snapshot) return
+
+  // Optimistic removal
+  localList.value = current.filter(q => q.id !== id)
+  selectedIds.value = selectedIds.value.filter(sid => sid !== id)
+
+  let undone = false
+  const timer = setTimeout(async () => {
+    if (undone) return
+    try {
+      await deleteQr(id)
+      fetchQrList()
+    }
+    catch {
+      // Restore on failure
+      localList.value = [snapshot, ...(localList.value ?? [])]
+      toast.add({ title: 'Ошибка удаления', color: 'error' })
+    }
+  }, 10_000)
+
+  toast.add({
+    title: `QR «${snapshot.title}» удалён`,
+    color: 'success',
+    actions: [
+      {
+        label: 'Отменить',
+        onClick: () => {
+          undone = true
+          clearTimeout(timer)
+          localList.value = [snapshot, ...(localList.value ?? [])]
+        },
+      },
+    ],
+  })
 }
 
-async function confirmDelete() {
-  if (!deleteTargetId.value) return
-  try {
-    await deleteQr(deleteTargetId.value)
-    toast.add({ title: 'QR-код удалён', color: 'success' })
-    selectedIds.value = selectedIds.value.filter(id => id !== deleteTargetId.value)
-    fetchQrList()
-  }
-  catch {
-    toast.add({ title: 'Ошибка удаления', color: 'error' })
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTargetId.value = null
-  }
+// Bulk delete with confirmation + Undo
+const bulkDeleteDialogOpen = ref(false)
+const pendingBulkIds = ref<string[]>([])
+
+function handleBulkDelete() {
+  pendingBulkIds.value = [...selectedIds.value]
+  bulkDeleteDialogOpen.value = true
 }
 
-async function handleBulkDelete() {
-  if (selectedIds.value.length === 0) return
-  try {
-    await bulkDeleteQr(selectedIds.value)
-    toast.add({ title: `Удалено QR-кодов: ${selectedIds.value.length}`, color: 'success' })
-    selectedIds.value = []
-    fetchQrList()
-  }
-  catch {
-    toast.add({ title: 'Ошибка массового удаления', color: 'error' })
-  }
+async function confirmBulkDelete() {
+  const ids = pendingBulkIds.value
+  const current: QrCode[] = localList.value ?? ([...qrList.value] as QrCode[])
+  const snapshots = current.filter(q => ids.includes(q.id))
+
+  // Optimistic removal
+  localList.value = current.filter(q => !ids.includes(q.id))
+  selectedIds.value = []
+
+  let undone = false
+  const timer = setTimeout(async () => {
+    if (undone) return
+    try {
+      await bulkDeleteQr(ids)
+      fetchQrList()
+    }
+    catch {
+      localList.value = [...snapshots, ...(localList.value ?? [])]
+      toast.add({ title: 'Ошибка массового удаления', color: 'error' })
+    }
+  }, 10_000)
+
+  toast.add({
+    title: `Удалено QR-кодов: ${ids.length}`,
+    color: 'success',
+    actions: [
+      {
+        label: 'Отменить',
+        onClick: () => {
+          undone = true
+          clearTimeout(timer)
+          localList.value = [...snapshots, ...(localList.value ?? [])]
+        },
+      },
+    ],
+  })
 }
 
-// Folder options (placeholder — will fetch from API in Epic 7)
-const folderOptions = ref([
+// Folder options — fetch from API
+const { folders, fetchFolders } = useFolders()
+const folderOptions = computed(() => [
   { label: 'Все папки', value: ALL_FOLDERS },
+  ...folders.value.map(f => ({ label: f.name, value: f.id })),
 ])
 
 const statusOptions = [
@@ -315,7 +386,10 @@ const selectedFolderId = computed({
 })
 
 // Fetch on mount and when non-search filters change
-onMounted(() => fetchQrList())
+onMounted(() => {
+  fetchQrList()
+  fetchFolders()
+})
 
 watch(
   () => [filters.value.status, filters.value.folderId, filters.value.sortBy, filters.value.sortOrder],

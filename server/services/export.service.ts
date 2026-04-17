@@ -1,7 +1,15 @@
+/**
+ * Export Service — генерация QR-кодов в форматах SVG, PNG, PDF.
+ *
+ * Содержит полную копию логики рендеринга из app/utils/qr-svg.ts,
+ * т.к. сервер не имеет прямого доступа к app/utils (разные модульные контексты).
+ */
 import QRCode from 'qrcode'
 import sharp from 'sharp'
 import PDFDocument from 'pdfkit'
 import type { QrStyle } from '~~/types/qr'
+
+// ─── SVG rendering (mirrors app/utils/qr-svg.ts) ────────────────────────────
 
 const DEFAULT_STYLE = {
   foregroundColor: '#000000',
@@ -11,18 +19,18 @@ const DEFAULT_STYLE = {
   errorCorrectionLevel: 'M',
 }
 
-function generateMatrix(data: string, errorCorrectionLevel: string): boolean[][] {
+function generateMatrix(data: string, ecl: string): boolean[][] {
   const qr = QRCode.create(data, {
-    errorCorrectionLevel: errorCorrectionLevel as 'L' | 'M' | 'Q' | 'H',
+    errorCorrectionLevel: ecl as 'L' | 'M' | 'Q' | 'H',
   })
   const size = qr.modules.size
   const matrix: boolean[][] = []
-  for (let row = 0; row < size; row++) {
-    const rowData: boolean[] = []
-    for (let col = 0; col < size; col++) {
-      rowData.push(qr.modules.get(row, col) === 1)
+  for (let r = 0; r < size; r++) {
+    const row: boolean[] = []
+    for (let c = 0; c < size; c++) {
+      row.push(qr.modules.get(r, c) === 1)
     }
-    matrix.push(rowData)
+    matrix.push(row)
   }
   return matrix
 }
@@ -34,9 +42,8 @@ function isFinderPattern(row: number, col: number, size: number): boolean {
   return false
 }
 
-function renderModule(x: number, y: number, cellSize: number, moduleStyle: string, color: string): string {
-  const s = cellSize
-  switch (moduleStyle) {
+function renderModule(x: number, y: number, s: number, style: string, color: string): string {
+  switch (style) {
     case 'rounded':
       return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${s * 0.3}" fill="${color}"/>`
     case 'dots':
@@ -49,69 +56,56 @@ function renderModule(x: number, y: number, cellSize: number, moduleStyle: strin
       const r = s * 0.4
       return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${r}" fill="${color}"/>`
     }
-    case 'square':
     default:
       return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${color}"/>`
   }
 }
 
 function renderFinderPattern(
-  startX: number,
-  startY: number,
-  cellSize: number,
+  sx: number,
+  sy: number,
+  s: number,
   cornerStyle: string,
   color: string,
-  cornerColor?: string,
+  cornerColor: string,
 ): string {
-  const c = cornerColor || color
-  const s = cellSize
   const outerSize = 7 * s
-  const innerSize = 3 * s
   const middleSize = 5 * s
+  const innerSize = 3 * s
   let svg = ''
 
   switch (cornerStyle) {
     case 'rounded': {
-      const or = s * 1.5
-      const mr = s
-      const ir = s * 0.8
-      svg += `<rect x="${startX}" y="${startY}" width="${outerSize}" height="${outerSize}" rx="${or}" fill="${c}"/>`
-      svg += `<rect x="${startX + s}" y="${startY + s}" width="${middleSize}" height="${middleSize}" rx="${mr}" fill="white"/>`
-      svg += `<rect x="${startX + 2 * s}" y="${startY + 2 * s}" width="${innerSize}" height="${innerSize}" rx="${ir}" fill="${c}"/>`
+      svg += `<rect x="${sx}" y="${sy}" width="${outerSize}" height="${outerSize}" rx="${s * 1.5}" fill="${cornerColor}"/>`
+      svg += `<rect x="${sx + s}" y="${sy + s}" width="${middleSize}" height="${middleSize}" rx="${s}" fill="white"/>`
+      svg += `<rect x="${sx + 2 * s}" y="${sy + 2 * s}" width="${innerSize}" height="${innerSize}" rx="${s * 0.8}" fill="${cornerColor}"/>`
       break
     }
     case 'dot': {
-      const outerR = outerSize / 2
-      const middleR = middleSize / 2
-      const innerR = innerSize / 2
-      const cx = startX + outerR
-      const cy = startY + outerR
-      svg += `<circle cx="${cx}" cy="${cy}" r="${outerR}" fill="${c}"/>`
-      svg += `<circle cx="${cx}" cy="${cy}" r="${middleR}" fill="white"/>`
-      svg += `<circle cx="${cx}" cy="${cy}" r="${innerR}" fill="${c}"/>`
+      const r = outerSize / 2
+      const cx = sx + r
+      const cy = sy + r
+      svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${cornerColor}"/>`
+      svg += `<circle cx="${cx}" cy="${cy}" r="${middleSize / 2}" fill="white"/>`
+      svg += `<circle cx="${cx}" cy="${cy}" r="${innerSize / 2}" fill="${cornerColor}"/>`
       break
     }
     case 'extra-rounded': {
-      const or = s * 2.5
-      const mr = s * 1.5
-      const ir = s
-      svg += `<rect x="${startX}" y="${startY}" width="${outerSize}" height="${outerSize}" rx="${or}" fill="${c}"/>`
-      svg += `<rect x="${startX + s}" y="${startY + s}" width="${middleSize}" height="${middleSize}" rx="${mr}" fill="white"/>`
-      svg += `<rect x="${startX + 2 * s}" y="${startY + 2 * s}" width="${innerSize}" height="${innerSize}" rx="${ir}" fill="${c}"/>`
+      svg += `<rect x="${sx}" y="${sy}" width="${outerSize}" height="${outerSize}" rx="${s * 2.5}" fill="${cornerColor}"/>`
+      svg += `<rect x="${sx + s}" y="${sy + s}" width="${middleSize}" height="${middleSize}" rx="${s * 1.5}" fill="white"/>`
+      svg += `<rect x="${sx + 2 * s}" y="${sy + 2 * s}" width="${innerSize}" height="${innerSize}" rx="${s}" fill="${cornerColor}"/>`
       break
     }
-    case 'square':
-    default:
-      svg += `<rect x="${startX}" y="${startY}" width="${outerSize}" height="${outerSize}" fill="${c}"/>`
-      svg += `<rect x="${startX + s}" y="${startY + s}" width="${middleSize}" height="${middleSize}" fill="white"/>`
-      svg += `<rect x="${startX + 2 * s}" y="${startY + 2 * s}" width="${innerSize}" height="${innerSize}" fill="${c}"/>`
-      break
+    default: {
+      svg += `<rect x="${sx}" y="${sy}" width="${outerSize}" height="${outerSize}" fill="${cornerColor}"/>`
+      svg += `<rect x="${sx + s}" y="${sy + s}" width="${middleSize}" height="${middleSize}" fill="white"/>`
+      svg += `<rect x="${sx + 2 * s}" y="${sy + 2 * s}" width="${innerSize}" height="${innerSize}" fill="${cornerColor}"/>`
+    }
   }
-
   return svg
 }
 
-export function generateQrSvg(data: string, style: Partial<QrStyle> = {}): string {
+function buildQrSvg(data: string, style: Partial<QrStyle> = {}): string {
   const {
     foregroundColor,
     backgroundColor,
@@ -121,7 +115,6 @@ export function generateQrSvg(data: string, style: Partial<QrStyle> = {}): strin
   } = { ...DEFAULT_STYLE, ...style }
 
   const cornerColor = style.cornerColor || foregroundColor
-
   const matrix = generateMatrix(data, errorCorrectionLevel)
   const size = matrix.length
   const cellSize = 10
@@ -131,11 +124,14 @@ export function generateQrSvg(data: string, style: Partial<QrStyle> = {}): strin
   let modules = ''
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
-      if (!matrix[row]![col]) continue
-      if (isFinderPattern(row, col, size)) continue
-      const x = margin + col * cellSize
-      const y = margin + row * cellSize
-      modules += renderModule(x, y, cellSize, moduleStyle, foregroundColor)
+      if (!matrix[row]![col] || isFinderPattern(row, col, size)) continue
+      modules += renderModule(
+        margin + col * cellSize,
+        margin + row * cellSize,
+        cellSize,
+        moduleStyle,
+        foregroundColor,
+      )
     }
   }
 
@@ -144,67 +140,69 @@ export function generateQrSvg(data: string, style: Partial<QrStyle> = {}): strin
     { row: 0, col: size - 7 },
     { row: size - 7, col: 0 },
   ]
+
   let eyeSvg = ''
   for (const eye of eyes) {
-    const x = margin + eye.col * cellSize
-    const y = margin + eye.row * cellSize
-    eyeSvg += renderFinderPattern(x, y, cellSize, cornerStyle, foregroundColor, cornerColor)
+    eyeSvg += renderFinderPattern(
+      margin + eye.col * cellSize,
+      margin + eye.row * cellSize,
+      cellSize,
+      cornerStyle,
+      foregroundColor,
+      cornerColor,
+    )
   }
 
-  let logoSvg = ''
-  if (style.logo?.url) {
-    const logoSizeRatio = style.logo.size || 0.2
-    const logoPixelSize = size * cellSize * logoSizeRatio
-    const logoPadding = style.logo.padding || 5
-    const logoX = margin + (size * cellSize - logoPixelSize) / 2
-    const logoY = margin + (size * cellSize - logoPixelSize) / 2
-    const br = style.logo.borderRadius || 4
-    logoSvg += `<rect x="${logoX - logoPadding}" y="${logoY - logoPadding}" width="${logoPixelSize + logoPadding * 2}" height="${logoPixelSize + logoPadding * 2}" rx="${br}" fill="${backgroundColor}"/>`
-    logoSvg += `<image href="${style.logo.url}" x="${logoX}" y="${logoY}" width="${logoPixelSize}" height="${logoPixelSize}" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round ${br}px)"/>`
-  }
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" shape-rendering="crispEdges">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgSize} ${svgSize}" shape-rendering="crispEdges">
   <rect width="${svgSize}" height="${svgSize}" fill="${backgroundColor}"/>
   ${eyeSvg}
   ${modules}
-  ${logoSvg}
 </svg>`
 }
 
-export async function generateQrPng(data: string, style: Partial<QrStyle> = {}, size: number = 1000): Promise<Buffer> {
-  const svgString = generateQrSvg(data, style)
-  return sharp(Buffer.from(svgString))
-    .resize(size, size)
-    .png()
-    .toBuffer()
-}
+// ─── Export service ──────────────────────────────────────────────────────────
 
-export async function generateQrPdf(data: string, style: Partial<QrStyle> = {}, title?: string): Promise<Buffer> {
-  const pngBuffer = await generateQrPng(data, style, 500)
+export const exportService = {
+  generateQrSvg(data: string, style: Partial<QrStyle> = {}): string {
+    return buildQrSvg(data, style)
+  },
 
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: 'A4', margin: 50 })
-    const chunks: Buffer[] = []
+  async generateQrPng(data: string, style: Partial<QrStyle> = {}, size = 1000): Promise<Buffer> {
+    const svg = buildQrSvg(data, style)
+    return sharp(Buffer.from(svg))
+      .resize(size, size)
+      .png()
+      .toBuffer()
+  },
 
-    doc.on('data', (chunk: Buffer) => chunks.push(chunk))
-    doc.on('end', () => resolve(Buffer.concat(chunks)))
-    doc.on('error', reject)
+  async generateQrPdf(data: string, style: Partial<QrStyle> = {}, title?: string): Promise<Buffer> {
+    // Растеризуем в PNG, затем встраиваем в PDF
+    const pngBuffer = await this.generateQrPng(data, style, 600)
 
-    const pageWidth = doc.page.width
-    const pageHeight = doc.page.height
-    const qrSize = 400
-    const x = (pageWidth - qrSize) / 2
-    const titleHeight = title ? 50 : 0
-    const y = (pageHeight - qrSize - titleHeight) / 2
+    return new Promise<Buffer>((resolve, reject) => {
+      const doc = new PDFDocument({ size: 'A4', margin: 40 })
+      const chunks: Buffer[] = []
 
-    if (title) {
-      doc.fontSize(18).font('Helvetica-Bold').text(title, 50, y, {
-        width: pageWidth - 100,
-        align: 'center',
-      })
-    }
+      doc.on('data', chunk => chunks.push(chunk as Buffer))
+      doc.on('end', () => resolve(Buffer.concat(chunks)))
+      doc.on('error', reject)
 
-    doc.image(pngBuffer, x, y + titleHeight, { width: qrSize, height: qrSize })
-    doc.end()
-  })
+      // A4: 595.28 × 841.89 pt
+      const pageWidth = 595.28
+      const imgSize = 400
+      const x = (pageWidth - imgSize) / 2
+
+      if (title) {
+        doc.fontSize(18).fillColor('#1f2937').text(title, { align: 'center' })
+        doc.moveDown(1.5)
+        doc.image(pngBuffer, x, doc.y, { width: imgSize, height: imgSize })
+      }
+      else {
+        const y = (841.89 - imgSize) / 2
+        doc.image(pngBuffer, x, y, { width: imgSize, height: imgSize })
+      }
+
+      doc.end()
+    })
+  },
 }

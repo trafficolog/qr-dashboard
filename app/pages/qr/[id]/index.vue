@@ -9,17 +9,14 @@
             variant="ghost"
             color="neutral"
             size="sm"
+            aria-label="Назад к списку QR-кодов"
+            title="Назад к списку QR-кодов"
             to="/qr"
           />
           <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
             {{ qr.title }}
           </h1>
-          <UBadge
-            :color="statusColor"
-            variant="subtle"
-          >
-            {{ statusLabel }}
-          </UBadge>
+          <QrStatusBadge :status="qr.status" />
         </div>
         <p
           v-if="qr.description"
@@ -41,6 +38,8 @@
             icon="i-lucide-more-horizontal"
             variant="outline"
             color="neutral"
+            aria-label="Открыть действия для QR-кода"
+            title="Открыть действия для QR-кода"
           />
         </UDropdownMenu>
       </div>
@@ -142,22 +141,106 @@
           </div>
         </UCard>
 
-        <!-- Analytics placeholder -->
+        <!-- A/B destinations results -->
+        <UCard
+          v-if="destinations.length > 0"
+          class="border border-[color:var(--border)] bg-[color:var(--surface-0)]"
+        >
+          <template #header>
+            <div class="flex items-center justify-between">
+              <span class="font-medium">A/B-варианты</span>
+              <UButton
+                icon="i-lucide-settings-2"
+                variant="ghost"
+                size="xs"
+                label="Управление"
+                :to="`/qr/${id}/edit#ab`"
+              />
+            </div>
+          </template>
+
+          <!-- Traffic bar -->
+          <div class="flex h-2.5 w-full overflow-hidden rounded-full mb-4">
+            <div
+              v-for="(dest, i) in destinations.filter(d => d.isActive)"
+              :key="dest.id"
+              :style="{ width: `${activeWeightBar(dest)}%`, backgroundColor: abColors[i % abColors.length] }"
+              class="transition-all"
+            />
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-100 dark:border-gray-800">
+                  <th class="py-2 pr-3 text-left text-xs text-gray-500">
+                    Вариант
+                  </th>
+                  <th class="py-2 pr-3 text-left text-xs text-gray-500 hidden sm:table-cell">
+                    URL
+                  </th>
+                  <th class="py-2 pr-3 text-right text-xs text-gray-500">
+                    Вес
+                  </th>
+                  <th class="py-2 pr-3 text-right text-xs text-gray-500">
+                    Клики
+                  </th>
+                  <th class="py-2 text-right text-xs text-gray-500">
+                    %
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(dest, i) in destinations"
+                  :key="dest.id"
+                  class="border-b border-gray-50 dark:border-gray-800/50"
+                  :class="!dest.isActive && 'opacity-50'"
+                >
+                  <td class="py-2.5 pr-3">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="inline-block size-2.5 rounded-full shrink-0"
+                        :style="{ backgroundColor: abColors[i % abColors.length] }"
+                      />
+                      <span class="font-medium text-gray-900 dark:text-white">
+                        {{ dest.label || `Вариант ${i + 1}` }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="py-2.5 pr-3 hidden sm:table-cell">
+                    <a
+                      :href="dest.url"
+                      target="_blank"
+                      class="text-green-600 dark:text-green-400 hover:underline truncate max-w-[200px] block"
+                    >
+                      {{ dest.url }}
+                    </a>
+                  </td>
+                  <td class="py-2.5 pr-3 text-right tabular-nums">
+                    {{ dest.weight }}%
+                  </td>
+                  <td class="py-2.5 pr-3 text-right tabular-nums font-medium">
+                    {{ dest.clicks.toLocaleString('ru-RU') }}
+                  </td>
+                  <td class="py-2.5 text-right tabular-nums text-gray-500">
+                    {{ totalClicks > 0 ? Math.round((dest.clicks / totalClicks) * 100) : 0 }}%
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </UCard>
+
+        <!-- Analytics (scan chart) -->
         <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
           <template #header>
-            <span class="font-medium">Аналитика</span>
+            <span class="font-medium">Аналитика сканирований</span>
           </template>
-          <div class="flex h-48 items-center justify-center text-[color:var(--text-muted)]">
-            <div class="text-center">
-              <UIcon
-                name="i-lucide-bar-chart-3"
-                class="size-10 mx-auto mb-2"
-              />
-              <p class="text-sm">
-                График сканирований — Эпик 6
-              </p>
-            </div>
-          </div>
+          <AnalyticsScanChart
+            :data="timeSeries"
+            :loading="loadingStats"
+          />
         </UCard>
       </div>
 
@@ -168,6 +251,7 @@
             :url="qr.destinationUrl"
             :style="qr.style as any"
             :short-code="qr.shortCode"
+            :title="qr.title"
             :display-size="280"
           />
         </div>
@@ -208,14 +292,25 @@
 
 <script setup lang="ts">
 import type { QrCode, QrStatus } from '~/../types/qr'
+import type { ScanTimeSeriesPoint } from '~~/types/analytics'
+
+interface Destination {
+  id: string
+  url: string
+  label: string | null
+  weight: number
+  isActive: boolean
+  clicks: number
+}
 
 interface QrDetails extends QrCode {
   tags?: { id: string, name: string, color: string | null }[]
   folder?: { id: string, name: string } | null
+  destinations?: Destination[]
 }
 
 const route = useRoute()
-const toast = useToast()
+const toast = useA11yToast()
 const { fetchQrById, deleteQr, duplicateQr } = useQr()
 
 const qr = ref<QrDetails | null>(null)
@@ -223,31 +318,41 @@ const loadingQr = ref(true)
 const exportOpen = ref(false)
 const deleteOpen = ref(false)
 
+// A/B destinations
+const destinations = ref<Destination[]>([])
+const abColors = ['#16a34a', '#3b82f6', '#f97316', '#8b5cf6', '#ec4899', '#06b6d4', '#eab308', '#ef4444']
+const totalClicks = computed(() => destinations.value.reduce((s, d) => s + d.clicks, 0))
+const totalActiveWeight = computed(() => destinations.value.filter(d => d.isActive).reduce((s, d) => s + d.weight, 0))
+function activeWeightBar(dest: Destination) {
+  if (totalActiveWeight.value === 0) return 0
+  return Math.round((dest.weight / totalActiveWeight.value) * 100)
+}
+
+// Scan chart
+const timeSeries = ref<ScanTimeSeriesPoint[]>([])
+const loadingStats = ref(false)
+
+async function loadStats() {
+  loadingStats.value = true
+  try {
+    const to = new Date()
+    const from = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    const res = await $fetch<{ data: ScanTimeSeriesPoint[] }>('/api/analytics/scans', {
+      query: {
+        qrCodeId: id.value,
+        dateFrom: from.toISOString(),
+        dateTo: to.toISOString(),
+      },
+    })
+    timeSeries.value = res.data
+  }
+  catch { /* silent */ }
+  finally {
+    loadingStats.value = false
+  }
+}
+
 const id = computed(() => route.params.id as string)
-
-type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
-
-const statusColor = computed<StatusBadgeColor>(() => {
-  const map: Record<QrStatus, StatusBadgeColor> = {
-    active: 'primary',
-    paused: 'warning',
-    expired: 'error',
-    archived: 'neutral',
-  }
-  const status = qr.value?.status
-  return status ? map[status] : 'neutral'
-})
-
-const statusLabel = computed(() => {
-  const map: Record<QrStatus, string> = {
-    active: 'Активен',
-    paused: 'Пауза',
-    expired: 'Истёк',
-    archived: 'Архив',
-  }
-  const status = qr.value?.status
-  return status ? map[status] : ''
-})
 
 const actions = computed(() => [
   [
@@ -292,6 +397,7 @@ async function loadQr() {
   loadingQr.value = true
   try {
     qr.value = await fetchQrById(id.value) as QrDetails
+    destinations.value = qr.value?.destinations ?? []
   }
   catch {
     toast.add({ title: 'QR-код не найден', color: 'error' })
@@ -345,5 +451,8 @@ async function handleDelete() {
   }
 }
 
-onMounted(loadQr)
+onMounted(() => {
+  loadQr()
+  loadStats()
+})
 </script>

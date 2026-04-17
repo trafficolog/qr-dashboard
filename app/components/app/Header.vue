@@ -5,6 +5,8 @@
     <!-- Mobile burger -->
     <UButton
       icon="i-lucide-menu"
+      :aria-label="t('a11y.actions.openMenu')"
+      :title="t('a11y.actions.openMenu')"
       variant="ghost"
       color="neutral"
       class="md:hidden"
@@ -14,6 +16,8 @@
     <!-- Desktop sidebar toggle -->
     <UButton
       icon="i-lucide-panel-left"
+      :aria-label="t('a11y.actions.toggleSidebar')"
+      :title="t('a11y.actions.toggleSidebar')"
       variant="ghost"
       color="neutral"
       class="hidden md:flex"
@@ -31,10 +35,12 @@
     <!-- Search trigger -->
     <UButton
       icon="i-lucide-search"
+      :aria-label="t('a11y.actions.openSearch')"
+      :title="t('a11y.actions.openSearch')"
       variant="ghost"
-      color="neutral"
       class="hidden sm:flex text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]"
-      @click="searchOpen = true"
+      data-testid="header-search-trigger"
+      @click="globalSearch.open()"
     >
       <span class="mr-2 text-sm text-[color:var(--text-muted)]">{{ $t('common.search') }}</span>
       <UKbd>⌘K</UKbd>
@@ -53,41 +59,30 @@
     <!-- User menu -->
     <AppUserMenu />
 
-    <!-- Search modal (placeholder) -->
-    <UModal v-model:open="searchOpen">
-      <template #content>
-        <div class="p-4">
-          <UInput
-            :placeholder="$t('common.search')"
-            icon="i-lucide-search"
-            size="lg"
-            autofocus
-          />
-          <p class="mt-4 text-center text-sm text-[color:var(--text-muted)]">
-            Начните вводить для поиска QR-кодов...
-          </p>
-        </div>
-      </template>
-    </UModal>
+    <!-- Global Search modal -->
+    <AppGlobalSearch />
   </header>
 </template>
 
 <script setup lang="ts">
+import { useGlobalSearch } from '~/composables/useGlobalSearch'
+
 defineEmits<{
   toggleSidebar: []
   toggleMobileNav: []
 }>()
 
 const route = useRoute()
-const searchOpen = ref(false)
+const { t } = useI18n()
 const colorMode = useColorMode()
+const globalSearch = useGlobalSearch()
 
-// Cmd+K shortcut
+// Cmd+K / Ctrl+K shortcut
 const magicKeys = useMagicKeys()
 whenever(
-  () => Boolean(magicKeys.meta?.value && magicKeys.k?.value),
+  () => Boolean((magicKeys.meta?.value || magicKeys.ctrl?.value) && magicKeys.k?.value),
   () => {
-    searchOpen.value = true
+    globalSearch.open()
   },
 )
 
@@ -99,8 +94,8 @@ const themeIcon = computed(() =>
 
 const themeLabel = computed(() =>
   colorMode.value === 'dark'
-    ? 'Включить светлую тему'
-    : 'Включить тёмную тему',
+    ? t('common.lightTheme')
+    : t('common.darkTheme'),
 )
 
 const breadcrumbLabels: Record<string, string> = {
@@ -113,6 +108,9 @@ const breadcrumbLabels: Record<string, string> = {
   settings: 'Настройки',
   team: 'Команда',
   domains: 'Домены',
+  general: 'Общие',
+  profile: 'Профиль',
+  integrations: 'Интеграции',
 }
 
 const breadcrumbs = computed(() => {

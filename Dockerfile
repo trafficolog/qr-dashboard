@@ -11,12 +11,12 @@ FROM deps AS builder
 COPY . .
 ENV NODE_ENV=production
 ENV NUXT_TELEMETRY_DISABLED=1
-RUN npm run build
+RUN npm ci
 
 FROM deps AS migrator
 COPY drizzle.config.ts tsconfig.json ./
 COPY server/db ./server/db
-CMD ["npx", "tsx", "server/db/migrations/migrate.ts"]
+CMD ["npx", "tsx", "server/db/migrate.ts"]
 
 FROM node:22-alpine AS runner
 WORKDIR /app

@@ -2,7 +2,7 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
-**Версия:** 0.2.0 — см. [CHANGELOG](./CHANGELOG.md).
+**Версия:** 0.12.1 — см. [CHANGELOG](./CHANGELOG.md).
 
 ## Стек
 
@@ -20,7 +20,7 @@
 
 ```bash
 # Установка зависимостей
-corepack pnpm install
+npm install
 
 # Копирование переменных окружения
 cp .env.example .env
@@ -29,13 +29,13 @@ cp .env.example .env
 docker compose up postgres -d
 
 # Генерация миграций (при первом запуске или после изменений схемы)
-corepack pnpm db:generate
-
-# Применение миграций
-corepack pnpm db:migrate
+npm run db:generate
  
+# Применение миграций
+npm run db:migrate
+
 # Seed-данные (опционально)
-corepack pnpm db:seed
+npm run db:seed
 
 # Запуск dev-сервера
 corepack pnpm dev
@@ -102,6 +102,31 @@ docker compose up postgres -d
 
 ## Скрипты
 
+| `npm run dev` | Dev-сервер |
+| `npm run build` | Production build |
+| `npm run preview` | Превью production-сборки |
+| `npm run lint` | Проверка ESLint |
+| `npm run lint:fix` | Автоисправление ESLint |
+| `npm run db:generate` | Генерация SQL-миграций из схемы |
+| `npm run db:migrate` | Применение миграций |
+| `npm run db:seed` | Заполнение тестовыми данными |
+| `npm run db:studio` | Drizzle Studio (GUI для БД) |
+| `npm run typecheck` | Проверка типов TypeScript |
+ 
+## Документация
+ 
+- [CHANGELOG](./CHANGELOG.md) — история изменений
+- [Выполненные задачи (Эпики 1–4)](./docs/splat-qr-docs-done.md)
+- [Инвентарь файлов](./docs/completed-epics.md)
+- [План разработки (Эпики 5–14)](./docs/splat-qr-cursor-plan.md)
+- [Code Review (Эпики 1–4)](./docs/reviews/epics-1-4-review.md)
+- [UX/UI ревизия v0.11.0](./docs/splat-qr-ux-ui-review.md) — снимок состояния интерфейса
+- [Планируемые EPIC 15–18](./docs/planned-epics-15-18.md) — дорожная карта UX/UI улучшений
+- [EPIC 15 — Forms UX Enhancement](./docs/epic-15-forms-ux.md) — детализация первого эпика итерации 1
+- [EPIC 16 — Interactive Shell & Settings Redesign](./docs/epic-16-interactive-shell.md) — закрытый эпик и синхронизированный документ
+- [EPIC 17 — Accessibility (a11y) Baseline](./docs/epic-17-accessibility.md) — активный эпик (старт работ)
+- [Review — EPIC 16/17 docs sync](./docs/review/epic-16-17-docs-review.md) — ревью выполненной работы
+
 | Команда | Описание |
 |---------|----------|
 | `corepack pnpm dev` | Dev-сервер |
@@ -116,18 +141,10 @@ docker compose up postgres -d
 | `corepack pnpm typecheck` | Проверка типов TypeScript |
 
 ## Актуальные хотфиксы
-
+ 
 - Авторизация переведена в единый экран `app/pages/auth/login.vue`: email и OTP живут на одной странице, а `app/pages/auth/verify.vue` сохранён как совместимый redirect.
 - Корневой shell обёрнут в `UApp`, поэтому Nuxt UI использует красную `splat`-палитру как primary theme.
 - В `@theme` в `assets/css/main.css` шкала Tailwind **`primary` привязана к `splat`**, чтобы `text-primary`, `bg-primary`, `ring-primary/*` и `color="primary"` у компонентов Nuxt UI не оставались зелёными (дефолт Tailwind).
 - Добавлены `app/error.vue` и `app/pages/analytics/index.vue`, поэтому навигация по `/analytics` и неизвестным URL больше не уходит в неоформленный дефолтный экран.
 - SSR-auth bootstrap в `app/composables/useAuth.ts` теперь пробрасывает cookie в `/api/auth/me`, из-за чего защищённые маршруты корректно открываются после входа.
- 
-## Документация
- 
-- [CHANGELOG](./CHANGELOG.md) — история изменений
-- [Выполненные задачи (Эпики 1–4)](./docs/splat-qr-docs-done.md)
-- [Инвентарь файлов](./docs/completed-epics.md)
-- [План разработки (Эпики 5–14)](./docs/splat-qr-cursor-plan.md)
-- [Code Review (Эпики 1–4)](./docs/reviews/epics-1-4-review.md)
-- [Hotfix Review (Auth, Nav, Error)](./docs/reviews/auth-nav-hotfix-review.md)
+- Стартовал EPIC 17 (phase 1): добавлены `useA11yAnnouncer`, `useA11yToast`, `aria-live` регион, focus-visible стили и базовый `axe-core` e2e smoke (`e2e/a11y.spec.ts`).

@@ -17,7 +17,7 @@
           v-if="!collapsed"
           class="ml-3 truncate text-sm font-semibold text-[color:var(--text-primary)]"
         >
-          QR Service
+          {{ $t('app.name') }}
         </span>
       </Transition>
     </div>
@@ -61,6 +61,8 @@
     <!-- Bottom -->
     <div class="shrink-0 border-t border-[color:var(--border)] p-2">
       <button
+        :aria-label="collapsed ? t('a11y.actions.expandSidebar') : t('a11y.actions.collapseSidebar')"
+        :title="collapsed ? t('a11y.actions.expandSidebar') : t('a11y.actions.collapseSidebar')"
         class="flex w-full items-center justify-center rounded-lg p-2 text-[color:var(--text-muted)] transition-colors hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
         @click="$emit('toggle')"
       >
@@ -74,7 +76,7 @@
           v-if="!collapsed"
           class="mt-1 text-center text-[10px] text-[color:var(--text-muted)]"
         >
-          v0.1.0
+          {{ $t('app.version') }}
         </p>
       </Transition>
     </div>
@@ -98,12 +100,14 @@ const navItems = computed(() => [
   { label: t('nav.qrCodes'), icon: 'i-lucide-qr-code', route: '/qr' },
   { label: t('nav.folders'), icon: 'i-lucide-folder', route: '/folders' },
   { label: t('nav.analytics'), icon: 'i-lucide-bar-chart-3', route: '/analytics' },
+  { label: t('nav.integrations'), icon: 'i-lucide-plug', route: '/integrations' },
   { label: t('nav.settings'), icon: 'i-lucide-settings', route: '/settings' },
 ])
 
 function isActive(path: string): boolean {
-  if (path === '/dashboard') return route.path === '/dashboard'
-  return route.path.startsWith(path)
+  if (route.path === path) return true
+  // Match only if the next character is '/' (prevents /qr matching /qrscan)
+  return route.path.startsWith(path + '/')
 }
 </script>
 
