@@ -1,6 +1,9 @@
 <template>
   <UApp>
-    <NuxtLoadingIndicator color="var(--color-primary-500)" :height="2" />
+    <NuxtLoadingIndicator
+      color="var(--color-primary-500)"
+      :height="2"
+    />
     <div
       role="status"
       :aria-live="priority"
