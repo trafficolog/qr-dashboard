@@ -9,6 +9,18 @@
 
 ---
 
+## [0.12.1] — 2026-04-17
+
+### Changed — EPIC 16 documentation sync
+
+- **`docs/epic-16-interactive-shell.md`** — документ приведён в соответствие с фактической реализацией (`settings.vue` как layout, `settings/index.vue` как redirect, уточнение scope settings-search, выравнивание списков файлов).
+- **`docs/epic-17-accessibility.md`** — статус переведён в `In Progress`, добавлен блок старта работ и чек-лист первой итерации.
+- **`docs/review/epic-16-17-docs-review.md`** — добавлен итоговый review по выполненной документационной работе.
+- **`README.md`** — обновлена версия и раздел документации (добавлены ссылки на EPIC 16, EPIC 17 и review).
+- **`package.json`** — версия проекта обновлена до `0.12.1`.
+
+---
+
 ## [0.12.0] — 2026-04-15
 
 ### Added — EPIC 15: Forms UX Enhancement

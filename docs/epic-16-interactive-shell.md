@@ -1,11 +1,22 @@
 # EPIC 16 — Interactive Shell & Settings Redesign
  
-**Статус:** 📋 Planned
-**Ветка:** `claude/ux-ui-improvements-Kt0wI` (продолжение итерации 1)
-**Целевая версия:** следующий релиз после **v0.12.0** (EPIC 15 уже выпущен отдельно; оценка — **v0.12.1** или **v0.13.0** в зависимости от объёма)
+**Статус:** ✅ Done (документ синхронизирован с реализацией, ревизия 2026-04-17)
+**Ветка:** `feat/epic-16-17-docs-update` (документационная синхронизация)
+**Целевая версия:** **v0.12.1** (закрытие документации по EPIC 16 после релиза v0.12.0)
  
 ---
  
+
+## Ревью и исправления (2026-04-17)
+
+- Документ синхронизирован с реальной структурой Nuxt-страниц (`settings.vue` как parent-layout, `settings/index.vue` как redirect).
+- Убраны упоминания `UTabs` как обязательного компонента, так как в реализации используется route-based навигация на `NuxtLink`.
+- Уточнён scope поиска внутри настроек: текущая реализация фильтрует разделы, а не отдельные ключи формы.
+- Списки «Новые/Изменённые файлы» выровнены с фактическим набором файлов в репозитории.
+- Обновлены статус, ветка и целевая версия документа после фактического завершения EPIC 16.
+
+---
+
 ## Цель
  
 Превратить поиск, настройки и второстепенные интерактивные элементы (toast-центр, sidebar, loading-индикация) в полноценные рабочие инструменты. Сейчас Cmd+K открывает пустую строку, `/settings` — это две отдельные страницы без группировки, toast-уведомления не содержат actions (Undo/Retry).
@@ -65,30 +76,30 @@ type SearchResult =
 - Helper `highlightMatch(text: string, query: string): string` возвращает HTML с `<mark>…</mark>` (экранирование через `escapeHtml`).
 - Использование через `v-html` только на результатах, где входной текст уже экранирован.
  
-### 16.3 Settings redesign на табах
+### 16.3 Settings redesign на nested routes
  
 **Изменённые/новые файлы:**
-- `app/pages/settings/index.vue` — каркас с `UTabs` и боковым меню.
+- `app/pages/settings.vue` *(new)* — основной каркас настроек с `<aside>` и `<NuxtPage />`.
+- `app/pages/settings/index.vue` *(new)* — redirect `/settings` → `/settings/general`.
 - `app/pages/settings/general.vue` *(new)* — тема, язык, таймзона.
 - `app/pages/settings/profile.vue` *(new)* — имя, email, смена пароля.
-- `app/pages/settings/team.vue` — вставить в таб «Команда».
-- `app/pages/settings/domains.vue` — в таб «Домены».
+- `app/pages/settings/team.vue` — раздел «Команда».
+- `app/pages/settings/domains.vue` — раздел «Домены».
 - `app/pages/settings/integrations.vue` *(new)* — API-ключи, webhooks.
  
 Поведение:
 - На ≥ `md`: левая колонка — вертикальное меню (`<aside>` с `role="navigation"`), справа — контент выбранного раздела. Ширина меню — 240 px.
-- На `< md`: `UTabs` горизонтально, контент ниже.
-- `NuxtPage` в `settings/index.vue` для вложенных путей `/settings/profile`, `/settings/team` и т.д.
+- На `< md`: горизонтальная scrollable-навигация `NuxtLink` по разделам.
+- `NuxtPage` размещён в `settings.vue` для вложенных путей `/settings/profile`, `/settings/team` и т.д.
 - `Breadcrumbs` подтягивают текущий раздел.
  
 ### 16.4 Поиск внутри настроек
  
-**В `settings/index.vue`:**
-- `UInput` с `icon="i-lucide-search"` над меню (или как sticky-header таба).
-- Индекс — массив `{ label: t('settings.theme.label'), tab: 'general', anchor: 'theme' }`.
-- Фильтрация по `label.toLowerCase().includes(query.toLowerCase())`.
-- При клике по результату — `navigateTo('/settings/general#theme')` + scroll к anchor.
-- Запрос `/` в поле фокусирует input (как в GitHub-settings).
+**В `settings.vue`:**
+- `UInput` с `icon="i-lucide-search"` над списком разделов.
+- Фильтрация по названиям разделов (`general/profile/team/domains/integrations`) через `label.toLowerCase().includes(query.toLowerCase())`.
+- При клике — переход в соответствующий раздел `/settings/*`.
+- Поиск по отдельным полям и anchor-навигация (`#theme`) вынесены в backlog EPIC 18 как расширение.
  
 ### 16.5 Toast с actions (Retry / Undo)
  
@@ -137,8 +148,8 @@ toast.add({
 - [ ] Cmd+K / Ctrl+K открывает палитру, поиск по QR и папкам работает с debounce.
 - [ ] История поиска сохраняется в `localStorage`, показывается при пустом запросе, кнопка «Очистить» работает.
 - [ ] Совпадения подсвечены через `<mark>` в результатах.
-- [ ] `/settings` — единый layout с табами, работает навигация между `/settings/general`, `/profile`, `/team`, `/domains`, `/integrations`.
-- [ ] Поиск внутри настроек фильтрует ключи, скролл к anchor работает.
+- [x] `/settings` — единый layout на nested routes, работает навигация между `/settings/general`, `/profile`, `/team`, `/domains`, `/integrations`.
+- [x] Поиск внутри настроек фильтрует разделы меню (поиск по полям и anchor-навигация запланированы отдельно).
 - [ ] Удаление QR показывает toast с «Отменить», Undo восстанавливает объект.
 - [ ] `NuxtLoadingIndicator` виден при переходах между страницами.
 - [ ] При заходе на `/qr/abc/edit` в sidebar активен пункт «QR-коды».
@@ -151,8 +162,12 @@ toast.add({
 ### Новые
 ```
 app/components/app/GlobalSearch.vue
+app/components/app/SearchItem.vue
+app/components/app/SearchSection.vue
 app/composables/useGlobalSearch.ts
 server/api/search.get.ts
+app/pages/settings.vue
+app/pages/settings/index.vue
 app/pages/settings/general.vue
 app/pages/settings/profile.vue
 app/pages/settings/integrations.vue
@@ -168,7 +183,6 @@ app/app.vue
 app/components/app/Header.vue
 app/components/app/Sidebar.vue
 app/components/qr/Table.vue
-app/pages/settings/index.vue
 app/pages/settings/team.vue
 app/pages/settings/domains.vue
 app/pages/dashboard/index.vue
@@ -180,7 +194,7 @@ i18n/locales/en.json
  
 ## Переиспользуемые утилиты
  
-- **Nuxt UI v3:** `UCommandPalette`, `UModal`, `UTabs`, `USkeleton`, `UInput`, `UBreadcrumb`.
+- **Nuxt UI v3:** `UCommandPalette`, `UModal`, `USkeleton`, `UInput`, `UBreadcrumb`.
 - **Nuxt:** `NuxtLoadingIndicator`, `NuxtPage`, `navigateTo`.
 - **@vueuse/core:** `useMagicKeys`, `useLocalStorage`, `useDebounceFn`, `useFocus`.
 - **Fetch:** `$fetch` с `AbortController` для отмены запроса.

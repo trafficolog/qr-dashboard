@@ -2,7 +2,7 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
-**Версия:** 0.12.0 — см. [CHANGELOG](./CHANGELOG.md).
+**Версия:** 0.12.1 — см. [CHANGELOG](./CHANGELOG.md).
 
 ## Стек
 
@@ -123,6 +123,9 @@ docker compose up postgres -d
 - [UX/UI ревизия v0.11.0](./docs/splat-qr-ux-ui-review.md) — снимок состояния интерфейса
 - [Планируемые EPIC 15–18](./docs/planned-epics-15-18.md) — дорожная карта UX/UI улучшений
 - [EPIC 15 — Forms UX Enhancement](./docs/epic-15-forms-ux.md) — детализация первого эпика итерации 1
+- [EPIC 16 — Interactive Shell & Settings Redesign](./docs/epic-16-interactive-shell.md) — закрытый эпик и синхронизированный документ
+- [EPIC 17 — Accessibility (a11y) Baseline](./docs/epic-17-accessibility.md) — активный эпик (старт работ)
+- [Review — EPIC 16/17 docs sync](./docs/review/epic-16-17-docs-review.md) — ревью выполненной работы
 
 | Команда | Описание |
 |---------|----------|
