@@ -1,21 +1,13 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="flex items-center gap-3 mb-6">
-      <UButton
-        icon="i-lucide-arrow-left"
-        variant="ghost"
-        color="neutral"
-        to="/settings"
-      />
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-          Допустимые домены
-        </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-          Управление белым списком email-доменов для авторизации
-        </p>
-      </div>
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
+        Допустимые домены
+      </h1>
+      <p class="text-sm text-[color:var(--text-secondary)] mt-0.5">
+        Управление белым списком email-доменов для авторизации
+      </p>
     </div>
 
     <!-- Info banner -->
@@ -150,10 +142,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 definePageMeta({
   middleware: () => {
-    const authStore = useAuthStore()
-    if (authStore.user?.role !== 'admin') {
+    const { user } = useAuth()
+    if (user.value?.role !== 'admin') {
       return navigateTo('/dashboard')
     }
   },

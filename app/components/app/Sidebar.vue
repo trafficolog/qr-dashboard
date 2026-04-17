@@ -103,8 +103,9 @@ const navItems = computed(() => [
 ])
 
 function isActive(path: string): boolean {
-  if (path === '/dashboard') return route.path === '/dashboard'
-  return route.path.startsWith(path)
+  if (route.path === path) return true
+  // Match only if the next character is '/' (prevents /qr matching /qrscan)
+  return route.path.startsWith(path + '/')
 }
 </script>
 

@@ -21,8 +21,23 @@
       :description="error"
     />
 
+    <!-- Stat cards skeleton -->
+    <div
+      v-if="loading"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+      <USkeleton
+        v-for="i in 4"
+        :key="i"
+        class="h-24 rounded-xl"
+      />
+    </div>
+
     <!-- Stat cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div
+      v-else
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
       <AnalyticsStatCard
         icon="i-lucide-qr-code"
         label="Всего QR-кодов"
@@ -53,8 +68,14 @@
       />
     </div>
 
+    <!-- Scan Chart skeleton -->
+    <USkeleton
+      v-if="loading"
+      class="h-72 rounded-xl"
+    />
+
     <!-- Scan Chart -->
-    <UCard>
+    <UCard v-else>
       <template #header>
         <h2 class="font-semibold text-gray-900 dark:text-white">
           Динамика сканирований
@@ -66,8 +87,20 @@
       />
     </UCard>
 
+    <!-- Top QR Table skeleton -->
+    <div
+      v-if="loading"
+      class="space-y-3"
+    >
+      <USkeleton
+        v-for="i in 5"
+        :key="i"
+        class="h-12 rounded-lg"
+      />
+    </div>
+
     <!-- Top QR Table -->
-    <UCard>
+    <UCard v-else>
       <template #header>
         <h2 class="font-semibold text-gray-900 dark:text-white">
           Топ QR-кодов по сканированиям

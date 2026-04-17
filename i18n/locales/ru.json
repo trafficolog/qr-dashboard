@@ -57,6 +57,84 @@
     "title": "Аналитика",
     "subtitle": "Статистика сканирований ваших QR-кодов"
   },
+  "search": {
+    "placeholder": "Поиск QR-кодов, папок, страниц...",
+    "noResults": "Ничего не найдено",
+    "recent": "Недавние",
+    "recentEmpty": "Начните вводить для поиска",
+    "clearHistory": "Очистить историю",
+    "categories": {
+      "qr": "QR-коды",
+      "folders": "Папки",
+      "pages": "Страницы"
+    },
+    "keybinds": {
+      "navigate": "навигация",
+      "select": "выбрать",
+      "close": "закрыть"
+    }
+  },
+  "settings": {
+    "nav": {
+      "label": "Разделы настроек",
+      "searchPlaceholder": "Поиск в настройках...",
+      "noResults": "Разделы не найдены"
+    },
+    "tabs": {
+      "general": "Общие",
+      "profile": "Профиль",
+      "team": "Команда",
+      "domains": "Домены",
+      "integrations": "Интеграции"
+    },
+    "general": {
+      "subtitle": "Тема, язык и часовой пояс",
+      "theme": {
+        "label": "Тема оформления"
+      },
+      "language": {
+        "label": "Язык интерфейса"
+      },
+      "timezone": {
+        "label": "Часовой пояс",
+        "auto": "Определён автоматически"
+      }
+    },
+    "profile": {
+      "subtitle": "Информация о вашем аккаунте",
+      "savedToast": "Профиль сохранён",
+      "info": {
+        "label": "Личные данные",
+        "name": "Имя",
+        "namePlaceholder": "Ваше имя",
+        "email": "Email",
+        "emailHint": "Email нельзя изменить — он используется для входа"
+      },
+      "account": {
+        "label": "Аккаунт",
+        "role": "Роль",
+        "memberId": "ID участника",
+        "roleAdmin": "Администратор",
+        "roleEditor": "Редактор",
+        "roleViewer": "Наблюдатель"
+      }
+    },
+    "integrations": {
+      "subtitle": "API-ключи и интеграции с внешними сервисами",
+      "apiKeys": {
+        "label": "API-ключи",
+        "create": "Создать ключ",
+        "nameLabel": "Название ключа",
+        "namePlaceholder": "Например: Production API",
+        "copyHint": "Сохраните ключ — он показывается один раз",
+        "empty": "Нет API-ключей. Создайте первый для работы с API.",
+        "deleted": "Ключ удалён"
+      },
+      "webhooks": {
+        "comingSoon": "Webhooks появятся в следующем релизе."
+      }
+    }
+  },
   "forms": {
     "errors": {
       "required": "Обязательное поле",

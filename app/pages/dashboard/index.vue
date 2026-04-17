@@ -21,10 +21,8 @@
         />
       </div>
     </div>
-
     <!-- Date range picker -->
     <AnalyticsDateRangePicker v-model="dateRange" />
-
     <!-- Error -->
     <UAlert
       v-if="error"
@@ -32,9 +30,22 @@
       color="error"
       :description="error"
     />
-
+    <!-- Stat cards skeleton -->
+    <div
+      v-if="loading"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+      <USkeleton
+        v-for="i in 4"
+        :key="i"
+        class="h-24 rounded-xl"
+      />
+    </div>
     <!-- Stat cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div
+      v-else
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
       <AnalyticsStatCard
         icon="i-lucide-qr-code"
         label="Всего QR-кодов"
@@ -64,9 +75,13 @@
         :loading="loading"
       />
     </div>
-
+    <!-- Chart skeleton -->
+    <USkeleton
+      v-if="loading"
+      class="h-72 rounded-xl"
+    />
     <!-- Chart -->
-    <UCard>
+    <UCard v-else>
       <template #header>
         <h2 class="font-semibold text-gray-900 dark:text-white">
           Динамика сканирований
@@ -77,7 +92,6 @@
         :loading="loading"
       />
     </UCard>
-
     <!-- Top QR -->
     <UCard>
       <template #header>

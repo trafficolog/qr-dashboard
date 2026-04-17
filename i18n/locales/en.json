@@ -57,6 +57,84 @@
     "title": "Analytics",
     "subtitle": "Scan statistics for your QR codes"
   },
+  "search": {
+    "placeholder": "Search QR codes, folders, pages...",
+    "noResults": "Nothing found",
+    "recent": "Recent",
+    "recentEmpty": "Start typing to search",
+    "clearHistory": "Clear history",
+    "categories": {
+      "qr": "QR codes",
+      "folders": "Folders",
+      "pages": "Pages"
+    },
+    "keybinds": {
+      "navigate": "navigate",
+      "select": "select",
+      "close": "close"
+    }
+  },
+  "settings": {
+    "nav": {
+      "label": "Settings sections",
+      "searchPlaceholder": "Search settings...",
+      "noResults": "No sections found"
+    },
+    "tabs": {
+      "general": "General",
+      "profile": "Profile",
+      "team": "Team",
+      "domains": "Domains",
+      "integrations": "Integrations"
+    },
+    "general": {
+      "subtitle": "Theme, language and timezone",
+      "theme": {
+        "label": "Appearance"
+      },
+      "language": {
+        "label": "Language"
+      },
+      "timezone": {
+        "label": "Timezone",
+        "auto": "Detected automatically"
+      }
+    },
+    "profile": {
+      "subtitle": "Your account information",
+      "savedToast": "Profile saved",
+      "info": {
+        "label": "Personal info",
+        "name": "Name",
+        "namePlaceholder": "Your name",
+        "email": "Email",
+        "emailHint": "Email cannot be changed — it is used for sign in"
+      },
+      "account": {
+        "label": "Account",
+        "role": "Role",
+        "memberId": "Member ID",
+        "roleAdmin": "Administrator",
+        "roleEditor": "Editor",
+        "roleViewer": "Viewer"
+      }
+    },
+    "integrations": {
+      "subtitle": "API keys and external service integrations",
+      "apiKeys": {
+        "label": "API Keys",
+        "create": "Create key",
+        "nameLabel": "Key name",
+        "namePlaceholder": "E.g. Production API",
+        "copyHint": "Save the key — it is shown only once",
+        "empty": "No API keys. Create one to use the API.",
+        "deleted": "Key deleted"
+      },
+      "webhooks": {
+        "comingSoon": "Webhooks are coming in the next release."
+      }
+    }
+  },
   "forms": {
     "errors": {
       "required": "This field is required",

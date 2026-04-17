@@ -1,14 +1,8 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="flex items-center gap-3 mb-6">
-      <UButton
-        icon="i-lucide-arrow-left"
-        variant="ghost"
-        color="neutral"
-        to="/settings"
-      />
-      <div class="flex-1 min-w-0">
+    <div class="flex items-center justify-between mb-6">
+      <div>
         <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
           Команда
         </h1>
