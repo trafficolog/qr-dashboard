@@ -127,7 +127,7 @@
 <script setup lang="ts">
 import type { Folder } from '~/composables/useFolders'
 
-const toast = useToast()
+const toast = useA11yToast()
 const { folders, loading, fetchFolders, deleteFolder } = useFolders()
 
 onMounted(() => fetchFolders())

@@ -22,7 +22,7 @@
 | 14 | i18n, Dark Mode, Polish | 4 | ✅ Завершён (v0.11.0) | 2–3 дня | Все |
 | 15 | Forms UX | UX ит. 1 | ✅ Завершён (**v0.12.0**) | — | Эпики 4, 14 |
 | 16 | Interactive Shell & Settings | UX ит. 1 | 📋 Запланирован | след. после 15 | Эпик 15 |
-| 17 | Accessibility (WCAG baseline) | UX ит. 2 | 📋 Запланирован | **v0.13.0** | 14, часть 15 |
+| 17 | Accessibility (WCAG baseline) | UX ит. 2 | 🚧 In Progress (phase 1) | **v0.13.0** | 14, часть 15 |
 | 18 | Design System & Motion | UX ит. 2 | 📋 Запланирован | **v0.13.0** | 15, 17 |
 | 19 | Видимость QR (Private / Dept / Public) | Продукт | 📋 Запланирован | **v0.14.0**, 8–12 дн. | 1, 4, 7, 11 |
 | 20 | Analytics UX, карточки QR, onboarding | Продукт / UX | 📋 Запланирован | **v0.14.0**, 8–11 дн. | 6, 4, 14; часть 18 |
@@ -34,7 +34,7 @@
 |---|------|----------|
 | **15** | Формы: guard, черновики, `useFormValidation`, 422 + `fieldErrors`, i18n `forms.*`. **Сделано в v0.12.0.** | [epic-15-forms-ux.md](./epic-15-forms-ux.md) |
 | **16** | Cmd+K-поиск, редизайн `/settings`, toast actions, loading indicator, активный sidebar на вложенных роутах. | [epic-16-interactive-shell.md](./epic-16-interactive-shell.md) |
-| **17** | WCAG 2.1 AA baseline: aria-labels, таблицы, focus-trap, axe в CI. | [epic-17-accessibility.md](./epic-17-accessibility.md) |
+| **17** | WCAG 2.1 AA baseline: aria-labels, таблицы, focus-trap, axe в CI. **Стартован, phase 1 реализован.** | [epic-17-accessibility.md](./epic-17-accessibility.md) |
 | **18** | Токены вместо «сырых» Tailwind-цветов, motion, `/docs-ui`, `prefers-reduced-motion`. | [epic-18-design-system.md](./epic-18-design-system.md) |
 | **19** | Модель видимости QR, подразделения, пересмотр access control в сервисах/API. | [epic-19-qr-visibility.md](./epic-19-qr-visibility.md) |
 | **20** | Карта сканов, обогащение карточек QR, onboarding — без дублирования 16–18. | [epic-20-ux-analytics-cards.md](./epic-20-ux-analytics-cards.md) |
@@ -727,10 +727,13 @@ import { schedule } from 'node-cron'
 Сессия 11: Эпик 21 фаза 0 (Security) — до production deploy
            → CSRF, security headers — см. epic-21-security-hardening.md
 
-Сессия 12: Эпики 17 + 18 (a11y + design system) — целевой v0.13.0
-           → WCAG baseline, токены, motion — epic-17, epic-18
+Сессия 12: Эпик 17 (a11y) — phase 1 выполнен, продолжается phase 2
+           → aria/focus/announcer/axe baseline внедрены; remaining scope — в epic-17
 
-Сессия 13: Эпики 19 и/или 20 — целевой v0.14.0
+Сессия 13: Эпик 18 (design system + motion) — целевой v0.13.0
+           → токены, motion, prefers-reduced-motion — epic-18
+
+Сессия 14: Эпики 19 и/или 20 — целевой v0.14.0
            → видимость QR, аналитика/cards/onboarding — epic-19, epic-20
 ```
 

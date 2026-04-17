@@ -12,5 +12,5 @@ export const qrTags = pgTable(
       .notNull()
       .references(() => tags.id, { onDelete: 'cascade' }),
   },
-  (table) => [primaryKey({ columns: [table.qrCodeId, table.tagId] })],
+  table => [primaryKey({ columns: [table.qrCodeId, table.tagId] })],
 )

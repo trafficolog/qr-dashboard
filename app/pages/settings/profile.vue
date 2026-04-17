@@ -102,7 +102,7 @@
 import { ref } from 'vue'
 
 const { user, fetchUser } = useAuth()
-const toast = useToast()
+const toast = useA11yToast()
 const { t } = useI18n()
 
 const saving = ref(false)

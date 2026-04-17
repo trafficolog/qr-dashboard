@@ -31,19 +31,34 @@
       v-else
       class="overflow-x-auto"
     >
-      <table class="w-full text-sm">
+      <table
+        class="w-full text-sm"
+        role="table"
+      >
         <thead>
           <tr class="border-b border-gray-100 dark:border-gray-800">
-            <th class="py-2 pr-4 text-left font-medium text-gray-500 dark:text-gray-400 w-8">
+            <th
+              scope="col"
+              class="py-2 pr-4 text-left font-medium text-gray-500 dark:text-gray-400 w-8"
+            >
               #
             </th>
-            <th class="py-2 pr-4 text-left font-medium text-gray-500 dark:text-gray-400">
+            <th
+              scope="col"
+              class="py-2 pr-4 text-left font-medium text-gray-500 dark:text-gray-400"
+            >
               QR-код
             </th>
-            <th class="py-2 pr-4 text-right font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+            <th
+              scope="col"
+              class="py-2 pr-4 text-right font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap"
+            >
               Всего
             </th>
-            <th class="py-2 text-right font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+            <th
+              scope="col"
+              class="py-2 text-right font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap"
+            >
               Уникальных
             </th>
           </tr>

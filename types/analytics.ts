@@ -23,9 +23,9 @@ export interface GeoBreakdownItem {
 }
 
 export interface DeviceBreakdown {
-  devices: { name: string; count: number; percentage: number }[]
-  os: { name: string; count: number; percentage: number }[]
-  browsers: { name: string; count: number; percentage: number }[]
+  devices: { name: string, count: number, percentage: number }[]
+  os: { name: string, count: number, percentage: number }[]
+  browsers: { name: string, count: number, percentage: number }[]
 }
 
 export interface TopQrCode {
