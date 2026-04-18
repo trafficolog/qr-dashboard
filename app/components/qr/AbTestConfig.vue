@@ -74,6 +74,7 @@
               variant="ghost"
               color="neutral"
               size="xs"
+              :aria-label="dest.isActive ? `Отключить вариант ${idx + 1}` : `Включить вариант ${idx + 1}`"
               :title="dest.isActive ? 'Отключить' : 'Включить'"
               @click="toggleActive(idx)"
             />
@@ -82,6 +83,8 @@
               variant="ghost"
               color="error"
               size="xs"
+              :aria-label="`Удалить вариант ${idx + 1}`"
+              :title="`Удалить вариант ${idx + 1}`"
               :disabled="localDests.length <= 1"
               @click="removeDest(idx)"
             />

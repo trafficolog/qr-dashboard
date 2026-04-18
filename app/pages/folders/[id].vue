@@ -20,6 +20,8 @@
           variant="ghost"
           color="neutral"
           size="sm"
+          aria-label="Назад к папкам"
+          title="Назад к папкам"
           to="/folders"
         />
         <div

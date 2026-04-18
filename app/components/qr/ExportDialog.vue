@@ -1,5 +1,8 @@
 <template>
-  <UModal v-model:open="isOpen">
+  <UModal
+    v-model:open="isOpen"
+    :close-on-escape="true"
+  >
     <template #content>
       <div class="bg-[color:var(--surface-0)] p-6">
         <h3 class="mb-4 text-lg font-semibold text-[color:var(--text-primary)]">
@@ -55,12 +58,15 @@
 </template>
 
 <script setup lang="ts">
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+
 const props = defineProps<{
   qrId: string
   title?: string
 }>()
 
 const isOpen = defineModel<boolean>('open', { default: false })
+const focusReturn = createDialogFocusReturn()
 
 const format = ref('png')
 const size = ref('1000')
@@ -79,6 +85,11 @@ const sizeOptions = [
   { label: '2000×2000', value: '2000' },
   { label: '4096×4096', value: '4096' },
 ]
+
+watch(isOpen, (open) => {
+  if (open) focusReturn.save()
+  else focusReturn.restore()
+})
 
 async function handleDownload() {
   downloading.value = true

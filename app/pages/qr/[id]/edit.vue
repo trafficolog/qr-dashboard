@@ -9,6 +9,8 @@
               variant="ghost"
               color="neutral"
               size="sm"
+              aria-label="Назад к QR-коду"
+              title="Назад к QR-коду"
               :to="`/qr/${id}`"
             />
             <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">

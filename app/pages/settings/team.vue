@@ -138,6 +138,7 @@
     <UModal
       v-model:open="inviteOpen"
       title="Пригласить участника"
+      :close-on-escape="true"
     >
       <template #body>
         <form
@@ -213,6 +214,8 @@
 </template>
 
 <script setup lang="ts">
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+
 definePageMeta({
   middleware: () => {
     const { user } = useAuth()
@@ -246,6 +249,7 @@ const deletingId = ref<string | null>(null)
 
 // Invite modal
 const inviteOpen = ref(false)
+const focusReturn = createDialogFocusReturn()
 const inviting = ref(false)
 const inviteForm = ref({ email: '', role: 'editor' as RoleValue })
 const inviteErrors = ref({ email: '', role: '' })
@@ -253,6 +257,11 @@ const inviteErrors = ref({ email: '', role: '' })
 // Delete confirmation
 const deleteOpen = ref(false)
 const deletingMember = ref<TeamMember | null>(null)
+
+watch(inviteOpen, (open) => {
+  if (open) focusReturn.save()
+  else focusReturn.restore()
+})
 
 const roleItems = [
   { label: 'Администратор', value: 'admin' },

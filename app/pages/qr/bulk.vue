@@ -7,6 +7,8 @@
         variant="ghost"
         color="neutral"
         size="sm"
+        aria-label="Назад к списку QR-кодов"
+        title="Назад к списку QR-кодов"
         to="/qr"
       />
       <div>
@@ -130,6 +132,8 @@
           variant="ghost"
           color="neutral"
           size="xs"
+          aria-label="Очистить выбранный файл"
+          title="Очистить выбранный файл"
           @click="clearFile"
         />
       </div>

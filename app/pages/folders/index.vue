@@ -81,6 +81,8 @@
               variant="ghost"
               color="neutral"
               size="xs"
+              :aria-label="`Редактировать папку ${folder.name}`"
+              :title="`Редактировать папку ${folder.name}`"
               @click.stop="openEdit(folder)"
             />
             <UButton
@@ -88,6 +90,8 @@
               variant="ghost"
               color="error"
               size="xs"
+              :aria-label="`Удалить папку ${folder.name}`"
+              :title="`Удалить папку ${folder.name}`"
               @click.stop="confirmDeleteFolder(folder)"
             />
           </div>

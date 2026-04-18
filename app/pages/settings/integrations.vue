@@ -84,6 +84,8 @@
             variant="ghost"
             color="error"
             size="xs"
+            :aria-label="`Удалить ключ ${key.name}`"
+            :title="`Удалить ключ ${key.name}`"
             :loading="deletingId === key.id"
             @click="handleDeleteKey(key.id)"
           />
@@ -113,6 +115,7 @@
     <UModal
       v-model:open="createKeyOpen"
       :title="$t('settings.integrations.apiKeys.create')"
+      :close-on-escape="true"
     >
       <template #body>
         <div class="space-y-4">
@@ -140,6 +143,8 @@
                 icon="i-lucide-copy"
                 size="xs"
                 variant="ghost"
+                :aria-label="$t('common.copy')"
+                :title="$t('common.copy')"
                 @click="copyKey"
               />
             </div>
@@ -169,6 +174,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 definePageMeta({
   middleware: () => {
@@ -193,10 +199,16 @@ const loading = ref(true)
 const keys = ref<ApiKey[]>([])
 const deletingId = ref<string | null>(null)
 const createKeyOpen = ref(false)
+const focusReturn = createDialogFocusReturn()
 const creating = ref(false)
 const newKeyName = ref('')
 const createError = ref('')
 const createdKey = ref<string | null>(null)
+
+watch(createKeyOpen, (open) => {
+  if (open) focusReturn.save()
+  else focusReturn.restore()
+})
 
 async function fetchKeys() {
   loading.value = true

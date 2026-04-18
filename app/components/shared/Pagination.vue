@@ -9,6 +9,8 @@
         variant="outline"
         color="neutral"
         size="sm"
+        aria-label="Предыдущая страница"
+        title="Предыдущая страница"
         :disabled="page <= 1"
         @click="$emit('update:page', page - 1)"
       />
@@ -26,6 +28,8 @@
         variant="outline"
         color="neutral"
         size="sm"
+        aria-label="Следующая страница"
+        title="Следующая страница"
         :disabled="page >= totalPages"
         @click="$emit('update:page', page + 1)"
       />
