@@ -51,7 +51,7 @@
         <!-- Tooltip when collapsed -->
         <div
           v-if="collapsed"
-          class="pointer-events-none absolute left-full z-50 ml-2 whitespace-nowrap rounded bg-[color:var(--text-primary)] px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
+          class="pointer-events-none absolute left-full z-50 ml-2 whitespace-nowrap rounded bg-[color:var(--text-primary)] px-2 py-1 text-xs text-[color:var(--text-primary)] opacity-0 transition-opacity group-hover:opacity-100"
         >
           {{ item.label }}
         </div>

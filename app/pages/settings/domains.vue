@@ -25,7 +25,7 @@
     <!-- Add domain form -->
     <UCard class="mb-6">
       <template #header>
-        <h2 class="font-medium text-gray-900 dark:text-white">
+        <h2 class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           Добавить домен
         </h2>
       </template>
@@ -59,9 +59,9 @@
     <!-- Domains list -->
     <UCard>
       <template #header>
-        <h2 class="font-medium text-gray-900 dark:text-white">
+        <h2 class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           Список доменов
-          <span class="ml-2 text-sm font-normal text-gray-500">({{ domains.length }})</span>
+          <span class="ml-2 text-sm font-normal text-[color:var(--text-muted)]">({{ domains.length }})</span>
         </h2>
       </template>
 
@@ -71,20 +71,20 @@
       >
         <UIcon
           name="i-lucide-loader-2"
-          class="size-6 animate-spin text-gray-400"
+          class="size-6 animate-spin text-[color:var(--text-muted)]"
         />
       </div>
 
       <div
         v-else-if="domains.length === 0"
-        class="py-8 text-center text-gray-500"
+        class="py-8 text-center text-[color:var(--text-muted)]"
       >
         <UIcon
           name="i-lucide-globe"
           class="size-10 mx-auto mb-2 text-gray-300"
         />
         <p>Домены не добавлены</p>
-        <p class="text-sm text-gray-400 mt-1">
+        <p class="text-sm text-[color:var(--text-muted)] mt-1">
           Все email-домены разрешены для входа
         </p>
       </div>
@@ -106,8 +106,8 @@
             >
               {{ d.isActive ? 'Активен' : 'Отключён' }}
             </UBadge>
-            <span class="font-medium text-gray-900 dark:text-white">{{ d.domain }}</span>
-            <span class="text-xs text-gray-400">
+            <span class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">{{ d.domain }}</span>
+            <span class="text-xs text-[color:var(--text-muted)]">
               {{ formatDate(d.createdAt) }}
             </span>
           </div>

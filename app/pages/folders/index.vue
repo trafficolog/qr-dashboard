@@ -3,10 +3,10 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           Папки
         </h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-1 text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
           Организуйте QR-коды по группам
         </p>
       </div>
@@ -25,7 +25,7 @@
       <div
         v-for="i in 6"
         :key="i"
-        class="h-28 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse"
+        class="h-28 rounded-xl bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] animate-pulse"
       />
     </div>
 
@@ -99,10 +99,10 @@
 
         <!-- Name + count -->
         <div class="mt-3">
-          <p class="font-semibold text-gray-900 dark:text-white truncate">
+          <p class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] truncate">
             {{ folder.name }}
           </p>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] mt-0.5">
             {{ folder.qrCount }} {{ pluralQr(folder.qrCount) }}
           </p>
         </div>

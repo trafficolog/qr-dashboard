@@ -5,8 +5,8 @@
       v-if="loadingFolder"
       class="flex items-center gap-3"
     >
-      <div class="size-8 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
-      <div class="h-7 w-48 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+      <div class="size-8 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
+      <div class="h-7 w-48 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
     </div>
 
     <!-- Header -->
@@ -35,10 +35,10 @@
           />
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
             {{ folder?.name }}
           </h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
             {{ qrList.length }} {{ pluralQr(qrList.length) }}
           </p>
         </div>

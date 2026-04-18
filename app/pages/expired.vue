@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-[color:var(--surface-0)] dark:bg-gray-950 px-4">
     <div class="text-center max-w-sm">
       <img
         src="/splat-logo.svg"
@@ -12,10 +12,10 @@
           class="size-8 text-orange-500 dark:text-orange-400"
         />
       </div>
-      <h1 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+      <h1 class="text-xl font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] mb-2">
         Срок действия истёк
       </h1>
-      <p class="text-sm text-gray-500 dark:text-gray-400">
+      <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
         Срок действия этого QR-кода истёк. Обратитесь к владельцу кампании.
       </p>
     </div>

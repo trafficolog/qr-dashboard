@@ -26,9 +26,9 @@
           <input
             v-model="form.color"
             type="color"
-            class="h-8 w-10 cursor-pointer rounded border border-gray-200 dark:border-gray-700 p-0.5"
+            class="h-8 w-10 cursor-pointer rounded border border-[color:var(--border)] dark:border-[color:var(--border)] p-0.5"
           >
-          <span class="text-sm text-gray-500 dark:text-gray-400 font-mono">{{ form.color || '#6b7280' }}</span>
+          <span class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] font-mono">{{ form.color || '#6b7280' }}</span>
           <UButton
             v-if="form.color"
             variant="ghost"

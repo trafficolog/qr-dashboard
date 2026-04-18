@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <!-- Traffic distribution bar -->
     <div v-if="localDests.length > 0">
-      <p class="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+      <p class="text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] mb-1.5">
         Распределение трафика
       </p>
       <div class="flex h-3 w-full overflow-hidden rounded-full">
@@ -18,7 +18,7 @@
         <div
           v-for="(d, i) in activeDests"
           :key="d.id ?? i"
-          class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400"
+          class="flex items-center gap-1.5 text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]"
         >
           <span
             class="inline-block size-2.5 rounded-full shrink-0"
@@ -46,8 +46,8 @@
         :key="dest.id ?? `new-${idx}`"
         class="rounded-lg border p-3 space-y-3 transition-colors"
         :class="dest.isActive
-          ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900'
-          : 'border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 opacity-60'"
+          ? 'border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-gray-900'
+          : 'border-gray-100 dark:border-gray-800 bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)]/50 opacity-60'"
       >
         <!-- Row header -->
         <div class="flex items-center justify-between gap-2">
@@ -56,7 +56,7 @@
               class="inline-block size-3 rounded-full shrink-0"
               :style="{ backgroundColor: barColor(activeDests.indexOf(dest)) }"
             />
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span class="text-sm font-medium text-[color:var(--text-secondary)] dark:text-gray-300">
               {{ dest.label || `Вариант ${idx + 1}` }}
             </span>
             <UBadge

@@ -173,19 +173,19 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-gray-100 dark:border-gray-800">
-                  <th class="py-2 pr-3 text-left text-xs text-gray-500">
+                  <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)]">
                     Вариант
                   </th>
-                  <th class="py-2 pr-3 text-left text-xs text-gray-500 hidden sm:table-cell">
+                  <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)] hidden sm:table-cell">
                     URL
                   </th>
-                  <th class="py-2 pr-3 text-right text-xs text-gray-500">
+                  <th class="py-2 pr-3 text-right text-xs text-[color:var(--text-muted)]">
                     Вес
                   </th>
-                  <th class="py-2 pr-3 text-right text-xs text-gray-500">
+                  <th class="py-2 pr-3 text-right text-xs text-[color:var(--text-muted)]">
                     Клики
                   </th>
-                  <th class="py-2 text-right text-xs text-gray-500">
+                  <th class="py-2 text-right text-xs text-[color:var(--text-muted)]">
                     %
                   </th>
                 </tr>
@@ -203,7 +203,7 @@
                         class="inline-block size-2.5 rounded-full shrink-0"
                         :style="{ backgroundColor: abColors[i % abColors.length] }"
                       />
-                      <span class="font-medium text-gray-900 dark:text-white">
+                      <span class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
                         {{ dest.label || `Вариант ${i + 1}` }}
                       </span>
                     </div>
@@ -212,7 +212,7 @@
                     <a
                       :href="dest.url"
                       target="_blank"
-                      class="text-green-600 dark:text-green-400 hover:underline truncate max-w-[200px] block"
+                      class="text-[color:var(--success)] dark:text-[color:var(--success)] hover:underline truncate max-w-[200px] block"
                     >
                       {{ dest.url }}
                     </a>
@@ -223,7 +223,7 @@
                   <td class="py-2.5 pr-3 text-right tabular-nums font-medium">
                     {{ dest.clicks.toLocaleString('ru-RU') }}
                   </td>
-                  <td class="py-2.5 text-right tabular-nums text-gray-500">
+                  <td class="py-2.5 text-right tabular-nums text-[color:var(--text-muted)]">
                     {{ totalClicks > 0 ? Math.round((dest.clicks / totalClicks) * 100) : 0 }}%
                   </td>
                 </tr>
