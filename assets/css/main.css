@@ -52,6 +52,14 @@
 }
 
 :root {
+  --fs-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --fs-sm: clamp(0.875rem, 0.84rem + 0.18vw, 0.9375rem);
+  --fs-base: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --fs-lg: clamp(1.125rem, 1.05rem + 0.38vw, 1.25rem);
+  --fs-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --fs-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
+  --fs-3xl: clamp(1.875rem, 1.65rem + 1.13vw, 2.5rem);
+
   --surface-0: #ffffff;
   --surface-1: #fff7f9;
   --surface-2: #fdeef2;
@@ -96,12 +104,25 @@ html.dark {
 
 body {
   font-family: "DM Sans", system-ui, sans-serif;
+  font-size: var(--fs-base);
   background: var(--surface-1);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
+}
+
+h1 {
+  font-size: var(--fs-3xl);
+}
+
+h2 {
+  font-size: var(--fs-2xl);
+}
+
+h3 {
+  font-size: var(--fs-xl);
 }
 
 :focus-visible {
@@ -256,14 +277,12 @@ html.dark .score-high {
 
 .markdown-body h1 {
   font-family: "DM Sans", sans-serif;
-  font-size: 1.75rem;
   font-weight: 700;
   margin: 2rem 0 1rem;
 }
 
 .markdown-body h2 {
   font-family: "DM Sans", sans-serif;
-  font-size: 1.35rem;
   font-weight: 600;
   margin: 1.75rem 0 0.75rem;
   color: var(--accent);
@@ -271,7 +290,6 @@ html.dark .score-high {
 
 .markdown-body h3 {
   font-family: "DM Sans", sans-serif;
-  font-size: 1.1rem;
   font-weight: 600;
   margin: 1.25rem 0 0.5rem;
 }
