@@ -1,7 +1,8 @@
-import { eq, and, or, like, inArray, gte, lte, desc, asc, count } from 'drizzle-orm'
+import { eq, and, or, like, inArray, gte, lte, desc, asc, count, type InferInsertModel } from 'drizzle-orm'
 import { db } from '../db'
 import { qrCodes, qrTags, userDepartments } from '../db/schema'
 import { generateShortCode } from '../utils/nanoid'
+import { invalidateQrCache } from '../utils/qr-cache'
 import type { User } from '~~/types/auth'
 
 // --- Types ---
@@ -18,8 +19,6 @@ interface CreateQrData {
   folderId?: string
   tagIds?: string[]
   expiresAt?: string
-  visibility?: 'private' | 'public' | 'department'
-  departmentId?: string | null
 }
 
 interface UpdateQrData {
@@ -34,8 +33,6 @@ interface UpdateQrData {
   folderId?: string | null
   tagIds?: string[]
   expiresAt?: string | null
-  visibility?: 'private' | 'public' | 'department'
-  departmentId?: string | null
 }
 
 interface QrFilters {
@@ -82,14 +79,14 @@ function checkAccess(qr: { createdBy: string, visibility?: 'private' | 'departme
   throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
 }
 
-function ensureEditAccess(qr: QrAccessEntity, user: User) {
-  if (!canManageQr(qr, user)) {
+async function ensureEditAccess(qr: QrAccessEntity, user: User) {
+  if (!(await canManageQr(qr, user))) {
     throw createError({ statusCode: 403, message: 'Нет прав на редактирование QR-кода' })
   }
 }
 
-function ensureDeleteAccess(qr: QrAccessEntity, user: User) {
-  if (!canManageQr(qr, user)) {
+async function ensureDeleteAccess(qr: QrAccessEntity, user: User) {
+  if (!(await canManageQr(qr, user))) {
     throw createError({ statusCode: 403, message: 'Нет прав на удаление QR-кода' })
   }
 }
@@ -120,6 +117,75 @@ async function ensureVisibilityUpdateAccess(
   if (!allowedForHead) {
     throw createError({ statusCode: 403, message: 'Недостаточно прав для изменения visibility' })
   }
+}
+
+function ensureVisibilityDepartmentPair(
+  visibility: 'private' | 'public' | 'department',
+  departmentId: string | null,
+) {
+  if (visibility === 'department' && !departmentId) {
+    throw createError({ statusCode: 400, message: 'Для department visibility требуется departmentId' })
+  }
+
+  if (visibility !== 'department' && departmentId) {
+    throw createError({ statusCode: 400, message: 'departmentId допустим только для department visibility' })
+  }
+}
+
+async function getUserDepartmentMembership(userId: string): Promise<DepartmentMembership> {
+  const memberships = await db
+    .select({
+      departmentId: userDepartments.departmentId,
+      role: userDepartments.role,
+    })
+    .from(userDepartments)
+    .where(eq(userDepartments.userId, userId))
+
+  return {
+    departmentIds: memberships.map(row => row.departmentId),
+    headDepartmentIds: memberships.filter(row => row.role === 'head').map(row => row.departmentId),
+  }
+}
+
+async function getMembershipWithCache(user: User, cache?: MembershipCache): Promise<DepartmentMembership> {
+  if (cache?.memberships) {
+    return cache.memberships
+  }
+
+  const memberships = await getUserDepartmentMembership(user.id)
+  if (cache) {
+    cache.memberships = memberships
+  }
+
+  return memberships
+}
+
+async function canManageQr(qr: QrAccessEntity, user: User, cache?: MembershipCache): Promise<boolean> {
+  if (user.role === 'admin' || qr.createdBy === user.id) {
+    return true
+  }
+
+  if (qr.visibility !== 'department' || !qr.departmentId) {
+    return false
+  }
+
+  const memberships = await getMembershipWithCache(user, cache)
+  return memberships.headDepartmentIds.includes(qr.departmentId)
+}
+
+async function ensureReadAccess(qr: QrAccessEntity, user: User, cache?: MembershipCache) {
+  if (user.role === 'admin' || qr.createdBy === user.id || qr.visibility === 'public') {
+    return
+  }
+
+  if (qr.visibility === 'department' && qr.departmentId) {
+    const memberships = await getMembershipWithCache(user, cache)
+    if (memberships.departmentIds.includes(qr.departmentId)) {
+      return
+    }
+  }
+
+  throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
 }
 
 const DEFAULT_STYLE = {
@@ -185,8 +251,6 @@ export const qrService = {
         title: data.title,
         description: data.description,
         type: data.type || 'dynamic',
-        visibility: data.visibility || 'private',
-        departmentId: data.departmentId ?? null,
         destinationUrl: data.destinationUrl,
         style,
         utmParams: data.utmParams,
@@ -396,7 +460,7 @@ export const qrService = {
       throw createError({ statusCode: 404, message: 'QR-код не найден' })
     }
 
-    ensureEditAccess(existing, user)
+    await ensureEditAccess(existing, user)
 
     const nextVisibility = data.visibility ?? existing.visibility
     const nextDepartmentId = data.departmentId !== undefined ? data.departmentId : existing.departmentId
@@ -421,14 +485,12 @@ export const qrService = {
     }
 
     // Build update object
-    const updateData: Record<string, unknown> = { updatedAt: new Date() }
+    const updateData: Partial<InferInsertModel<typeof qrCodes>> = { updatedAt: new Date() }
 
     if (data.title !== undefined) updateData.title = data.title
     if (data.destinationUrl !== undefined) updateData.destinationUrl = data.destinationUrl
     if (data.description !== undefined) updateData.description = data.description
     if (data.status !== undefined) updateData.status = data.status
-    if (data.visibility !== undefined) updateData.visibility = data.visibility
-    if (data.departmentId !== undefined) updateData.departmentId = data.departmentId
     if (data.style !== undefined) updateData.style = data.style
     if (data.utmParams !== undefined) updateData.utmParams = data.utmParams
     if (data.folderId !== undefined) updateData.folderId = data.folderId
@@ -469,7 +531,7 @@ export const qrService = {
       throw createError({ statusCode: 404, message: 'QR-код не найден' })
     }
 
-    ensureDeleteAccess(existing, user)
+    await ensureDeleteAccess(existing, user)
 
     await db.delete(qrCodes).where(eq(qrCodes.id, id))
     invalidateQrCache(existing.shortCode)
@@ -518,7 +580,7 @@ export const qrService = {
     }
 
     for (const qr of existing) {
-      ensureDeleteAccess(qr, user)
+      await ensureDeleteAccess(qr, user)
     }
 
     await db.delete(qrCodes).where(inArray(qrCodes.id, ids))

@@ -21,8 +21,6 @@ const updateSchema = z.object({
   folderId: z.string().uuid().optional().nullable(),
   tagIds: z.array(z.string().uuid()).optional(),
   expiresAt: z.string().datetime().optional().nullable(),
-  visibility: z.enum(['private', 'public', 'department']).optional(),
-  departmentId: z.string().uuid().nullable().optional(),
 })
 
 export default defineEventHandler(async (event) => {

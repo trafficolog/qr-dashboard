@@ -8,7 +8,6 @@ interface QrFilters {
   departmentId: string
   scope: '' | 'mine' | 'department' | 'public' | 'all'
   folderId: string
-  visibility: string
   tags: string
   dateFrom: string
   dateTo: string
@@ -25,7 +24,6 @@ const defaultFilters: QrFilters = {
   departmentId: '',
   scope: '',
   folderId: '',
-  visibility: '',
   tags: '',
   dateFrom: '',
   dateTo: '',
@@ -71,6 +69,10 @@ export function useQr() {
 
   function applyFiltersFromQuery(query: Record<string, unknown>) {
     const getString = (value: unknown) => (typeof value === 'string' ? value : '')
+    const getVisibility = (value: unknown): QrFilters['visibility'] => {
+      const typedValue = getString(value)
+      return typedValue === 'private' || typedValue === 'department' || typedValue === 'public' ? typedValue : ''
+    }
     const getPositiveNumber = (value: unknown, fallback: number) => {
       if (typeof value !== 'string') return fallback
       const parsed = Number.parseInt(value, 10)
@@ -82,7 +84,7 @@ export function useQr() {
       search: getString(query.search),
       status: getString(query.status),
       folderId: getString(query.folderId),
-      visibility: getString(query.visibility),
+      visibility: getVisibility(query.visibility),
       tags: getString(query.tags),
       dateFrom: getString(query.dateFrom),
       dateTo: getString(query.dateTo),
