@@ -3,6 +3,11 @@
 </template>
 
 <script setup lang="ts">
-// Redirect /settings → /settings/general
-await navigateTo('/settings/general', { replace: true })
+const { user } = useAuth()
+
+const fallbackRoute = user.value?.role === 'admin'
+  ? '/settings/general'
+  : '/settings/profile'
+
+await navigateTo(fallbackRoute, { replace: true })
 </script>

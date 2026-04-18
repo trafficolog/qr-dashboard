@@ -78,15 +78,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-definePageMeta({
-  middleware: () => {
-    const { user } = useAuth()
-    if (user.value?.role !== 'admin') {
-      return navigateTo('/dashboard')
-    }
-  },
-})
-
 const route = useRoute()
 const { t } = useI18n()
 const { user } = useAuth()
@@ -110,6 +101,7 @@ const navItems = computed<NavItem[]>(() => [
     ? [
         { key: 'team', label: t('settings.tabs.team'), icon: 'i-lucide-users', to: '/settings/team', adminOnly: true },
         { key: 'domains', label: t('settings.tabs.domains'), icon: 'i-lucide-globe', to: '/settings/domains', adminOnly: true },
+        { key: 'departments', label: t('settings.tabs.departments'), icon: 'i-lucide-building-2', to: '/settings/departments', adminOnly: true },
         { key: 'integrations', label: t('settings.tabs.integrations'), icon: 'i-lucide-plug', to: '/settings/integrations', adminOnly: true },
       ]
     : []),

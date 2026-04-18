@@ -48,11 +48,12 @@ interface QrPagination {
 
 // --- Helpers ---
 
-function checkAccess(qr: { createdBy: string }, user: User) {
+function checkAccess(qr: { createdBy: string, visibility?: 'private' | 'department' | 'public' }, user: User) {
   if (user.role === 'admin') return
-  if (qr.createdBy !== user.id) {
-    throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
-  }
+  if (qr.createdBy === user.id) return
+  if (qr.visibility === 'public') return
+
+  throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
 }
 
 const DEFAULT_STYLE = {
@@ -332,6 +333,30 @@ export const qrService = {
     await db.delete(qrCodes).where(eq(qrCodes.id, id))
     invalidateQrCache(existing.shortCode)
     return { success: true }
+  },
+
+  /**
+   * Публичные QR-коды компании
+   */
+  async getSharedQrList() {
+    const shared = await db.query.qrCodes.findMany({
+      where: eq(qrCodes.visibility, 'public'),
+      with: {
+        folder: { columns: { id: true, name: true, color: true } },
+        qrTags: {
+          with: {
+            tag: true,
+          },
+        },
+      },
+      orderBy: desc(qrCodes.createdAt),
+    })
+
+    return shared.map(qr => ({
+      ...qr,
+      tags: qr.qrTags.map(qt => qt.tag),
+      qrTags: undefined,
+    }))
   },
 
   /**
