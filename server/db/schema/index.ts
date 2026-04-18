@@ -143,3 +143,7 @@ export const scanDailyStatsRelations = relations(scanDailyStats, ({ one }) => ({
     references: [qrCodes.id],
   }),
 }))
+
+export const departmentsRelations = relations(departments, ({ many }) => ({
+  qrCodes: many(qrCodes),
+}))
