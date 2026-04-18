@@ -2,6 +2,9 @@ import { z } from 'zod'
 import { requireAuth } from '../../../utils/auth'
 import { qrService } from '../../../services/qr.service'
 
+const visibilitySchema = z.enum(['private', 'department', 'public'])
+const departmentIdSchema = z.string().uuid().nullable().optional()
+
 const bodySchema = z.object({
   title: z.string().trim().min(1).max(255).optional(),
   destination_url: z.string().url().optional(),
@@ -10,8 +13,8 @@ const bodySchema = z.object({
   folder_id: z.string().uuid().nullable().optional(),
   tag_ids: z.array(z.string().uuid()).optional(),
   expires_at: z.string().datetime({ offset: true }).nullable().optional(),
-  visibility: z.enum(['private', 'public', 'department']).optional(),
-  department_id: z.string().uuid().nullable().optional(),
+  visibility: visibilitySchema.optional(),
+  department_id: departmentIdSchema,
 })
 
 export default defineEventHandler(async (event) => {
@@ -19,21 +22,19 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')!
   const body = await readValidatedBody(event, bodySchema.parse)
 
-  const qr = await qrService.updateQr(
-    id,
-    {
-      title: body.title,
-      destinationUrl: body.destination_url,
-      description: body.description,
-      status: body.status,
-      folderId: body.folder_id,
-      tagIds: body.tag_ids,
-      expiresAt: body.expires_at,
-      visibility: body.visibility,
-      departmentId: body.department_id,
-    },
-    user,
-  )
+  const updatePayload: Parameters<typeof qrService.updateQr>[1] = {
+    title: body.title,
+    destinationUrl: body.destination_url,
+    description: body.description,
+    status: body.status,
+    folderId: body.folder_id,
+    tagIds: body.tag_ids,
+    expiresAt: body.expires_at,
+    visibility: body.visibility,
+    departmentId: body.department_id,
+  }
+
+  const qr = await qrService.updateQr(id, updatePayload, user)
 
   return apiSuccess(qr)
 })

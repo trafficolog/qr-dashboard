@@ -2,6 +2,9 @@ import { z } from 'zod'
 import { requireAuth } from '../../../utils/auth'
 import { qrService } from '../../../services/qr.service'
 
+const visibilitySchema = z.enum(['private', 'department', 'public'])
+const departmentIdSchema = z.string().uuid().nullable().optional()
+
 const bodySchema = z.object({
   title: z.string().trim().min(1).max(255),
   destination_url: z.string().url(),
@@ -14,8 +17,8 @@ const bodySchema = z.object({
   folder_id: z.string().uuid().optional(),
   tag_ids: z.array(z.string().uuid()).optional(),
   expires_at: z.string().datetime({ offset: true }).optional(),
-  visibility: z.enum(['private', 'public', 'department']).optional(),
-  department_id: z.string().uuid().nullable().optional(),
+  visibility: visibilitySchema.optional(),
+  department_id: departmentIdSchema,
 })
 
 export default defineEventHandler(async (event) => {
@@ -28,21 +31,20 @@ export default defineEventHandler(async (event) => {
   if (body.utm_campaign) utmParams.utm_campaign = body.utm_campaign
   if (body.utm_content) utmParams.utm_content = body.utm_content
 
-  const qr = await qrService.createQr(
-    {
-      title: body.title,
-      destinationUrl: body.destination_url,
-      description: body.description,
-      type: body.type,
-      utmParams: Object.keys(utmParams).length ? utmParams : undefined,
-      folderId: body.folder_id,
-      tagIds: body.tag_ids,
-      expiresAt: body.expires_at,
-      visibility: body.visibility,
-      departmentId: body.department_id,
-    },
-    user,
-  )
+  const createPayload: Parameters<typeof qrService.createQr>[0] = {
+    title: body.title,
+    destinationUrl: body.destination_url,
+    description: body.description,
+    type: body.type,
+    utmParams: Object.keys(utmParams).length ? utmParams : undefined,
+    folderId: body.folder_id,
+    tagIds: body.tag_ids,
+    expiresAt: body.expires_at,
+    visibility: body.visibility,
+    departmentId: body.department_id,
+  }
+
+  const qr = await qrService.createQr(createPayload, user)
 
   setResponseStatus(event, 201)
   return apiSuccess(qr)
