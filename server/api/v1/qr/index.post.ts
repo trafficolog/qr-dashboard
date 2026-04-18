@@ -14,6 +14,8 @@ const bodySchema = z.object({
   folder_id: z.string().uuid().optional(),
   tag_ids: z.array(z.string().uuid()).optional(),
   expires_at: z.string().datetime({ offset: true }).optional(),
+  visibility: z.enum(['private', 'public', 'department']).optional(),
+  department_id: z.string().uuid().nullable().optional(),
 })
 
 export default defineEventHandler(async (event) => {
@@ -36,6 +38,8 @@ export default defineEventHandler(async (event) => {
       folderId: body.folder_id,
       tagIds: body.tag_ids,
       expiresAt: body.expires_at,
+      visibility: body.visibility,
+      departmentId: body.department_id,
     },
     user,
   )
