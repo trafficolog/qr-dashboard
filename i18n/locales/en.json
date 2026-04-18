@@ -173,7 +173,14 @@
     "actions": {
       "makePrivate": "Make private",
       "makeDepartment": "Share with department",
-      "makePublic": "Make public"
+      "makePublic": "Make public",
+      "makeDepartmentDisabledTooltip": "Unavailable: user is not assigned to any department"
+    },
+    "departmentModal": {
+      "title": "Choose department",
+      "description": "Select which department should get access to this QR code.",
+      "cancel": "Cancel",
+      "confirm": "Share"
     },
     "filters": {
       "visibility": "Visibility",
