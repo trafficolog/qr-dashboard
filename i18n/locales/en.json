@@ -8,7 +8,8 @@
     "folders": "Folders",
     "analytics": "Analytics",
     "integrations": "Integrations",
-    "settings": "Settings"
+    "settings": "Settings",
+    "sharedQr": "Shared QR"
   },
   "common": {
     "search": "Search",
@@ -65,7 +66,8 @@
     "domains": "Domains",
     "general": "General",
     "profile": "Profile",
-    "integrations": "Integrations"
+    "integrations": "Integrations",
+    "departments": "Departments"
   },
   "analytics": {
     "title": "Analytics",
@@ -99,7 +101,8 @@
       "profile": "Profile",
       "team": "Team",
       "domains": "Domains",
-      "integrations": "Integrations"
+      "integrations": "Integrations",
+      "departments": "Departments"
     },
     "general": {
       "subtitle": "Theme, language and timezone",

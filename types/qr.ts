@@ -48,6 +48,8 @@ export interface QrCode {
   utmParams: UtmParams | null
   folderId: string | null
   createdBy: string
+  visibility?: QrVisibility
+  departmentId?: string | null
   expiresAt: Date | null
   totalScans: number
   uniqueScans: number

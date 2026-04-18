@@ -98,6 +98,7 @@ const { t } = useI18n()
 const navItems = computed(() => [
   { label: t('nav.dashboard'), icon: 'i-lucide-layout-dashboard', route: '/dashboard' },
   { label: t('nav.qrCodes'), icon: 'i-lucide-qr-code', route: '/qr' },
+  { label: t('nav.sharedQr'), icon: 'i-lucide-globe', route: '/qr/shared' },
   { label: t('nav.folders'), icon: 'i-lucide-folder', route: '/folders' },
   { label: t('nav.analytics'), icon: 'i-lucide-bar-chart-3', route: '/analytics' },
   { label: t('nav.integrations'), icon: 'i-lucide-plug', route: '/integrations' },

@@ -33,7 +33,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   qrCodes: many(qrCodes),
   apiKeys: many(apiKeys),
-  userDepartments: many(userDepartments),
+  departments: many(userDepartments),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -55,6 +55,10 @@ export const qrCodesRelations = relations(qrCodes, ({ one, many }) => ({
   creator: one(users, {
     fields: [qrCodes.createdBy],
     references: [users.id],
+  }),
+  department: one(departments, {
+    fields: [qrCodes.departmentId],
+    references: [departments.id],
   }),
   destinations: many(qrDestinations),
   scanEvents: many(scanEvents),
@@ -118,11 +122,11 @@ export const qrTagsRelations = relations(qrTags, ({ one }) => ({
 }))
 
 export const departmentsRelations = relations(departments, ({ one, many }) => ({
-  headUser: one(users, {
+  head: one(users, {
     fields: [departments.headUserId],
     references: [users.id],
   }),
-  userDepartments: many(userDepartments),
+  memberships: many(userDepartments),
   qrCodes: many(qrCodes),
 }))
 
@@ -136,7 +140,6 @@ export const userDepartmentsRelations = relations(userDepartments, ({ one }) => 
     references: [departments.id],
   }),
 }))
-
 export const scanDailyStatsRelations = relations(scanDailyStats, ({ one }) => ({
   qrCode: one(qrCodes, {
     fields: [scanDailyStats.qrCodeId],

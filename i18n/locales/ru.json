@@ -8,7 +8,8 @@
     "folders": "Папки",
     "analytics": "Аналитика",
     "integrations": "Интеграции",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "sharedQr": "Общие QR"
   },
   "common": {
     "search": "Поиск",
@@ -65,7 +66,8 @@
     "domains": "Домены",
     "general": "Общие",
     "profile": "Профиль",
-    "integrations": "Интеграции"
+    "integrations": "Интеграции",
+    "departments": "Подразделения"
   },
   "analytics": {
     "title": "Аналитика",
@@ -99,7 +101,8 @@
       "profile": "Профиль",
       "team": "Команда",
       "domains": "Домены",
-      "integrations": "Интеграции"
+      "integrations": "Интеграции",
+      "departments": "Подразделения"
     },
     "general": {
       "subtitle": "Тема, язык и часовой пояс",

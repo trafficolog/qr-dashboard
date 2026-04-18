@@ -19,8 +19,8 @@
     {
       "idx": 2,
       "version": "7",
-      "when": 1776499200000,
-      "tag": "0002_add_departments_and_visibility",
+      "when": 1776103500000,
+      "tag": "0002_add_departments_and_qr_visibility",
       "breakpoints": true
     }
   ]

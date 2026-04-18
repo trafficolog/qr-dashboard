@@ -74,61 +74,12 @@ interface MembershipCache {
 
 // --- Helpers ---
 
-async function getUserDepartmentMembership(userId: string): Promise<DepartmentMembership> {
-  const memberships = await db
-    .select({ departmentId: userDepartments.departmentId, role: userDepartments.role })
-    .from(userDepartments)
-    .where(eq(userDepartments.userId, userId))
+function checkAccess(qr: { createdBy: string, visibility?: 'private' | 'department' | 'public' }, user: User) {
+  if (user.role === 'admin') return
+  if (qr.createdBy === user.id) return
+  if (qr.visibility === 'public') return
 
-  return {
-    departmentIds: [...new Set(memberships.map(m => m.departmentId))],
-    headDepartmentIds: [...new Set(memberships.filter(m => m.role === 'head').map(m => m.departmentId))],
-  }
-}
-
-async function getMembershipWithCache(user: User, cache?: MembershipCache): Promise<DepartmentMembership> {
-  if (cache?.memberships) return cache.memberships
-
-  const memberships = await getUserDepartmentMembership(user.id)
-  if (cache) {
-    cache.memberships = memberships
-  }
-
-  return memberships
-}
-
-function ensureVisibilityDepartmentPair(visibility: 'private' | 'public' | 'department', departmentId?: string | null) {
-  if (visibility === 'department' && !departmentId) {
-    throw createError({ statusCode: 400, message: 'Для visibility=department необходимо указать departmentId' })
-  }
-
-  if (visibility !== 'department' && departmentId) {
-    throw createError({ statusCode: 400, message: 'departmentId можно указывать только для visibility=department' })
-  }
-}
-
-function canManageQr(qr: QrAccessEntity, user: User) {
-  return user.role === 'admin' || qr.createdBy === user.id
-}
-
-async function canReadQr(qr: QrAccessEntity, user: User, cache?: MembershipCache) {
-  if (user.role === 'admin') return true
-  if (qr.createdBy === user.id) return true
-  if (qr.visibility === 'public') return true
-
-  if (qr.visibility === 'department' && qr.departmentId) {
-    const memberships = await getMembershipWithCache(user, cache)
-    return memberships.departmentIds.includes(qr.departmentId)
-  }
-
-  return false
-}
-
-async function ensureReadAccess(qr: QrAccessEntity, user: User, cache?: MembershipCache) {
-  const allowed = await canReadQr(qr, user, cache)
-  if (!allowed) {
-    throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
-  }
+  throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
 }
 
 function ensureEditAccess(qr: QrAccessEntity, user: User) {
@@ -523,6 +474,30 @@ export const qrService = {
     await db.delete(qrCodes).where(eq(qrCodes.id, id))
     invalidateQrCache(existing.shortCode)
     return { success: true }
+  },
+
+  /**
+   * Публичные QR-коды компании
+   */
+  async getSharedQrList() {
+    const shared = await db.query.qrCodes.findMany({
+      where: eq(qrCodes.visibility, 'public'),
+      with: {
+        folder: { columns: { id: true, name: true, color: true } },
+        qrTags: {
+          with: {
+            tag: true,
+          },
+        },
+      },
+      orderBy: desc(qrCodes.createdAt),
+    })
+
+    return shared.map(qr => ({
+      ...qr,
+      tags: qr.qrTags.map(qt => qt.tag),
+      qrTags: undefined,
+    }))
   },
 
   /**
