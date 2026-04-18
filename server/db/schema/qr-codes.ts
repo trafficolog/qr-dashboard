@@ -46,7 +46,6 @@ export const qrCodes = pgTable(
     index('qr_visibility_idx').on(table.visibility),
     index('qr_folder_idx').on(table.folderId),
     index('qr_department_idx').on(table.departmentId),
-    index('qr_visibility_department_idx').on(table.visibility, table.departmentId),
     index('qr_created_by_idx').on(table.createdBy),
     index('qr_created_at_idx').on(table.createdAt),
   ],
