@@ -9,6 +9,11 @@ const pages = [
   '/analytics',
 ]
 
+const themes = [
+  { name: 'light', colorScheme: 'light' as const },
+  { name: 'dark', colorScheme: 'dark' as const },
+]
+
 test.describe('Accessibility smoke (axe)', () => {
   test.beforeEach(async ({ page }) => {
     if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
@@ -26,20 +31,24 @@ test.describe('Accessibility smoke (axe)', () => {
   })
 
   for (const path of pages) {
-    test(`${path} has no serious/critical a11y violations`, async ({ page }) => {
-      await page.goto(path)
-      await page.waitForLoadState('networkidle')
+    for (const theme of themes) {
+      test(`${path} (${theme.name}) has no blocking a11y violations`, async ({ page }) => {
+        await page.emulateMedia({ colorScheme: theme.colorScheme })
+        await page.goto(path)
+        await page.waitForLoadState('networkidle')
 
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa'])
-        .disableRules(['color-contrast'])
-        .analyze()
+        const results = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa'])
+          .analyze()
 
-      const blockingViolations = results.violations.filter((violation) => {
-        return violation.impact === 'serious' || violation.impact === 'critical'
+        const blockingViolations = results.violations.filter((violation) => {
+          const isHighImpact = violation.impact === 'serious' || violation.impact === 'critical'
+          const isContrastViolation = violation.id === 'color-contrast'
+          return isHighImpact || isContrastViolation
+        })
+
+        expect(blockingViolations).toEqual([])
       })
-
-      expect(blockingViolations).toEqual([])
-    })
+    }
   }
 })
