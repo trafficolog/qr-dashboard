@@ -48,10 +48,6 @@ export const qrCodesRelations = relations(qrCodes, ({ one, many }) => ({
     fields: [qrCodes.folderId],
     references: [folders.id],
   }),
-  department: one(departments, {
-    fields: [qrCodes.departmentId],
-    references: [departments.id],
-  }),
   creator: one(users, {
     fields: [qrCodes.createdBy],
     references: [users.id],
@@ -145,8 +141,4 @@ export const scanDailyStatsRelations = relations(scanDailyStats, ({ one }) => ({
     fields: [scanDailyStats.qrCodeId],
     references: [qrCodes.id],
   }),
-}))
-
-export const departmentsRelations = relations(departments, ({ many }) => ({
-  qrCodes: many(qrCodes),
 }))
