@@ -36,7 +36,7 @@ export const qrCodes = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [
+  table => [
     uniqueIndex('qr_short_code_idx').on(table.shortCode),
     index('qr_status_idx').on(table.status),
     index('qr_folder_idx').on(table.folderId),

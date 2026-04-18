@@ -20,6 +20,8 @@
           variant="ghost"
           color="neutral"
           size="sm"
+          aria-label="Назад к папкам"
+          title="Назад к папкам"
           to="/folders"
         />
         <div
@@ -135,7 +137,7 @@
 import type { Folder } from '~/composables/useFolders'
 
 const route = useRoute()
-const toast = useToast()
+const toast = useA11yToast()
 const id = route.params.id as string
 
 // Folder meta

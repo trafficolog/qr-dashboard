@@ -7,6 +7,38 @@
  
 ## [Unreleased]
 
+### Added — EPIC 17 Accessibility (in progress)
+
+- **`app/composables/useA11yAnnouncer.ts`** — общий announcer для `aria-live` сообщений screen-reader.
+- **`app/composables/useA11yToast.ts`** — обёртка над `useToast()` с автоматическим `announce()` для уведомлений.
+- **`app/components/qr/StatusBadge.vue`** — единый бейдж статуса QR с иконкой + текстом.
+- **`app/utils/dialog-focus-return.ts`** — утилита сохранения/восстановления фокуса для модальных сценариев.
+- **`e2e/a11y.spec.ts`** — базовая `axe-core` проверка страниц `/dashboard`, `/qr`, `/qr/create`, `/settings/profile`, `/analytics`.
+
+### Changed
+
+- **`app/app.vue`** — добавлен `aria-live` регион (`role="status"`) для озвучивания уведомлений.
+- **`assets/css/main.css`** — добавлены глобальные правила `:focus-visible` и контур focus-ring.
+- **`app/components/qr/Table.vue`**, **`app/components/analitics/TopQrTable.vue`** — улучшена табличная семантика (`role="table"`, `scope="col"`), добавлены aria-label для действий.
+- **`app/components/app/Header.vue`**, **`Sidebar.vue`**, **`UserMenu.vue`**, **`app/pages/settings/team.vue`**, **`domains.vue`**, **`app/pages/qr/[id]/index.vue`** — добавлены `aria-label/title` для icon-only интерактивных элементов.
+- **`app/components/shared/ConfirmDialog.vue`**, **`app/components/shared/unsavedChangesDialog.vue`** — включено закрытие по `Esc`, добавлено восстановление фокуса после закрытия.
+- **`app/components/qr/Preview.vue`**, **`app/pages/qr/create.vue`**, **`app/pages/qr/[id]/edit.vue`**, **`app/pages/qr/[id]/index.vue`** — добавлены a11y-метки для QR preview.
+- **`i18n/locales/ru.json`**, **`i18n/locales/en.json`** — добавлены ключи `a11y.actions.*`, `a11y.labels.*`, `qr.status.*`, `qr.preview.alt`.
+- **`package.json`** — добавлен скрипт `test:e2e` и dev dependency `@axe-core/playwright`.
+- **`README.md`**, **`docs/completed-epics.md`**, **`docs/splat-qr-docs-done.md`**, **`docs/splat-qr-cursor-plan.md`** — синхронизированы статусы EPIC 17 по фактически выполненному phase 1.
+
+---
+
+## [0.12.1] — 2026-04-17
+
+### Changed — EPIC 16 documentation sync
+
+- **`docs/epic-16-interactive-shell.md`** — документ приведён в соответствие с фактической реализацией (`settings.vue` как layout, `settings/index.vue` как redirect, уточнение scope settings-search, выравнивание списков файлов).
+- **`docs/epic-17-accessibility.md`** — статус переведён в `In Progress`, добавлен блок старта работ и чек-лист первой итерации.
+- **`docs/review/epic-16-17-docs-review.md`** — добавлен итоговый review по выполненной документационной работе.
+- **`README.md`** — обновлена версия и раздел документации (добавлены ссылки на EPIC 16, EPIC 17 и review).
+- **`package.json`** — версия проекта обновлена до `0.12.1`.
+
 ---
 
 ## [0.12.0] — 2026-04-15

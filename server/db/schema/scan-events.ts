@@ -33,7 +33,7 @@ export const scanEvents = pgTable(
     isUnique: boolean('is_unique').notNull().default(false),
     scannedAt: timestamp('scanned_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [
+  table => [
     index('scan_qr_code_idx').on(table.qrCodeId),
     index('scan_scanned_at_idx').on(table.scannedAt),
     index('scan_country_idx').on(table.country),

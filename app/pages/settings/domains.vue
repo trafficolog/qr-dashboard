@@ -122,6 +122,8 @@
               variant="ghost"
               color="error"
               size="sm"
+              :aria-label="`Удалить домен ${d.domain}`"
+              :title="`Удалить домен ${d.domain}`"
               @click="handleDelete(d)"
             />
           </div>
@@ -160,7 +162,7 @@ interface Domain {
   createdAt: string
 }
 
-const toast = useToast()
+const toast = useA11yToast()
 
 const loading = ref(true)
 const domains = ref<Domain[]>([])

@@ -1,9 +1,9 @@
-# SPLAT QR Service — Отчёт о реализации (Эпики 1–15)
+# SPLAT QR Service — Отчёт о реализации (Эпики 1–17)
 
-> **Дата:** 2026-04-07 (обновлено 2026-04-15)
-> **Фаза:** 4 — завершена; итерация UX (Эпик 15) — завершена
+> **Дата:** 2026-04-07 (обновлено 2026-04-17)
+> **Фаза:** 4 — завершена; UX-итерация продолжается (EPIC 17 в статусе In Progress, phase 1 реализован)
 > **Файлов в проекте:** ~190
-> **Статус:** Реализованы Эпики 1–7, 9, 10, 11, 12, 13, 14, 15
+> **Статус:** Реализованы Эпики 1–7, 9, 10, 11, 12, 13, 14, 15; EPIC 17 — частично (phase 1)
 
 ---
 
@@ -29,6 +29,7 @@
 | 13 | Daily Aggregation | ✅ Завершён | v0.10.0 | 13.1–13.4 все выполнены |
 | 14 | i18n, Dark Mode, Sentry, E2E | ✅ Завершён | v0.11.0 | 14.1–14.5 все выполнены |
 | 15 | Forms UX (guard, draft, валидация, i18n форм) | ✅ Завершён | v0.12.0 | 15.1–15.7 — см. [epic-15-forms-ux.md](./epic-15-forms-ux.md) |
+| 17 | Accessibility baseline (WCAG) | 🚧 In Progress | Unreleased | phase 1: announcer, aria-label, focus-visible, semantic tables, axe smoke |
 
 ### 1.1а Запланированные эпики (16–21)
 
@@ -37,7 +38,7 @@
 | Эпик | Тема | Статус в спеке |
 |------|------|----------------|
 | 16 | Interactive Shell & Settings | Planned |
-| 17 | Accessibility baseline | Planned |
+| 17 | Accessibility baseline | In Progress (phase 1 выполнен) |
 | 18 | Design System & Motion | Planned |
 | 19 | Видимость QR | Planned |
 | 20 | Analytics / cards / onboarding | Planned |

@@ -762,5 +762,22 @@ UI: показывает modal с ключом + кнопка копирован
 ### Зависимости
 - Эпик 14 (i18n), формы QR (Эпик 4)
 
+---
+
+## EPIC 17 (phase 1) — Accessibility baseline (в процессе)
+
+### Реализовано в phase 1
+- `app/composables/useA11yAnnouncer.ts`, `app/composables/useA11yToast.ts` — озвучивание toast-сообщений через `aria-live`.
+- `app/app.vue` — добавлен screen-reader регион `role="status"` / `aria-live`.
+- `assets/css/main.css` — добавлены глобальные `:focus-visible` стили.
+- `app/components/qr/Table.vue`, `app/components/analitics/TopQrTable.vue` — улучшена семантика таблиц (`role="table"`, `scope="col"`), aria-label у интерактивных элементов.
+- `app/components/qr/StatusBadge.vue` — статус QR теперь содержит иконку + текст.
+- `app/components/shared/ConfirmDialog.vue`, `app/components/shared/unsavedChangesDialog.vue` — `Esc` закрытие и восстановление фокуса.
+- `e2e/a11y.spec.ts` + `@axe-core/playwright` — базовый a11y smoke в e2e.
+
+### Статус
+- EPIC 17 переведён в `In Progress`.
+- Завершён первый технический срез (phase 1); оставшиеся пункты закрываются в последующих итерациях EPIC 17.
+
 ### Известные ограничения
-- EPIC 16 (Interactive Shell) и эпики **17–21** описаны в отдельных `docs/epic-*.md`; сводный план — [planned-epics-15-18.md](./planned-epics-15-18.md), [splat-qr-cursor-plan.md](./splat-qr-cursor-plan.md). **EPIC 21** (security) — блокер production по спецификации.
+- EPIC 18–21 описаны в отдельных `docs/epic-*.md`; сводный план — [planned-epics-15-18.md](./planned-epics-15-18.md), [splat-qr-cursor-plan.md](./splat-qr-cursor-plan.md). **EPIC 21** (security) — блокер production по спецификации.

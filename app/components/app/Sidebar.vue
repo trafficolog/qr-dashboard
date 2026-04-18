@@ -61,6 +61,8 @@
     <!-- Bottom -->
     <div class="shrink-0 border-t border-[color:var(--border)] p-2">
       <button
+        :aria-label="collapsed ? t('a11y.actions.expandSidebar') : t('a11y.actions.collapseSidebar')"
+        :title="collapsed ? t('a11y.actions.expandSidebar') : t('a11y.actions.collapseSidebar')"
         class="flex w-full items-center justify-center rounded-lg p-2 text-[color:var(--text-muted)] transition-colors hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
         @click="$emit('toggle')"
       >

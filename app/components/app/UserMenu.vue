@@ -1,11 +1,14 @@
 <template>
   <UDropdownMenu :items="menuItems">
     <UButton
+      :aria-label="t('a11y.actions.openUserMenu')"
+      :title="t('a11y.actions.openUserMenu')"
       variant="ghost"
       color="neutral"
       class="gap-2 text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
     >
       <UAvatar
+        :alt="user?.name || user?.email || t('a11y.labels.userAvatar')"
         :text="initials"
         size="sm"
       />
@@ -22,6 +25,7 @@
 
 <script setup lang="ts">
 const { user, logout } = useAuth()
+const { t } = useI18n()
 
 function getInitials(name: string) {
   return name

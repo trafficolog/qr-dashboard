@@ -2,7 +2,7 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
-**Версия:** 0.12.0 — см. [CHANGELOG](./CHANGELOG.md).
+**Версия:** 0.12.1 — см. [CHANGELOG](./CHANGELOG.md).
 
 ## Стек
 
@@ -123,6 +123,9 @@ docker compose up postgres -d
 - [UX/UI ревизия v0.11.0](./docs/splat-qr-ux-ui-review.md) — снимок состояния интерфейса
 - [Планируемые EPIC 15–18](./docs/planned-epics-15-18.md) — дорожная карта UX/UI улучшений
 - [EPIC 15 — Forms UX Enhancement](./docs/epic-15-forms-ux.md) — детализация первого эпика итерации 1
+- [EPIC 16 — Interactive Shell & Settings Redesign](./docs/epic-16-interactive-shell.md) — закрытый эпик и синхронизированный документ
+- [EPIC 17 — Accessibility (a11y) Baseline](./docs/epic-17-accessibility.md) — активный эпик (выполнен phase 1: aria/focus/announcer/axe-baseline)
+- [Review — EPIC 16/17 docs sync](./docs/review/epic-16-17-docs-review.md) — ревью выполненной работы
 
 | Команда | Описание |
 |---------|----------|
@@ -144,3 +147,4 @@ docker compose up postgres -d
 - В `@theme` в `assets/css/main.css` шкала Tailwind **`primary` привязана к `splat`**, чтобы `text-primary`, `bg-primary`, `ring-primary/*` и `color="primary"` у компонентов Nuxt UI не оставались зелёными (дефолт Tailwind).
 - Добавлены `app/error.vue` и `app/pages/analytics/index.vue`, поэтому навигация по `/analytics` и неизвестным URL больше не уходит в неоформленный дефолтный экран.
 - SSR-auth bootstrap в `app/composables/useAuth.ts` теперь пробрасывает cookie в `/api/auth/me`, из-за чего защищённые маршруты корректно открываются после входа.
+- Стартовал EPIC 17 (phase 1): добавлены `useA11yAnnouncer`, `useA11yToast`, `aria-live` регион, focus-visible стили и базовый `axe-core` e2e smoke (`e2e/a11y.spec.ts`).
