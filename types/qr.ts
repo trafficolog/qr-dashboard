@@ -1,5 +1,6 @@
 export type QrStatus = 'active' | 'paused' | 'expired' | 'archived'
 export type QrType = 'dynamic' | 'static'
+export type QrVisibility = 'private' | 'department' | 'public'
 
 export interface QrStyle {
   foregroundColor?: string
@@ -40,6 +41,8 @@ export interface QrCode {
   description: string | null
   type: QrType
   status: QrStatus
+  visibility: QrVisibility
+  departmentId: string | null
   destinationUrl: string
   style: QrStyle
   utmParams: UtmParams | null

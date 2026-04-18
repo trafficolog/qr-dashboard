@@ -10,6 +10,8 @@ interface CreateQrData {
   title: string
   destinationUrl: string
   type?: 'dynamic' | 'static'
+  visibility?: 'private' | 'department' | 'public'
+  departmentId?: string | null
   description?: string
   style?: Record<string, unknown>
   utmParams?: Record<string, string>
@@ -25,6 +27,8 @@ interface UpdateQrData {
   destinationUrl?: string
   description?: string | null
   status?: 'active' | 'paused' | 'expired' | 'archived'
+  visibility?: 'private' | 'department' | 'public'
+  departmentId?: string | null
   style?: Record<string, unknown>
   utmParams?: Record<string, string>
   folderId?: string | null
@@ -37,6 +41,9 @@ interface UpdateQrData {
 interface QrFilters {
   search?: string
   status?: string
+  visibility?: 'private' | 'department' | 'public'
+  departmentId?: string
+  scope?: 'mine' | 'department' | 'public' | 'all'
   folderId?: string
   tagIds?: string[]
   dateFrom?: string
@@ -227,6 +234,8 @@ export const qrService = {
         title: data.title,
         description: data.description,
         type: data.type || 'dynamic',
+        visibility: data.visibility || 'private',
+        departmentId: data.departmentId ?? null,
         destinationUrl: data.destinationUrl,
         style,
         utmParams: data.utmParams,
@@ -262,28 +271,54 @@ export const qrService = {
     // Build WHERE conditions
     const conditions = []
 
-    if (user.role !== 'admin') {
-      const membershipCache: MembershipCache = {}
-      const { departmentIds } = await getMembershipWithCache(user, membershipCache)
-      const accessConditions = [
-        eq(qrCodes.createdBy, user.id),
-        eq(qrCodes.visibility, 'public'),
-      ]
-
-      if (departmentIds.length > 0) {
-        accessConditions.push(
-          and(
-            eq(qrCodes.visibility, 'department'),
-            inArray(qrCodes.departmentId, departmentIds),
+    if (filters.scope === 'mine') {
+      conditions.push(eq(qrCodes.createdBy, user.id))
+    }
+    else if (filters.scope === 'department') {
+      if (filters.departmentId) {
+        conditions.push(eq(qrCodes.visibility, 'department'))
+        conditions.push(eq(qrCodes.departmentId, filters.departmentId))
+      }
+      else {
+        conditions.push(eq(qrCodes.createdBy, user.id))
+      }
+    }
+    else if (filters.scope === 'public') {
+      conditions.push(eq(qrCodes.visibility, 'public'))
+    }
+    else if (user.role !== 'admin') {
+      if (filters.departmentId) {
+        conditions.push(
+          or(
+            eq(qrCodes.createdBy, user.id),
+            eq(qrCodes.visibility, 'public'),
+            and(
+              eq(qrCodes.visibility, 'department'),
+              eq(qrCodes.departmentId, filters.departmentId),
+            ),
           )!,
         )
       }
-
-      conditions.push(or(...accessConditions)!)
+      else {
+        conditions.push(
+          or(
+            eq(qrCodes.createdBy, user.id),
+            eq(qrCodes.visibility, 'public'),
+          )!,
+        )
+      }
     }
 
     if (filters.status) {
       conditions.push(eq(qrCodes.status, filters.status as 'active' | 'paused' | 'expired' | 'archived'))
+    }
+
+    if (filters.visibility) {
+      conditions.push(eq(qrCodes.visibility, filters.visibility))
+    }
+
+    if (filters.departmentId) {
+      conditions.push(eq(qrCodes.departmentId, filters.departmentId))
     }
 
     if (filters.folderId) {
@@ -441,6 +476,8 @@ export const qrService = {
     if (data.destinationUrl !== undefined) updateData.destinationUrl = data.destinationUrl
     if (data.description !== undefined) updateData.description = data.description
     if (data.status !== undefined) updateData.status = data.status
+    if (data.visibility !== undefined) updateData.visibility = data.visibility
+    if (data.departmentId !== undefined) updateData.departmentId = data.departmentId
     if (data.style !== undefined) updateData.style = data.style
     if (data.utmParams !== undefined) updateData.utmParams = data.utmParams
     if (data.folderId !== undefined) updateData.folderId = data.folderId

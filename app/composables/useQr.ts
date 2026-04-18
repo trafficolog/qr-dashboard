@@ -4,6 +4,9 @@ import type { ApiMeta } from '~~/types/api'
 interface QrFilters {
   search: string
   status: string
+  visibility: '' | 'private' | 'department' | 'public'
+  departmentId: string
+  scope: '' | 'mine' | 'department' | 'public' | 'all'
   folderId: string
   tags: string
   dateFrom: string
@@ -17,6 +20,9 @@ interface QrFilters {
 const defaultFilters: QrFilters = {
   search: '',
   status: '',
+  visibility: '',
+  departmentId: '',
+  scope: '',
   folderId: '',
   tags: '',
   dateFrom: '',
@@ -51,6 +57,9 @@ export function useQr() {
 
       if (debouncedSearch.value) query.search = debouncedSearch.value
       if (filters.value.status) query.status = filters.value.status
+      if (filters.value.visibility) query.visibility = filters.value.visibility
+      if (filters.value.departmentId) query.departmentId = filters.value.departmentId
+      if (filters.value.scope) query.scope = filters.value.scope
       if (filters.value.folderId) query.folderId = filters.value.folderId
       if (filters.value.tags) query.tags = filters.value.tags
       if (filters.value.dateFrom) query.dateFrom = filters.value.dateFrom
@@ -76,6 +85,8 @@ export function useQr() {
     title: string
     destinationUrl: string
     type?: 'dynamic' | 'static'
+    visibility?: 'private' | 'department' | 'public'
+    departmentId?: string | null
     description?: string
     style?: QrStyle
     utmParams?: UtmParams
