@@ -5,6 +5,7 @@ interface QrFilters {
   search: string
   status: string
   folderId: string
+  visibility: string
   tags: string
   dateFrom: string
   dateTo: string
@@ -18,6 +19,7 @@ const defaultFilters: QrFilters = {
   search: '',
   status: '',
   folderId: '',
+  visibility: '',
   tags: '',
   dateFrom: '',
   dateTo: '',
@@ -39,25 +41,57 @@ export function useQr() {
     300,
   )
 
+  function serializeFiltersToQuery(options?: { useDebouncedSearch?: boolean }) {
+    const useDebouncedSearch = options?.useDebouncedSearch ?? false
+    const searchValue = useDebouncedSearch ? debouncedSearch.value : filters.value.search
+
+    const query: Record<string, string | number> = {
+      page: filters.value.page,
+      limit: filters.value.limit,
+      sortBy: filters.value.sortBy,
+      sortOrder: filters.value.sortOrder,
+    }
+
+    if (searchValue) query.search = searchValue
+    if (filters.value.status) query.status = filters.value.status
+    if (filters.value.folderId) query.folderId = filters.value.folderId
+    if (filters.value.visibility) query.visibility = filters.value.visibility
+    if (filters.value.tags) query.tags = filters.value.tags
+    if (filters.value.dateFrom) query.dateFrom = filters.value.dateFrom
+    if (filters.value.dateTo) query.dateTo = filters.value.dateTo
+
+    return query
+  }
+
+  function applyFiltersFromQuery(query: Record<string, unknown>) {
+    const getString = (value: unknown) => (typeof value === 'string' ? value : '')
+    const getPositiveNumber = (value: unknown, fallback: number) => {
+      if (typeof value !== 'string') return fallback
+      const parsed = Number.parseInt(value, 10)
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+    }
+
+    filters.value = {
+      ...filters.value,
+      search: getString(query.search),
+      status: getString(query.status),
+      folderId: getString(query.folderId),
+      visibility: getString(query.visibility),
+      tags: getString(query.tags),
+      dateFrom: getString(query.dateFrom),
+      dateTo: getString(query.dateTo),
+      sortBy: getString(query.sortBy) || defaultFilters.sortBy,
+      sortOrder: getString(query.sortOrder) === 'asc' ? 'asc' : 'desc',
+      page: getPositiveNumber(query.page, defaultFilters.page),
+      limit: getPositiveNumber(query.limit, defaultFilters.limit),
+    }
+  }
+
   async function fetchQrList() {
     loading.value = true
     try {
-      const query: Record<string, string | number> = {
-        page: filters.value.page,
-        limit: filters.value.limit,
-        sortBy: filters.value.sortBy,
-        sortOrder: filters.value.sortOrder,
-      }
-
-      if (debouncedSearch.value) query.search = debouncedSearch.value
-      if (filters.value.status) query.status = filters.value.status
-      if (filters.value.folderId) query.folderId = filters.value.folderId
-      if (filters.value.tags) query.tags = filters.value.tags
-      if (filters.value.dateFrom) query.dateFrom = filters.value.dateFrom
-      if (filters.value.dateTo) query.dateTo = filters.value.dateTo
-
       const response = await $fetch<{ data: QrCode[], meta: ApiMeta }>('/api/qr', {
-        query,
+        query: serializeFiltersToQuery({ useDebouncedSearch: true }),
       })
 
       qrList.value = response.data
@@ -149,5 +183,7 @@ export function useQr() {
     bulkDeleteQr,
     duplicateQr,
     resetFilters,
+    serializeFiltersToQuery,
+    applyFiltersFromQuery,
   }
 }

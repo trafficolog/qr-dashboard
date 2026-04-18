@@ -158,6 +158,26 @@
     },
     "preview": {
       "alt": "Предпросмотр QR-кода для «{title}»"
+    },
+    "visibility": {
+      "private": "Приватный",
+      "department": "Отдел",
+      "departmentWithName": "Отдел: {name}",
+      "public": "Публичный",
+      "updated": "Видимость обновлена",
+      "updateError": "Ошибка обновления видимости"
+    },
+    "actions": {
+      "makePrivate": "Сделать приватным",
+      "makeDepartment": "Сделать для отдела",
+      "makePublic": "Сделать публичным"
+    },
+    "filters": {
+      "visibility": "Видимость",
+      "allVisibility": "Все",
+      "my": "Мои",
+      "department": "Отдела",
+      "public": "Публичные"
     }
   },
   "a11y": {

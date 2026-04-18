@@ -1,5 +1,6 @@
 export type QrStatus = 'active' | 'paused' | 'expired' | 'archived'
 export type QrType = 'dynamic' | 'static'
+export type QrVisibility = 'private' | 'department' | 'public'
 
 export interface QrStyle {
   foregroundColor?: string
@@ -50,6 +51,8 @@ export interface QrCode {
   uniqueScans: number
   createdAt: Date
   updatedAt: Date
+  visibility?: QrVisibility
+  departmentName?: string | null
 }
 
 export interface QrDestination {
