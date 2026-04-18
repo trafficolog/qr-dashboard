@@ -60,6 +60,8 @@ export function useQr() {
     if (filters.value.status) query.status = filters.value.status
     if (filters.value.folderId) query.folderId = filters.value.folderId
     if (filters.value.visibility) query.visibility = filters.value.visibility
+    if (filters.value.departmentId) query.departmentId = filters.value.departmentId
+    if (filters.value.scope) query.scope = filters.value.scope
     if (filters.value.tags) query.tags = filters.value.tags
     if (filters.value.dateFrom) query.dateFrom = filters.value.dateFrom
     if (filters.value.dateTo) query.dateTo = filters.value.dateTo
@@ -73,6 +75,10 @@ export function useQr() {
       const typedValue = getString(value)
       return typedValue === 'private' || typedValue === 'department' || typedValue === 'public' ? typedValue : ''
     }
+    const getScope = (value: unknown): QrFilters['scope'] => {
+      const typedValue = getString(value)
+      return typedValue === 'mine' || typedValue === 'department' || typedValue === 'public' || typedValue === 'all' ? typedValue : ''
+    }
     const getPositiveNumber = (value: unknown, fallback: number) => {
       if (typeof value !== 'string') return fallback
       const parsed = Number.parseInt(value, 10)
@@ -85,6 +91,8 @@ export function useQr() {
       status: getString(query.status),
       folderId: getString(query.folderId),
       visibility: getVisibility(query.visibility),
+      departmentId: getString(query.departmentId),
+      scope: getScope(query.scope),
       tags: getString(query.tags),
       dateFrom: getString(query.dateFrom),
       dateTo: getString(query.dateTo),
@@ -98,23 +106,6 @@ export function useQr() {
   async function fetchQrList() {
     loading.value = true
     try {
-      const query: Record<string, string | number> = {
-        page: filters.value.page,
-        limit: filters.value.limit,
-        sortBy: filters.value.sortBy,
-        sortOrder: filters.value.sortOrder,
-      }
-
-      if (debouncedSearch.value) query.search = debouncedSearch.value
-      if (filters.value.status) query.status = filters.value.status
-      if (filters.value.visibility) query.visibility = filters.value.visibility
-      if (filters.value.departmentId) query.departmentId = filters.value.departmentId
-      if (filters.value.scope) query.scope = filters.value.scope
-      if (filters.value.folderId) query.folderId = filters.value.folderId
-      if (filters.value.tags) query.tags = filters.value.tags
-      if (filters.value.dateFrom) query.dateFrom = filters.value.dateFrom
-      if (filters.value.dateTo) query.dateTo = filters.value.dateTo
-
       const response = await $fetch<{ data: QrCode[], meta: ApiMeta }>('/api/qr', {
         query: serializeFiltersToQuery({ useDebouncedSearch: true }),
       })

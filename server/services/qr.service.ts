@@ -3,6 +3,7 @@ import { db } from '../db'
 import { qrCodes, qrTags, userDepartments } from '../db/schema'
 import { generateShortCode } from '../utils/nanoid'
 import { invalidateQrCache } from '../utils/qr-cache'
+import { resolveVisibilityAccess } from './qr-visibility-access'
 import type { User } from '~~/types/auth'
 
 // --- Types ---
@@ -70,14 +71,6 @@ interface MembershipCache {
 }
 
 // --- Helpers ---
-
-function checkAccess(qr: { createdBy: string, visibility?: 'private' | 'department' | 'public' }, user: User) {
-  if (user.role === 'admin') return
-  if (qr.createdBy === user.id) return
-  if (qr.visibility === 'public') return
-
-  throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
-}
 
 async function ensureEditAccess(qr: QrAccessEntity, user: User) {
   if (!(await canManageQr(qr, user))) {
@@ -286,41 +279,46 @@ export const qrService = {
     // Build WHERE conditions
     const conditions = []
 
-    if (filters.scope === 'mine') {
-      conditions.push(eq(qrCodes.createdBy, user.id))
-    }
-    else if (filters.scope === 'department') {
-      if (filters.departmentId) {
-        conditions.push(eq(qrCodes.visibility, 'department'))
-        conditions.push(eq(qrCodes.departmentId, filters.departmentId))
+    if (user.role !== 'admin' || filters.scope) {
+      const membership = user.role === 'admin'
+        ? { departmentIds: [] }
+        : await getUserDepartmentMembership(user.id)
+
+      const access = resolveVisibilityAccess({
+        scope: filters.scope,
+        userRole: user.role,
+        userDepartmentIds: membership.departmentIds,
+        requestedDepartmentId: filters.departmentId,
+      })
+
+      if (access.denyAll) {
+        return { data: [], total: 0, page, limit, totalPages: 0 }
       }
-      else {
-        conditions.push(eq(qrCodes.createdBy, user.id))
+
+      const accessConditions = []
+      if (access.includeMine) {
+        accessConditions.push(eq(qrCodes.createdBy, user.id))
       }
-    }
-    else if (filters.scope === 'public') {
-      conditions.push(eq(qrCodes.visibility, 'public'))
-    }
-    else if (user.role !== 'admin') {
-      if (filters.departmentId) {
-        conditions.push(
-          or(
-            eq(qrCodes.createdBy, user.id),
-            eq(qrCodes.visibility, 'public'),
-            and(
-              eq(qrCodes.visibility, 'department'),
-              eq(qrCodes.departmentId, filters.departmentId),
-            ),
-          )!,
+      if (access.includePublic) {
+        accessConditions.push(eq(qrCodes.visibility, 'public'))
+      }
+      if (access.allowedDepartmentIds === null) {
+        accessConditions.push(eq(qrCodes.visibility, 'department'))
+      }
+      else if (access.allowedDepartmentIds.length > 0) {
+        accessConditions.push(
+          and(
+            eq(qrCodes.visibility, 'department'),
+            inArray(qrCodes.departmentId, access.allowedDepartmentIds),
+          ),
         )
       }
+
+      if (accessConditions.length > 0) {
+        conditions.push(or(...accessConditions)!)
+      }
       else {
-        conditions.push(
-          or(
-            eq(qrCodes.createdBy, user.id),
-            eq(qrCodes.visibility, 'public'),
-          )!,
-        )
+        return { data: [], total: 0, page, limit, totalPages: 0 }
       }
     }
 

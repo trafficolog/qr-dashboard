@@ -47,8 +47,8 @@
       />
 
       <USelect
-        v-model="selectedVisibility"
-        :items="visibilityOptions"
+        v-model="selectedScope"
+        :items="scopeOptions"
         :placeholder="t('qr.filters.visibility')"
         size="sm"
         class="w-44"
@@ -396,9 +396,9 @@ const statusOptions = [
   { label: 'Архив', value: 'archived' },
 ]
 
-const visibilityOptions = [
+const scopeOptions = [
   { label: t('qr.filters.allVisibility'), value: ALL_VISIBILITY },
-  { label: t('qr.filters.my'), value: 'private' },
+  { label: t('qr.filters.my'), value: 'mine' },
   { label: t('qr.filters.department'), value: 'department' },
   { label: t('qr.filters.public'), value: 'public' },
 ]
@@ -417,10 +417,12 @@ const selectedFolderId = computed({
   },
 })
 
-const selectedVisibility = computed({
-  get: () => filters.value.visibility || ALL_VISIBILITY,
+const selectedScope = computed({
+  get: () => filters.value.scope || ALL_VISIBILITY,
   set: (value: string) => {
-    filters.value.visibility = value === ALL_VISIBILITY ? '' : value
+    filters.value.scope = value === ALL_VISIBILITY
+      ? ''
+      : (value as 'mine' | 'department' | 'public' | 'all')
   },
 })
 
@@ -432,7 +434,7 @@ onMounted(() => {
 })
 
 watch(
-  () => [filters.value.status, filters.value.folderId, filters.value.visibility, filters.value.sortBy, filters.value.sortOrder],
+  () => [filters.value.status, filters.value.folderId, filters.value.scope, filters.value.sortBy, filters.value.sortOrder],
   () => {
     filters.value.page = 1
     fetchQrList()
