@@ -6,6 +6,8 @@ const updateSchema = z.object({
   destinationUrl: z.string().url().optional(),
   description: z.string().max(1000).optional().nullable(),
   status: z.enum(['active', 'paused', 'expired', 'archived']).optional(),
+  visibility: z.enum(['private', 'department', 'public']).optional(),
+  departmentId: z.string().uuid().optional().nullable(),
   style: z.record(z.any()).optional(),
   utmParams: z
     .object({
