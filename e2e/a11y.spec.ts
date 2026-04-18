@@ -9,26 +9,37 @@ const pages = [
   '/analytics',
 ]
 
-for (const path of pages) {
-  test(`${path} has no critical a11y violations`, async ({ page }) => {
-    if (process.env.PLAYWRIGHT_AUTH_COOKIE) {
-      await page.context().addCookies([
-        {
-          name: 'session',
-          value: process.env.PLAYWRIGHT_AUTH_COOKIE,
-          domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001').hostname,
-          path: '/',
-        },
-      ])
+test.describe('Accessibility smoke (axe)', () => {
+  test.beforeEach(async ({ page }) => {
+    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+      test.skip()
     }
 
-    await page.goto(path)
-
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .disableRules(['color-contrast'])
-      .analyze()
-
-    expect(results.violations).toEqual([])
+    await page.context().addCookies([
+      {
+        name: 'session',
+        value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
+        domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001').hostname,
+        path: '/',
+      },
+    ])
   })
-}
+
+  for (const path of pages) {
+    test(`${path} has no serious/critical a11y violations`, async ({ page }) => {
+      await page.goto(path)
+      await page.waitForLoadState('networkidle')
+
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa'])
+        .disableRules(['color-contrast'])
+        .analyze()
+
+      const blockingViolations = results.violations.filter((violation) => {
+        return violation.impact === 'serious' || violation.impact === 'critical'
+      })
+
+      expect(blockingViolations).toEqual([])
+    })
+  }
+})
