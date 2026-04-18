@@ -8,14 +8,14 @@
       <div
         v-for="i in 5"
         :key="i"
-        class="h-12 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"
+        class="h-12 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse"
       />
     </div>
 
     <!-- Empty -->
     <div
       v-else-if="!data.length"
-      class="py-10 text-center text-gray-400 dark:text-gray-600"
+      class="py-10 text-center text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)]"
     >
       <UIcon
         name="i-lucide-qr-code"
@@ -39,25 +39,25 @@
           <tr class="border-b border-gray-100 dark:border-gray-800">
             <th
               scope="col"
-              class="py-2 pr-4 text-left font-medium text-gray-500 dark:text-gray-400 w-8"
+              class="py-2 pr-4 text-left font-medium text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] w-8"
             >
               #
             </th>
             <th
               scope="col"
-              class="py-2 pr-4 text-left font-medium text-gray-500 dark:text-gray-400"
+              class="py-2 pr-4 text-left font-medium text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]"
             >
               QR-код
             </th>
             <th
               scope="col"
-              class="py-2 pr-4 text-right font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap"
+              class="py-2 pr-4 text-right font-medium text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] whitespace-nowrap"
             >
               Всего
             </th>
             <th
               scope="col"
-              class="py-2 text-right font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap"
+              class="py-2 text-right font-medium text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] whitespace-nowrap"
             >
               Уникальных
             </th>
@@ -67,26 +67,26 @@
           <tr
             v-for="(qr, idx) in data"
             :key="qr.id"
-            class="border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
+            class="border-b border-gray-50 dark:border-gray-800/50 hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/30 transition-colors"
           >
-            <td class="py-2.5 pr-4 text-gray-400 dark:text-gray-600 tabular-nums">
+            <td class="py-2.5 pr-4 text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)] tabular-nums">
               {{ idx + 1 }}
             </td>
             <td class="py-2.5 pr-4">
               <NuxtLink
                 :to="`/qr/${qr.id}`"
-                class="font-medium text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] hover:text-[color:var(--success)] dark:hover:text-[color:var(--success)] transition-colors"
               >
                 {{ qr.title || qr.shortCode }}
               </NuxtLink>
-              <p class="text-xs text-gray-400 dark:text-gray-600 mt-0.5">
+              <p class="text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)] mt-0.5">
                 {{ qr.shortCode }}
               </p>
             </td>
-            <td class="py-2.5 pr-4 text-right tabular-nums font-medium text-gray-900 dark:text-white">
+            <td class="py-2.5 pr-4 text-right tabular-nums font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
               {{ qr.totalScans.toLocaleString('ru-RU') }}
             </td>
-            <td class="py-2.5 text-right tabular-nums text-gray-500 dark:text-gray-400">
+            <td class="py-2.5 text-right tabular-nums text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
               {{ qr.uniqueScans.toLocaleString('ru-RU') }}
             </td>
           </tr>

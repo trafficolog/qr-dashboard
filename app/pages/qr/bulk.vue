@@ -12,10 +12,10 @@
         to="/qr"
       />
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           Массовое создание QR-кодов
         </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] mt-0.5">
           Загрузите CSV-файл для создания нескольких QR-кодов за раз
         </p>
       </div>
@@ -41,14 +41,14 @@
         </div>
         <span
           class="text-sm hidden sm:block"
-          :class="step === i + 1 ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-400'"
+          :class="step === i + 1 ? 'font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)]'"
         >
           {{ label }}
         </span>
         <UIcon
           v-if="i < stepLabels.length - 1"
           name="i-lucide-chevron-right"
-          class="size-4 text-gray-300 dark:text-gray-600"
+          class="size-4 text-gray-300 dark:text-[color:var(--text-secondary)]"
         />
       </div>
     </div>
@@ -85,8 +85,8 @@
       <div
         class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-colors cursor-pointer"
         :class="isDragging
-          ? 'border-green-400 bg-green-50 dark:bg-green-950/30'
-          : 'border-gray-200 dark:border-gray-700 hover:border-green-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'"
+          ? 'border-green-400 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)]'
+          : 'border-[color:var(--border)] dark:border-[color:var(--border)] hover:border-green-300 hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/50'"
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop.prevent="onFileDrop"
@@ -101,29 +101,29 @@
         >
         <UIcon
           name="i-lucide-upload-cloud"
-          class="size-12 text-gray-300 dark:text-gray-600 mb-3"
+          class="size-12 text-gray-300 dark:text-[color:var(--text-secondary)] mb-3"
         />
-        <p class="font-medium text-gray-700 dark:text-gray-300">
+        <p class="font-medium text-[color:var(--text-secondary)] dark:text-gray-300">
           Перетащите CSV-файл или нажмите для выбора
         </p>
-        <p class="text-sm text-gray-400 mt-1">
+        <p class="text-sm text-[color:var(--text-muted)] mt-1">
           Поддерживается только .csv, до 500 строк
         </p>
       </div>
 
       <div
         v-if="selectedFile"
-        class="mt-4 flex items-center gap-3 rounded-lg border border-green-100 dark:border-green-900 bg-green-50 dark:bg-green-950/30 px-4 py-3"
+        class="mt-4 flex items-center gap-3 rounded-lg border border-green-100 dark:border-green-900 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] px-4 py-3"
       >
         <UIcon
           name="i-lucide-file-text"
-          class="size-5 text-green-600 shrink-0"
+          class="size-5 text-[color:var(--success)] shrink-0"
         />
         <div class="flex-1 min-w-0">
           <p class="font-medium text-sm truncate">
             {{ selectedFile.name }}
           </p>
-          <p class="text-xs text-gray-500">
+          <p class="text-xs text-[color:var(--text-muted)]">
             {{ formatFileSize(selectedFile.size) }}
           </p>
         </div>
@@ -140,7 +140,7 @@
 
       <p
         v-if="parseError"
-        class="mt-3 text-sm text-red-500"
+        class="mt-3 text-sm text-[color:var(--danger)]"
       >
         {{ parseError }}
       </p>
@@ -180,14 +180,14 @@
               <th
                 v-for="col in detectedHeaders"
                 :key="col"
-                class="py-2 pr-4 text-left text-xs font-medium text-gray-500"
+                class="py-2 pr-4 text-left text-xs font-medium text-[color:var(--text-muted)]"
               >
                 <div class="flex items-center gap-1">
                   {{ col }}
                   <UIcon
                     v-if="requiredHeaders.includes(col)"
                     name="i-lucide-asterisk"
-                    class="size-2.5 text-red-400"
+                    class="size-2.5 text-[color:var(--danger)]"
                   />
                 </div>
               </th>
@@ -202,7 +202,7 @@
               <td
                 v-for="col in detectedHeaders"
                 :key="col"
-                class="py-2 pr-4 max-w-[200px] truncate text-gray-700 dark:text-gray-300"
+                class="py-2 pr-4 max-w-[200px] truncate text-[color:var(--text-secondary)] dark:text-gray-300"
               >
                 {{ row[col] || '—' }}
               </td>
@@ -213,7 +213,7 @@
 
       <p
         v-if="parsedRows.length > 5"
-        class="mt-3 text-xs text-gray-400"
+        class="mt-3 text-xs text-[color:var(--text-muted)]"
       >
         Показаны первые 5 из {{ parsedRows.length }} строк
       </p>
@@ -266,16 +266,16 @@
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-gray-100 dark:border-gray-800">
-              <th class="py-2 pr-3 w-10 text-left text-xs text-gray-500">
+              <th class="py-2 pr-3 w-10 text-left text-xs text-[color:var(--text-muted)]">
                 #
               </th>
-              <th class="py-2 pr-3 text-left text-xs text-gray-500">
+              <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)]">
                 Название
               </th>
-              <th class="py-2 pr-3 text-left text-xs text-gray-500 hidden sm:table-cell">
+              <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)] hidden sm:table-cell">
                 URL
               </th>
-              <th class="py-2 text-left text-xs text-gray-500">
+              <th class="py-2 text-left text-xs text-[color:var(--text-muted)]">
                 Статус
               </th>
             </tr>
@@ -285,24 +285,24 @@
               v-for="item in validationItems"
               :key="item.row"
               class="border-b border-gray-50 dark:border-gray-800/50"
-              :class="item.valid ? '' : 'bg-red-50/50 dark:bg-red-950/20'"
+              :class="item.valid ? '' : 'bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)]'"
             >
-              <td class="py-2.5 pr-3 text-gray-400 tabular-nums">
+              <td class="py-2.5 pr-3 text-[color:var(--text-muted)] tabular-nums">
                 {{ item.row }}
               </td>
               <td
                 class="py-2.5 pr-3 font-medium"
-                :class="item.valid ? 'text-gray-900 dark:text-white' : 'text-red-700 dark:text-red-400'"
+                :class="item.valid ? 'text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]' : 'text-[color:var(--danger)] dark:text-[color:var(--danger)]'"
               >
                 {{ item.title || '—' }}
               </td>
               <td class="py-2.5 pr-3 hidden sm:table-cell max-w-[200px]">
-                <span class="truncate block text-gray-500">{{ item.url || '—' }}</span>
+                <span class="truncate block text-[color:var(--text-muted)]">{{ item.url || '—' }}</span>
               </td>
               <td class="py-2.5">
                 <div
                   v-if="item.valid"
-                  class="flex items-center gap-1 text-green-600 dark:text-green-400"
+                  class="flex items-center gap-1 text-[color:var(--success)] dark:text-[color:var(--success)]"
                 >
                   <UIcon
                     name="i-lucide-check-circle"
@@ -312,7 +312,7 @@
                 </div>
                 <div
                   v-else
-                  class="text-xs text-red-600 dark:text-red-400"
+                  class="text-xs text-[color:var(--danger)] dark:text-[color:var(--danger)]"
                 >
                   {{ item.errorMsg }}
                 </div>
@@ -350,27 +350,27 @@
 
       <div class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="rounded-xl border border-green-100 dark:border-green-900 bg-green-50 dark:bg-green-950/30 p-4 text-center">
-            <p class="text-3xl font-bold text-green-600 dark:text-green-400">
+          <div class="rounded-xl border border-green-100 dark:border-green-900 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] p-4 text-center">
+            <p class="text-3xl font-bold text-[color:var(--success)] dark:text-[color:var(--success)]">
               {{ validRows.length }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-1">
               Будет создано
             </p>
           </div>
-          <div class="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 p-4 text-center">
-            <p class="text-3xl font-bold text-gray-900 dark:text-white">
+          <div class="rounded-xl border border-gray-100 dark:border-gray-800 bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)]/50 p-4 text-center">
+            <p class="text-3xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
               {{ parsedRows.length }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-1">
               Всего строк
             </p>
           </div>
-          <div class="rounded-xl border border-red-100 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-4 text-center">
-            <p class="text-3xl font-bold text-red-500">
+          <div class="rounded-xl border border-red-100 dark:border-red-900 bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] p-4 text-center">
+            <p class="text-3xl font-bold text-[color:var(--danger)]">
               {{ rowErrors.length }}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-1">
               Пропущено (ошибки)
             </p>
           </div>
@@ -384,7 +384,7 @@
           :description="`${rowErrors.length} строк с ошибками будут пропущены. Проверьте данные и загрузите исправленный файл.`"
         />
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
           Все QR-коды будут созданы с типом <strong>«Динамический»</strong> и стилем по умолчанию.
           После создания вы сможете отредактировать каждый QR-код отдельно.
         </p>
@@ -421,17 +421,17 @@
         <!-- Success -->
         <div
           v-if="result.created > 0"
-          class="flex items-center gap-4 rounded-xl border border-green-100 dark:border-green-900 bg-green-50 dark:bg-green-950/30 p-5"
+          class="flex items-center gap-4 rounded-xl border border-green-100 dark:border-green-900 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] p-5"
         >
           <UIcon
             name="i-lucide-check-circle"
-            class="size-10 text-green-500 shrink-0"
+            class="size-10 text-[color:var(--success)] shrink-0"
           />
           <div>
-            <p class="text-xl font-bold text-green-700 dark:text-green-400">
+            <p class="text-xl font-bold text-[color:var(--success)] dark:text-[color:var(--success)]">
               {{ result.created }} QR-кодов создано
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-0.5">
               Все QR-коды доступны в разделе «QR-коды»
             </p>
           </div>
@@ -439,20 +439,20 @@
 
         <!-- Errors -->
         <div v-if="result.failed > 0">
-          <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <p class="text-sm font-medium text-[color:var(--text-secondary)] dark:text-gray-300 mb-2">
             Ошибки ({{ result.failed }}):
           </p>
           <div class="rounded-lg border border-red-100 dark:border-red-900 overflow-hidden">
             <table class="w-full text-sm">
               <thead>
-                <tr class="bg-red-50 dark:bg-red-950/30">
-                  <th class="py-2 px-3 text-left text-xs text-red-600">
+                <tr class="bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)]">
+                  <th class="py-2 px-3 text-left text-xs text-[color:var(--danger)]">
                     Строка
                   </th>
-                  <th class="py-2 px-3 text-left text-xs text-red-600">
+                  <th class="py-2 px-3 text-left text-xs text-[color:var(--danger)]">
                     Поле
                   </th>
-                  <th class="py-2 px-3 text-left text-xs text-red-600">
+                  <th class="py-2 px-3 text-left text-xs text-[color:var(--danger)]">
                     Ошибка
                   </th>
                 </tr>
@@ -466,10 +466,10 @@
                   <td class="py-2 px-3 tabular-nums">
                     {{ err.row }}
                   </td>
-                  <td class="py-2 px-3 text-gray-500">
+                  <td class="py-2 px-3 text-[color:var(--text-muted)]">
                     {{ err.field }}
                   </td>
-                  <td class="py-2 px-3 text-red-600 dark:text-red-400">
+                  <td class="py-2 px-3 text-[color:var(--danger)] dark:text-[color:var(--danger)]">
                     {{ err.message }}
                   </td>
                 </tr>
@@ -478,7 +478,7 @@
           </div>
           <p
             v-if="result.errors.length > 20"
-            class="mt-2 text-xs text-gray-400"
+            class="mt-2 text-xs text-[color:var(--text-muted)]"
           >
             Показаны первые 20 из {{ result.errors.length }} ошибок
           </p>
@@ -540,9 +540,9 @@ const result = ref<{ created: number, failed: number, errors: RowError[] }>({
 })
 
 function stepCircleClass(s: number) {
-  if (step.value > s) return 'bg-green-500 text-white'
-  if (step.value === s) return 'bg-green-600 text-white'
-  return 'bg-gray-100 dark:bg-gray-800 text-gray-400'
+  if (step.value > s) return 'bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] text-[color:var(--text-primary)]'
+  if (step.value === s) return 'bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] text-[color:var(--text-primary)]'
+  return 'bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] text-[color:var(--text-muted)]'
 }
 
 const previewRows = computed(() => parsedRows.value.slice(0, 5))
