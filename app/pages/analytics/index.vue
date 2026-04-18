@@ -44,6 +44,7 @@
         :value="overview?.totalQrCodes"
         :change="overview?.totalQrCodesChange"
         :loading="loading"
+        :reduced-motion="reducedMotion"
       />
       <AnalyticsStatCard
         icon="i-lucide-scan-line"
@@ -51,6 +52,7 @@
         :value="overview?.totalScans"
         :change="overview?.totalScansChange"
         :loading="loading"
+        :reduced-motion="reducedMotion"
       />
       <AnalyticsStatCard
         icon="i-lucide-users"
@@ -58,6 +60,7 @@
         :value="overview?.uniqueScans"
         :change="overview?.uniqueScansChange"
         :loading="loading"
+        :reduced-motion="reducedMotion"
       />
       <AnalyticsStatCard
         icon="i-lucide-trending-up"
@@ -65,6 +68,7 @@
         :value="overview?.scansToday"
         :change="overview?.scansTodayChange"
         :loading="loading"
+        :reduced-motion="reducedMotion"
       />
     </div>
 
@@ -84,6 +88,7 @@
       <AnalyticsScanChart
         :data="timeSeries"
         :loading="loading"
+        :reduced-motion="reducedMotion"
       />
     </UCard>
 
@@ -118,6 +123,7 @@
 import type { DateRange } from '~~/types/analytics'
 
 const { overview, timeSeries, topQr, loading, error, fetchAll } = useAnalytics()
+const reducedMotion = useReducedMotion()
 
 const dateRange = ref<DateRange>({
   from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!,

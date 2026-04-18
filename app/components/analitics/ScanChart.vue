@@ -54,6 +54,7 @@ use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer
 const props = defineProps<{
   data: ScanTimeSeriesPoint[]
   loading?: boolean
+  reducedMotion?: boolean
 }>()
 
 function formatDate(iso: string): string {
@@ -62,6 +63,9 @@ function formatDate(iso: string): string {
 }
 
 const chartOption = computed(() => ({
+  animation: !props.reducedMotion,
+  animationDuration: props.reducedMotion ? 0 : 300,
+  animationDurationUpdate: props.reducedMotion ? 0 : 300,
   tooltip: {
     trigger: 'axis',
     formatter: (params: unknown[]) => {
@@ -95,6 +99,7 @@ const chartOption = computed(() => ({
       name: 'Все сканирования',
       type: 'line',
       data: props.data.map(d => d.totalScans),
+      animation: !props.reducedMotion,
       smooth: true,
       symbol: 'circle',
       symbolSize: 5,
@@ -106,6 +111,7 @@ const chartOption = computed(() => ({
       name: 'Уникальные',
       type: 'line',
       data: props.data.map(d => d.uniqueScans),
+      animation: !props.reducedMotion,
       smooth: true,
       symbol: 'circle',
       symbolSize: 5,
