@@ -16,6 +16,7 @@
     <div
       v-else
       class="flex items-start gap-3"
+      :data-motion-enabled="!props.reducedMotion"
     >
       <div class="p-2 rounded-lg bg-green-50 dark:bg-green-950 shrink-0">
         <UIcon
@@ -58,6 +59,7 @@ const props = defineProps<{
   value?: number | string
   change?: number
   loading?: boolean
+  reducedMotion?: boolean
 }>()
 
 const formattedValue = computed(() => {

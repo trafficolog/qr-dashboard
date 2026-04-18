@@ -397,3 +397,19 @@ html.dark .score-high {
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hover\:-translate-y-0\.5:hover,
+  .active\:scale-95:active {
+    transform: none !important;
+  }
+}
