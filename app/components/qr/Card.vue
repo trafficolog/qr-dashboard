@@ -42,6 +42,14 @@
         >
           {{ statusLabel }}
         </UBadge>
+        <UBadge
+          :icon="visibilityBadge.icon"
+          variant="soft"
+          color="neutral"
+          size="xs"
+        >
+          {{ visibilityBadge.label }}
+        </UBadge>
         <span class="text-xs text-[color:var(--text-secondary)]">
           {{ qr.totalScans.toLocaleString() }} сканов
         </span>
@@ -74,6 +82,8 @@ interface QrItem {
   totalScans: number
   style?: Record<string, unknown>
   tags?: { id: string, name: string, color: string | null }[]
+  visibility?: 'private' | 'department' | 'public'
+  departmentName?: string | null
 }
 
 const props = defineProps<{ qr: QrItem }>()
@@ -82,7 +92,9 @@ const emit = defineEmits<{
   edit: [id: string]
   duplicate: [id: string]
   delete: [id: string]
+  changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public' }]
 }>()
+const { t } = useI18n()
 
 type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
 
@@ -96,11 +108,31 @@ const statusLabel = computed(() => {
   return map[props.qr.status] || props.qr.status
 })
 
+const visibilityBadge = computed(() => {
+  if (props.qr.visibility === 'department') {
+    return {
+      icon: 'i-lucide-building-2',
+      label: props.qr.departmentName ? t('qr.visibility.departmentWithName', { name: props.qr.departmentName }) : t('qr.visibility.department'),
+    }
+  }
+
+  if (props.qr.visibility === 'public') {
+    return { icon: 'i-lucide-globe', label: t('qr.visibility.public') }
+  }
+
+  return { icon: 'i-lucide-lock', label: t('qr.visibility.private') }
+})
+
 const actions = [
   [
     { label: 'Открыть', icon: 'i-lucide-external-link', to: `/qr/${props.qr.id}` },
     { label: 'Редактировать', icon: 'i-lucide-pencil', onSelect: () => emit('edit', props.qr.id) },
     { label: 'Дублировать', icon: 'i-lucide-copy', onSelect: () => emit('duplicate', props.qr.id) },
+  ],
+  [
+    { label: t('qr.actions.makePrivate'), icon: 'i-lucide-lock', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'private' }) },
+    { label: t('qr.actions.makeDepartment'), icon: 'i-lucide-building-2', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'department' }) },
+    { label: t('qr.actions.makePublic'), icon: 'i-lucide-globe', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'public' }) },
   ],
   [
     { label: 'Удалить', icon: 'i-lucide-trash-2', onSelect: () => emit('delete', props.qr.id) },

@@ -41,6 +41,8 @@ export interface QrCode {
   description: string | null
   type: QrType
   status: QrStatus
+  visibility: QrVisibility
+  departmentId: string | null
   destinationUrl: string
   style: QrStyle
   utmParams: UtmParams | null
@@ -53,6 +55,8 @@ export interface QrCode {
   uniqueScans: number
   createdAt: Date
   updatedAt: Date
+  visibility?: QrVisibility
+  departmentName?: string | null
 }
 
 export interface QrDestination {

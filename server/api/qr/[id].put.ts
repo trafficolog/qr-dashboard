@@ -6,6 +6,8 @@ const updateSchema = z.object({
   destinationUrl: z.string().url().optional(),
   description: z.string().max(1000).optional().nullable(),
   status: z.enum(['active', 'paused', 'expired', 'archived']).optional(),
+  visibility: z.enum(['private', 'department', 'public']).optional(),
+  departmentId: z.string().uuid().optional().nullable(),
   style: z.record(z.any()).optional(),
   utmParams: z
     .object({
@@ -19,6 +21,8 @@ const updateSchema = z.object({
   folderId: z.string().uuid().optional().nullable(),
   tagIds: z.array(z.string().uuid()).optional(),
   expiresAt: z.string().datetime().optional().nullable(),
+  visibility: z.enum(['private', 'public', 'department']).optional(),
+  departmentId: z.string().uuid().nullable().optional(),
 })
 
 export default defineEventHandler(async (event) => {
