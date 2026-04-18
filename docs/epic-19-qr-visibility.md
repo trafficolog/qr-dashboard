@@ -196,7 +196,7 @@ getQrList(filters, pagination, user):
 ```
 server/db/schema/departments.ts
 server/db/schema/user-departments.ts
-server/db/migrations/0002_add_departments_and_visibility.sql
+server/db/migrations/0002_add_departments_and_qr_visibility.sql
 ```
 
 **Изменяемые файлы:**
@@ -886,7 +886,7 @@ docs/completed-epics.md
 ```
 server/db/schema/departments.ts
 server/db/schema/user-departments.ts
-server/db/migrations/0002_add_departments_and_visibility.sql
+server/db/migrations/0002_add_departments_and_qr_visibility.sql
 server/services/department.service.ts
 server/api/departments/index.get.ts
 server/api/departments/index.post.ts
