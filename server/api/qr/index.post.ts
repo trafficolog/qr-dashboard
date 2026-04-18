@@ -19,6 +19,8 @@ const createSchema = z.object({
   folderId: z.string().uuid().optional(),
   tagIds: z.array(z.string().uuid()).optional(),
   expiresAt: z.string().datetime().optional(),
+  visibility: z.enum(['private', 'public', 'department']).optional(),
+  departmentId: z.string().uuid().nullable().optional(),
 })
 
 export default defineEventHandler(async (event) => {
