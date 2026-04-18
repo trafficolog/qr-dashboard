@@ -26,6 +26,20 @@ async function getDepartmentOrThrow(id: string) {
 }
 
 export const departmentsService = {
+  async listForUser(userId: string) {
+    const memberships = await db.query.userDepartments.findMany({
+      where: eq(userDepartments.userId, userId),
+      with: {
+        department: {
+          columns: { id: true, name: true },
+        },
+      },
+      orderBy: asc(userDepartments.joinedAt),
+    })
+
+    return memberships.map(({ department }) => department)
+  },
+
   async list() {
     const rows = await db.query.departments.findMany({
       with: {

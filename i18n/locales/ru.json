@@ -173,7 +173,14 @@
     "actions": {
       "makePrivate": "Сделать приватным",
       "makeDepartment": "Сделать для отдела",
-      "makePublic": "Сделать публичным"
+      "makePublic": "Сделать публичным",
+      "makeDepartmentDisabledTooltip": "Недоступно: пользователь не состоит ни в одном отделе"
+    },
+    "departmentModal": {
+      "title": "Выберите отдел",
+      "description": "Укажите отдел, которому будет доступен QR-код.",
+      "cancel": "Отмена",
+      "confirm": "Поделиться"
     },
     "filters": {
       "visibility": "Видимость",

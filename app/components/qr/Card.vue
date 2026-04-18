@@ -22,16 +22,18 @@
         >
           {{ qr.title }}
         </NuxtLink>
-        <UDropdownMenu :items="actions">
-          <UButton
-            icon="i-lucide-more-horizontal"
-            :aria-label="`Открыть действия для QR-кода ${qr.title}`"
-            :title="`Открыть действия для QR-кода ${qr.title}`"
-            variant="ghost"
-            color="neutral"
-            size="xs"
-          />
-        </UDropdownMenu>
+        <UTooltip :text="makeDepartmentTooltip">
+          <UDropdownMenu :items="actions">
+            <UButton
+              icon="i-lucide-more-horizontal"
+              :aria-label="`Открыть действия для QR-кода ${qr.title}`"
+              :title="`Открыть действия для QR-кода ${qr.title}`"
+              variant="ghost"
+              color="neutral"
+              size="xs"
+            />
+          </UDropdownMenu>
+        </UTooltip>
       </div>
 
       <div class="flex items-center gap-2">
@@ -86,7 +88,11 @@ interface QrItem {
   departmentName?: string | null
 }
 
-const props = defineProps<{ qr: QrItem }>()
+const props = defineProps<{
+  qr: QrItem
+  makeDepartmentDisabled?: boolean
+  makeDepartmentTooltip?: string
+}>()
 
 const emit = defineEmits<{
   edit: [id: string]
@@ -131,7 +137,12 @@ const actions = [
   ],
   [
     { label: t('qr.actions.makePrivate'), icon: 'i-lucide-lock', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'private' }) },
-    { label: t('qr.actions.makeDepartment'), icon: 'i-lucide-building-2', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'department' }) },
+    {
+      label: t('qr.actions.makeDepartment'),
+      icon: 'i-lucide-building-2',
+      disabled: props.makeDepartmentDisabled,
+      onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'department' }),
+    },
     { label: t('qr.actions.makePublic'), icon: 'i-lucide-globe', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'public' }) },
   ],
   [

@@ -145,16 +145,18 @@
             {{ formatDate(qr.createdAt) }}
           </td>
           <td class="py-3 px-2">
-            <UDropdownMenu :items="getActions(qr)">
-              <UButton
-                icon="i-lucide-more-horizontal"
-                :aria-label="t('a11y.actions.openQrActions', { title: qr.title })"
-                :title="t('a11y.actions.openQrActions', { title: qr.title })"
-                variant="ghost"
-                color="neutral"
-                size="sm"
-              />
-            </UDropdownMenu>
+            <UTooltip :text="makeDepartmentTooltip">
+              <UDropdownMenu :items="getActions(qr)">
+                <UButton
+                  icon="i-lucide-more-horizontal"
+                  :aria-label="t('a11y.actions.openQrActions', { title: qr.title })"
+                  :title="t('a11y.actions.openQrActions', { title: qr.title })"
+                  variant="ghost"
+                  color="neutral"
+                  size="sm"
+                />
+              </UDropdownMenu>
+            </UTooltip>
           </td>
         </tr>
       </tbody>
@@ -176,12 +178,14 @@ interface QrItem {
   departmentName?: string | null
 }
 
-defineProps<{
+const props = defineProps<{
   items: QrItem[]
   selectedIds: string[]
   allSelected: boolean
   sortBy: string
   sortOrder: string
+  makeDepartmentDisabled?: boolean
+  makeDepartmentTooltip?: string
 }>()
 
 const emit = defineEmits<{
@@ -227,7 +231,12 @@ function getActions(qr: QrItem) {
     ],
     [
       { label: t('qr.actions.makePrivate'), icon: 'i-lucide-lock', onSelect: () => emit('changeVisibility', { id: qr.id, visibility: 'private' }) },
-      { label: t('qr.actions.makeDepartment'), icon: 'i-lucide-building-2', onSelect: () => emit('changeVisibility', { id: qr.id, visibility: 'department' }) },
+      {
+        label: t('qr.actions.makeDepartment'),
+        icon: 'i-lucide-building-2',
+        disabled: props.makeDepartmentDisabled,
+        onSelect: () => emit('changeVisibility', { id: qr.id, visibility: 'department' }),
+      },
       { label: t('qr.actions.makePublic'), icon: 'i-lucide-globe', onSelect: () => emit('changeVisibility', { id: qr.id, visibility: 'public' }) },
     ],
     [

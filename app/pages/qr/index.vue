@@ -153,6 +153,8 @@
       :all-selected="allSelected"
       :sort-by="filters.sortBy"
       :sort-order="filters.sortOrder"
+      :make-department-disabled="departmentActionDisabled"
+      :make-department-tooltip="departmentActionTooltip"
       @toggle-all="toggleAll"
       @toggle-select="toggleSelect"
       @sort="handleSort"
@@ -171,6 +173,8 @@
         v-for="qr in displayList"
         :key="qr.id"
         :qr="qr as any"
+        :make-department-disabled="departmentActionDisabled"
+        :make-department-tooltip="departmentActionTooltip"
         @edit="(id) => navigateTo(`/qr/${id}/edit`)"
         @duplicate="handleDuplicate"
         @delete="handleDelete"
@@ -195,6 +199,38 @@
       :message="`Будет удалено ${pendingBulkIds.length} QR-кодов. Их можно будет отменить в течение 10 секунд.`"
       @confirm="confirmBulkDelete"
     />
+
+    <UModal v-model:open="departmentPickerOpen">
+      <template #content>
+        <div class="space-y-4 p-5">
+          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+            {{ t('qr.departmentModal.title') }}
+          </h3>
+          <p class="text-sm text-[color:var(--text-secondary)]">
+            {{ t('qr.departmentModal.description') }}
+          </p>
+          <USelect
+            v-model="selectedDepartmentId"
+            :items="departmentSelectItems"
+            value-key="value"
+            placeholder="Выберите отдел"
+          />
+          <div class="flex justify-end gap-2">
+            <UButton
+              variant="ghost"
+              color="neutral"
+              :label="t('qr.departmentModal.cancel')"
+              @click="closeDepartmentPicker"
+            />
+            <UButton
+              :label="t('qr.departmentModal.confirm')"
+              :disabled="!selectedDepartmentId"
+              @click="confirmDepartmentVisibilityChange"
+            />
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -209,6 +245,11 @@ const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulk
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
 const ALL_VISIBILITY = '__all_visibility__'
+
+interface UserDepartmentOption {
+  id: string
+  name: string
+}
 
 // Local display list for optimistic UI (null = use qrList from composable)
 // qrList is DeepReadonly<QrCode[]> — cast to QrCode[] when copying
@@ -226,6 +267,32 @@ if (typeof window !== 'undefined') {
   const saved = localStorage.getItem('qr-view-mode') as 'table' | 'grid' | null
   if (saved) viewMode.value = saved
   watch(viewMode, v => localStorage.setItem('qr-view-mode', v))
+}
+
+const userDepartments = ref<UserDepartmentOption[]>([])
+const departmentActionDisabled = computed(() => userDepartments.value.length === 0)
+const departmentActionTooltip = computed(() => departmentActionDisabled.value ? t('qr.actions.makeDepartmentDisabledTooltip') : '')
+const departmentSelectItems = computed(() =>
+  userDepartments.value.map(item => ({ label: item.name, value: item.id })),
+)
+const departmentPickerOpen = ref(false)
+const selectedDepartmentId = ref<string>('')
+const pendingDepartmentVisibilityQrId = ref<string | null>(null)
+
+async function fetchUserDepartments() {
+  try {
+    const response = await $fetch<{ data: UserDepartmentOption[] }>('/api/departments/my')
+    userDepartments.value = response.data
+  }
+  catch {
+    userDepartments.value = []
+  }
+}
+
+function closeDepartmentPicker() {
+  departmentPickerOpen.value = false
+  pendingDepartmentVisibilityQrId.value = null
+  selectedDepartmentId.value = ''
 }
 
 // Selection
@@ -285,8 +352,45 @@ async function handleDuplicate(id: string) {
 
 async function handleVisibilityChange(payload: { id: string, visibility: 'private' | 'department' | 'public' }) {
   try {
+    if (payload.visibility === 'department') {
+      if (userDepartments.value.length === 0) {
+        return
+      }
+
+      if (userDepartments.value.length === 1) {
+        await updateQr(payload.id, { visibility: 'department', departmentId: userDepartments.value[0]!.id })
+        toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+        fetchQrList()
+        return
+      }
+
+      pendingDepartmentVisibilityQrId.value = payload.id
+      selectedDepartmentId.value = userDepartments.value[0]!.id
+      departmentPickerOpen.value = true
+      return
+    }
+
     await updateQr(payload.id, { visibility: payload.visibility })
     toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    fetchQrList()
+  }
+  catch {
+    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
+  }
+}
+
+async function confirmDepartmentVisibilityChange() {
+  if (!pendingDepartmentVisibilityQrId.value || !selectedDepartmentId.value) {
+    return
+  }
+
+  try {
+    await updateQr(pendingDepartmentVisibilityQrId.value, {
+      visibility: 'department',
+      departmentId: selectedDepartmentId.value,
+    })
+    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    closeDepartmentPicker()
     fetchQrList()
   }
   catch {
@@ -429,6 +533,7 @@ const selectedScope = computed({
 // Fetch on mount and when non-search filters change
 onMounted(() => {
   applyFiltersFromQuery(route.query as Record<string, unknown>)
+  fetchUserDepartments()
   fetchQrList()
   fetchFolders()
 })
