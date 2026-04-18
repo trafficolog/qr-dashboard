@@ -5,6 +5,8 @@ const createSchema = z.object({
   title: z.string().min(1, 'Название обязательно').max(255),
   destinationUrl: z.string().url('Некорректный URL'),
   type: z.enum(['dynamic', 'static']).default('dynamic'),
+  visibility: z.enum(['private', 'department', 'public']).default('private'),
+  departmentId: z.string().uuid().optional().nullable(),
   description: z.string().max(1000).optional(),
   style: z.record(z.any()).optional(),
   utmParams: z
@@ -19,6 +21,8 @@ const createSchema = z.object({
   folderId: z.string().uuid().optional(),
   tagIds: z.array(z.string().uuid()).optional(),
   expiresAt: z.string().datetime().optional(),
+  visibility: z.enum(['private', 'public', 'department']).optional(),
+  departmentId: z.string().uuid().nullable().optional(),
 })
 
 export default defineEventHandler(async (event) => {

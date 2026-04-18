@@ -8,6 +8,9 @@ const querySchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   search: z.string().optional(),
   status: z.enum(['active', 'paused', 'expired', 'archived']).optional(),
+  visibility: z.enum(['private', 'department', 'public']).optional(),
+  departmentId: z.string().uuid().optional(),
+  scope: z.enum(['mine', 'department', 'public', 'all']).optional(),
   folderId: z.string().uuid().optional(),
   tags: z.string().optional(), // comma-separated tag IDs
   dateFrom: z.string().optional(),
@@ -21,6 +24,9 @@ export default defineEventHandler(async (event) => {
   const filters = {
     search: query.search,
     status: query.status,
+    visibility: query.visibility,
+    departmentId: query.departmentId,
+    scope: query.scope,
     folderId: query.folderId,
     tagIds: query.tags?.split(',').filter(Boolean),
     dateFrom: query.dateFrom,

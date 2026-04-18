@@ -41,6 +41,8 @@ export interface QrCode {
   description: string | null
   type: QrType
   status: QrStatus
+  visibility: QrVisibility
+  departmentId: string | null
   destinationUrl: string
   style: QrStyle
   utmParams: UtmParams | null
