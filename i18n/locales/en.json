@@ -158,6 +158,26 @@
     },
     "preview": {
       "alt": "QR preview for “{title}”"
+    },
+    "visibility": {
+      "private": "Private",
+      "department": "Department",
+      "departmentWithName": "Department: {name}",
+      "public": "Public",
+      "updated": "Visibility updated",
+      "updateError": "Failed to update visibility"
+    },
+    "actions": {
+      "makePrivate": "Make private",
+      "makeDepartment": "Share with department",
+      "makePublic": "Make public"
+    },
+    "filters": {
+      "visibility": "Visibility",
+      "allVisibility": "All",
+      "my": "Mine",
+      "department": "Department",
+      "public": "Public"
     }
   },
   "a11y": {

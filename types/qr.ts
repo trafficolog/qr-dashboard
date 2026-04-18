@@ -53,6 +53,8 @@ export interface QrCode {
   uniqueScans: number
   createdAt: Date
   updatedAt: Date
+  visibility?: QrVisibility
+  departmentName?: string | null
 }
 
 export interface QrDestination {

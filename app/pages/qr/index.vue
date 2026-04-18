@@ -46,6 +46,14 @@
         class="w-40"
       />
 
+      <USelect
+        v-model="selectedVisibility"
+        :items="visibilityOptions"
+        :placeholder="t('qr.filters.visibility')"
+        size="sm"
+        class="w-44"
+      />
+
       <div class="flex-1" />
 
       <!-- View toggle -->
@@ -151,6 +159,7 @@
       @edit="(id) => navigateTo(`/qr/${id}/edit`)"
       @duplicate="handleDuplicate"
       @delete="handleDelete"
+      @change-visibility="handleVisibilityChange"
     />
 
     <!-- Grid view -->
@@ -165,6 +174,7 @@
         @edit="(id) => navigateTo(`/qr/${id}/edit`)"
         @duplicate="handleDuplicate"
         @delete="handleDelete"
+        @change-visibility="handleVisibilityChange"
       />
     </div>
 
@@ -192,9 +202,13 @@
 import type { QrCode } from '~~/types/qr'
 
 const toast = useA11yToast()
-const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr } = useQr()
+const route = useRoute()
+const router = useRouter()
+const { t } = useI18n()
+const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, updateQr, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
+const ALL_VISIBILITY = '__all_visibility__'
 
 // Local display list for optimistic UI (null = use qrList from composable)
 // qrList is DeepReadonly<QrCode[]> — cast to QrCode[] when copying
@@ -266,6 +280,17 @@ async function handleDuplicate(id: string) {
   }
   catch {
     toast.add({ title: 'Ошибка дублирования', color: 'error' })
+  }
+}
+
+async function handleVisibilityChange(payload: { id: string, visibility: 'private' | 'department' | 'public' }) {
+  try {
+    await updateQr(payload.id, { visibility: payload.visibility })
+    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    fetchQrList()
+  }
+  catch {
+    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
   }
 }
 
@@ -371,6 +396,13 @@ const statusOptions = [
   { label: 'Архив', value: 'archived' },
 ]
 
+const visibilityOptions = [
+  { label: t('qr.filters.allVisibility'), value: ALL_VISIBILITY },
+  { label: t('qr.filters.my'), value: 'private' },
+  { label: t('qr.filters.department'), value: 'department' },
+  { label: t('qr.filters.public'), value: 'public' },
+]
+
 const selectedStatus = computed({
   get: () => filters.value.status || ALL_STATUSES,
   set: (value: string) => {
@@ -385,18 +417,45 @@ const selectedFolderId = computed({
   },
 })
 
+const selectedVisibility = computed({
+  get: () => filters.value.visibility || ALL_VISIBILITY,
+  set: (value: string) => {
+    filters.value.visibility = value === ALL_VISIBILITY ? '' : value
+  },
+})
+
 // Fetch on mount and when non-search filters change
 onMounted(() => {
+  applyFiltersFromQuery(route.query as Record<string, unknown>)
   fetchQrList()
   fetchFolders()
 })
 
 watch(
-  () => [filters.value.status, filters.value.folderId, filters.value.sortBy, filters.value.sortOrder],
+  () => [filters.value.status, filters.value.folderId, filters.value.visibility, filters.value.sortBy, filters.value.sortOrder],
   () => {
     filters.value.page = 1
     fetchQrList()
   },
+)
+
+watch(
+  () => ({ ...route.query }),
+  (query) => {
+    applyFiltersFromQuery(query as Record<string, unknown>)
+  },
+)
+
+watch(
+  filters,
+  () => {
+    const nextQuery = serializeFiltersToQuery()
+    const currentQuery = route.query as Record<string, unknown>
+    if (JSON.stringify(nextQuery) !== JSON.stringify(currentQuery)) {
+      router.replace({ query: nextQuery })
+    }
+  },
+  { deep: true },
 )
 </script>
 
