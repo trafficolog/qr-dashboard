@@ -1,7 +1,7 @@
 <template>
   <aside
     :class="[
-      'fixed top-0 left-0 z-30 flex h-screen flex-col border-r border-[color:var(--border)] bg-[color:var(--surface-0)] transition-all duration-200',
+      'fixed top-0 left-0 z-30 flex h-screen flex-col border-r border-[color:var(--border)] bg-[color:var(--surface-0)] transition-[width] duration-200 ease-in-out',
       collapsed ? 'w-16' : 'w-60',
     ]"
   >
@@ -29,7 +29,7 @@
         :key="item.route"
         :to="item.route"
         :class="[
-          'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+          'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-interactive',
           isActive(item.route)
             ? 'bg-[color:var(--accent-light)] text-[color:var(--accent)]'
             : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]',
@@ -63,7 +63,7 @@
       <button
         :aria-label="collapsed ? t('a11y.actions.expandSidebar') : t('a11y.actions.collapseSidebar')"
         :title="collapsed ? t('a11y.actions.expandSidebar') : t('a11y.actions.collapseSidebar')"
-        class="flex w-full items-center justify-center rounded-lg p-2 text-[color:var(--text-muted)] transition-colors hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
+        class="flex w-full items-center justify-center rounded-lg p-2 text-[color:var(--text-muted)] transition-interactive hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
         @click="$emit('toggle')"
       >
         <UIcon

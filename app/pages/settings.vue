@@ -22,7 +22,7 @@
           :key="item.to"
           :to="item.to"
           :class="[
-            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-interactive',
             isSettingsActive(item.to)
               ? 'bg-[color:var(--accent-light)] text-[color:var(--accent)]'
               : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]',
@@ -53,7 +53,7 @@
           :key="item.to"
           :to="item.to"
           :class="[
-            'shrink-0 flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors',
+            'shrink-0 flex items-center gap-2 px-3 py-2 text-sm font-medium transition-interactive',
             isSettingsActive(item.to)
               ? 'border-b-2 border-[color:var(--accent)] text-[color:var(--accent)]'
               : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]',

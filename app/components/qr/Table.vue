@@ -80,7 +80,7 @@
         <tr
           v-for="qr in items"
           :key="qr.id"
-          class="border-b border-[color:var(--surface-2)] transition-colors hover:bg-[color:var(--surface-2)]/60"
+          class="border-b border-[color:var(--surface-2)] transition-interactive hover:bg-[color:var(--surface-2)]/60"
         >
           <td class="py-3 px-2">
             <input
