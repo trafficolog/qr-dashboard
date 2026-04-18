@@ -35,6 +35,7 @@ export default defineNuxtConfig({
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3001',
       appName: process.env.NUXT_PUBLIC_APP_NAME || 'SPLAT QR Service',
+      docsUiEnabled: process.env.NODE_ENV !== 'production' || process.env.NUXT_DOCS_UI !== '0',
     },
   },
 
