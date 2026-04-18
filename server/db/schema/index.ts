@@ -9,6 +9,7 @@ import { tags } from './tags'
 import { qrTags } from './qr-tags'
 import { apiKeys } from './api-keys'
 import { scanDailyStats } from './scan-daily-stats'
+import { userDepartments } from './user-departments'
 
 // --- Re-exports ---
 export * from './users'
@@ -23,12 +24,14 @@ export * from './qr-tags'
 export * from './allowed-domains'
 export * from './api-keys'
 export * from './scan-daily-stats'
+export * from './user-departments'
 
 // --- Relations ---
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   qrCodes: many(qrCodes),
   apiKeys: many(apiKeys),
+  departments: many(userDepartments),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -105,6 +108,13 @@ export const qrTagsRelations = relations(qrTags, ({ one }) => ({
   tag: one(tags, {
     fields: [qrTags.tagId],
     references: [tags.id],
+  }),
+}))
+
+export const userDepartmentsRelations = relations(userDepartments, ({ one }) => ({
+  user: one(users, {
+    fields: [userDepartments.userId],
+    references: [users.id],
   }),
 }))
 

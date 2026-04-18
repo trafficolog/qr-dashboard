@@ -15,6 +15,7 @@ import { folders } from './folders'
 
 export const qrStatusEnum = pgEnum('qr_status', ['active', 'paused', 'expired', 'archived'])
 export const qrTypeEnum = pgEnum('qr_type', ['dynamic', 'static'])
+export const qrVisibilityEnum = pgEnum('qr_visibility', ['private', 'public', 'department'])
 
 export const qrCodes = pgTable(
   'qr_codes',
@@ -29,6 +30,8 @@ export const qrCodes = pgTable(
     style: jsonb('style').default('{}'),
     utmParams: jsonb('utm_params'),
     folderId: uuid('folder_id').references(() => folders.id, { onDelete: 'set null' }),
+    visibility: qrVisibilityEnum('visibility').notNull().default('private'),
+    departmentId: uuid('department_id'),
     createdBy: uuid('created_by').notNull().references(() => users.id),
     expiresAt: timestamp('expires_at', { withTimezone: true }),
     totalScans: integer('total_scans').notNull().default(0),
@@ -40,6 +43,8 @@ export const qrCodes = pgTable(
     uniqueIndex('qr_short_code_idx').on(table.shortCode),
     index('qr_status_idx').on(table.status),
     index('qr_folder_idx').on(table.folderId),
+    index('qr_visibility_idx').on(table.visibility),
+    index('qr_department_id_idx').on(table.departmentId),
     index('qr_created_by_idx').on(table.createdBy),
     index('qr_created_at_idx').on(table.createdAt),
   ],
