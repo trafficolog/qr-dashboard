@@ -7,6 +7,8 @@
         variant="ghost"
         color="neutral"
         size="sm"
+        aria-label="Назад к списку QR-кодов"
+        title="Назад к списку QR-кодов"
         to="/qr"
       />
       <div>
@@ -130,6 +132,8 @@
           variant="ghost"
           color="neutral"
           size="xs"
+          aria-label="Очистить выбранный файл"
+          title="Очистить выбранный файл"
           @click="clearFile"
         />
       </div>
@@ -693,7 +697,7 @@ async function handleCreate() {
   }
   catch (err: unknown) {
     const e = err as { data?: { message?: string } }
-    useToast().add({ title: e?.data?.message ?? 'Ошибка при создании', color: 'error' })
+    useA11yToast().add({ title: e?.data?.message ?? 'Ошибка при создании', color: 'error' })
   }
   finally {
     creating.value = false

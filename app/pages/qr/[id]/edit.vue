@@ -9,6 +9,8 @@
               variant="ghost"
               color="neutral"
               size="sm"
+              aria-label="Назад к QR-коду"
+              title="Назад к QR-коду"
               :to="`/qr/${id}`"
             />
             <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
@@ -180,6 +182,7 @@
               :url="form.destinationUrl || 'https://splat.ru'"
               :style="form.style"
               :short-code="qr.shortCode"
+              :title="form.title"
               :display-size="280"
             />
           </div>
@@ -237,7 +240,7 @@ interface EditableQr extends QrCode {
 }
 
 const route = useRoute()
-const toast = useToast()
+const toast = useA11yToast()
 const { t } = useI18n()
 const { fetchQrById, updateQr } = useQr()
 

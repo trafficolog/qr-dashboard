@@ -1,5 +1,5 @@
-import { db } from '../db'
 import { sql } from 'drizzle-orm'
+import { db } from '../db'
 
 export default defineNitroPlugin(async () => {
   console.log('[DB] Initializing PostgreSQL connection pool...')
@@ -7,7 +7,8 @@ export default defineNitroPlugin(async () => {
   try {
     await db.execute(sql`SELECT 1`)
     console.log('[DB] Connection verified successfully')
-  } catch (error) {
+  }
+  catch (error) {
     console.error('[DB] Connection failed:', error)
     throw error
   }

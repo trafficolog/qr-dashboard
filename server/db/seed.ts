@@ -1,8 +1,8 @@
 import 'dotenv/config'
+import { randomUUID, createHash } from 'node:crypto'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import pg from 'pg'
 import { eq, count } from 'drizzle-orm'
-import { randomUUID, createHash } from 'node:crypto'
 import * as schema from './schema'
 
 const {
@@ -36,7 +36,7 @@ function randomFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!
 }
 
-function weightedRandom<T>(items: { value: T; weight: number }[]): T {
+function weightedRandom<T>(items: { value: T, weight: number }[]): T {
   const total = items.reduce((s, i) => s + i.weight, 0)
   let r = Math.random() * total
   for (const item of items) {
@@ -340,8 +340,8 @@ async function seed() {
   // 7. Update QR scan counters
   console.log('  → Updating scan counters...')
   for (const qrId of qrIds) {
-    const totalScans = scanBatch.filter((s) => s.qrCodeId === qrId).length
-    const uniqueScans = scanBatch.filter((s) => s.qrCodeId === qrId && s.isUnique).length
+    const totalScans = scanBatch.filter(s => s.qrCodeId === qrId).length
+    const uniqueScans = scanBatch.filter(s => s.qrCodeId === qrId && s.isUnique).length
 
     await db
       .update(qrCodes)

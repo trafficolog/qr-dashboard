@@ -149,6 +149,34 @@
       }
     }
   },
+  "qr": {
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "expired": "Expired",
+      "archived": "Archived"
+    },
+    "preview": {
+      "alt": "QR preview for “{title}”"
+    }
+  },
+  "a11y": {
+    "actions": {
+      "openMenu": "Open menu",
+      "toggleSidebar": "Toggle sidebar",
+      "openSearch": "Open search",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar",
+      "openUserMenu": "Open user menu",
+      "selectAllQrs": "Select all QR codes",
+      "selectQr": "Select QR code “{title}”",
+      "openQrActions": "Open actions for QR code “{title}”",
+      "deleteMember": "Delete member “{name}”"
+    },
+    "labels": {
+      "userAvatar": "User avatar"
+    }
+  },
   "forms": {
     "errors": {
       "required": "This field is required",

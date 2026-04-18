@@ -4,6 +4,8 @@
     <div
       class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4 shadow-sm"
       :style="{ width: `${displaySize + 32}px` }"
+      role="img"
+      :aria-label="previewAlt"
     >
       <div
         v-if="svgHtml"
@@ -49,6 +51,7 @@ const props = withDefaults(
     url?: string
     style?: Partial<QrStyle>
     shortCode?: string
+    title?: string
     displaySize?: number
   }>(),
   {
@@ -59,7 +62,8 @@ const props = withDefaults(
 
 const { public: publicConfig } = useRuntimeConfig()
 const { copy, copied } = useClipboard()
-const toast = useToast()
+const toast = useA11yToast()
+const { t } = useI18n()
 
 const redirectUrl = computed(() => {
   if (!props.shortCode) return ''
@@ -82,6 +86,10 @@ const svgHtml = computed(() => {
     return ''
   }
 })
+
+const previewAlt = computed(() =>
+  t('qr.preview.alt', { title: props.title || props.shortCode || 'QR' }),
+)
 
 function copyUrl() {
   if (redirectUrl.value) {

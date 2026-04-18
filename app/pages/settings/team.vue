@@ -124,6 +124,8 @@
             variant="ghost"
             color="error"
             size="xs"
+            :aria-label="t('a11y.actions.deleteMember', { name: member.name || member.email })"
+            :title="t('a11y.actions.deleteMember', { name: member.name || member.email })"
             :disabled="member.id === currentUser?.id"
             :loading="deletingId === member.id"
             @click="handleDelete(member)"
@@ -136,6 +138,7 @@
     <UModal
       v-model:open="inviteOpen"
       title="Пригласить участника"
+      :close-on-escape="true"
     >
       <template #body>
         <form
@@ -211,6 +214,8 @@
 </template>
 
 <script setup lang="ts">
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+
 definePageMeta({
   middleware: () => {
     const { user } = useAuth()
@@ -234,7 +239,7 @@ interface TeamMember {
 }
 
 const { user: currentUser } = useAuth()
-const toast = useToast()
+const toast = useA11yToast()
 const { t } = useI18n()
 
 const loading = ref(true)
@@ -244,6 +249,7 @@ const deletingId = ref<string | null>(null)
 
 // Invite modal
 const inviteOpen = ref(false)
+const focusReturn = createDialogFocusReturn()
 const inviting = ref(false)
 const inviteForm = ref({ email: '', role: 'editor' as RoleValue })
 const inviteErrors = ref({ email: '', role: '' })
@@ -251,6 +257,11 @@ const inviteErrors = ref({ email: '', role: '' })
 // Delete confirmation
 const deleteOpen = ref(false)
 const deletingMember = ref<TeamMember | null>(null)
+
+watch(inviteOpen, (open) => {
+  if (open) focusReturn.save()
+  else focusReturn.restore()
+})
 
 const roleItems = [
   { label: 'Администратор', value: 'admin' },

@@ -12,7 +12,8 @@ export function compareHash(plain: string, hash: string): boolean {
   const plainHash = hashToken(plain)
   try {
     return timingSafeEqual(Buffer.from(plainHash, 'hex'), Buffer.from(hash, 'hex'))
-  } catch {
+  }
+  catch {
     return false
   }
 }

@@ -25,6 +25,8 @@
         <UDropdownMenu :items="actions">
           <UButton
             icon="i-lucide-more-horizontal"
+            :aria-label="`Открыть действия для QR-кода ${qr.title}`"
+            :title="`Открыть действия для QR-кода ${qr.title}`"
             variant="ghost"
             color="neutral"
             size="xs"

@@ -1,5 +1,8 @@
 <template>
-  <UModal v-model:open="open">
+  <UModal
+    v-model:open="open"
+    :close-on-escape="true"
+  >
     <template #header>
       <h3 class="text-base font-semibold">
         {{ folder ? 'Редактировать папку' : 'Новая папка' }}
@@ -32,6 +35,8 @@
             color="neutral"
             size="xs"
             icon="i-lucide-x"
+            aria-label="Сбросить выбранный цвет"
+            title="Сбросить выбранный цвет"
             @click="form.color = ''"
           />
         </div>
@@ -80,6 +85,7 @@
 
 <script setup lang="ts">
 import type { Folder } from '~/composables/useFolders'
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 const props = defineProps<{
   folder?: Folder | null
@@ -92,6 +98,7 @@ const emit = defineEmits<{
 }>()
 
 const open = defineModel<boolean>('open', { default: false })
+const focusReturn = createDialogFocusReturn()
 
 const colorPresets = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899']
 
@@ -105,9 +112,13 @@ const form = reactive({
 
 watch(open, (val) => {
   if (val) {
+    focusReturn.save()
     form.name = props.folder?.name ?? ''
     form.color = props.folder?.color ?? ''
     form.parentId = props.folder?.parentId ?? ''
+  }
+  else {
+    focusReturn.restore()
   }
 })
 

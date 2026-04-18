@@ -1,6 +1,7 @@
 <template>
   <UModal
     v-model:open="isOpen"
+    :close-on-escape="true"
     class="max-w-xl"
   >
     <template #content>
@@ -28,6 +29,8 @@
           </UKbd>
           <button
             v-else
+            aria-label="Очистить поисковый запрос"
+            title="Очистить поисковый запрос"
             class="shrink-0 text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]"
             @click="query = ''"
           >
@@ -172,16 +175,22 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useGlobalSearch, highlightMatch, escapeHtml } from '~/composables/useGlobalSearch'
 import type { SearchResult } from '~/composables/useGlobalSearch'
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 const { isOpen, query, results, recent, loading, close, select, discardRecent } = useGlobalSearch()
+const focusReturn = createDialogFocusReturn()
 
 const inputRef = ref<HTMLInputElement | null>(null)
 
 // Focus input when modal opens
 watch(isOpen, (v) => {
   if (v) {
+    focusReturn.save()
     nextTick(() => inputRef.value?.focus())
     focusedIndex.value = 0
+  }
+  else {
+    focusReturn.restore()
   }
 })
 
