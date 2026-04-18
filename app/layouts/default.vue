@@ -10,7 +10,7 @@
     <!-- Main content area -->
     <div
       :class="[
-        'transition-all duration-200 min-h-screen flex flex-col',
+        'transition-[margin] duration-200 ease-in-out min-h-screen flex flex-col',
         sidebarCollapsed ? 'md:ml-16' : 'md:ml-60',
       ]"
     >

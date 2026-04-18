@@ -45,6 +45,12 @@
   --color-primary-950: var(--color-splat-950);
 }
 
+.transition-interactive {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 :root {
   --surface-0: #ffffff;
   --surface-1: #fff7f9;

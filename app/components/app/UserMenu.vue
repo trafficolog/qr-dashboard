@@ -5,7 +5,7 @@
       :title="t('a11y.actions.openUserMenu')"
       variant="ghost"
       color="neutral"
-      class="gap-2 text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
+      class="gap-2 text-[color:var(--text-secondary)] transition-interactive hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
     >
       <UAvatar
         :alt="user?.name || user?.email || t('a11y.labels.userAvatar')"

@@ -11,7 +11,7 @@
           :key="d.id ?? i"
           :style="{ width: `${barWidth(d)}%`, backgroundColor: barColor(i) }"
           :title="`${d.label || `Вариант ${i + 1}`}: ${d.weight}%`"
-          class="transition-all"
+          class="transition-[width] duration-200 ease-in-out"
         />
       </div>
       <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1.5">

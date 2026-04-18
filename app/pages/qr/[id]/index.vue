@@ -165,7 +165,7 @@
               v-for="(dest, i) in destinations.filter(d => d.isActive)"
               :key="dest.id"
               :style="{ width: `${activeWeightBar(dest)}%`, backgroundColor: abColors[i % abColors.length] }"
-              class="transition-all"
+              class="transition-[width] duration-200 ease-in-out"
             />
           </div>
 
