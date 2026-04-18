@@ -22,7 +22,7 @@
         :max="toInput"
         @change="onCustomChange"
       />
-      <span class="text-sm text-gray-400">—</span>
+      <span class="text-sm text-[color:var(--text-muted)]">—</span>
       <UInput
         v-model="toInput"
         type="date"

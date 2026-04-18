@@ -97,7 +97,7 @@
                       {{ p.name }}
                       <span
                         v-if="p.required"
-                        class="text-red-400"
+                        class="text-[color:var(--danger)]"
                       >*</span>
                     </td>
                     <td class="py-1.5 px-3 font-mono text-xs text-[color:var(--text-muted)]">

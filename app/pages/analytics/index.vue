@@ -3,10 +3,10 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           {{ $t('analytics.title') }}
         </h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-1 text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
           {{ $t('analytics.subtitle') }}
         </p>
       </div>
@@ -77,7 +77,7 @@
     <!-- Scan Chart -->
     <UCard v-else>
       <template #header>
-        <h2 class="font-semibold text-gray-900 dark:text-white">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           Динамика сканирований
         </h2>
       </template>
@@ -102,7 +102,7 @@
     <!-- Top QR Table -->
     <UCard v-else>
       <template #header>
-        <h2 class="font-semibold text-gray-900 dark:text-white">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           Топ QR-кодов по сканированиям
         </h2>
       </template>

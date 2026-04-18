@@ -5,10 +5,10 @@
       v-if="loading"
       class="flex items-center gap-3"
     >
-      <div class="size-10 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse shrink-0" />
+      <div class="size-10 rounded-lg bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] animate-pulse shrink-0" />
       <div class="flex-1 space-y-2">
-        <div class="h-7 w-20 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
-        <div class="h-4 w-28 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+        <div class="h-7 w-20 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
+        <div class="h-4 w-28 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
       </div>
     </div>
 
@@ -17,17 +17,17 @@
       v-else
       class="flex items-start gap-3"
     >
-      <div class="p-2 rounded-lg bg-green-50 dark:bg-green-950 shrink-0">
+      <div class="p-2 rounded-lg bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] shrink-0">
         <UIcon
           :name="icon"
-          class="size-5 text-green-600 dark:text-green-400"
+          class="size-5 text-[color:var(--success)] dark:text-[color:var(--success)]"
         />
       </div>
       <div class="min-w-0">
-        <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
+        <p class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] tabular-nums">
           {{ formattedValue }}
         </p>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] mt-0.5">
           {{ label }}
         </p>
         <div
@@ -37,11 +37,11 @@
           <UIcon
             :name="change >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
             class="size-3.5"
-            :class="change >= 0 ? 'text-green-500' : 'text-red-500'"
+            :class="change >= 0 ? 'text-[color:var(--success)]' : 'text-[color:var(--danger)]'"
           />
           <span
             class="text-xs font-medium"
-            :class="change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+            :class="change >= 0 ? 'text-[color:var(--success)] dark:text-[color:var(--success)]' : 'text-[color:var(--danger)] dark:text-[color:var(--danger)]'"
           >
             {{ change >= 0 ? '+' : '' }}{{ change }}% vs прошлый период
           </span>

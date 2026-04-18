@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
         {{ $t('nav.dashboard') }}
       </h1>
       <div class="flex gap-3">
@@ -83,7 +83,7 @@
     <!-- Chart -->
     <UCard v-else>
       <template #header>
-        <h2 class="font-semibold text-gray-900 dark:text-white">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
           Динамика сканирований
         </h2>
       </template>
@@ -96,7 +96,7 @@
     <UCard>
       <template #header>
         <div class="flex items-center justify-between">
-          <h2 class="font-semibold text-gray-900 dark:text-white">
+          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
             Топ QR-кодов
           </h2>
           <UButton

@@ -57,6 +57,7 @@
   --accent-light: #fce8ed;
   --border: #ebcdd4;
   --danger: #d9363e;
+  --success: #2f9e44;
   --warning: #b46b00;
   --info: #0d5bd4;
 }
@@ -78,6 +79,7 @@ html.dark {
   --accent-light: #43101d;
   --border: #4a202c;
   --danger: #ff8c95;
+  --success: #4ddc78;
   --warning: #f4c15d;
   --info: #7eafff;
 }
