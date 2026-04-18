@@ -9,6 +9,8 @@ import { tags } from './tags'
 import { qrTags } from './qr-tags'
 import { apiKeys } from './api-keys'
 import { scanDailyStats } from './scan-daily-stats'
+import { departments } from './departments'
+import { userDepartments } from './user-departments'
 
 // --- Re-exports ---
 export * from './users'
@@ -23,12 +25,15 @@ export * from './qr-tags'
 export * from './allowed-domains'
 export * from './api-keys'
 export * from './scan-daily-stats'
+export * from './departments'
+export * from './user-departments'
 
 // --- Relations ---
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   qrCodes: many(qrCodes),
   apiKeys: many(apiKeys),
+  userDepartments: many(userDepartments),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -42,6 +47,10 @@ export const qrCodesRelations = relations(qrCodes, ({ one, many }) => ({
   folder: one(folders, {
     fields: [qrCodes.folderId],
     references: [folders.id],
+  }),
+  department: one(departments, {
+    fields: [qrCodes.departmentId],
+    references: [departments.id],
   }),
   creator: one(users, {
     fields: [qrCodes.createdBy],
@@ -105,6 +114,26 @@ export const qrTagsRelations = relations(qrTags, ({ one }) => ({
   tag: one(tags, {
     fields: [qrTags.tagId],
     references: [tags.id],
+  }),
+}))
+
+export const departmentsRelations = relations(departments, ({ one, many }) => ({
+  headUser: one(users, {
+    fields: [departments.headUserId],
+    references: [users.id],
+  }),
+  userDepartments: many(userDepartments),
+  qrCodes: many(qrCodes),
+}))
+
+export const userDepartmentsRelations = relations(userDepartments, ({ one }) => ({
+  user: one(users, {
+    fields: [userDepartments.userId],
+    references: [users.id],
+  }),
+  department: one(departments, {
+    fields: [userDepartments.departmentId],
+    references: [departments.id],
   }),
 }))
 
