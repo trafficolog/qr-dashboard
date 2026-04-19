@@ -202,16 +202,26 @@
             v-for="donut in deviceDonuts"
             :key="donut.key"
             class="rounded-xl border border-[color:var(--border-color)] p-4"
+            :data-testid="`device-block-${donut.key}`"
           >
-            <AnalyticsDevicePieChart
-              :title="donut.title"
-              :items="donut.items"
-              :loading="loadingSections.devices"
-            />
-            <AnalyticsDeviceBreakdown
-              :items="donut.items"
-              :loading="loadingSections.devices"
-            />
+            <template v-if="loadingSections.devices || hasDeviceData(donut.items)">
+              <AnalyticsDevicePieChart
+                :title="donut.title"
+                :items="donut.items"
+                :loading="loadingSections.devices"
+              />
+              <AnalyticsDeviceBreakdown
+                :items="donut.items"
+                :loading="loadingSections.devices"
+              />
+            </template>
+            <div
+              v-else
+              class="py-8 text-center text-sm text-[color:var(--text-muted)]"
+              data-testid="devices-empty-state"
+            >
+              {{ $t('analytics.devices.empty') }}
+            </div>
           </div>
         </div>
       </UCard>
@@ -274,6 +284,10 @@ const deviceDonuts = computed(() => ([
   { key: 'os', title: t('analytics.devices.categories.os'), items: devices.value?.os ?? [] },
   { key: 'browsers', title: t('analytics.devices.categories.browsers'), items: devices.value?.browsers ?? [] },
 ]))
+
+function hasDeviceData(items: readonly { count: number }[]) {
+  return items.some(item => item.count > 0)
+}
 
 const topHourly = computed(() => (timeDistribution.value?.hourly ?? []).slice().sort((a, b) => a.hour - b.hour))
 const sortedWeekly = computed(() => (timeDistribution.value?.weekly ?? []).slice().sort((a, b) => a.weekday - b.weekday))
