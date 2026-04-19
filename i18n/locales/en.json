@@ -51,6 +51,16 @@
     "genericDescription": "An unexpected error occurred. Please try again later.",
     "notFoundTitle": "Page not found",
     "notFoundDescription": "The requested page does not exist or has been removed.",
+    "notFoundQr": {
+      "title": "QR code not found",
+      "description": "This QR code does not exist or has been deleted.",
+      "illustrationAlt": "Illustration: QR code not found"
+    },
+    "expiredQr": {
+      "title": "Expired QR code",
+      "description": "This QR code has expired. Please contact the campaign owner.",
+      "illustrationAlt": "Illustration: expired QR code"
+    },
     "goHome": "Go home",
     "goLogin": "Sign in"
   },
@@ -72,6 +82,11 @@
   "analytics": {
     "title": "Analytics",
     "subtitle": "Scan statistics for your QR codes",
+    "empty": {
+      "title": "No analytics yet",
+      "description": "Charts and metrics will appear here after your QR codes get scanned.",
+      "illustrationAlt": "Empty analytics illustration"
+    },
     "errors": {
       "loadFailed": "Failed to load analytics"
     },
@@ -204,6 +219,13 @@
     }
   },
   "qr": {
+    "empty": {
+      "title": "No QR codes",
+      "description": "Create your first QR code to get started.",
+      "searchDescription": "Nothing found. Try changing your query.",
+      "createAction": "Create QR",
+      "illustrationAlt": "Empty QR list illustration"
+    },
     "status": {
       "active": "Active",
       "paused": "Paused",
@@ -256,6 +278,14 @@
     },
     "labels": {
       "userAvatar": "User avatar"
+    }
+  },
+  "folders": {
+    "empty": {
+      "title": "No folders",
+      "description": "Create your first folder to organize QR codes.",
+      "createAction": "Create folder",
+      "illustrationAlt": "Empty folders illustration"
     }
   },
   "forms": {

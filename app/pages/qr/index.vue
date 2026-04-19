@@ -132,14 +132,16 @@
     <SharedEmptyState
       v-else-if="displayList.length === 0"
       icon="i-lucide-qr-code"
-      title="Нет QR-кодов"
-      :description="filters.search ? 'Ничего не найдено. Попробуйте изменить запрос.' : 'Создайте первый QR-код для начала работы.'"
+      illustration="/illustrations/empty-qr.svg"
+      :illustration-alt="t('qr.empty.illustrationAlt')"
+      :title="t('qr.empty.title')"
+      :description="filters.search ? t('qr.empty.searchDescription') : t('qr.empty.description')"
     >
       <template #action>
         <UButton
           v-if="!filters.search"
           icon="i-lucide-plus"
-          label="Создать QR"
+          :label="t('qr.empty.createAction')"
           to="/qr/create"
         />
       </template>
