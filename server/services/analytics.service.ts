@@ -1,6 +1,7 @@
-import { eq, and, lte, count, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { db } from '../db'
-import { qrCodes } from '../db/schema'
+import { userDepartments } from '../db/schema'
+import { resolveVisibilityAccess } from './qr-visibility-access'
 import type { User } from '~~/types/auth'
 import type {
   AnalyticsOverview,
@@ -13,6 +14,66 @@ interface DateRange {
   to: Date
 }
 
+type AnalyticsScope = 'mine' | 'department' | 'public' | 'company' | undefined
+
+interface AnalyticsAccessOptions {
+  scope?: AnalyticsScope
+  departmentId?: string
+}
+
+async function getUserDepartmentIds(userId: string): Promise<string[]> {
+  const memberships = await db
+    .select({ departmentId: userDepartments.departmentId })
+    .from(userDepartments)
+    .where(eq(userDepartments.userId, userId))
+
+  return memberships.map(row => row.departmentId)
+}
+
+async function getAnalyticsAclFilter(user: User, options: AnalyticsAccessOptions = {}) {
+  const userDepartmentIds = user.role === 'admin' ? [] : await getUserDepartmentIds(user.id)
+
+  const access = resolveVisibilityAccess({
+    scope: options.scope,
+    userRole: user.role,
+    userDepartmentIds,
+    requestedDepartmentId: options.departmentId,
+  })
+
+  if (access.denyAll) {
+    return { sql: sql`AND 1 = 0`, denyAll: true }
+  }
+
+  if (user.role === 'admin' && (options.scope === undefined || options.scope === 'company')) {
+    return { sql: sql``, denyAll: false }
+  }
+
+  const parts = []
+
+  if (access.includeMine) {
+    parts.push(sql`qr.created_by = ${user.id}::uuid`)
+  }
+  if (access.includePublic) {
+    parts.push(sql`qr.visibility = 'public'`)
+  }
+  if (access.allowedDepartmentIds === null) {
+    parts.push(sql`qr.visibility = 'department'`)
+  }
+  else if (access.allowedDepartmentIds.length > 0) {
+    parts.push(sql`(qr.visibility = 'department' AND qr.department_id = ANY(${access.allowedDepartmentIds}::uuid[]))`)
+  }
+
+  if (parts.length === 0) {
+    return { sql: sql`AND 1 = 0`, denyAll: true }
+  }
+
+  if (parts.length === 1) {
+    return { sql: sql`AND (${parts[0]})`, denyAll: false }
+  }
+
+  return { sql: sql`AND (${sql.join(parts, sql` OR `)})`, denyAll: false }
+}
+
 /** Вычислить % изменения, избегая деления на 0 */
 function pctChange(curr: number, prev: number): number {
   if (prev === 0) return curr > 0 ? 100 : 0
@@ -23,7 +84,7 @@ export const analyticsService = {
   /**
    * Сводная статистика с % изменением относительно предыдущего аналогичного периода.
    */
-  async getOverview(user: User, range: DateRange): Promise<AnalyticsOverview> {
+  async getOverview(user: User, range: DateRange, options: AnalyticsAccessOptions = {}): Promise<AnalyticsOverview> {
     const { from, to } = range
     const periodMs = to.getTime() - from.getTime()
     const prevFrom = new Date(from.getTime() - periodMs)
@@ -34,24 +95,22 @@ export const analyticsService = {
     todayStart.setHours(0, 0, 0, 0)
     const yesterdayStart = new Date(todayStart.getTime() - 86_400_000)
 
-    const userFilter = user.role !== 'admin'
-      ? sql`AND qr.created_by = ${user.id}::uuid`
-      : sql``
+    const aclFilter = await getAnalyticsAclFilter(user, options)
 
     // Total QR codes (всего за всё время, не за период)
-    const [totalQrRow] = await db
-      .select({ n: count() })
-      .from(qrCodes)
-      .where(user.role !== 'admin' ? eq(qrCodes.createdBy, user.id) : undefined)
+    const totalQrResult = await db.execute<{ n: string }>(sql`
+      SELECT COUNT(*) AS n
+      FROM qr_codes qr
+      WHERE 1 = 1
+      ${aclFilter.sql}
+    `)
 
-    const [prevQrRow] = await db
-      .select({ n: count() })
-      .from(qrCodes)
-      .where(
-        user.role !== 'admin'
-          ? and(eq(qrCodes.createdBy, user.id), lte(qrCodes.createdAt, prevTo))
-          : lte(qrCodes.createdAt, prevTo),
-      )
+    const prevQrResult = await db.execute<{ n: string }>(sql`
+      SELECT COUNT(*) AS n
+      FROM qr_codes qr
+      WHERE qr.created_at <= ${prevTo}
+      ${aclFilter.sql}
+    `)
 
     // Scans in current period
     const curRow = await db.execute<{ total: string, uniq: string }>(sql`
@@ -61,7 +120,7 @@ export const analyticsService = {
       FROM scan_events se
       INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
       WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
-      ${userFilter}
+      ${aclFilter.sql}
     `)
 
     // Scans in previous period
@@ -72,7 +131,7 @@ export const analyticsService = {
       FROM scan_events se
       INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
       WHERE se.scanned_at >= ${prevFrom} AND se.scanned_at <= ${prevTo}
-      ${userFilter}
+      ${aclFilter.sql}
     `)
 
     // Scans today / yesterday
@@ -81,7 +140,7 @@ export const analyticsService = {
       FROM scan_events se
       INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
       WHERE se.scanned_at >= ${todayStart}
-      ${userFilter}
+      ${aclFilter.sql}
     `)
 
     const yesterdayRow = await db.execute<{ n: string }>(sql`
@@ -89,11 +148,11 @@ export const analyticsService = {
       FROM scan_events se
       INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
       WHERE se.scanned_at >= ${yesterdayStart} AND se.scanned_at < ${todayStart}
-      ${userFilter}
+      ${aclFilter.sql}
     `)
 
-    const totalQr = totalQrRow!.n
-    const prevQr = prevQrRow!.n
+    const totalQr = Number((totalQrResult.rows[0] as { n: string } | undefined)?.n ?? 0)
+    const prevQr = Number((prevQrResult.rows[0] as { n: string } | undefined)?.n ?? 0)
     const cur = curRow.rows[0] ?? { total: '0', uniq: '0' }
     const prev = prevRow.rows[0] ?? { total: '0', uniq: '0' }
     const todayScans = Number((todayRow.rows[0] as { n: string } | undefined)?.n ?? 0)
@@ -125,6 +184,7 @@ export const analyticsService = {
     user: User,
     range: DateRange,
     qrCodeId?: string,
+    options: AnalyticsAccessOptions = {},
   ): Promise<ScanTimeSeriesPoint[]> {
     const { from, to } = range
     const diffMs = to.getTime() - from.getTime()
@@ -138,9 +198,7 @@ export const analyticsService = {
 
     const qrFilter = qrCodeId ? sql`AND sds.qr_code_id = ${qrCodeId}::uuid` : sql``
     const qrFilterRaw = qrCodeId ? sql`AND se.qr_code_id = ${qrCodeId}::uuid` : sql``
-    const userFilter = user.role !== 'admin'
-      ? sql`AND qr.created_by = ${user.id}::uuid`
-      : sql``
+    const aclFilter = await getAnalyticsAclFilter(user, options)
 
     // For week/month granularity use the pre-aggregated scan_daily_stats table
     if (trunc === 'week' || trunc === 'month') {
@@ -156,7 +214,7 @@ export const analyticsService = {
         INNER JOIN qr_codes qr ON sds.qr_code_id = qr.id
         WHERE sds.date >= ${fromDate}::date AND sds.date <= ${toDate}::date
           ${qrFilter}
-          ${userFilter}
+          ${aclFilter.sql}
         GROUP BY date_group
         ORDER BY date_group ASC
       `)
@@ -178,7 +236,7 @@ export const analyticsService = {
       INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
       WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
         ${qrFilterRaw}
-        ${userFilter}
+        ${aclFilter.sql}
       GROUP BY date_group
       ORDER BY date_group ASC
     `)
@@ -193,11 +251,9 @@ export const analyticsService = {
   /**
    * Топ-10 QR-кодов по сканированиям за период.
    */
-  async getTopQrCodes(user: User, range: DateRange): Promise<TopQrCode[]> {
+  async getTopQrCodes(user: User, range: DateRange, options: AnalyticsAccessOptions = {}): Promise<TopQrCode[]> {
     const { from, to } = range
-    const userFilter = user.role !== 'admin'
-      ? sql`AND qr.created_by = ${user.id}::uuid`
-      : sql``
+    const aclFilter = await getAnalyticsAclFilter(user, options)
 
     const result = await db.execute(sql`
       SELECT
@@ -212,7 +268,7 @@ export const analyticsService = {
         AND se.scanned_at >= ${from}
         AND se.scanned_at <= ${to}
       WHERE 1 = 1
-        ${userFilter}
+        ${aclFilter.sql}
       GROUP BY qr.id, qr.title, qr.short_code
       ORDER BY total_scans DESC
       LIMIT 10

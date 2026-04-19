@@ -1,4 +1,4 @@
-type QrScope = 'mine' | 'department' | 'public' | 'all' | undefined
+type QrScope = 'mine' | 'department' | 'public' | 'all' | 'company' | undefined
 type UserRole = 'admin' | 'editor' | 'viewer'
 
 interface ResolveVisibilityAccessInput {
@@ -18,8 +18,9 @@ export interface ResolvedVisibilityAccess {
 export function resolveVisibilityAccess(input: ResolveVisibilityAccessInput): ResolvedVisibilityAccess {
   const { scope, userRole, userDepartmentIds, requestedDepartmentId } = input
   const isAdmin = userRole === 'admin'
+  const normalizedScope = scope === 'company' ? 'all' : scope
 
-  if (scope === 'mine') {
+  if (normalizedScope === 'mine') {
     return {
       includeMine: true,
       includePublic: false,
@@ -28,7 +29,7 @@ export function resolveVisibilityAccess(input: ResolveVisibilityAccessInput): Re
     }
   }
 
-  if (scope === 'public') {
+  if (normalizedScope === 'public') {
     return {
       includeMine: false,
       includePublic: true,
@@ -37,7 +38,7 @@ export function resolveVisibilityAccess(input: ResolveVisibilityAccessInput): Re
     }
   }
 
-  if (scope === 'department') {
+  if (normalizedScope === 'department') {
     if (requestedDepartmentId) {
       if (!isAdmin && !userDepartmentIds.includes(requestedDepartmentId)) {
         return {
@@ -61,6 +62,15 @@ export function resolveVisibilityAccess(input: ResolveVisibilityAccessInput): Re
       includePublic: false,
       allowedDepartmentIds: isAdmin ? null : userDepartmentIds,
       denyAll: !isAdmin && userDepartmentIds.length === 0,
+    }
+  }
+
+  if (normalizedScope === 'all' && !isAdmin) {
+    return {
+      includeMine: false,
+      includePublic: false,
+      allowedDepartmentIds: [],
+      denyAll: true,
     }
   }
 

@@ -6,6 +6,8 @@ const querySchema = z.object({
   qrCodeId: z.string().uuid().optional(),
   dateFrom: z.string().datetime({ offset: true }).optional(),
   dateTo: z.string().datetime({ offset: true }).optional(),
+  scope: z.enum(['mine', 'department', 'public', 'company']).optional(),
+  departmentId: z.string().uuid().optional(),
 })
 
 export default defineEventHandler(async (event) => {
@@ -17,6 +19,9 @@ export default defineEventHandler(async (event) => {
     ? new Date(query.dateFrom)
     : new Date(to.getTime() - 30 * 24 * 60 * 60 * 1000)
 
-  const data = await analyticsService.getScansTimeSeries(user, { from, to }, query.qrCodeId)
+  const data = await analyticsService.getScansTimeSeries(user, { from, to }, query.qrCodeId, {
+    scope: query.scope,
+    departmentId: query.departmentId,
+  })
   return apiSuccess(data)
 })
