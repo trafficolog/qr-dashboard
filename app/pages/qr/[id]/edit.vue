@@ -40,6 +40,7 @@
                 label="URL назначения"
                 :error="urlError"
                 :hint="isStatic ? $t('forms.hints.destinationUrl') + ' — ' + 'URL статического QR нельзя изменить' : $t('forms.hints.destinationUrl')"
+                required
               >
                 <UInput
                   v-model="form.destinationUrl"
@@ -47,8 +48,21 @@
                   icon="i-lucide-globe"
                   size="lg"
                   :disabled="isStatic"
+                  :aria-invalid="!!urlError"
+                  :aria-describedby="urlError ? qrEditUrlErrorId : undefined"
+                  :aria-required="true"
                   @blur="validateUrl"
                 />
+                <template #error="{ error }">
+                  <p
+                    v-if="error"
+                    :id="qrEditUrlErrorId"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {{ error }}
+                  </p>
+                </template>
               </UFormField>
 
               <UCollapsible>
@@ -114,8 +128,20 @@
                 <UInput
                   v-model="form.title"
                   :aria-invalid="!!titleError"
+                  :aria-describedby="titleError ? qrEditTitleErrorId : undefined"
+                  :aria-required="true"
                   @blur="validateTitle"
                 />
+                <template #error="{ error }">
+                  <p
+                    v-if="error"
+                    :id="qrEditTitleErrorId"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {{ error }}
+                  </p>
+                </template>
               </UFormField>
 
               <UFormField label="Описание">
@@ -244,6 +270,8 @@ interface EditableQr extends QrCode {
 const route = useRoute()
 const toast = useA11yToast()
 const { t } = useI18n()
+const qrEditUrlErrorId = 'qr-edit-url-error'
+const qrEditTitleErrorId = 'qr-edit-title-error'
 const { fetchQrById, updateQr } = useQr()
 
 const id = computed(() => route.params.id as string)

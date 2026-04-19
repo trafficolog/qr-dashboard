@@ -48,9 +48,20 @@
                 icon="i-lucide-globe"
                 size="lg"
                 :aria-invalid="!!urlError"
-                aria-describedby="qr-create-url-hint"
+                :aria-describedby="urlError ? qrCreateUrlErrorId : undefined"
+                :aria-required="true"
                 @blur="validateUrl"
               />
+              <template #error="{ error }">
+                <p
+                  v-if="error"
+                  :id="qrCreateUrlErrorId"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  {{ error }}
+                </p>
+              </template>
             </UFormField>
 
             <div class="flex items-center gap-4">
@@ -149,8 +160,20 @@
                 v-model="form.title"
                 placeholder="Промо-акция на упаковке"
                 :aria-invalid="!!titleError"
+                :aria-describedby="titleError ? qrCreateTitleErrorId : undefined"
+                :aria-required="true"
                 @blur="validateTitle"
               />
+              <template #error="{ error }">
+                <p
+                  v-if="error"
+                  :id="qrCreateTitleErrorId"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  {{ error }}
+                </p>
+              </template>
             </UFormField>
 
             <UFormField label="Папка">
@@ -258,6 +281,8 @@ import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
 const toast = useA11yToast()
 const { t } = useI18n()
+const qrCreateUrlErrorId = 'qr-create-url-error'
+const qrCreateTitleErrorId = 'qr-create-title-error'
 const { createQr } = useQr()
 const { user } = useAuth()
 const route = useRoute()
