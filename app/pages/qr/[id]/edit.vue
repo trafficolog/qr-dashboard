@@ -280,7 +280,9 @@ import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
 interface EditableQr extends QrCode {
   tags?: { id: string, name: string, color: string | null }[]
+  tagIds?: string[]
   folder?: { id: string, name: string } | null
+  folderId?: string | null
 }
 
 const route = useRoute()
@@ -397,8 +399,8 @@ async function loadQr() {
     form.destinationUrl = qr.value.destinationUrl
     form.description = qr.value.description || ''
     form.status = qr.value.status
-    form.folderId = qr.value.folder?.id || ''
-    form.tagIds = qr.value.tags?.map(tag => tag.id) || []
+    form.folderId = qr.value.folder?.id || qr.value.folderId || ''
+    form.tagIds = qr.value.tags?.map(tag => tag.id) || qr.value.tagIds || []
     form.style = { ...(qr.value.style || {}) }
 
     if (qr.value.expiresAt) {
@@ -433,8 +435,10 @@ async function loadQr() {
 }
 
 async function loadTagsAndFolders() {
-  fetchFolders()
-  const res = await $fetch<{ data: Tag[] }>('/api/tags')
+  const [_, res] = await Promise.all([
+    fetchFolders(),
+    $fetch<{ data: Tag[] }>('/api/tags'),
+  ])
   allTags.value = res.data
 }
 
