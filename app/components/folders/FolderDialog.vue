@@ -143,7 +143,7 @@ async function handleSubmit() {
     if (props.folder) {
       const res = await $fetch<{ data: Folder }>(`/api/folders/${props.folder.id}`, {
         method: 'PUT',
-        body: { ...payload, parentId: form.parentId || null, color: form.color || null },
+        body: payload,
       })
       emit('updated', res.data)
     }
