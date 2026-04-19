@@ -254,9 +254,7 @@ const schema = z.object({
   destinationUrl: z.string().trim().min(1, 'forms.errors.required').url('forms.errors.url'),
 })
 const { errors, touched, validate, validateField, setServerErrors } = useFormValidation(schema)
-const urlError = computed(() =>
-  touched.value.destinationUrl ? translateError(errors.value.destinationUrl) : '',
-)
+const urlError = ref('')
 const titleError = computed(() =>
   touched.value.title ? translateError(errors.value.title) : '',
 )
@@ -286,6 +284,19 @@ const statusOptions = [
 
 function validateUrl() {
   validateField('destinationUrl', form.destinationUrl)
+
+  if (!form.destinationUrl.trim()) {
+    urlError.value = translateError(errors.value.destinationUrl)
+    return
+  }
+
+  try {
+    new URL(form.destinationUrl)
+    urlError.value = ''
+  }
+  catch {
+    urlError.value = t('forms.errors.url')
+  }
 }
 
 function validateTitle() {
@@ -353,7 +364,12 @@ async function loadQr() {
 }
 
 async function handleSave() {
-  if (!validate(form)) return
+  if (!validate(form)) {
+    urlError.value = translateError(errors.value.destinationUrl)
+    return
+  }
+
+  urlError.value = ''
 
   saving.value = true
   try {
