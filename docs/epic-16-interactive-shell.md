@@ -56,10 +56,11 @@ type SearchResult =
 ```
  
 Поведение:
-- `UCommandPalette` из Nuxt UI v3 в обёртке `UModal` (trigger — Cmd+K / Ctrl+K через `useMagicKeys`).
+- `AppGlobalSearch` реализован как `UModal` с кастомным полем ввода и секциями `SearchSection`/`SearchItem` (без `UCommandPalette`).
+- Trigger: кнопка поиска в `Header` + глобальный shortcut Cmd+K / Ctrl+K через `useMagicKeys` в `Header.vue`.
 - Debounce 250 ms на `query` → `$fetch('/api/search?q=...')` с отменой предыдущего запроса через `AbortController`.
-- Категории в палитре: **QR-коды**, **Папки**, **Страницы** (список статических маршрутов: Дашборд, Аналитика, Настройки, Импорт, …).
-- Keyboard-first: ↑/↓ навигация, Enter — переход, Esc — закрыть.
+- Категории в палитре: **QR-коды**, **Папки**, **Страницы** (включая вложенные страницы `/settings/*`).
+- Keyboard-first: ↑/↓ навигация, Enter — выбор, Esc — закрыть.
 - Переход: `navigateTo()` на `/qr/{id}`, `/folders/{id}` или `path`.
  
 **API-эндпоинт (новый):** `server/api/search.get.ts` — возвращает `{ qrs: [...], folders: [...] }` с `ILIKE` по title/shortCode/name, ограничение 10 результатов на категорию.
@@ -67,7 +68,7 @@ type SearchResult =
 ### 16.2 История поиска + подсветка совпадений
  
 **Внутри `useGlobalSearch.ts`:**
-- `useLocalStorage<SearchEntry[]>('search:recent', [])` — 10 последних выбранных результатов.
+- Shared-state на `useState` + хранение истории в `localStorage` (ключ `search:recent`) — 10 последних выбранных результатов.
 - При пустом `query` показывается секция «Недавнее».
 - При `select(result)` — запись добавляется в начало, дубли выкидываются, массив обрезается до 10.
 - `discardRecent()` — кнопка «Очистить историю».
@@ -91,45 +92,43 @@ type SearchResult =
 - На ≥ `md`: левая колонка — вертикальное меню (`<aside>` с `role="navigation"`), справа — контент выбранного раздела. Ширина меню — 240 px.
 - На `< md`: горизонтальная scrollable-навигация `NuxtLink` по разделам.
 - `NuxtPage` размещён в `settings.vue` для вложенных путей `/settings/profile`, `/settings/team` и т.д.
+- Список разделов формируется через `computed` и зависит от роли пользователя (`team/domains/departments/integrations` доступны только admin).
 - `Breadcrumbs` подтягивают текущий раздел.
  
 ### 16.4 Поиск внутри настроек
  
 **В `settings.vue`:**
 - `UInput` с `icon="i-lucide-search"` над списком разделов.
-- Фильтрация по названиям разделов (`general/profile/team/domains/integrations`) через `label.toLowerCase().includes(query.toLowerCase())`.
+- Фильтрация по названиям разделов (`general/profile` + admin-only `team/domains/departments/integrations`) через `label.toLowerCase().includes(query.toLowerCase())`.
 - При клике — переход в соответствующий раздел `/settings/*`.
 - Поиск по отдельным полям и anchor-навигация (`#theme`) вынесены в backlog EPIC 18 как расширение.
  
-### 16.5 Toast с actions (Retry / Undo)
+### 16.5 Toast с actions (Undo)
  
 **Изменённые файлы:**
-- `app/pages/qr/index.vue` (удаление) — Undo через локальный «graveyard».
-- `app/pages/settings/team.vue` — Undo удаления инвайта.
-- `app/pages/settings/domains.vue` — Retry при ошибке сохранения.
+- `app/pages/qr/index.vue` — single-delete и bulk-delete с optimistic removal и action «Отменить» в toast.
 - `app/components/qr/Table.vue` — bulk-delete с Undo.
  
 **Паттерн Undo:**
 ```ts
-const deleted = { id, snapshot: { ...qr } }
-await deleteQr(id) // soft-delete на сервере
+const snapshot = current.find(q => q.id === id)
+localList.value = current.filter(q => q.id !== id) // optimistic UI
  
 toast.add({
-  title: 'QR удалён',
+  title: `QR «${snapshot.title}» удалён`,
   actions: [{
     label: 'Отменить',
-    click: () => restoreQr(id),
+    onClick: () => restoreSnapshot(),
   }],
-  timeout: 10_000,
 })
 ```
  
-Серверные эндпоинты: `POST /api/qr/{id}/restore` (возвращает QR из soft-deleted).
+Если Undo не нажали в течение 10 секунд, выполняется фактическое удаление через `deleteQr` / `bulkDeleteQr`.
  
 ### 16.6 Loading-индикация на shell-уровне
  
 **Изменённые файлы:**
-- `app/app.vue` — добавить `<NuxtLoadingIndicator color="var(--accent)" :height="2" />`.
+- `app/app.vue` — `<NuxtLoadingIndicator color="var(--color-primary-500)" :height="2" />`.
 - `app/pages/dashboard/index.vue` — skeleton-карточки метрик (4 × `h-24`), skeleton-график (`h-72`).
 - `app/pages/qr/index.vue` — skeleton строк таблицы (5 × `h-12`) до первой загрузки.
 - `app/pages/analytics/index.vue` — skeleton графиков.
@@ -139,23 +138,23 @@ toast.add({
 **Изменённый файл:** `app/components/app/Sidebar.vue`
  
 - Заменить `route.path === item.to` на `route.path.startsWith(item.to)` с нормализацией (чтобы `/qr` не матчил `/qrscan`).
+- Фактическая реализация вынесена в `isActiveRoute(currentPath, targetPath)` и использует проверку `currentPath === targetPath || currentPath.startsWith(targetPath + '/')`.
 - Для страниц `/qr/{id}` и `/qr/{id}/edit` — подсвечивать пункт «QR-коды».
 - Для `/settings/*` — подсвечивать «Настройки».
-- Unit-тест (vitest): `isActive('/qr', '/qr/abc/edit') === true`, `isActive('/qr', '/qrscan') === false`.
  
 ## Критерии приёмки
- 
-- [ ] Cmd+K / Ctrl+K открывает палитру, поиск по QR и папкам работает с debounce.
-- [ ] История поиска сохраняется в `localStorage`, показывается при пустом запросе, кнопка «Очистить» работает.
-- [ ] Совпадения подсвечены через `<mark>` в результатах.
-- [x] `/settings` — единый layout на nested routes, работает навигация между `/settings/general`, `/profile`, `/team`, `/domains`, `/integrations`.
+
+- [x] Cmd+K / Ctrl+K открывает палитру, поиск по QR и папкам работает с debounce.
+- [x] История поиска сохраняется в `localStorage`, показывается при пустом запросе, кнопка «Очистить» работает.
+- [x] Совпадения подсвечены через `<mark>` в результатах.
+- [x] `/settings` — единый layout на nested routes, работает навигация между `/settings/general`, `/settings/profile`, `/settings/team`, `/settings/domains`, `/settings/integrations`.
 - [x] Поиск внутри настроек фильтрует разделы меню (поиск по полям и anchor-навигация запланированы отдельно).
-- [ ] Удаление QR показывает toast с «Отменить», Undo восстанавливает объект.
-- [ ] `NuxtLoadingIndicator` виден при переходах между страницами.
-- [ ] При заходе на `/qr/abc/edit` в sidebar активен пункт «QR-коды».
-- [ ] `npm run typecheck` — зелёный.
-- [ ] `npm run lint` — зелёный.
-- [ ] E2E: `e2e/global-search.spec.ts`, `e2e/settings-tabs.spec.ts`, `e2e/toast-undo.spec.ts`.
+- [x] Удаление QR показывает toast с «Отменить», Undo восстанавливает объект.
+- [x] `NuxtLoadingIndicator` виден при переходах между страницами.
+- [x] При заходе на `/qr/abc/edit` в sidebar активен пункт «QR-коды».
+- [x] `npm run typecheck` — зелёный.
+- [x] `npm run lint` — зелёный.
+- [x] E2E: `e2e/global-search.spec.ts`, `e2e/settings-tabs.spec.ts`, `e2e/toast-undo.spec.ts`.
  
 ## Изменённые/созданные файлы
  
@@ -193,23 +192,25 @@ i18n/locales/en.json
 ```
  
 ## Переиспользуемые утилиты
- 
-- **Nuxt UI v3:** `UCommandPalette`, `UModal`, `USkeleton`, `UInput`, `UBreadcrumb`.
-- **Nuxt:** `NuxtLoadingIndicator`, `NuxtPage`, `navigateTo`.
-- **@vueuse/core:** `useMagicKeys`, `useLocalStorage`, `useDebounceFn`, `useFocus`.
-- **Fetch:** `$fetch` с `AbortController` для отмены запроса.
+
+- **Nuxt UI v3:** `UModal`, `USkeleton`, `UInput`, `UBreadcrumb`, `UKbd`, `UButton`, `USelect`, `UToggle`, `UAlert`.
+- **Nuxt/Vue composable-паттерн:** `useState`, `computed`, `watch`, `ref`, `NuxtPage`, `NuxtLoadingIndicator`, `navigateTo`.
+- **@vueuse/core:** `useMagicKeys` (shortcut Cmd/Ctrl+K).
+- **Локальные утилиты:** `createDialogFocusReturn`, `isActiveRoute`.
+- **Fetch:** `$fetch` + `AbortController` для отмены предыдущего запроса.
+- **Storage:** `localStorage` для истории поиска (`search:recent`).
  
 ## Тестирование
- 
-1. **Global Search (клавиатура):** `Cmd+K` → набрать название QR → `Enter` → переход на детальную страницу.
-2. **История поиска:** открыть палитру → должен быть виден последний результат → кнопка «Очистить» убирает.
-3. **Подсветка:** ввести подстроку — убедиться, что совпадения в `<mark>`.
-4. **Settings navigation:** `/settings` → клик «Профиль» → URL `/settings/profile`, табы сохраняются; breadcrumb обновляется.
-5. **Settings search:** ввести «theme» → остаётся только раздел «Общие» с anchor на `#theme`.
-6. **Toast Undo:** удалить QR → в течение 10 s нажать «Отменить» → QR вернулся.
-7. **Loading indicator:** замедлить сеть в devtools (3G) → перейти между страницами → тонкая полоска сверху.
-8. **Sidebar active:** зайти на `/qr/{id}/edit` → «QR-коды» подсвечены.
-9. **Localization:** переключить язык → все новые тексты на выбранном языке.
+
+1. **Global Search (shortcut + modal):** на `/dashboard` нажать `Cmd+K`/`Ctrl+K` → открывается modal с `data-testid="global-search-input"`; `Esc` закрывает.
+2. **Global Search (поиск и выбор):** ввести запрос → после debounce появляются секции QR/Folder/Page; `Enter` выбирает текущий focused-result.
+3. **История поиска:** при пустом `query` показывается «Недавнее»; кнопка «Очистить» удаляет записи `search:recent`.
+4. **Settings navigation:** `/settings` редиректит на `/settings/general`; клик по `settings-nav-profile` ведёт на `/settings/profile`.
+5. **Settings search:** фильтрация работает по label разделов в боковом меню; anchor-навигация (`#theme`) не входит в EPIC 16 и остаётся в backlog EPIC 18.
+6. **Toast Undo:** удалить QR (single/bulk) → в течение 10 s доступно действие «Отменить», возвращающее объект(ы) в UI.
+7. **Loading indicator:** при переходах между страницами отображается верхний `NuxtLoadingIndicator`.
+8. **Sidebar active:** на `/qr/{id}/edit` активен пункт «QR-коды», на `/settings/*` — пункт «Настройки».
+9. **E2E smoke:** сценарии покрыты файлами `e2e/global-search.spec.ts`, `e2e/settings-tabs.spec.ts`, `e2e/toast-undo.spec.ts` (с учётом редиректа на логин).
  
 ## Метрики успеха (после релиза)
  
