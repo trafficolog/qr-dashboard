@@ -105,8 +105,20 @@
     "geo": {
       "title": "Geography",
       "empty": "No geography data",
-      "mapTitle": "GeoMap",
-      "tableTitle": "GeoTable"
+      "mapTitle": "Scan map",
+      "tableTitle": "Cities and countries",
+      "russiaFallback": "No Russia data for the selected period. Switch to “World” mode.",
+      "russiaMapAria": "Russia choropleth scan map",
+      "toggle": {
+        "russia": "Russia",
+        "world": "World"
+      },
+      "columns": {
+        "country": "Country",
+        "city": "City",
+        "scans": "Scans",
+        "uniqueScans": "Unique"
+      }
     },
     "devices": {
       "title": "Devices",
@@ -120,8 +132,8 @@
     "time": {
       "title": "Time distribution",
       "empty": "No time distribution data",
-      "hourly": "Hourly",
-      "weekday": "Weekday",
+      "hourly": "Hourly (0–23)",
+      "weekday": "Weekday (Mon–Sun)",
       "weekdays": {
         "sun": "Sun",
         "mon": "Mon",
