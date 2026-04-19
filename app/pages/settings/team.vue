@@ -4,15 +4,15 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-          Команда
+          {{ $t('pages.team.title') }}
         </h1>
         <p class="mt-0.5 text-sm text-[color:var(--text-secondary)]">
-          Управление участниками команды и их ролями
+          {{ $t('pages.team.subtitle') }}
         </p>
       </div>
       <UButton
         icon="i-lucide-user-plus"
-        label="Пригласить"
+        :label="$t('forms.actions.invite')"
         @click="inviteOpen = true"
       />
     </div>
@@ -22,7 +22,7 @@
       <template #header>
         <div class="flex items-center justify-between">
           <h2 class="font-medium text-[color:var(--text-primary)]">
-            Участники
+            {{ $t('team.members.title') }}
           </h2>
           <UBadge
             color="neutral"
@@ -54,7 +54,7 @@
           name="i-lucide-users"
           class="mx-auto mb-2 size-10 text-[color:var(--text-muted)]/50"
         />
-        <p>Нет участников</p>
+        <p>{{ $t('team.members.empty') }}</p>
       </div>
 
       <!-- List -->
@@ -89,12 +89,12 @@
 
           <!-- QR count -->
           <span class="hidden sm:block text-xs text-[color:var(--text-muted)] whitespace-nowrap">
-            {{ member.qrCount }} QR
+            {{ $t('team.members.qrCount', { count: member.qrCount }) }}
           </span>
 
           <!-- Last login -->
           <span class="hidden md:block text-xs text-[color:var(--text-muted)] whitespace-nowrap">
-            {{ member.lastLoginAt ? formatDate(member.lastLoginAt) : 'Не входил' }}
+            {{ member.lastLoginAt ? formatDate(member.lastLoginAt) : $t('team.members.neverLoggedIn') }}
           </span>
 
           <!-- Role badge (self — not editable) -->
@@ -137,7 +137,7 @@
     <!-- Invite modal -->
     <UModal
       v-model:open="inviteOpen"
-      title="Пригласить участника"
+      :title="$t('team.invite.modalTitle')"
       :close-on-escape="true"
     >
       <template #body>
@@ -146,7 +146,7 @@
           @submit.prevent="handleInvite"
         >
           <UFormField
-            label="Email"
+            :label="$t('forms.labels.email')"
             :error="inviteEmailError"
             :hint="$t('forms.hints.inviteEmail')"
             required
@@ -175,7 +175,7 @@
           </UFormField>
 
           <UFormField
-            label="Роль"
+            :label="$t('forms.labels.role')"
             :error="inviteRoleError"
             required
           >
@@ -204,7 +204,7 @@
             icon="i-lucide-info"
             color="info"
             variant="soft"
-            description="Пользователь получит письмо с инструкцией по входу. Для авторизации используется OTP-код."
+            :description="$t('team.invite.alertDescription')"
           />
         </form>
       </template>
@@ -212,13 +212,13 @@
       <template #footer>
         <div class="flex justify-end gap-3">
           <UButton
-            label="Отмена"
+            :label="$t('forms.actions.cancel')"
             variant="outline"
             color="neutral"
             @click="inviteOpen = false"
           />
           <UButton
-            label="Пригласить"
+            :label="$t('forms.actions.invite')"
             icon="i-lucide-send"
             :loading="inviting"
             @click="handleInvite"
@@ -230,11 +230,11 @@
     <!-- Confirm delete -->
     <SharedConfirmDialog
       v-model:open="deleteOpen"
-      title="Удалить участника?"
+      :title="$t('team.delete.title')"
       :message="deletingMember
-        ? `Пользователь «${deletingMember.name || deletingMember.email}» будет удалён. Его QR-коды будут переназначены вам.`
+        ? t('team.delete.message', { name: deletingMember.name || deletingMember.email })
         : ''"
-      confirm-label="Удалить"
+      :confirm-label="$t('forms.actions.delete')"
       @confirm="confirmDelete"
     />
   </div>
@@ -269,7 +269,7 @@ interface TeamMember {
 
 const { user: currentUser } = useAuth()
 const toast = useA11yToast()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const inviteEmailErrorId = 'settings-team-invite-email-error'
 const inviteRoleErrorId = 'settings-team-invite-role-error'
 
@@ -284,7 +284,7 @@ const focusReturn = createDialogFocusReturn()
 const inviting = ref(false)
 const inviteForm = ref({ email: '', role: 'editor' as RoleValue })
 const inviteSchema = z.object({
-  email: z.string().trim().min(1, 'forms.errors.required').email('Некорректный email'),
+  email: z.string().trim().min(1, 'forms.errors.required').email('forms.errors.email'),
   role: z.enum(['admin', 'editor', 'viewer'], { message: 'forms.errors.required' }),
 })
 const { errors: inviteErrors, touched: inviteTouched, validate: validateInvite, validateField: validateInviteField, setServerErrors: setInviteServerErrors, reset: resetInviteValidation } = useFormValidation(inviteSchema)
@@ -301,9 +301,9 @@ watch(inviteOpen, (open) => {
 })
 
 const roleItems = [
-  { label: 'Администратор', value: 'admin' },
-  { label: 'Редактор', value: 'editor' },
-  { label: 'Наблюдатель', value: 'viewer' },
+  { label: t('team.roles.admin'), value: 'admin' },
+  { label: t('team.roles.editor'), value: 'editor' },
+  { label: t('team.roles.viewer'), value: 'viewer' },
 ]
 
 function roleLabel(role: RoleValue) {
@@ -317,7 +317,7 @@ function roleColor(role: RoleValue): 'error' | 'warning' | 'neutral' {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('ru-RU', {
+  return new Date(iso).toLocaleDateString(locale.value === 'ru' ? 'ru-RU' : 'en-US', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -331,7 +331,7 @@ async function fetchMembers() {
     members.value = res.data
   }
   catch {
-    toast.add({ title: 'Ошибка загрузки команды', color: 'error' })
+    toast.add({ title: t('team.toasts.loadError'), color: 'error' })
   }
   finally {
     loading.value = false
@@ -348,11 +348,11 @@ async function handleRoleChange(member: TeamMember, newRole: RoleValue) {
     })
     const idx = members.value.findIndex(m => m.id === member.id)
     if (idx !== -1) members.value[idx] = res.data
-    toast.add({ title: `Роль изменена на «${roleLabel(newRole)}»`, color: 'success' })
+    toast.add({ title: t('team.toasts.roleChanged', { role: roleLabel(newRole) }), color: 'success' })
   }
   catch (err: unknown) {
     const e = err as { data?: { message?: string } }
-    toast.add({ title: e?.data?.message ?? 'Ошибка изменения роли', color: 'error' })
+    toast.add({ title: e?.data?.message ?? t('team.toasts.roleChangeError'), color: 'error' })
   }
   finally {
     updatingId.value = null
@@ -369,7 +369,7 @@ async function handleInvite() {
       body: { email: inviteForm.value.email, role: inviteForm.value.role },
     })
     members.value.push(res.data)
-    toast.add({ title: `Приглашение отправлено на ${inviteForm.value.email}`, color: 'success' })
+    toast.add({ title: t('team.toasts.inviteSent', { email: inviteForm.value.email }), color: 'success' })
     inviteOpen.value = false
     inviteForm.value = { email: '', role: 'editor' }
     resetInviteValidation()
@@ -420,11 +420,11 @@ async function confirmDelete() {
   try {
     await $fetch(`/api/team/${deletingMember.value.id}`, { method: 'DELETE' })
     members.value = members.value.filter(m => m.id !== deletingMember.value!.id)
-    toast.add({ title: 'Участник удалён', color: 'success' })
+    toast.add({ title: t('team.toasts.memberDeleted'), color: 'success' })
   }
   catch (err: unknown) {
     const e = err as { data?: { message?: string } }
-    toast.add({ title: e?.data?.message ?? 'Ошибка удаления', color: 'error' })
+    toast.add({ title: e?.data?.message ?? t('team.toasts.deleteError'), color: 'error' })
   }
   finally {
     deletingId.value = null
