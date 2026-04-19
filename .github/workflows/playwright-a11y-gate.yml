@@ -32,7 +32,6 @@ jobs:
       DATABASE_URL: postgresql://splat_qr:secret@localhost:5432/splat_qr
       NUXT_PUBLIC_APP_URL: http://127.0.0.1:3001
       PLAYWRIGHT_BASE_URL: http://127.0.0.1:3001
-      PLAYWRIGHT_AUTH_COOKIE_NAME: session_token
 
     steps:
       - name: Checkout

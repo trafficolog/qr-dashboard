@@ -169,7 +169,7 @@ test('dashboard has no blocking a11y violations', async ({ page }) => {
 
 - **CI workflow (merge gate):** `.github/workflows/playwright-a11y-gate.yml`, job `playwright-a11y`.
   - Шаг `Run accessibility e2e gate` запускает обязательную команду `npm run test:e2e -- a11y.spec.ts`.
-  - Job получает `PLAYWRIGHT_AUTH_COOKIE` через seeded `admin@splat.com` session (`session_token`) и поднимает app+postgres окружение.
+  - Job получает `PLAYWRIGHT_AUTH_COOKIE` через seeded `admin@splat.com` session: в таблицу `sessions` записывается `SHA-256` hash токена, а клиенту в e2e подставляется cookie `session_token` со значением plain token.
   - **Fail condition:** job завершается с ошибкой, если команда вернула non-zero (т.е. найдено хотя бы одно blocking-нарушение из `serious`/`critical` или `color-contrast`, либо не поднялась инфраструктура e2e).
   - **Pass condition:** job зелёный только если окружение поднято и `a11y.spec.ts` полностью проходит; в branch protection этот check должен быть отмечен как Required.
   - При падении публикуется артефакт `playwright-report-a11y` (папка `playwright-report`).
