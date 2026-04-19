@@ -153,7 +153,6 @@
       :all-selected="allSelected"
       :sort-by="filters.sortBy"
       :sort-order="filters.sortOrder"
-      :make-department-disabled="departmentActionDisabled"
       :make-department-tooltip="departmentActionTooltip"
       @toggle-all="toggleAll"
       @toggle-select="toggleSelect"
@@ -161,7 +160,7 @@
       @edit="(id) => navigateTo(`/qr/${id}/edit`)"
       @duplicate="handleDuplicate"
       @delete="handleDelete"
-      @change-visibility="handleVisibilityChange"
+      @toggle-status="handleToggleStatus"
     />
 
     <!-- Grid view -->
@@ -173,12 +172,11 @@
         v-for="qr in displayList"
         :key="qr.id"
         :qr="qr as any"
-        :make-department-disabled="departmentActionDisabled"
         :make-department-tooltip="departmentActionTooltip"
         @edit="(id) => navigateTo(`/qr/${id}/edit`)"
         @duplicate="handleDuplicate"
         @delete="handleDelete"
-        @change-visibility="handleVisibilityChange"
+        @toggle-status="handleToggleStatus"
       />
     </div>
 
@@ -350,32 +348,14 @@ async function handleDuplicate(id: string) {
   }
 }
 
-async function handleVisibilityChange(payload: { id: string, visibility: 'private' | 'department' | 'public' }) {
+async function handleToggleStatus(payload: { id: string, status: 'active' | 'paused' }) {
   try {
-    if (payload.visibility === 'department') {
-      if (userDepartments.value.length === 0) {
-        return
-      }
-
-      if (userDepartments.value.length === 1) {
-        await updateQr(payload.id, { visibility: 'department', departmentId: userDepartments.value[0]!.id })
-        toast.add({ title: t('qr.visibility.updated'), color: 'success' })
-        fetchQrList()
-        return
-      }
-
-      pendingDepartmentVisibilityQrId.value = payload.id
-      selectedDepartmentId.value = userDepartments.value[0]!.id
-      departmentPickerOpen.value = true
-      return
-    }
-
-    await updateQr(payload.id, { visibility: payload.visibility })
-    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    await updateQr(payload.id, { status: payload.status })
+    toast.add({ title: 'Статус QR-кода обновлён', color: 'success' })
     fetchQrList()
   }
   catch {
-    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
+    toast.add({ title: 'Ошибка обновления статуса', color: 'error' })
   }
 }
 

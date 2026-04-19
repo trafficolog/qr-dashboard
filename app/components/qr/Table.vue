@@ -72,8 +72,10 @@
           </th>
           <th
             scope="col"
-            class="py-3 px-2 w-10"
-          />
+            class="py-3 px-2 w-[140px]"
+          >
+            Действия
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -92,12 +94,20 @@
             >
           </td>
           <td class="py-3 px-2">
-            <div class="h-10 w-10 overflow-hidden rounded border border-[color:var(--border)] bg-[color:var(--surface-0)] p-0.5">
-              <QrPreviewMini
-                :url="qr.destinationUrl"
-                :style-config="qr.style as any"
-              />
-            </div>
+            <QrHoverPreview
+              :title="qr.title"
+              :destination-url="qr.destinationUrl"
+              :status="qr.status"
+              :scans="qr.totalScans"
+              :style-config="qr.style as any"
+            >
+              <div class="h-10 w-10 overflow-hidden rounded border border-[color:var(--border)] bg-[color:var(--surface-0)] p-0.5">
+                <QrPreviewMini
+                  :url="qr.destinationUrl"
+                  :style-config="qr.style as any"
+                />
+              </div>
+            </QrHoverPreview>
           </td>
           <td class="py-3 px-3">
             <NuxtLink
@@ -139,24 +149,25 @@
             </UBadge>
           </td>
           <td class="px-3 py-3 text-right font-medium text-[color:var(--text-primary)]">
-            {{ qr.totalScans.toLocaleString() }}
+            {{ qr.totalScans.toLocaleString('ru-RU') }}
           </td>
           <td class="hidden whitespace-nowrap px-3 py-3 text-[color:var(--text-secondary)] md:table-cell">
             {{ formatDate(qr.createdAt) }}
           </td>
           <td class="py-3 px-2">
-            <UTooltip :text="makeDepartmentTooltip">
-              <UDropdownMenu :items="getActions(qr)">
-                <UButton
-                  icon="i-lucide-more-horizontal"
-                  :aria-label="t('a11y.actions.openQrActions', { title: qr.title })"
-                  :title="t('a11y.actions.openQrActions', { title: qr.title })"
-                  variant="ghost"
-                  color="neutral"
-                  size="sm"
-                />
-              </UDropdownMenu>
-            </UTooltip>
+            <QuickActions
+              compact
+              :qr-id="qr.id"
+              :title="qr.title"
+              :short-code="qr.shortCode"
+              :destination-url="qr.destinationUrl"
+              :status="qr.status"
+              :make-department-tooltip="makeDepartmentTooltip"
+              @edit="emit('edit', $event)"
+              @duplicate="emit('duplicate', $event)"
+              @delete="emit('delete', $event)"
+              @toggle-status="emit('toggleStatus', $event)"
+            />
           </td>
         </tr>
       </tbody>
@@ -167,6 +178,7 @@
 <script setup lang="ts">
 interface QrItem {
   id: string
+  shortCode?: string
   title: string
   destinationUrl: string
   status: string
@@ -178,13 +190,12 @@ interface QrItem {
   departmentName?: string | null
 }
 
-const props = defineProps<{
+defineProps<{
   items: QrItem[]
   selectedIds: string[]
   allSelected: boolean
   sortBy: string
   sortOrder: string
-  makeDepartmentDisabled?: boolean
   makeDepartmentTooltip?: string
 }>()
 
@@ -195,15 +206,16 @@ const emit = defineEmits<{
   edit: [id: string]
   duplicate: [id: string]
   delete: [id: string]
-  changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public' }]
+  toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
 }>()
 
 const { t } = useI18n()
 
 function formatDate(date: string | Date) {
   return new Date(date).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
   })
 }
 
@@ -220,28 +232,5 @@ function getVisibilityBadge(qr: QrItem) {
   }
 
   return { icon: 'i-lucide-lock', label: t('qr.visibility.private') }
-}
-
-function getActions(qr: QrItem) {
-  return [
-    [
-      { label: 'Открыть', icon: 'i-lucide-external-link', to: `/qr/${qr.id}` },
-      { label: 'Редактировать', icon: 'i-lucide-pencil', onSelect: () => emit('edit', qr.id) },
-      { label: 'Дублировать', icon: 'i-lucide-copy', onSelect: () => emit('duplicate', qr.id) },
-    ],
-    [
-      { label: t('qr.actions.makePrivate'), icon: 'i-lucide-lock', onSelect: () => emit('changeVisibility', { id: qr.id, visibility: 'private' }) },
-      {
-        label: t('qr.actions.makeDepartment'),
-        icon: 'i-lucide-building-2',
-        disabled: props.makeDepartmentDisabled,
-        onSelect: () => emit('changeVisibility', { id: qr.id, visibility: 'department' }),
-      },
-      { label: t('qr.actions.makePublic'), icon: 'i-lucide-globe', onSelect: () => emit('changeVisibility', { id: qr.id, visibility: 'public' }) },
-    ],
-    [
-      { label: 'Удалить', icon: 'i-lucide-trash-2', onSelect: () => emit('delete', qr.id) },
-    ],
-  ]
 }
 </script>

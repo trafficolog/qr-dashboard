@@ -1,11 +1,10 @@
 <template>
   <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)] transition-shadow hover:shadow-md hover:shadow-black/5">
-    <!-- QR Preview -->
     <NuxtLink
       :to="`/qr/${qr.id}`"
-      class="block"
+      class="mb-3 block"
     >
-      <div class="mb-3 aspect-square w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)] p-3">
+      <div class="aspect-square w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)] p-3">
         <QrPreviewMini
           :url="qr.destinationUrl"
           :style-config="qr.style as any"
@@ -13,8 +12,7 @@
       </div>
     </NuxtLink>
 
-    <!-- Info -->
-    <div class="space-y-2">
+    <div class="space-y-3">
       <div class="flex items-start justify-between gap-2">
         <NuxtLink
           :to="`/qr/${qr.id}`"
@@ -22,21 +20,6 @@
         >
           {{ qr.title }}
         </NuxtLink>
-        <UTooltip :text="makeDepartmentTooltip">
-          <UDropdownMenu :items="actions">
-            <UButton
-              icon="i-lucide-more-horizontal"
-              :aria-label="`Открыть действия для QR-кода ${qr.title}`"
-              :title="`Открыть действия для QR-кода ${qr.title}`"
-              variant="ghost"
-              color="neutral"
-              size="xs"
-            />
-          </UDropdownMenu>
-        </UTooltip>
-      </div>
-
-      <div class="flex items-center gap-2">
         <UBadge
           :color="statusColor"
           variant="soft"
@@ -44,22 +27,34 @@
         >
           {{ statusLabel }}
         </UBadge>
-        <UBadge
-          :icon="visibilityBadge.icon"
-          variant="soft"
-          color="neutral"
-          size="xs"
-        >
-          {{ visibilityBadge.label }}
-        </UBadge>
-        <span class="text-xs text-[color:var(--text-secondary)]">
-          {{ qr.totalScans.toLocaleString() }} сканов
+      </div>
+
+      <button
+        type="button"
+        class="flex w-full items-center gap-1 text-left text-xs text-[color:var(--text-secondary)] hover:text-[color:var(--accent)]"
+        :title="qr.destinationUrl"
+        @click="copyDestination"
+      >
+        <UIcon name="i-lucide-link" class="size-3 shrink-0" />
+        <span class="truncate">{{ qr.destinationUrl }}</span>
+        <UIcon name="i-lucide-copy" class="size-3 shrink-0" />
+      </button>
+
+      <div class="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
+        <span class="inline-flex items-center gap-1">
+          <UIcon name="i-lucide-calendar" class="size-3" />
+          {{ formatEpicDate(qr.createdAt) }}
+        </span>
+        <span>·</span>
+        <span class="inline-flex items-center gap-1">
+          <UIcon name="i-lucide-bar-chart-3" class="size-3" />
+          {{ qr.totalScans.toLocaleString('ru-RU') }}
         </span>
       </div>
 
       <div
         v-if="qr.tags?.length"
-        class="flex gap-1 flex-wrap"
+        class="flex flex-wrap gap-1"
       >
         <UBadge
           v-for="tag in qr.tags.slice(0, 3)"
@@ -71,6 +66,19 @@
           {{ tag.name }}
         </UBadge>
       </div>
+
+      <QuickActions
+        :qr-id="qr.id"
+        :title="qr.title"
+        :short-code="qr.shortCode"
+        :destination-url="qr.destinationUrl"
+        :status="qr.status"
+        :make-department-tooltip="makeDepartmentTooltip"
+        @edit="emit('edit', $event)"
+        @duplicate="emit('duplicate', $event)"
+        @delete="emit('delete', $event)"
+        @toggle-status="emit('toggleStatus', $event)"
+      />
     </div>
   </UCard>
 </template>
@@ -78,19 +86,18 @@
 <script setup lang="ts">
 interface QrItem {
   id: string
+  shortCode?: string
   title: string
   destinationUrl: string
   status: string
   totalScans: number
+  createdAt: string | Date
   style?: Record<string, unknown>
   tags?: { id: string, name: string, color: string | null }[]
-  visibility?: 'private' | 'department' | 'public'
-  departmentName?: string | null
 }
 
 const props = defineProps<{
   qr: QrItem
-  makeDepartmentDisabled?: boolean
   makeDepartmentTooltip?: string
 }>()
 
@@ -98,9 +105,11 @@ const emit = defineEmits<{
   edit: [id: string]
   duplicate: [id: string]
   delete: [id: string]
-  changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public' }]
+  toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
 }>()
-const { t } = useI18n()
+
+const toast = useA11yToast()
+const { copy } = useClipboard()
 
 type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
 
@@ -114,39 +123,21 @@ const statusLabel = computed(() => {
   return map[props.qr.status] || props.qr.status
 })
 
-const visibilityBadge = computed(() => {
-  if (props.qr.visibility === 'department') {
-    return {
-      icon: 'i-lucide-building-2',
-      label: props.qr.departmentName ? t('qr.visibility.departmentWithName', { name: props.qr.departmentName }) : t('qr.visibility.department'),
-    }
+function formatEpicDate(date: string | Date) {
+  return new Date(date).toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  })
+}
+
+async function copyDestination() {
+  try {
+    await copy(props.qr.destinationUrl)
+    toast.add({ title: 'Ссылка скопирована', color: 'success' })
   }
-
-  if (props.qr.visibility === 'public') {
-    return { icon: 'i-lucide-globe', label: t('qr.visibility.public') }
+  catch {
+    toast.add({ title: 'Не удалось скопировать ссылку', color: 'error' })
   }
-
-  return { icon: 'i-lucide-lock', label: t('qr.visibility.private') }
-})
-
-const actions = [
-  [
-    { label: 'Открыть', icon: 'i-lucide-external-link', to: `/qr/${props.qr.id}` },
-    { label: 'Редактировать', icon: 'i-lucide-pencil', onSelect: () => emit('edit', props.qr.id) },
-    { label: 'Дублировать', icon: 'i-lucide-copy', onSelect: () => emit('duplicate', props.qr.id) },
-  ],
-  [
-    { label: t('qr.actions.makePrivate'), icon: 'i-lucide-lock', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'private' }) },
-    {
-      label: t('qr.actions.makeDepartment'),
-      icon: 'i-lucide-building-2',
-      disabled: props.makeDepartmentDisabled,
-      onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'department' }),
-    },
-    { label: t('qr.actions.makePublic'), icon: 'i-lucide-globe', onSelect: () => emit('changeVisibility', { id: props.qr.id, visibility: 'public' }) },
-  ],
-  [
-    { label: 'Удалить', icon: 'i-lucide-trash-2', onSelect: () => emit('delete', props.qr.id) },
-  ],
-]
+}
 </script>
