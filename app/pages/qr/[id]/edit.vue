@@ -9,12 +9,12 @@
               variant="ghost"
               color="neutral"
               size="sm"
-              aria-label="Назад к QR-коду"
-              title="Назад к QR-коду"
+              :aria-label="$t('pages.qrEdit.backToQr')"
+              :title="$t('pages.qrEdit.backToQr')"
               :to="`/qr/${id}`"
             />
             <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-              Редактирование QR-кода
+              {{ $t('pages.qrEdit.title') }}
             </h1>
           </div>
         </div>
@@ -31,15 +31,16 @@
                   name="i-lucide-link"
                   class="size-5 text-[color:var(--accent)]"
                 />
-                <span class="font-medium">Ссылка</span>
+                <span class="font-medium">{{ $t('forms.sections.link') }}</span>
               </div>
             </template>
 
             <div class="space-y-4">
               <UFormField
-                label="URL назначения"
+                :label="$t('forms.labels.destinationUrl')"
                 :error="urlError"
-                :hint="isStatic ? $t('forms.hints.destinationUrl') + ' — ' + 'URL статического QR нельзя изменить' : $t('forms.hints.destinationUrl')"
+                :hint="isStatic ? $t('forms.hints.destinationUrlStaticLocked') : $t('forms.hints.destinationUrl')"
+                required
               >
                 <UInput
                   v-model="form.destinationUrl"
@@ -47,8 +48,21 @@
                   icon="i-lucide-globe"
                   size="lg"
                   :disabled="isStatic"
+                  :aria-invalid="!!urlError"
+                  :aria-describedby="urlError ? qrEditUrlErrorId : undefined"
+                  :aria-required="true"
                   @blur="validateUrl"
                 />
+                <template #error="{ error }">
+                  <p
+                    v-if="error"
+                    :id="qrEditUrlErrorId"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {{ error }}
+                  </p>
+                </template>
               </UFormField>
 
               <UCollapsible>
@@ -57,30 +71,30 @@
                   color="neutral"
                   size="sm"
                   icon="i-lucide-tag"
-                  label="UTM-параметры"
+                  :label="$t('forms.labels.utmParams')"
                   class="-ml-2"
                 />
                 <template #content>
                   <div class="grid grid-cols-2 gap-3 pt-3">
-                    <UFormField label="Source">
+                    <UFormField :label="$t('forms.labels.utmSource')">
                       <UInput
                         v-model="form.utmParams.utm_source"
                         size="sm"
                       />
                     </UFormField>
-                    <UFormField label="Medium">
+                    <UFormField :label="$t('forms.labels.utmMedium')">
                       <UInput
                         v-model="form.utmParams.utm_medium"
                         size="sm"
                       />
                     </UFormField>
-                    <UFormField label="Campaign">
+                    <UFormField :label="$t('forms.labels.utmCampaign')">
                       <UInput
                         v-model="form.utmParams.utm_campaign"
                         size="sm"
                       />
                     </UFormField>
-                    <UFormField label="Content">
+                    <UFormField :label="$t('forms.labels.utmContent')">
                       <UInput
                         v-model="form.utmParams.utm_content"
                         size="sm"
@@ -100,13 +114,13 @@
                   name="i-lucide-info"
                   class="size-5 text-[color:var(--accent)]"
                 />
-                <span class="font-medium">Информация</span>
+                <span class="font-medium">{{ $t('forms.sections.info') }}</span>
               </div>
             </template>
 
             <div class="space-y-4">
               <UFormField
-                label="Название"
+                :label="$t('forms.labels.title')"
                 :hint="$t('forms.hints.qrTitle')"
                 :error="titleError"
                 required
@@ -114,25 +128,53 @@
                 <UInput
                   v-model="form.title"
                   :aria-invalid="!!titleError"
+                  :aria-describedby="titleError ? qrEditTitleErrorId : undefined"
+                  :aria-required="true"
                   @blur="validateTitle"
                 />
+                <template #error="{ error }">
+                  <p
+                    v-if="error"
+                    :id="qrEditTitleErrorId"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {{ error }}
+                  </p>
+                </template>
               </UFormField>
 
-              <UFormField label="Описание">
+              <UFormField :label="$t('forms.labels.description')">
                 <UTextarea
                   v-model="form.description"
                   :rows="2"
                 />
               </UFormField>
 
-              <UFormField label="Статус">
+              <UFormField :label="$t('forms.labels.folder')">
+                <USelect
+                  v-model="form.folderId"
+                  :items="folderOptions"
+                  :placeholder="$t('forms.options.noFolder')"
+                />
+              </UFormField>
+
+              <UFormField :label="$t('forms.labels.tags')">
+                <SharedTagInput
+                  v-model="form.tagIds"
+                  :available-tags="availableTags"
+                  @create-tag="handleCreateTag"
+                />
+              </UFormField>
+
+              <UFormField :label="$t('forms.labels.status')">
                 <USelect
                   v-model="form.status"
                   :items="statusOptions"
                 />
               </UFormField>
 
-              <UFormField label="Срок действия">
+              <UFormField :label="$t('forms.labels.expiresAt')">
                 <UInput
                   v-model="form.expiresAt"
                   type="datetime-local"
@@ -149,7 +191,7 @@
                   name="i-lucide-palette"
                   class="size-5 text-[color:var(--accent)]"
                 />
-                <span class="font-medium">Стиль</span>
+                <span class="font-medium">{{ $t('forms.sections.style') }}</span>
               </div>
             </template>
 
@@ -159,7 +201,7 @@
           <!-- Actions -->
           <div class="flex items-center gap-3">
             <UButton
-              label="Сохранить изменения"
+              :label="$t('forms.actions.saveChanges')"
               icon="i-lucide-check"
               size="lg"
               :loading="saving"
@@ -231,7 +273,9 @@
 </template>
 
 <script setup lang="ts">
+import { z } from 'zod'
 import type { QrCode, QrStyle, QrStatus } from '~/../types/qr'
+import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
 interface EditableQr extends QrCode {
@@ -242,13 +286,22 @@ interface EditableQr extends QrCode {
 const route = useRoute()
 const toast = useA11yToast()
 const { t } = useI18n()
+const qrEditUrlErrorId = 'qr-edit-url-error'
+const qrEditTitleErrorId = 'qr-edit-title-error'
 const { fetchQrById, updateQr } = useQr()
 
 const id = computed(() => route.params.id as string)
 const qr = ref<EditableQr | null>(null)
 const saving = ref(false)
+const schema = z.object({
+  title: z.string().trim().min(1, 'forms.errors.required'),
+  destinationUrl: z.string().trim().min(1, 'forms.errors.required').url('forms.errors.url'),
+})
+const { errors, touched, validate, validateField, setServerErrors } = useFormValidation(schema)
 const urlError = ref('')
-const titleError = ref('')
+const titleError = computed(() =>
+  touched.value.title ? translateError(errors.value.title) : '',
+)
 
 const isStatic = computed(() => qr.value?.type === 'static')
 
@@ -258,6 +311,8 @@ const form = reactive({
   description: '',
   status: 'active' as QrStatus,
   expiresAt: '',
+  folderId: '',
+  tagIds: [] as string[],
   style: {} as Partial<QrStyle>,
   utmParams: {
     utm_source: '',
@@ -268,27 +323,45 @@ const form = reactive({
 })
 
 const statusOptions = [
-  { label: 'Активен', value: 'active' },
-  { label: 'Пауза', value: 'paused' },
-  { label: 'Архив', value: 'archived' },
+  { label: t('qr.status.active'), value: 'active' },
+  { label: t('qr.status.paused'), value: 'paused' },
+  { label: t('qr.status.archived'), value: 'archived' },
 ]
 
+const { folders, fetchFolders } = useFolders()
+const folderOptions = computed(() => [
+  { label: t('forms.options.noFolder'), value: '' },
+  ...folders.value.map(f => ({ label: f.name, value: f.id })),
+])
+
+interface Tag { id: string, name: string, color: string | null }
+const allTags = ref<Tag[]>([])
+const availableTags = computed(() => allTags.value)
+
 function validateUrl() {
-  if (!form.destinationUrl) {
-    urlError.value = t('forms.errors.required')
+  validateField('destinationUrl', form.destinationUrl)
+
+  if (!form.destinationUrl.trim()) {
+    urlError.value = translateError(errors.value.destinationUrl)
     return
   }
+
   try {
     new URL(form.destinationUrl)
-    urlError.value = t('forms.errors.url')
+    urlError.value = ''
   }
   catch {
-    urlError.value = 'Некорректный URL'
+    urlError.value = t('forms.errors.url')
   }
 }
 
 function validateTitle() {
-  titleError.value = form.title.trim() === '' ? t('forms.errors.required') : ''
+  validateField('title', form.title)
+}
+
+function translateError(message?: string) {
+  if (!message) return ''
+  return message.startsWith('forms.') ? t(message) : message
 }
 
 // Снимок исходной формы для определения dirty-состояния
@@ -301,6 +374,8 @@ function serializeForm(): string {
     description: form.description,
     status: form.status,
     expiresAt: form.expiresAt,
+    folderId: form.folderId,
+    tagIds: form.tagIds,
     style: form.style,
     utmParams: form.utmParams,
   })
@@ -322,10 +397,15 @@ async function loadQr() {
     form.destinationUrl = qr.value.destinationUrl
     form.description = qr.value.description || ''
     form.status = qr.value.status
+    form.folderId = qr.value.folder?.id || ''
+    form.tagIds = qr.value.tags?.map(tag => tag.id) || []
     form.style = { ...(qr.value.style || {}) }
 
     if (qr.value.expiresAt) {
       form.expiresAt = new Date(qr.value.expiresAt).toISOString().slice(0, 16)
+    }
+    else {
+      form.expiresAt = ''
     }
 
     const utm = qr.value.utmParams as Record<string, string> | null
@@ -335,21 +415,42 @@ async function loadQr() {
       form.utmParams.utm_campaign = utm.utm_campaign || ''
       form.utmParams.utm_content = utm.utm_content || ''
     }
+    else {
+      form.utmParams.utm_source = ''
+      form.utmParams.utm_medium = ''
+      form.utmParams.utm_campaign = ''
+      form.utmParams.utm_content = ''
+    }
 
     // Фиксируем исходное состояние после загрузки — используется для isDirty
     await nextTick()
     initialSnapshot.value = serializeForm()
   }
   catch {
-    toast.add({ title: 'QR-код не найден', color: 'error' })
+    toast.add({ title: t('forms.errors.qrNotFound'), color: 'error' })
     navigateTo('/qr')
   }
 }
 
+async function loadTagsAndFolders() {
+  fetchFolders()
+  const res = await $fetch<{ data: Tag[] }>('/api/tags')
+  allTags.value = res.data
+}
+
+async function handleCreateTag(name: string) {
+  const res = await $fetch<{ data: Tag }>('/api/tags', { method: 'POST', body: { name } })
+  allTags.value.push(res.data)
+  form.tagIds.push(res.data.id)
+}
+
 async function handleSave() {
-  validateUrl()
-  validateTitle()
-  if (urlError.value || titleError.value) return
+  if (!validate(form)) {
+    urlError.value = translateError(errors.value.destinationUrl)
+    return
+  }
+
+  urlError.value = ''
 
   saving.value = true
   try {
@@ -362,19 +463,29 @@ async function handleSave() {
       destinationUrl: isStatic.value ? undefined : form.destinationUrl,
       description: form.description || null,
       status: form.status,
+      folderId: form.folderId || null,
+      tagIds: form.tagIds,
       style: form.style,
       utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
       expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
     })
 
-    toast.add({ title: 'Изменения сохранены', color: 'success' })
+    toast.add({ title: t('forms.toasts.changesSaved'), color: 'success' })
     // Снимаем unsaved-guard и синхронизируем snapshot
     initialSnapshot.value = serializeForm()
     unsaved.markClean()
     navigateTo(`/qr/${id.value}`)
   }
   catch (error: unknown) {
-    const err = error as { data?: { message?: string }, statusMessage?: string }
+    const err = error as {
+      statusCode?: number
+      data?: { message?: string, fieldErrors?: Record<string, string> }
+      statusMessage?: string
+    }
+    if (err.statusCode === 422 && err.data?.fieldErrors) {
+      setServerErrors(err.data.fieldErrors)
+      return
+    }
     toast.add({
       title: err?.data?.message || t('forms.errors.serverGeneric'),
       color: 'error',
@@ -385,5 +496,10 @@ async function handleSave() {
   }
 }
 
-onMounted(loadQr)
+onMounted(async () => {
+  await Promise.all([
+    loadQr(),
+    loadTagsAndFolders(),
+  ])
+})
 </script>

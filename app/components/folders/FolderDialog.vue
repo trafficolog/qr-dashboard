@@ -46,7 +46,7 @@
             :key="preset"
             :style="{ backgroundColor: preset }"
             class="size-6 rounded-full border-2 transition-transform hover:scale-110"
-            :class="form.color === preset ? 'border-gray-900 dark:border-white' : 'border-transparent'"
+            :class="form.color === preset ? 'border-[color:var(--text-primary)] dark:border-[color:var(--text-primary)]' : 'border-transparent'"
             @click="form.color = preset"
           />
         </div>
@@ -134,16 +134,19 @@ async function handleSubmit() {
   if (!form.name.trim()) return
   saving.value = true
   try {
+    const normalizedParentId = form.parentId.trim()
+    const normalizedColor = form.color.trim()
+
     const payload = {
       name: form.name.trim(),
-      color: form.color || undefined,
-      parentId: form.parentId || undefined,
+      color: normalizedColor || null,
+      parentId: normalizedParentId || null,
     }
 
     if (props.folder) {
       const res = await $fetch<{ data: Folder }>(`/api/folders/${props.folder.id}`, {
         method: 'PUT',
-        body: { ...payload, parentId: form.parentId || null, color: form.color || null },
+        body: payload,
       })
       emit('updated', res.data)
     }

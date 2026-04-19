@@ -1,0 +1,125 @@
+name: Playwright A11y Gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  playwright-a11y:
+    name: playwright-a11y
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: splat_qr
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: splat_qr
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U splat_qr -d splat_qr"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      CI: true
+      NODE_ENV: test
+      DATABASE_URL: postgresql://splat_qr:secret@localhost:5432/splat_qr
+      NUXT_PUBLIC_APP_URL: http://127.0.0.1:3001
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:3001
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright (Chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Run DB migrations
+        run: npm run db:migrate
+
+      - name: Seed DB
+        run: npm run db:seed
+
+      - name: Create e2e auth session token
+        run: |
+          TOKEN=$(node <<'NODE'
+          const crypto = require('node:crypto')
+          const { Client } = require('pg')
+
+          async function main() {
+            const dbUrl = process.env.DATABASE_URL
+            const client = new Client({ connectionString: dbUrl })
+            await client.connect()
+
+            const userRes = await client.query(
+              "select id from users where email = $1 limit 1",
+              ['admin@splat.com'],
+            )
+
+            if (userRes.rowCount === 0) {
+              throw new Error('Seed user admin@splat.com not found')
+            }
+
+            const plainToken = crypto.randomBytes(32).toString('hex')
+            const tokenHash = crypto.createHash('sha256').update(plainToken).digest('hex')
+
+            await client.query(
+              `insert into sessions (user_id, token, expires_at)
+               values ($1, $2, now() + interval '30 day')`,
+              [userRes.rows[0].id, tokenHash],
+            )
+
+            await client.end()
+            process.stdout.write(plainToken)
+          }
+
+          main().catch((error) => {
+            console.error(error)
+            process.exit(1)
+          })
+          NODE
+          )
+
+          echo "PLAYWRIGHT_AUTH_COOKIE=$TOKEN" >> "$GITHUB_ENV"
+
+      - name: Start Nuxt app
+        run: npm run dev -- --host 0.0.0.0 --port 3001 > /tmp/nuxt-dev.log 2>&1 &
+
+      - name: Wait for app
+        run: |
+          for i in {1..60}; do
+            if curl --silent --fail "http://127.0.0.1:3001/auth/login" > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'App failed to start in time'
+          tail -n 200 /tmp/nuxt-dev.log || true
+          exit 1
+
+      - name: Run accessibility e2e gate
+        run: npm run test:e2e -- a11y.spec.ts
+
+      - name: Upload Playwright HTML report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-a11y
+          path: playwright-report/
+          if-no-files-found: warn
+          retention-days: 14

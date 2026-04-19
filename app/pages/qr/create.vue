@@ -3,10 +3,10 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-          Создание QR-кода
+          {{ $t('pages.qrCreate.title') }}
         </h1>
         <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
-          Настройте ссылку, стиль и параметры
+          {{ $t('pages.qrCreate.subtitle') }}
         </p>
       </div>
     </div>
@@ -31,13 +31,13 @@
                 name="i-lucide-link"
                 class="size-5 text-[color:var(--accent)]"
               />
-              <span class="font-medium">Ссылка</span>
+              <span class="font-medium">{{ $t('forms.sections.link') }}</span>
             </div>
           </template>
 
           <div class="space-y-4">
             <UFormField
-              label="URL назначения"
+              :label="$t('forms.labels.destinationUrl')"
               :error="urlError"
               :hint="$t('forms.hints.destinationUrl')"
               required
@@ -48,26 +48,37 @@
                 icon="i-lucide-globe"
                 size="lg"
                 :aria-invalid="!!urlError"
-                aria-describedby="qr-create-url-hint"
+                :aria-describedby="urlError ? qrCreateUrlErrorId : undefined"
+                :aria-required="true"
                 @blur="validateUrl"
               />
+              <template #error="{ error }">
+                <p
+                  v-if="error"
+                  :id="qrCreateUrlErrorId"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  {{ error }}
+                </p>
+              </template>
             </UFormField>
 
             <div class="flex items-center gap-4">
-              <label class="text-sm text-[color:var(--text-secondary)]">Тип:</label>
+              <label class="text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.qrType') }}</label>
               <div class="flex gap-2">
                 <UButton
                   :variant="form.type === 'dynamic' ? 'solid' : 'outline'"
                   :color="form.type === 'dynamic' ? 'primary' : 'neutral'"
                   size="sm"
-                  label="Динамический"
+                  :label="$t('forms.options.qrType.dynamic')"
                   @click="form.type = 'dynamic'"
                 />
                 <UButton
                   :variant="form.type === 'static' ? 'solid' : 'outline'"
                   :color="form.type === 'static' ? 'primary' : 'neutral'"
                   size="sm"
-                  label="Статический"
+                  :label="$t('forms.options.qrType.static')"
                   @click="form.type = 'static'"
                 />
               </div>
@@ -75,8 +86,8 @@
 
             <p class="text-xs text-[color:var(--text-muted)]">
               {{ form.type === 'dynamic'
-                ? 'Динамический QR: ссылку можно изменить после создания'
-                : 'Статический QR: URL вшивается в QR-матрицу и не может быть изменён'
+                ? $t('forms.hints.qrTypeDynamic')
+                : $t('forms.hints.qrTypeStatic')
               }}
             </p>
 
@@ -87,33 +98,33 @@
                 color="neutral"
                 size="sm"
                 icon="i-lucide-tag"
-                label="UTM-параметры"
+                :label="$t('forms.labels.utmParams')"
                 class="-ml-2"
               />
               <template #content>
                 <div class="grid grid-cols-2 gap-3 pt-3">
-                  <UFormField label="Source">
+                  <UFormField :label="$t('forms.labels.utmSource')">
                     <UInput
                       v-model="form.utmParams.utm_source"
                       placeholder="qr-code"
                       size="sm"
                     />
                   </UFormField>
-                  <UFormField label="Medium">
+                  <UFormField :label="$t('forms.labels.utmMedium')">
                     <UInput
                       v-model="form.utmParams.utm_medium"
                       placeholder="packaging"
                       size="sm"
                     />
                   </UFormField>
-                  <UFormField label="Campaign">
+                  <UFormField :label="$t('forms.labels.utmCampaign')">
                     <UInput
                       v-model="form.utmParams.utm_campaign"
                       placeholder="summer2025"
                       size="sm"
                     />
                   </UFormField>
-                  <UFormField label="Content">
+                  <UFormField :label="$t('forms.labels.utmContent')">
                     <UInput
                       v-model="form.utmParams.utm_content"
                       placeholder=""
@@ -134,34 +145,46 @@
                 name="i-lucide-info"
                 class="size-5 text-[color:var(--accent)]"
               />
-              <span class="font-medium">Информация</span>
+              <span class="font-medium">{{ $t('forms.sections.info') }}</span>
             </div>
           </template>
 
           <div class="space-y-4">
             <UFormField
-              label="Название"
+              :label="$t('forms.labels.title')"
               :hint="$t('forms.hints.qrTitle')"
               :error="titleError"
               required
             >
               <UInput
                 v-model="form.title"
-                placeholder="Промо-акция на упаковке"
+                :placeholder="$t('forms.placeholders.qrTitle')"
                 :aria-invalid="!!titleError"
+                :aria-describedby="titleError ? qrCreateTitleErrorId : undefined"
+                :aria-required="true"
                 @blur="validateTitle"
               />
+              <template #error="{ error }">
+                <p
+                  v-if="error"
+                  :id="qrCreateTitleErrorId"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  {{ error }}
+                </p>
+              </template>
             </UFormField>
 
-            <UFormField label="Папка">
+            <UFormField :label="$t('forms.labels.folder')">
               <USelect
                 v-model="form.folderId"
                 :items="folderOptions"
-                placeholder="Без папки"
+                :placeholder="$t('forms.options.noFolder')"
               />
             </UFormField>
 
-            <UFormField label="Теги">
+            <UFormField :label="$t('forms.labels.tags')">
               <SharedTagInput
                 v-model="form.tagIds"
                 :available-tags="availableTags"
@@ -169,15 +192,15 @@
               />
             </UFormField>
 
-            <UFormField label="Описание">
+            <UFormField :label="$t('forms.labels.description')">
               <UTextarea
                 v-model="form.description"
-                placeholder="Краткое описание QR-кода..."
+                :placeholder="$t('forms.placeholders.description')"
                 :rows="2"
               />
             </UFormField>
 
-            <UFormField label="Срок действия">
+            <UFormField :label="$t('forms.labels.expiresAt')">
               <UInput
                 v-model="form.expiresAt"
                 :hint="$t('forms.hints.expiresAt')"
@@ -195,7 +218,7 @@
                 name="i-lucide-palette"
                 class="size-5 text-[color:var(--accent)]"
               />
-              <span class="font-medium">Стиль</span>
+              <span class="font-medium">{{ $t('forms.sections.style') }}</span>
             </div>
           </template>
 
@@ -205,7 +228,7 @@
         <!-- Actions -->
         <div class="flex items-center gap-3">
           <UButton
-            label="Создать QR-код"
+            :label="$t('forms.actions.createQr')"
             icon="i-lucide-check"
             size="lg"
             :loading="saving"
@@ -234,7 +257,7 @@
 
           <div class="text-center">
             <p class="text-xs text-[color:var(--text-muted)]">
-              Предварительный просмотр обновляется в реальном времени
+              {{ $t('forms.hints.livePreview') }}
             </p>
           </div>
         </div>
@@ -250,19 +273,32 @@
 </template>
 
 <script setup lang="ts">
+import { z } from 'zod'
 import type { QrStyle } from '~/../types/qr'
 import { useFormDraft } from '~/composables/useFormDraft'
+import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
 const toast = useA11yToast()
 const { t } = useI18n()
+const qrCreateUrlErrorId = 'qr-create-url-error'
+const qrCreateTitleErrorId = 'qr-create-title-error'
 const { createQr } = useQr()
 const { user } = useAuth()
 const route = useRoute()
 
 const saving = ref(false)
-const urlError = ref('')
-const titleError = ref('')
+const schema = z.object({
+  title: z.string().trim().min(1, 'forms.errors.required'),
+  destinationUrl: z.string().trim().min(1, 'forms.errors.required').url('forms.errors.url'),
+})
+const { errors, touched, validate, validateField, setServerErrors, reset } = useFormValidation(schema)
+const urlError = computed(() =>
+  touched.value.destinationUrl ? translateError(errors.value.destinationUrl) : '',
+)
+const titleError = computed(() =>
+  touched.value.title ? translateError(errors.value.title) : '',
+)
 
 const form = reactive({
   title: '',
@@ -289,10 +325,25 @@ const form = reactive({
 
 // Draft autosave — ключ уникален на пользователя
 const draftKey = computed(() => `qr-create:${user.value?.id ?? 'anon'}`)
-const draft = useFormDraft(draftKey.value, form, {
+const draft = useFormDraft(draftKey, form, {
   debounceMs: 1000,
   // style — большой объект, не считаем черновиком
   exclude: ['style', 'tagIds'] as (keyof typeof form)[],
+})
+
+watch(() => user.value?.id, (newUserId, oldUserId) => {
+  if (typeof window === 'undefined') return
+  if (!newUserId || oldUserId) return
+
+  const anonStorageKey = 'draft:qr-create:anon'
+  const personalStorageKey = `draft:qr-create:${newUserId}`
+  const anonDraft = localStorage.getItem(anonStorageKey)
+  if (!anonDraft) return
+
+  if (!localStorage.getItem(personalStorageKey)) {
+    localStorage.setItem(personalStorageKey, anonDraft)
+  }
+  localStorage.removeItem(anonStorageKey)
 })
 
 // Unsaved changes guard — форма "грязная", если есть заполненные ключевые поля
@@ -306,7 +357,7 @@ const unsaved = useUnsavedChanges(isDirty)
 // Folders & tags
 const { folders, fetchFolders } = useFolders()
 const folderOptions = computed(() => [
-  { label: 'Без папки', value: '' },
+  { label: t('forms.options.noFolder'), value: '' },
   ...folders.value.map(f => ({ label: f.name, value: f.id })),
 ])
 
@@ -331,32 +382,25 @@ onMounted(() => loadTagsAndFolders())
 const isValid = computed(() => {
   return form.title.trim() !== ''
     && form.destinationUrl.trim() !== ''
-    && !urlError.value
-    && !titleError.value
+    && !errors.value.destinationUrl
+    && !errors.value.title
 })
 
+function translateError(message?: string) {
+  if (!message) return ''
+  return message.startsWith('forms.') ? t(message) : message
+}
+
 function validateUrl() {
-  if (!form.destinationUrl) {
-    urlError.value = t('forms.errors.required')
-    return
-  }
-  try {
-    new URL(form.destinationUrl)
-    urlError.value = ''
-  }
-  catch {
-    urlError.value = t('forms.errors.url')
-  }
+  validateField('destinationUrl', form.destinationUrl)
 }
 
 function validateTitle() {
-  titleError.value = form.title.trim() === '' ? t('forms.errors.required') : ''
+  validateField('title', form.title)
 }
 
 async function handleCreate() {
-  validateUrl()
-  validateTitle()
-  if (!isValid.value) return
+  if (!validate(form)) return
 
   saving.value = true
   try {
@@ -372,17 +416,28 @@ async function handleCreate() {
       description: form.description || undefined,
       style: form.style as QrStyle,
       utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
+      folderId: form.folderId || undefined,
+      tagIds: form.tagIds.length ? form.tagIds : undefined,
       expiresAt: form.expiresAt || undefined,
     })
 
-    toast.add({ title: `QR «${qr.title}» создан`, color: 'success' })
+    toast.add({ title: t('forms.toasts.qrCreated', { title: qr.title }), color: 'success' })
     // Чистим черновик и снимаем unsaved-guard перед навигацией
     draft.clear()
+    reset()
     unsaved.markClean()
     await navigateTo(`/qr/${qr.id}`)
   }
   catch (error: unknown) {
-    const err = error as { data?: { message?: string }, statusMessage?: string }
+    const err = error as {
+      statusCode?: number
+      data?: { message?: string, fieldErrors?: Record<string, string> }
+      statusMessage?: string
+    }
+    if (err.statusCode === 422 && err.data?.fieldErrors) {
+      setServerErrors(err.data.fieldErrors)
+      return
+    }
     toast.add({
       title: err?.data?.message || err?.statusMessage || t('forms.errors.serverGeneric'),
       color: 'error',

@@ -1,7 +1,7 @@
 <template>
   <button
     :class="[
-      'flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors text-sm',
+      'flex w-full items-center gap-3 px-4 py-2.5 text-left transition-interactive text-sm',
       focused
         ? 'bg-[color:var(--accent-light)] text-[color:var(--accent)]'
         : 'text-[color:var(--text-primary)] hover:bg-[color:var(--surface-2)]',

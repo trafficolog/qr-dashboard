@@ -32,7 +32,7 @@
           'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-interactive',
           isActive(item.route)
             ? 'bg-[color:var(--accent-light)] text-[color:var(--accent)]'
-            : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]',
+            : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover-accent',
         ]"
       >
         <UIcon
@@ -84,6 +84,8 @@
 </template>
 
 <script setup lang="ts">
+import { isActiveRoute } from '~/app/utils/navigation/isActiveRoute'
+
 defineProps<{
   collapsed: boolean
 }>()
@@ -106,9 +108,7 @@ const navItems = computed(() => [
 ])
 
 function isActive(path: string): boolean {
-  if (route.path === path) return true
-  // Match only if the next character is '/' (prevents /qr matching /qrscan)
-  return route.path.startsWith(path + '/')
+  return isActiveRoute(route.path, path)
 }
 </script>
 

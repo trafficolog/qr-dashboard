@@ -17,6 +17,20 @@ interface QrFilters {
   limit: number
 }
 
+interface UpdateQrInput {
+  title?: string
+  destinationUrl?: string
+  description?: string | null
+  status?: 'active' | 'paused' | 'expired' | 'archived'
+  visibility?: 'private' | 'department' | 'public'
+  departmentId?: string | null
+  style?: QrStyle | Record<string, unknown>
+  utmParams?: UtmParams
+  folderId?: string | null
+  tagIds?: string[]
+  expiresAt?: string | null
+}
+
 const defaultFilters: QrFilters = {
   search: '',
   status: '',
@@ -142,9 +156,17 @@ export function useQr() {
     return response.data
   }
 
-  async function updateQr(id: string, data: Record<string, unknown>) {
+  async function updateQr(id: string, data: UpdateQrInput) {
     const response = await $fetch<{ data: QrCode }>(`/api/qr/${id}`, {
       method: 'PUT',
+      body: data,
+    })
+    return response.data
+  }
+
+  async function updateQrVisibility(id: string, data: { visibility: 'private' | 'department' | 'public', departmentId?: string }) {
+    const response = await $fetch<{ data: QrCode }>(`/api/qr/${id}/visibility`, {
+      method: 'PATCH',
       body: data,
     })
     return response.data
@@ -158,6 +180,17 @@ export function useQr() {
     await $fetch('/api/qr/bulk-delete', {
       method: 'POST',
       body: { ids },
+    })
+  }
+
+  async function bulkUpdateQrVisibility(data: {
+    ids: string[]
+    visibility: 'private' | 'department' | 'public'
+    departmentId?: string
+  }) {
+    await $fetch('/api/qr/bulk-visibility', {
+      method: 'PATCH',
+      body: data,
     })
   }
 
@@ -197,6 +230,8 @@ export function useQr() {
     fetchQrById,
     createQr,
     updateQr,
+    updateQrVisibility,
+    bulkUpdateQrVisibility,
     deleteQr,
     bulkDeleteQr,
     duplicateQr,

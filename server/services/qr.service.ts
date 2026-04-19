@@ -17,7 +17,7 @@ interface CreateQrData {
   description?: string
   style?: Record<string, unknown>
   utmParams?: Record<string, string>
-  folderId?: string
+  folderId?: string | null
   tagIds?: string[]
   expiresAt?: string
 }
@@ -70,6 +70,16 @@ interface MembershipCache {
   memberships?: DepartmentMembership
 }
 
+interface VisibilityChangeInput {
+  visibility?: 'private' | 'public' | 'department'
+  departmentId?: string | null
+}
+
+interface ResolvedVisibilityChange {
+  visibility: 'private' | 'public' | 'department'
+  departmentId: string | null
+}
+
 // --- Helpers ---
 
 async function ensureEditAccess(qr: QrAccessEntity, user: User) {
@@ -110,6 +120,43 @@ async function ensureVisibilityUpdateAccess(
   if (!allowedForHead) {
     throw createError({ statusCode: 403, message: 'Недостаточно прав для изменения visibility' })
   }
+}
+
+function buildNextVisibilityState(qr: QrAccessEntity, payload: VisibilityChangeInput): ResolvedVisibilityChange {
+  const nextVisibility = payload.visibility ?? qr.visibility
+
+  if (payload.visibility && payload.visibility !== 'department' && payload.departmentId === undefined) {
+    return {
+      visibility: nextVisibility,
+      departmentId: null,
+    }
+  }
+
+  return {
+    visibility: nextVisibility,
+    departmentId: payload.departmentId !== undefined ? payload.departmentId : qr.departmentId,
+  }
+}
+
+async function resolveVisibilityChange(
+  qr: QrAccessEntity,
+  payload: VisibilityChangeInput,
+  user: User,
+  cache?: MembershipCache,
+): Promise<ResolvedVisibilityChange> {
+  const next = buildNextVisibilityState(qr, payload)
+
+  ensureVisibilityDepartmentPair(next.visibility, next.departmentId)
+  await ensureVisibilityUpdateAccess(qr, user, next.visibility, next.departmentId, cache)
+
+  if (next.visibility === 'department') {
+    const membership = await getMembershipWithCache(user, cache)
+    if (!next.departmentId || !membership.departmentIds.includes(next.departmentId)) {
+      throw createError({ statusCode: 403, message: 'Нет доступа к указанному отделу' })
+    }
+  }
+
+  return next
 }
 
 function ensureVisibilityDepartmentPair(
@@ -247,7 +294,7 @@ export const qrService = {
         destinationUrl: data.destinationUrl,
         style,
         utmParams: data.utmParams,
-        folderId: data.folderId,
+        folderId: data.folderId ?? null,
         createdBy: user.id,
         expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
         visibility,
@@ -459,20 +506,10 @@ export const qrService = {
     }
 
     await ensureEditAccess(existing, user)
-
-    const nextVisibility = data.visibility ?? existing.visibility
-    const nextDepartmentId = data.departmentId !== undefined ? data.departmentId : existing.departmentId
-
-    ensureVisibilityDepartmentPair(nextVisibility, nextDepartmentId)
-
-    await ensureVisibilityUpdateAccess(existing, user, nextVisibility, nextDepartmentId)
-
-    if (nextVisibility === 'department') {
-      const membership = await getUserDepartmentMembership(user.id)
-      if (!nextDepartmentId || !membership.departmentIds.includes(nextDepartmentId)) {
-        throw createError({ statusCode: 403, message: 'Нет доступа к указанному отделу' })
-      }
-    }
+    const shouldUpdateVisibility = data.visibility !== undefined || data.departmentId !== undefined
+    const resolvedVisibility = shouldUpdateVisibility
+      ? await resolveVisibilityChange(existing, { visibility: data.visibility, departmentId: data.departmentId }, user)
+      : null
 
     // Static QR: нельзя менять URL
     if (existing.type === 'static' && data.destinationUrl && data.destinationUrl !== existing.destinationUrl) {
@@ -495,8 +532,10 @@ export const qrService = {
     if (data.expiresAt !== undefined) {
       updateData.expiresAt = data.expiresAt ? new Date(data.expiresAt) : null
     }
-    if (data.visibility !== undefined) updateData.visibility = data.visibility
-    if (data.departmentId !== undefined) updateData.departmentId = data.departmentId
+    if (resolvedVisibility) {
+      updateData.visibility = resolvedVisibility.visibility
+      updateData.departmentId = resolvedVisibility.departmentId
+    }
 
     await db.update(qrCodes).set(updateData).where(eq(qrCodes.id, id))
 
@@ -513,6 +552,32 @@ export const qrService = {
       }
     }
 
+    return this.getQrById(id, user)
+  },
+
+  async updateVisibility(id: string, data: VisibilityChangeInput, user: User) {
+    const existing = await db.query.qrCodes.findFirst({
+      where: eq(qrCodes.id, id),
+      columns: { id: true, createdBy: true, visibility: true, departmentId: true, shortCode: true },
+    })
+
+    if (!existing) {
+      throw createError({ statusCode: 404, message: 'QR-код не найден' })
+    }
+
+    await ensureEditAccess(existing, user)
+    const next = await resolveVisibilityChange(existing, data, user)
+
+    await db
+      .update(qrCodes)
+      .set({
+        visibility: next.visibility,
+        departmentId: next.departmentId,
+        updatedAt: new Date(),
+      })
+      .where(eq(qrCodes.id, id))
+
+    invalidateQrCache(existing.shortCode)
     return this.getQrById(id, user)
   },
 
@@ -583,6 +648,51 @@ export const qrService = {
 
     await db.delete(qrCodes).where(inArray(qrCodes.id, ids))
     return { success: true, deleted: ids.length }
+  },
+
+  async bulkUpdateVisibility(ids: string[], data: VisibilityChangeInput, user: User) {
+    await db.transaction(async (tx) => {
+      const existing = await tx
+        .select({
+          id: qrCodes.id,
+          createdBy: qrCodes.createdBy,
+          visibility: qrCodes.visibility,
+          departmentId: qrCodes.departmentId,
+          shortCode: qrCodes.shortCode,
+        })
+        .from(qrCodes)
+        .where(inArray(qrCodes.id, ids))
+
+      if (existing.length !== ids.length) {
+        throw createError({
+          statusCode: 404,
+          message: 'Некоторые QR-коды не найдены',
+        })
+      }
+
+      const cache: MembershipCache = {}
+      for (const qr of existing) {
+        await ensureEditAccess(qr, user)
+        await resolveVisibilityChange(qr, data, user, cache)
+      }
+
+      const next = await resolveVisibilityChange(existing[0]!, data, user, cache)
+
+      await tx
+        .update(qrCodes)
+        .set({
+          visibility: next.visibility,
+          departmentId: next.departmentId,
+          updatedAt: new Date(),
+        })
+        .where(inArray(qrCodes.id, ids))
+
+      for (const qr of existing) {
+        invalidateQrCache(qr.shortCode)
+      }
+    })
+
+    return { success: true, updated: ids.length }
   },
 
   /**

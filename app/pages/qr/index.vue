@@ -60,7 +60,7 @@
       <div class="flex overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)]">
         <button
           :class="[
-            'p-2 transition-colors',
+            'p-2 transition-interactive',
             viewMode === 'table'
               ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
               : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
@@ -74,7 +74,7 @@
         </button>
         <button
           :class="[
-            'p-2 transition-colors',
+            'p-2 transition-interactive',
             viewMode === 'grid'
               ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
               : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
@@ -113,6 +113,13 @@
           size="sm"
           @click="handleBulkDelete"
         />
+        <UButton
+          icon="i-lucide-eye"
+          label="Изменить видимость"
+          variant="outline"
+          size="sm"
+          @click="openBulkVisibilityDialog"
+        />
       </div>
     </Transition>
 
@@ -132,14 +139,16 @@
     <SharedEmptyState
       v-else-if="displayList.length === 0"
       icon="i-lucide-qr-code"
-      title="Нет QR-кодов"
-      :description="filters.search ? 'Ничего не найдено. Попробуйте изменить запрос.' : 'Создайте первый QR-код для начала работы.'"
+      illustration="/illustrations/empty-qr.svg"
+      :illustration-alt="t('qr.empty.illustrationAlt')"
+      :title="t('qr.empty.title')"
+      :description="filters.search ? t('qr.empty.searchDescription') : t('qr.empty.description')"
     >
       <template #action>
         <UButton
           v-if="!filters.search"
           icon="i-lucide-plus"
-          label="Создать QR"
+          :label="t('qr.empty.createAction')"
           to="/qr/create"
         />
       </template>
@@ -153,7 +162,6 @@
       :all-selected="allSelected"
       :sort-by="filters.sortBy"
       :sort-order="filters.sortOrder"
-      :make-department-disabled="departmentActionDisabled"
       :make-department-tooltip="departmentActionTooltip"
       @toggle-all="toggleAll"
       @toggle-select="toggleSelect"
@@ -161,7 +169,8 @@
       @edit="(id) => navigateTo(`/qr/${id}/edit`)"
       @duplicate="handleDuplicate"
       @delete="handleDelete"
-      @change-visibility="handleVisibilityChange"
+      @toggle-status="handleToggleStatus"
+      @change-visibility="handleChangeVisibility"
     />
 
     <!-- Grid view -->
@@ -173,12 +182,12 @@
         v-for="qr in displayList"
         :key="qr.id"
         :qr="qr as any"
-        :make-department-disabled="departmentActionDisabled"
         :make-department-tooltip="departmentActionTooltip"
         @edit="(id) => navigateTo(`/qr/${id}/edit`)"
         @duplicate="handleDuplicate"
         @delete="handleDelete"
-        @change-visibility="handleVisibilityChange"
+        @toggle-status="handleToggleStatus"
+        @change-visibility="handleChangeVisibility"
       />
     </div>
 
@@ -200,7 +209,49 @@
       @confirm="confirmBulkDelete"
     />
 
-    <UModal v-model:open="departmentPickerOpen">
+    <UModal
+      v-model:open="bulkVisibilityDialogOpen"
+      :close-on-escape="true"
+    >
+      <template #content>
+        <div class="space-y-4 p-5">
+          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+            Изменить видимость выбранных QR
+          </h3>
+          <USelect
+            v-model="bulkVisibility"
+            :items="bulkVisibilityItems"
+            value-key="value"
+          />
+          <USelect
+            v-if="bulkVisibility === 'department'"
+            v-model="bulkDepartmentId"
+            :items="departmentSelectItems"
+            value-key="value"
+            placeholder="Выберите отдел"
+          />
+          <div class="flex justify-end gap-2">
+            <UButton
+              variant="ghost"
+              color="neutral"
+              label="Отмена"
+              @click="bulkVisibilityDialogOpen = false"
+            />
+            <UButton
+              label="Применить"
+              :disabled="bulkVisibility === 'department' && !bulkDepartmentId"
+              :loading="bulkVisibilityLoading"
+              @click="confirmBulkVisibilityChange"
+            />
+          </div>
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="departmentPickerOpen"
+      :close-on-escape="true"
+    >
       <template #content>
         <div class="space-y-4 p-5">
           <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
@@ -236,12 +287,13 @@
 
 <script setup lang="ts">
 import type { QrCode } from '~~/types/qr'
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 const toast = useA11yToast()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, updateQr, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
+const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, bulkUpdateQrVisibility, updateQr, updateQrVisibility, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
 const ALL_VISIBILITY = '__all_visibility__'
@@ -276,6 +328,7 @@ const departmentSelectItems = computed(() =>
   userDepartments.value.map(item => ({ label: item.name, value: item.id })),
 )
 const departmentPickerOpen = ref(false)
+const departmentPickerFocusReturn = createDialogFocusReturn()
 const selectedDepartmentId = ref<string>('')
 const pendingDepartmentVisibilityQrId = ref<string | null>(null)
 
@@ -350,32 +403,14 @@ async function handleDuplicate(id: string) {
   }
 }
 
-async function handleVisibilityChange(payload: { id: string, visibility: 'private' | 'department' | 'public' }) {
+async function handleToggleStatus(payload: { id: string, status: 'active' | 'paused' }) {
   try {
-    if (payload.visibility === 'department') {
-      if (userDepartments.value.length === 0) {
-        return
-      }
-
-      if (userDepartments.value.length === 1) {
-        await updateQr(payload.id, { visibility: 'department', departmentId: userDepartments.value[0]!.id })
-        toast.add({ title: t('qr.visibility.updated'), color: 'success' })
-        fetchQrList()
-        return
-      }
-
-      pendingDepartmentVisibilityQrId.value = payload.id
-      selectedDepartmentId.value = userDepartments.value[0]!.id
-      departmentPickerOpen.value = true
-      return
-    }
-
-    await updateQr(payload.id, { visibility: payload.visibility })
-    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    await updateQr(payload.id, { status: payload.status })
+    toast.add({ title: 'Статус QR-кода обновлён', color: 'success' })
     fetchQrList()
   }
   catch {
-    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
+    toast.add({ title: 'Ошибка обновления статуса', color: 'error' })
   }
 }
 
@@ -385,17 +420,59 @@ async function confirmDepartmentVisibilityChange() {
   }
 
   try {
-    await updateQr(pendingDepartmentVisibilityQrId.value, {
+    await updateQrVisibility(pendingDepartmentVisibilityQrId.value, {
       visibility: 'department',
       departmentId: selectedDepartmentId.value,
     })
     toast.add({ title: t('qr.visibility.updated'), color: 'success' })
     closeDepartmentPicker()
-    fetchQrList()
+    await fetchQrList()
   }
-  catch {
-    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
+  catch (error) {
+    toast.add({ title: resolveApiErrorMessage(error, t('qr.visibility.updateError')), color: 'error' })
   }
+}
+
+type VisibilityPayload = { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }
+
+async function handleChangeVisibility(payload: VisibilityPayload) {
+  if (payload.visibility === 'department') {
+    if (departmentActionDisabled.value) {
+      toast.add({ title: departmentActionTooltip.value || t('qr.visibility.updateError'), color: 'warning' })
+      return
+    }
+
+    pendingDepartmentVisibilityQrId.value = payload.id
+    selectedDepartmentId.value = payload.departmentId || userDepartments.value[0]?.id || ''
+    departmentPickerOpen.value = true
+    return
+  }
+
+  try {
+    await updateQrVisibility(payload.id, { visibility: payload.visibility })
+    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    await fetchQrList()
+  }
+  catch (error) {
+    toast.add({ title: resolveApiErrorMessage(error, t('qr.visibility.updateError')), color: 'error' })
+  }
+}
+
+function resolveApiErrorMessage(error: unknown, fallbackMessage: string) {
+  if (!error || typeof error !== 'object') return fallbackMessage
+
+  const typedError = error as {
+    data?: { message?: string, statusMessage?: string, error?: { message?: string } }
+    message?: string
+    statusMessage?: string
+  }
+
+  return typedError.data?.error?.message
+    || typedError.data?.message
+    || typedError.data?.statusMessage
+    || typedError.statusMessage
+    || typedError.message
+    || fallbackMessage
 }
 
 // Single delete with Undo (optimistic UI)
@@ -441,10 +518,31 @@ function handleDelete(id: string) {
 // Bulk delete with confirmation + Undo
 const bulkDeleteDialogOpen = ref(false)
 const pendingBulkIds = ref<string[]>([])
+const bulkVisibilityDialogOpen = ref(false)
+const bulkVisibilityFocusReturn = createDialogFocusReturn()
+const bulkVisibilityLoading = ref(false)
+const bulkVisibility = ref<'private' | 'department' | 'public'>('private')
+const bulkDepartmentId = ref<string>('')
+
+const bulkVisibilityItems = [
+  { label: 'Приватные', value: 'private' },
+  { label: 'Отдела', value: 'department' },
+  { label: 'Публичные', value: 'public' },
+]
 
 function handleBulkDelete() {
   pendingBulkIds.value = [...selectedIds.value]
   bulkDeleteDialogOpen.value = true
+}
+
+function openBulkVisibilityDialog() {
+  if (selectedIds.value.length === 0) {
+    return
+  }
+
+  bulkVisibility.value = 'private'
+  bulkDepartmentId.value = userDepartments.value[0]?.id || ''
+  bulkVisibilityDialogOpen.value = true
 }
 
 async function confirmBulkDelete() {
@@ -483,6 +581,36 @@ async function confirmBulkDelete() {
       },
     ],
   })
+}
+
+async function confirmBulkVisibilityChange() {
+  if (selectedIds.value.length === 0) {
+    return
+  }
+
+  if (bulkVisibility.value === 'department' && !bulkDepartmentId.value) {
+    toast.add({ title: 'Выберите отдел', color: 'warning' })
+    return
+  }
+
+  bulkVisibilityLoading.value = true
+  try {
+    await bulkUpdateQrVisibility({
+      ids: selectedIds.value,
+      visibility: bulkVisibility.value,
+      departmentId: bulkVisibility.value === 'department' ? bulkDepartmentId.value : undefined,
+    })
+    toast.add({ title: 'Видимость обновлена', color: 'success' })
+    bulkVisibilityDialogOpen.value = false
+    selectedIds.value = []
+    await fetchQrList()
+  }
+  catch (error) {
+    toast.add({ title: resolveApiErrorMessage(error, t('qr.visibility.updateError')), color: 'error' })
+  }
+  finally {
+    bulkVisibilityLoading.value = false
+  }
 }
 
 // Folder options — fetch from API
@@ -537,6 +665,22 @@ onMounted(() => {
   fetchQrList()
   fetchFolders()
 })
+
+watch(
+  bulkVisibilityDialogOpen,
+  (open) => {
+    if (open) bulkVisibilityFocusReturn.save()
+    else bulkVisibilityFocusReturn.restore()
+  },
+)
+
+watch(
+  departmentPickerOpen,
+  (open) => {
+    if (open) departmentPickerFocusReturn.save()
+    else departmentPickerFocusReturn.restore()
+  },
+)
 
 watch(
   () => [filters.value.status, filters.value.folderId, filters.value.scope, filters.value.sortBy, filters.value.sortOrder],

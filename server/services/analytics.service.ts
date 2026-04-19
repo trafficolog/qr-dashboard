@@ -5,7 +5,11 @@ import { resolveVisibilityAccess } from './qr-visibility-access'
 import type { User } from '~~/types/auth'
 import type {
   AnalyticsOverview,
+  DeviceBreakdown,
+  DeviceBreakdownItem,
+  GeoBreakdown,
   ScanTimeSeriesPoint,
+  TimeDistribution,
   TopQrCode,
 } from '~~/types/analytics'
 
@@ -81,6 +85,212 @@ function pctChange(curr: number, prev: number): number {
 }
 
 export const analyticsService = {
+  async getGeoBreakdown(
+    user: User,
+    range: DateRange,
+    options: AnalyticsAccessOptions = {},
+  ): Promise<GeoBreakdown> {
+    const { from, to } = range
+    const aclFilter = await getAnalyticsAclFilter(user, options)
+
+    const totalResult = await db.execute<{ n: string }>(sql`
+      SELECT COUNT(*) AS n
+      FROM scan_events se
+      INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+      WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+      ${aclFilter.sql}
+    `)
+    const totalScans = Number((totalResult.rows[0] as { n: string } | undefined)?.n ?? 0)
+
+    const countryResult = await db.execute(sql`
+      SELECT
+        se.country,
+        COUNT(*) AS scans,
+        COUNT(*) FILTER (WHERE se.is_unique = true) AS unique_scans
+      FROM scan_events se
+      INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+      WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+        AND se.country IS NOT NULL
+        AND se.country <> ''
+        ${aclFilter.sql}
+      GROUP BY se.country
+      ORDER BY scans DESC
+    `)
+
+    const cityResult = await db.execute(sql`
+      SELECT
+        se.country,
+        se.city,
+        COUNT(*) AS scans,
+        COUNT(*) FILTER (WHERE se.is_unique = true) AS unique_scans,
+        AVG(se.latitude) AS lat,
+        AVG(se.longitude) AS lng
+      FROM scan_events se
+      INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+      WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+        AND se.country IS NOT NULL
+        AND se.country <> ''
+        AND se.city IS NOT NULL
+        AND se.city <> ''
+        ${aclFilter.sql}
+      GROUP BY se.country, se.city
+      ORDER BY scans DESC
+    `)
+
+    const countries = (countryResult.rows as Array<Record<string, unknown>>).map((row) => {
+      const scans = Number(row.scans)
+      return {
+        country: row.country as string,
+        scans,
+        uniqueScans: Number(row.unique_scans ?? 0),
+        percentage: totalScans > 0 ? Math.round((scans / totalScans) * 10000) / 100 : 0,
+      }
+    })
+
+    const cities = (cityResult.rows as Array<Record<string, unknown>>).map((row) => {
+      const scans = Number(row.scans)
+      return {
+        country: row.country as string,
+        city: row.city as string,
+        scans,
+        uniqueScans: Number(row.unique_scans ?? 0),
+        percentage: totalScans > 0 ? Math.round((scans / totalScans) * 10000) / 100 : 0,
+        coordinates: {
+          lat: row.lat === null ? null : Number(row.lat),
+          lng: row.lng === null ? null : Number(row.lng),
+        },
+      }
+    })
+
+    return {
+      countries,
+      cities,
+      totalCountries: countries.length,
+      totalCities: cities.length,
+    }
+  },
+
+  async getDeviceBreakdown(
+    user: User,
+    range: DateRange,
+    options: AnalyticsAccessOptions = {},
+  ): Promise<DeviceBreakdown> {
+    const { from, to } = range
+    const aclFilter = await getAnalyticsAclFilter(user, options)
+
+    const totalResult = await db.execute<{ n: string }>(sql`
+      SELECT COUNT(*) AS n
+      FROM scan_events se
+      INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+      WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+      ${aclFilter.sql}
+    `)
+    const totalScans = Number((totalResult.rows[0] as { n: string } | undefined)?.n ?? 0)
+
+    const mapBreakdown = (rows: Array<Record<string, unknown>>): DeviceBreakdownItem[] => rows.map((row) => {
+      const count = Number(row.count)
+      return {
+        name: row.name as string,
+        count,
+        percentage: totalScans > 0 ? Math.round((count / totalScans) * 10000) / 100 : 0,
+      }
+    })
+
+    const [devicesResult, osResult, browsersResult] = await Promise.all([
+      db.execute(sql`
+        SELECT se.device_type AS name, COUNT(*) AS count
+        FROM scan_events se
+        INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+        WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+          AND se.device_type IS NOT NULL
+          AND se.device_type <> ''
+          ${aclFilter.sql}
+        GROUP BY se.device_type
+        ORDER BY count DESC
+      `),
+      db.execute(sql`
+        SELECT se.os AS name, COUNT(*) AS count
+        FROM scan_events se
+        INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+        WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+          AND se.os IS NOT NULL
+          AND se.os <> ''
+          ${aclFilter.sql}
+        GROUP BY se.os
+        ORDER BY count DESC
+      `),
+      db.execute(sql`
+        SELECT se.browser AS name, COUNT(*) AS count
+        FROM scan_events se
+        INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+        WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+          AND se.browser IS NOT NULL
+          AND se.browser <> ''
+          ${aclFilter.sql}
+        GROUP BY se.browser
+        ORDER BY count DESC
+      `),
+    ])
+
+    return {
+      devices: mapBreakdown(devicesResult.rows as Array<Record<string, unknown>>),
+      os: mapBreakdown(osResult.rows as Array<Record<string, unknown>>),
+      browsers: mapBreakdown(browsersResult.rows as Array<Record<string, unknown>>),
+    }
+  },
+
+  async getTimeDistribution(
+    user: User,
+    range: DateRange,
+    options: AnalyticsAccessOptions = {},
+  ): Promise<TimeDistribution> {
+    const { from, to } = range
+    const aclFilter = await getAnalyticsAclFilter(user, options)
+
+    const totalResult = await db.execute<{ n: string }>(sql`
+      SELECT COUNT(*) AS n
+      FROM scan_events se
+      INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+      WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+      ${aclFilter.sql}
+    `)
+    const totalScans = Number((totalResult.rows[0] as { n: string } | undefined)?.n ?? 0)
+
+    const [hourlyResult, weeklyResult] = await Promise.all([
+      db.execute(sql`
+        SELECT EXTRACT(HOUR FROM se.scanned_at)::int AS bucket, COUNT(*) AS scans
+        FROM scan_events se
+        INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+        WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+          ${aclFilter.sql}
+        GROUP BY bucket
+        ORDER BY bucket ASC
+      `),
+      db.execute(sql`
+        SELECT EXTRACT(DOW FROM se.scanned_at)::int AS bucket, COUNT(*) AS scans
+        FROM scan_events se
+        INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
+        WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
+          ${aclFilter.sql}
+        GROUP BY bucket
+        ORDER BY bucket ASC
+      `),
+    ])
+
+    return {
+      hourly: (hourlyResult.rows as Array<Record<string, unknown>>).map(row => ({
+        hour: Number(row.bucket),
+        scans: Number(row.scans),
+        percentage: totalScans > 0 ? Math.round((Number(row.scans) / totalScans) * 10000) / 100 : 0,
+      })),
+      weekly: (weeklyResult.rows as Array<Record<string, unknown>>).map(row => ({
+        weekday: Number(row.bucket),
+        scans: Number(row.scans),
+        percentage: totalScans > 0 ? Math.round((Number(row.scans) / totalScans) * 10000) / 100 : 0,
+      })),
+    }
+  },
+
   /**
    * Сводная статистика с % изменением относительно предыдущего аналогичного периода.
    */

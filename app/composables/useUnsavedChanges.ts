@@ -11,7 +11,7 @@
  * const { showDialog, confirm, cancel } = useUnsavedChanges(isDirty)
  * ```
  */
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import type { RouteLocationNormalized } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
@@ -56,6 +56,12 @@ export function useUnsavedChanges(isDirty: Ref<boolean> | ComputedRef<boolean>) 
   function markClean() {
     bypass.value = true
   }
+
+  watch(isDirty, (dirty) => {
+    if (dirty) {
+      bypass.value = false
+    }
+  })
 
   // beforeunload: нативный prompt браузера при закрытии вкладки/перезагрузке
   if (typeof window !== 'undefined') {

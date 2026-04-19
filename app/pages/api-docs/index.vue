@@ -97,7 +97,7 @@
                       {{ p.name }}
                       <span
                         v-if="p.required"
-                        class="text-[color:var(--danger)]"
+                        class="text-[color:var(--color-error)]"
                       >*</span>
                     </td>
                     <td class="py-1.5 px-3 font-mono text-xs text-[color:var(--text-muted)]">
@@ -190,6 +190,9 @@ const endpointGroups = [
           { name: 'limit', type: 'number', required: false, desc: 'Записей на странице, 1–100 (default: 20)' },
           { name: 'search', type: 'string', required: false, desc: 'Поиск по названию' },
           { name: 'status', type: 'string', required: false, desc: 'active | paused | expired | archived' },
+          { name: 'visibility', type: 'string', required: false, desc: 'private | department | public' },
+          { name: 'scope', type: 'string', required: false, desc: 'mine | department | public | all' },
+          { name: 'department_id', type: 'uuid', required: false, desc: 'ID отдела (для scope=department)' },
           { name: 'sortBy', type: 'string', required: false, desc: 'createdAt | title | totalScans' },
           { name: 'sortOrder', type: 'string', required: false, desc: 'asc | desc' },
         ],

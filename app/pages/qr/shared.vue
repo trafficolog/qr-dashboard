@@ -38,20 +38,86 @@
         @edit="navigateTo(`/qr/${$event}/edit`)"
         @duplicate="handleDuplicate"
         @delete="handleDelete"
+        @change-visibility="handleChangeVisibility"
       />
     </div>
+
+    <UModal
+      v-model:open="departmentPickerOpen"
+      :close-on-escape="true"
+    >
+      <template #content>
+        <div class="space-y-4 p-5">
+          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+            Выберите отдел
+          </h3>
+          <USelect
+            v-model="selectedDepartmentId"
+            :items="departmentSelectItems"
+            value-key="value"
+            placeholder="Выберите отдел"
+          />
+          <div class="flex justify-end gap-2">
+            <UButton
+              variant="ghost"
+              color="neutral"
+              label="Отмена"
+              @click="closeDepartmentPicker"
+            />
+            <UButton
+              label="Применить"
+              :disabled="!selectedDepartmentId"
+              @click="confirmDepartmentVisibilityChange"
+            />
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { QrCode } from '~~/types/qr'
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 const toast = useA11yToast()
-const { duplicateQr, deleteQr } = useQr()
+const { duplicateQr, deleteQr, updateQrVisibility } = useQr()
+const { t } = useI18n()
 
 const { data, pending, refresh } = await useFetch<{ data: QrCode[] }>('/api/qr/shared')
 
 const sharedQr = computed(() => data.value?.data ?? [])
+const userDepartments = ref<Array<{ id: string, name: string }>>([])
+const departmentPickerOpen = ref(false)
+const departmentPickerFocusReturn = createDialogFocusReturn()
+const selectedDepartmentId = ref('')
+const pendingQrId = ref<string | null>(null)
+const departmentSelectItems = computed(() =>
+  userDepartments.value.map(item => ({ label: item.name, value: item.id })),
+)
+
+type VisibilityPayload = { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }
+
+watch(departmentPickerOpen, (open) => {
+  if (open) departmentPickerFocusReturn.save()
+  else departmentPickerFocusReturn.restore()
+})
+
+async function fetchUserDepartments() {
+  try {
+    const response = await $fetch<{ data: Array<{ id: string, name: string }> }>('/api/departments/my')
+    userDepartments.value = response.data
+  }
+  catch {
+    userDepartments.value = []
+  }
+}
+
+function closeDepartmentPicker() {
+  departmentPickerOpen.value = false
+  pendingQrId.value = null
+  selectedDepartmentId.value = ''
+}
 
 async function handleDuplicate(id: string) {
   try {
@@ -74,4 +140,48 @@ async function handleDelete(id: string) {
     toast.add({ title: 'Ошибка удаления', color: 'error' })
   }
 }
+
+async function handleChangeVisibility(payload: VisibilityPayload) {
+  if (payload.visibility === 'department') {
+    if (userDepartments.value.length === 0) {
+      toast.add({ title: t('qr.actions.makeDepartmentDisabledTooltip'), color: 'warning' })
+      return
+    }
+
+    pendingQrId.value = payload.id
+    selectedDepartmentId.value = payload.departmentId || userDepartments.value[0]?.id || ''
+    departmentPickerOpen.value = true
+    return
+  }
+
+  try {
+    await updateQrVisibility(payload.id, { visibility: payload.visibility })
+    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    await refresh()
+  }
+  catch {
+    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
+  }
+}
+
+async function confirmDepartmentVisibilityChange() {
+  if (!pendingQrId.value || !selectedDepartmentId.value) {
+    return
+  }
+
+  try {
+    await updateQrVisibility(pendingQrId.value, {
+      visibility: 'department',
+      departmentId: selectedDepartmentId.value,
+    })
+    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    closeDepartmentPicker()
+    await refresh()
+  }
+  catch {
+    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
+  }
+}
+
+onMounted(fetchUserDepartments)
 </script>

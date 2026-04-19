@@ -51,7 +51,10 @@
       </div>
     </UCard>
 
-    <UModal v-model:open="defaultOpen">
+    <UModal
+      v-model:open="defaultOpen"
+      :close-on-escape="true"
+    >
       <template #header>
         <h3 class="text-base font-semibold">
           Default modal
@@ -76,7 +79,10 @@
       </template>
     </UModal>
 
-    <UModal v-model:open="loadingOpen">
+    <UModal
+      v-model:open="loadingOpen"
+      :close-on-escape="true"
+    >
       <template #header>
         <h3 class="text-base font-semibold">
           Loading modal
@@ -104,12 +110,26 @@
 </template>
 
 <script setup lang="ts">
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+
 definePageMeta({
   middleware: ['docs-ui-enabled', 'admin-only'],
 })
 
 const defaultOpen = ref(false)
 const loadingOpen = ref(false)
+const defaultFocusReturn = createDialogFocusReturn()
+const loadingFocusReturn = createDialogFocusReturn()
+
+watch(defaultOpen, (open) => {
+  if (open) defaultFocusReturn.save()
+  else defaultFocusReturn.restore()
+})
+
+watch(loadingOpen, (open) => {
+  if (open) loadingFocusReturn.save()
+  else loadingFocusReturn.restore()
+})
 
 const dropdownItems = [
   [

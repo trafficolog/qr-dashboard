@@ -26,7 +26,7 @@
     <!-- Redirect URL (copy on click) -->
     <div
       v-if="redirectUrl"
-      class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-[color:var(--text-secondary)] transition-colors hover:text-[color:var(--accent)]"
+      class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-[color:var(--text-secondary)] transition-interactive hover:text-[color:var(--accent)]"
       @click="copyUrl"
     >
       <UIcon

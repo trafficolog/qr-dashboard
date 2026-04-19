@@ -7,6 +7,19 @@
  
 ## [Unreleased]
 
+### Added — EPIC 20 UX/UI Enhancement Pack (Done with notes)
+
+- **Analytics**: гео-блок (`GeoMap`, `GeoTable`), breakdown по устройствам/OS/браузерам, графики по часам и дням недели, compare previous period в `ScanChart`.
+- **Cards**: обогащённые QR-карточки и inline quick actions (Download/Copy URL), hover-preview в таблице.
+- **Empty states**: SVG-иллюстрации для пустых состояний и error-сценариев (`404`, `expired`), расширение `EmptyState` через `illustration` API.
+- **Onboarding**: overlay первого входа на 3 шага + локализация ru/en.
+
+### Changed
+
+- **`README.md`**, **`docs/completed-epics.md`**, **`docs/epic-20-ux-analytics-cards.md`** — синхронизированы версия и статусы EPIC 20 между документами.
+
+---
+
 ### Added — EPIC 17 Accessibility (in progress)
 
 - **`app/composables/useA11yAnnouncer.ts`** — общий announcer для `aria-live` сообщений screen-reader.
@@ -15,7 +28,7 @@
 - **`app/utils/dialog-focus-return.ts`** — утилита сохранения/восстановления фокуса для модальных сценариев.
 - **`e2e/a11y.spec.ts`** — базовая `axe-core` проверка страниц `/dashboard`, `/qr`, `/qr/create`, `/settings/profile`, `/analytics`.
 
-### Changed
+### Changed — EPIC 17
 
 - **`app/app.vue`** — добавлен `aria-live` регион (`role="status"`) для озвучивания уведомлений.
 - **`assets/css/main.css`** — добавлены глобальные правила `:focus-visible` и контур focus-ring.
@@ -26,6 +39,7 @@
 - **`i18n/locales/ru.json`**, **`i18n/locales/en.json`** — добавлены ключи `a11y.actions.*`, `a11y.labels.*`, `qr.status.*`, `qr.preview.alt`.
 - **`package.json`** — добавлен скрипт `test:e2e` и dev dependency `@axe-core/playwright`.
 - **`README.md`**, **`docs/completed-epics.md`**, **`docs/splat-qr-docs-done.md`**, **`docs/splat-qr-cursor-plan.md`** — синхронизированы статусы EPIC 17 по фактически выполненному phase 1.
+- **`server/api/analytics/top-qr.get.ts`** — endpoint переименован по Nuxt/Nitro паттерну (`kebab-case` + `.get.ts`): корректный путь `GET /api/analytics/top-qr`; использовать тот же шаблон для будущих роутов `geo`, `devices`, `time-distribution`.
 
 ---
 

@@ -32,14 +32,15 @@
     <!-- Empty -->
     <SharedEmptyState
       v-else-if="!folders.length"
-      icon="i-lucide-folder-open"
-      title="Нет папок"
-      description="Создайте первую папку, чтобы организовать QR-коды."
+      illustration="/illustrations/empty-folders.svg"
+      :illustration-alt="t('folders.empty.illustrationAlt')"
+      :title="t('folders.empty.title')"
+      :description="t('folders.empty.description')"
     >
       <template #action>
         <UButton
           icon="i-lucide-folder-plus"
-          label="Создать папку"
+          :label="t('folders.empty.createAction')"
           @click="openCreate"
         />
       </template>
@@ -53,7 +54,7 @@
       <div
         v-for="folder in folders"
         :key="folder.id"
-        class="group relative rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 hover:border-green-200 dark:hover:border-green-800 hover:shadow-sm transition-interactive cursor-pointer"
+        class="group relative rounded-xl border border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)] p-5 hover:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] dark:hover:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] transition-interactive hover-lift cursor-pointer"
         @click="navigateTo(`/folders/${folder.id}`)"
       >
         <!-- Color accent -->
@@ -132,6 +133,7 @@
 import type { Folder } from '~/composables/useFolders'
 
 const toast = useA11yToast()
+const { t } = useI18n()
 const { folders, loading, fetchFolders, deleteFolder } = useFolders()
 
 onMounted(() => fetchFolders())

@@ -18,8 +18,14 @@ const createSchema = z.object({
       utm_content: z.string().optional(),
     })
     .optional(),
-  folderId: z.string().uuid().optional(),
-  tagIds: z.array(z.string().uuid()).optional(),
+  folderId: z.preprocess(
+    value => value === '' || value === null ? undefined : value,
+    z.string().uuid().optional(),
+  ),
+  tagIds: z.preprocess(
+    value => Array.isArray(value) && value.length === 0 ? undefined : value,
+    z.array(z.string().uuid()).optional(),
+  ),
   expiresAt: z.string().datetime().optional(),
 })
 

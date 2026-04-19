@@ -11,21 +11,33 @@
 - `bg-white|bg-gray-50` → `bg-[color:var(--surface-0)]`
 - `bg-gray-100|bg-gray-800` → `bg-[color:var(--surface-2)]`
 - `border-gray-200|700` → `border-[color:var(--border)]`
-- `text-red-*`, `bg-red-*` → danger tokens (`--danger`)
-- `text-green-*`, `bg-green-*` → success tokens (`--success`)
+- `text-red-*`, `bg-red-*` → error tokens (`--color-error`, `--color-error-soft`)
+- `text-green-*`, `bg-green-*` → success tokens (`--color-success`)
 
-## Allowed exceptions (for clean grep-audit)
-The following categories are intentionally allowed and are **not** part of this audit rule set:
+## Canonical semantic naming (EPIC 18.1 / 18.4)
+- Canonical semantic tokens: `--color-error`, `--color-error-soft`, `--color-success`, `--color-warning`, `--color-info`.
+- Legacy aliases `--danger`, `--success`, `--warning`, `--info` are preserved only for backward compatibility and must not be used in new code.
 
-1. Illustration-only colors and SVG/preview palettes (brand/semantic drawing colors).
-2. Component-specific hover/accent shades not in EPIC 18.1 replacement matrix.
-3. Legacy colors outside `app/**/*.vue` and `app/**/*.ts` (e.g. external styles, docs, snapshots).
+## Allowed exceptions (EPIC 18 registry)
+Document only explicit, justified exclusions from this audit scope.
+
+### Current exceptions list
+- No active exceptions in `app/**/*.vue` and `app/**/*.ts`.
+
+### Out of scope by definition
+1. Legacy colors outside `app/**/*.vue` and `app/**/*.ts` (e.g. external styles, docs, snapshots).
+2. Non-class color values in TS/JS objects (for chart palettes, preview/illustration drawing).
 
 ## Audit command
 Use this command to validate EPIC 18.1 in-scope classes:
 
 ```bash
-rg -n "text-gray-(900|700|600|500|400)|text-white|bg-white|bg-gray-50|bg-gray-100|bg-gray-800|border-gray-(200|700)|text-red-[^\\s\"']+|bg-red-[^\\s\"']+|text-green-[^\\s\"']+|bg-green-[^\\s\"']+" app --glob '**/*.vue' --glob '**/*.ts'
+rg -n --glob 'app/**/*.vue' --glob 'app/**/*.ts' \
+  -e "gray-[^[:space:]\\\"']+" \
+  -e "text-white" \
+  -e "bg-white" \
+  -e "red-[^[:space:]\\\"']+" \
+  -e "green-[^[:space:]\\\"']+"
 ```
 
 Expected result: no matches.
