@@ -11,8 +11,12 @@
 - `bg-white|bg-gray-50` → `bg-[color:var(--surface-0)]`
 - `bg-gray-100|bg-gray-800` → `bg-[color:var(--surface-2)]`
 - `border-gray-200|700` → `border-[color:var(--border)]`
-- `text-red-*`, `bg-red-*` → danger tokens (`--danger`)
-- `text-green-*`, `bg-green-*` → success tokens (`--success`)
+- `text-red-*`, `bg-red-*` → error tokens (`--color-error`, `--color-error-soft`)
+- `text-green-*`, `bg-green-*` → success tokens (`--color-success`)
+
+## Canonical semantic naming (EPIC 18.1 / 18.4)
+- Canonical semantic tokens: `--color-error`, `--color-error-soft`, `--color-success`, `--color-warning`, `--color-info`.
+- Legacy aliases `--danger`, `--success`, `--warning`, `--info` are preserved only for backward compatibility and must not be used in new code.
 
 ## Allowed exceptions (EPIC 18 registry)
 Document only explicit, justified exclusions from this audit scope.

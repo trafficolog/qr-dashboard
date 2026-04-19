@@ -75,7 +75,7 @@
             <td class="py-2.5 pr-4">
               <NuxtLink
                 :to="`/qr/${qr.id}`"
-                class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] hover:text-[color:var(--success)] dark:hover:text-[color:var(--success)] transition-colors"
+                class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] hover:text-[color:var(--color-success)] dark:hover:text-[color:var(--color-success)] transition-colors"
               >
                 {{ qr.title || qr.shortCode }}
               </NuxtLink>

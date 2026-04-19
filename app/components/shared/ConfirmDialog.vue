@@ -9,7 +9,7 @@
           <div class="shrink-0 rounded-full bg-[color:var(--accent-light)] p-2">
             <UIcon
               :name="icon"
-              class="size-5 text-[color:var(--danger)]"
+              class="size-5 text-[color:var(--color-error)]"
             />
           </div>
           <div class="flex-1">

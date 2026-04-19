@@ -108,6 +108,10 @@ body { font-size: var(--fs-base); }
 ```
  
 Проверка: `375 px` (iPhone SE) и `1920 px` (desktop) — шрифты читаемы без изменения класса.
+
+**Canonical naming update (final):**
+- Использовать `--color-error`, `--color-error-soft`, `--color-success`, `--color-warning`, `--color-info` как единственные канонические semantic-токены.
+- `--danger`, `--success`, `--warning`, `--info` оставить только как alias-слой обратной совместимости.
  
 ### 18.5 Каталог UI `/docs-ui`
  

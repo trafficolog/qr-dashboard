@@ -127,7 +127,7 @@
                 min="1"
                 max="100"
                 step="1"
-                class="flex-1 h-1.5 rounded-full accent-[color:var(--success)] cursor-pointer"
+                class="flex-1 h-1.5 rounded-full accent-[color:var(--color-success)] cursor-pointer"
               >
               <UInput
                 v-model.number="dest.weight"

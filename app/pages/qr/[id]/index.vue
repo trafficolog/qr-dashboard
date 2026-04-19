@@ -212,7 +212,7 @@
                     <a
                       :href="dest.url"
                       target="_blank"
-                      class="text-[color:var(--success)] dark:text-[color:var(--success)] hover:underline truncate max-w-[200px] block"
+                      class="text-[color:var(--color-success)] dark:text-[color:var(--color-success)] hover:underline truncate max-w-[200px] block"
                     >
                       {{ dest.url }}
                     </a>

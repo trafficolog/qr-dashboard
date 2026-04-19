@@ -18,10 +18,10 @@
       class="flex items-start gap-3"
       :data-motion-enabled="!props.reducedMotion"
     >
-      <div class="p-2 rounded-lg bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] shrink-0">
+      <div class="p-2 rounded-lg bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] shrink-0">
         <UIcon
           :name="icon"
-          class="size-5 text-[color:var(--success)] dark:text-[color:var(--success)]"
+          class="size-5 text-[color:var(--color-success)] dark:text-[color:var(--color-success)]"
         />
       </div>
       <div class="min-w-0">
@@ -38,11 +38,11 @@
           <UIcon
             :name="change >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
             class="size-3.5"
-            :class="change >= 0 ? 'text-[color:var(--success)]' : 'text-[color:var(--danger)]'"
+            :class="change >= 0 ? 'text-[color:var(--color-success)]' : 'text-[color:var(--color-error)]'"
           />
           <span
             class="text-xs font-medium"
-            :class="change >= 0 ? 'text-[color:var(--success)] dark:text-[color:var(--success)]' : 'text-[color:var(--danger)] dark:text-[color:var(--danger)]'"
+            :class="change >= 0 ? 'text-[color:var(--color-success)] dark:text-[color:var(--color-success)]' : 'text-[color:var(--color-error)] dark:text-[color:var(--color-error)]'"
           >
             {{ change >= 0 ? '+' : '' }}{{ change }}% vs прошлый период
           </span>

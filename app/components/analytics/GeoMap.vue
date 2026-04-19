@@ -12,7 +12,7 @@
           type="button"
           class="rounded-md px-3 py-1 text-xs transition"
           :class="activeMode === mode
-            ? 'bg-[color:var(--success)] text-[color:var(--text-primary)]'
+            ? 'bg-[color:var(--color-success)] text-[color:var(--text-primary)]'
             : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]'"
           @click="activeMode = mode"
         >
@@ -95,7 +95,7 @@
         <span class="w-28 truncate text-sm text-[color:var(--text-muted)]">{{ country.country }}</span>
         <div class="h-2 flex-1 rounded-full bg-[color:var(--surface-2)]">
           <div
-            class="h-2 rounded-full bg-[color:var(--success)]"
+            class="h-2 rounded-full bg-[color:var(--color-success)]"
             :style="{ width: `${Math.max(country.percentage, 2)}%` }"
           />
         </div>
