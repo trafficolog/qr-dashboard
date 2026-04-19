@@ -1,6 +1,6 @@
 import { and, asc, eq, inArray, ne } from 'drizzle-orm'
 import { db } from '../db'
-import { departments, userDepartments, users } from '../db/schema'
+import { departments, qrCodes, userDepartments, users } from '../db/schema'
 
 type DepartmentRole = 'member' | 'head'
 
@@ -137,7 +137,24 @@ export const departmentsService = {
 
   async remove(id: string) {
     await getDepartmentOrThrow(id)
-    await db.delete(departments).where(eq(departments.id, id))
+
+    return db.transaction(async (tx) => {
+      const reassignedQrs = await tx
+        .update(qrCodes)
+        .set({
+          visibility: 'private',
+          departmentId: null,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(qrCodes.departmentId, id), eq(qrCodes.visibility, 'department')))
+        .returning({ id: qrCodes.id })
+
+      await tx.delete(departments).where(eq(departments.id, id))
+
+      return {
+        reassignedDepartmentQrCount: reassignedQrs.length,
+      }
+    })
   },
 
   async setMembers(departmentId: string, members: MembershipInput[]) {

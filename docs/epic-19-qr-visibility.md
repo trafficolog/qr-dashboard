@@ -339,7 +339,7 @@ export const departmentService = {
 | POST | `/api/departments` | Admin | Создать подразделение |
 | GET | `/api/departments/:id` | All | Детали с участниками |
 | PUT | `/api/departments/:id` | Admin | Обновить |
-| DELETE | `/api/departments/:id` | Admin | Удалить (QR → departmentId = null) |
+| DELETE | `/api/admin/departments/:id` | Admin | Удалить (все `department` QR этого отдела атомарно переводятся в `private` и получают `departmentId = null`) |
 | GET | `/api/departments/:id/members` | All | Список участников |
 | POST | `/api/departments/:id/members` | Admin | Добавить участника { userId, role } |
 | DELETE | `/api/departments/:id/members/:userId` | Admin | Убрать участника |
@@ -347,8 +347,8 @@ export const departmentService = {
 **Критерии приёмки:**
 - [ ] CRUD подразделений работает корректно
 - [ ] M2M `user_departments` корректно создаётся/удаляется
-- [ ] При удалении подразделения — QR получают `departmentId = null`, `visibility` остаётся (не меняется на private автоматически — admin решает)
-- [ ] Guard: нельзя удалить подразделение, пока в нём есть department-visibility QR (или предупреждение + конфирм)
+- [ ] При удалении подразделения — все QR с `visibility='department'` и этим `departmentId` атомарно переводятся в `visibility='private'` и получают `departmentId = null`
+- [ ] API DELETE `/api/admin/departments/:id` возвращает понятное сообщение для UI о количестве переведённых QR
 - [ ] `npm run typecheck` — зелёный
 
 ---
@@ -875,7 +875,7 @@ docs/completed-epics.md
 | Производительность: JOIN через user_departments при каждом запросе списка | Кешировать `getUserDepartmentIds(userId)` в LRU (TTL 5 мин). Индексы на user_departments. |
 | Сложность access control: много точек проверки | Единая функция `checkQrAccess(qr, user, action)` вынесена в `server/utils/qr-access.ts`, используется во всех эндпоинтах. |
 | Пользователь без отдела не видит department QR | Корректное поведение. EmptyState с подсказкой: «Обратитесь к администратору для добавления в подразделение». |
-| Удаление подразделения с активными department-QR | Guard + предупреждение. QR получают `departmentId = null`, visibility остаётся `department` → admin решает (bulk change to private/public). |
+| Удаление подразделения с активными department-QR | Операция атомарна: такие QR автоматически переводятся в `private` и открепляются (`departmentId = null`), API возвращает количество затронутых QR. |
 
 ---
 
