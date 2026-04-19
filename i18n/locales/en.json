@@ -71,7 +71,10 @@
   },
   "analytics": {
     "title": "Analytics",
-    "subtitle": "Scan statistics for your QR codes"
+    "subtitle": "Scan statistics for your QR codes",
+    "errors": {
+      "loadFailed": "Failed to load analytics"
+    }
   },
   "search": {
     "placeholder": "Search QR codes, folders, pages...",

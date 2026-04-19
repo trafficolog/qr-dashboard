@@ -15,17 +15,76 @@ export interface ScanTimeSeriesPoint {
   uniqueScans: number
 }
 
-export interface GeoBreakdownItem {
+export interface GeoCoordinates {
+  lat: number | null
+  lng: number | null
+}
+
+export interface GeoCountryBreakdownItem {
   country: string
-  city?: string
   scans: number
+  percentage: number
+  coordinates?: GeoCoordinates | null
+}
+
+export interface GeoCityBreakdownItem {
+  country: string
+  city: string
+  scans: number
+  percentage: number
+  coordinates?: GeoCoordinates | null
+}
+
+export interface GeoBreakdown {
+  countries: GeoCountryBreakdownItem[]
+  cities: GeoCityBreakdownItem[]
+  totalCountries: number
+  totalCities: number
+}
+
+export interface DeviceBreakdownItem {
+  name: string
+  count: number
   percentage: number
 }
 
 export interface DeviceBreakdown {
-  devices: { name: string, count: number, percentage: number }[]
-  os: { name: string, count: number, percentage: number }[]
-  browsers: { name: string, count: number, percentage: number }[]
+  devices: DeviceBreakdownItem[]
+  os: DeviceBreakdownItem[]
+  browsers: DeviceBreakdownItem[]
+}
+
+export interface HourlyDistributionItem {
+  hour: number
+  scans: number
+  percentage: number
+}
+
+export interface WeeklyDistributionItem {
+  weekday: number
+  scans: number
+  percentage: number
+}
+
+export interface TimeDistribution {
+  hourly: HourlyDistributionItem[]
+  weekly: WeeklyDistributionItem[]
+}
+
+export interface CompareSeries<T> {
+  current: T
+  previous: T
+}
+
+export type ScanTimeSeriesCompare = CompareSeries<ScanTimeSeriesPoint[]>
+
+export interface AnalyticsSectionLoading {
+  overview: boolean
+  timeSeries: boolean
+  topQr: boolean
+  geo: boolean
+  devices: boolean
+  timeDistribution: boolean
 }
 
 export interface TopQrCode {
