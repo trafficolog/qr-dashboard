@@ -327,5 +327,32 @@
       "create": "Create",
       "saving": "Saving…"
     }
+  },
+  "onboarding": {
+    "progress": "Step {current} of {total}",
+    "actions": {
+      "skip": "Skip",
+      "back": "Back",
+      "next": "Next",
+      "finish": "Finish"
+    },
+    "steps": {
+      "actions": {
+        "title": "Quick actions",
+        "description": "Create a new QR code or open the full QR list from here."
+      },
+      "dateRange": {
+        "title": "Analytics period",
+        "description": "Select a date range to refresh cards and charts for a specific period."
+      },
+      "stats": {
+        "title": "Key metrics",
+        "description": "These cards show trends for QR codes, scans, and unique visitors."
+      },
+      "topQr": {
+        "title": "Top QR codes",
+        "description": "Use this table to quickly identify the best-performing QR codes."
+      }
+    }
   }
 }
