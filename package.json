@@ -16,7 +16,8 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "npx tsx server/db/seed.ts",
     "typecheck": "nuxt typecheck",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.9.0",
@@ -63,7 +64,8 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.4.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.8"
   },
   "packageManager": "pnpm@9.15.0"
 }
