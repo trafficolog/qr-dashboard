@@ -3,10 +3,10 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-          Создание QR-кода
+          {{ $t('pages.qrCreate.title') }}
         </h1>
         <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
-          Настройте ссылку, стиль и параметры
+          {{ $t('pages.qrCreate.subtitle') }}
         </p>
       </div>
     </div>
@@ -31,13 +31,13 @@
                 name="i-lucide-link"
                 class="size-5 text-[color:var(--accent)]"
               />
-              <span class="font-medium">Ссылка</span>
+              <span class="font-medium">{{ $t('forms.sections.link') }}</span>
             </div>
           </template>
 
           <div class="space-y-4">
             <UFormField
-              label="URL назначения"
+              :label="$t('forms.labels.destinationUrl')"
               :error="urlError"
               :hint="$t('forms.hints.destinationUrl')"
               required
@@ -65,20 +65,20 @@
             </UFormField>
 
             <div class="flex items-center gap-4">
-              <label class="text-sm text-[color:var(--text-secondary)]">Тип:</label>
+              <label class="text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.qrType') }}</label>
               <div class="flex gap-2">
                 <UButton
                   :variant="form.type === 'dynamic' ? 'solid' : 'outline'"
                   :color="form.type === 'dynamic' ? 'primary' : 'neutral'"
                   size="sm"
-                  label="Динамический"
+                  :label="$t('forms.options.qrType.dynamic')"
                   @click="form.type = 'dynamic'"
                 />
                 <UButton
                   :variant="form.type === 'static' ? 'solid' : 'outline'"
                   :color="form.type === 'static' ? 'primary' : 'neutral'"
                   size="sm"
-                  label="Статический"
+                  :label="$t('forms.options.qrType.static')"
                   @click="form.type = 'static'"
                 />
               </div>
@@ -86,8 +86,8 @@
 
             <p class="text-xs text-[color:var(--text-muted)]">
               {{ form.type === 'dynamic'
-                ? 'Динамический QR: ссылку можно изменить после создания'
-                : 'Статический QR: URL вшивается в QR-матрицу и не может быть изменён'
+                ? $t('forms.hints.qrTypeDynamic')
+                : $t('forms.hints.qrTypeStatic')
               }}
             </p>
 
@@ -98,33 +98,33 @@
                 color="neutral"
                 size="sm"
                 icon="i-lucide-tag"
-                label="UTM-параметры"
+                :label="$t('forms.labels.utmParams')"
                 class="-ml-2"
               />
               <template #content>
                 <div class="grid grid-cols-2 gap-3 pt-3">
-                  <UFormField label="Source">
+                  <UFormField :label="$t('forms.labels.utmSource')">
                     <UInput
                       v-model="form.utmParams.utm_source"
                       placeholder="qr-code"
                       size="sm"
                     />
                   </UFormField>
-                  <UFormField label="Medium">
+                  <UFormField :label="$t('forms.labels.utmMedium')">
                     <UInput
                       v-model="form.utmParams.utm_medium"
                       placeholder="packaging"
                       size="sm"
                     />
                   </UFormField>
-                  <UFormField label="Campaign">
+                  <UFormField :label="$t('forms.labels.utmCampaign')">
                     <UInput
                       v-model="form.utmParams.utm_campaign"
                       placeholder="summer2025"
                       size="sm"
                     />
                   </UFormField>
-                  <UFormField label="Content">
+                  <UFormField :label="$t('forms.labels.utmContent')">
                     <UInput
                       v-model="form.utmParams.utm_content"
                       placeholder=""
@@ -145,20 +145,20 @@
                 name="i-lucide-info"
                 class="size-5 text-[color:var(--accent)]"
               />
-              <span class="font-medium">Информация</span>
+              <span class="font-medium">{{ $t('forms.sections.info') }}</span>
             </div>
           </template>
 
           <div class="space-y-4">
             <UFormField
-              label="Название"
+              :label="$t('forms.labels.title')"
               :hint="$t('forms.hints.qrTitle')"
               :error="titleError"
               required
             >
               <UInput
                 v-model="form.title"
-                placeholder="Промо-акция на упаковке"
+                :placeholder="$t('forms.placeholders.qrTitle')"
                 :aria-invalid="!!titleError"
                 :aria-describedby="titleError ? qrCreateTitleErrorId : undefined"
                 :aria-required="true"
@@ -176,15 +176,15 @@
               </template>
             </UFormField>
 
-            <UFormField label="Папка">
+            <UFormField :label="$t('forms.labels.folder')">
               <USelect
                 v-model="form.folderId"
                 :items="folderOptions"
-                placeholder="Без папки"
+                :placeholder="$t('forms.options.noFolder')"
               />
             </UFormField>
 
-            <UFormField label="Теги">
+            <UFormField :label="$t('forms.labels.tags')">
               <SharedTagInput
                 v-model="form.tagIds"
                 :available-tags="availableTags"
@@ -192,15 +192,15 @@
               />
             </UFormField>
 
-            <UFormField label="Описание">
+            <UFormField :label="$t('forms.labels.description')">
               <UTextarea
                 v-model="form.description"
-                placeholder="Краткое описание QR-кода..."
+                :placeholder="$t('forms.placeholders.description')"
                 :rows="2"
               />
             </UFormField>
 
-            <UFormField label="Срок действия">
+            <UFormField :label="$t('forms.labels.expiresAt')">
               <UInput
                 v-model="form.expiresAt"
                 :hint="$t('forms.hints.expiresAt')"
@@ -218,7 +218,7 @@
                 name="i-lucide-palette"
                 class="size-5 text-[color:var(--accent)]"
               />
-              <span class="font-medium">Стиль</span>
+              <span class="font-medium">{{ $t('forms.sections.style') }}</span>
             </div>
           </template>
 
@@ -228,7 +228,7 @@
         <!-- Actions -->
         <div class="flex items-center gap-3">
           <UButton
-            label="Создать QR-код"
+            :label="$t('forms.actions.createQr')"
             icon="i-lucide-check"
             size="lg"
             :loading="saving"
@@ -257,7 +257,7 @@
 
           <div class="text-center">
             <p class="text-xs text-[color:var(--text-muted)]">
-              Предварительный просмотр обновляется в реальном времени
+              {{ $t('forms.hints.livePreview') }}
             </p>
           </div>
         </div>
@@ -342,7 +342,7 @@ const unsaved = useUnsavedChanges(isDirty)
 // Folders & tags
 const { folders, fetchFolders } = useFolders()
 const folderOptions = computed(() => [
-  { label: 'Без папки', value: '' },
+  { label: t('forms.options.noFolder'), value: '' },
   ...folders.value.map(f => ({ label: f.name, value: f.id })),
 ])
 
@@ -404,7 +404,7 @@ async function handleCreate() {
       expiresAt: form.expiresAt || undefined,
     })
 
-    toast.add({ title: `QR «${qr.title}» создан`, color: 'success' })
+    toast.add({ title: t('forms.toasts.qrCreated', { title: qr.title }), color: 'success' })
     // Чистим черновик и снимаем unsaved-guard перед навигацией
     draft.clear()
     reset()

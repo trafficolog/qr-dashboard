@@ -3,10 +3,10 @@
     <!-- Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-        Допустимые домены
+        {{ $t('pages.domains.title') }}
       </h1>
       <p class="text-sm text-[color:var(--text-secondary)] mt-0.5">
-        Управление белым списком email-доменов для авторизации
+        {{ $t('pages.domains.subtitle') }}
       </p>
     </div>
 
@@ -16,17 +16,17 @@
       icon="i-lucide-info"
       color="primary"
       variant="soft"
-      title="Режим доступа"
+      :title="$t('pages.domains.accessMode.title')"
       :description="domains.length === 0
-        ? 'Список пуст — разрешены все домены (открытый режим). Добавьте домен для включения режима белого списка.'
-        : `Режим белого списка активен. Только ${activeDomains} из ${domains.length} доменов разрешены.`"
+        ? $t('pages.domains.accessMode.openDescription')
+        : $t('pages.domains.accessMode.whitelistDescription', { active: activeDomains, total: domains.length })"
     />
 
     <!-- Add domain form -->
     <UCard class="mb-6">
       <template #header>
         <h2 class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-          Добавить домен
+          {{ $t('forms.actions.addDomain') }}
         </h2>
       </template>
 
@@ -63,7 +63,7 @@
           :loading="adding"
           :disabled="!newDomain.trim()"
         >
-          Добавить
+          {{ $t('forms.actions.add') }}
         </UButton>
       </form>
     </UCard>
@@ -72,7 +72,7 @@
     <UCard>
       <template #header>
         <h2 class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-          Список доменов
+          {{ $t('pages.domains.listTitle') }}
           <span class="ml-2 text-sm font-normal text-[color:var(--text-muted)]">({{ domains.length }})</span>
         </h2>
       </template>
@@ -95,9 +95,9 @@
           name="i-lucide-globe"
           class="size-10 mx-auto mb-2 text-[color:var(--text-secondary)]"
         />
-        <p>Домены не добавлены</p>
+        <p>{{ $t('pages.domains.empty.title') }}</p>
         <p class="text-sm text-[color:var(--text-muted)] mt-1">
-          Все email-домены разрешены для входа
+          {{ $t('pages.domains.empty.description') }}
         </p>
       </div>
 
@@ -116,7 +116,7 @@
               variant="soft"
               size="sm"
             >
-              {{ d.isActive ? 'Активен' : 'Отключён' }}
+              {{ d.isActive ? $t('pages.domains.status.active') : $t('pages.domains.status.disabled') }}
             </UBadge>
             <span class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">{{ d.domain }}</span>
             <span class="text-xs text-[color:var(--text-muted)]">
@@ -134,8 +134,8 @@
               variant="ghost"
               color="error"
               size="sm"
-              :aria-label="`Удалить домен ${d.domain}`"
-              :title="`Удалить домен ${d.domain}`"
+              :aria-label="$t('pages.domains.actions.deleteDomain', { domain: d.domain })"
+              :title="$t('pages.domains.actions.deleteDomain', { domain: d.domain })"
               @click="handleDelete(d)"
             />
           </div>
@@ -146,9 +146,9 @@
     <!-- Confirm delete dialog -->
     <SharedConfirmDialog
       v-model:open="confirmOpen"
-      title="Удалить домен?"
-      :description="`Домен «${deletingDomain?.domain}» будет удалён из белого списка.`"
-      confirm-label="Удалить"
+      :title="$t('pages.domains.delete.title')"
+      :description="t('pages.domains.delete.description', { domain: deletingDomain?.domain })"
+      :confirm-label="$t('forms.actions.delete')"
       confirm-color="error"
       @confirm="confirmDelete"
     />
@@ -177,7 +177,7 @@ interface Domain {
 }
 
 const toast = useA11yToast()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const loading = ref(true)
 const domains = ref<Domain[]>([])
@@ -189,7 +189,7 @@ const addDomainSchema = z.object({
   domain: z.string()
     .trim()
     .min(1, 'forms.errors.required')
-    .regex(/^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+$/i, 'Некорректный формат домена (пример: company.com)'),
+    .regex(/^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+$/i, 'forms.errors.domain'),
 })
 const { errors, touched, validate, validateField, setServerErrors, reset } = useFormValidation(addDomainSchema)
 const addError = ref('')
@@ -205,7 +205,7 @@ async function fetchDomains() {
     domains.value = res.data
   }
   catch {
-    toast.add({ title: 'Ошибка загрузки доменов', color: 'error' })
+    toast.add({ title: t('pages.domains.toasts.loadError'), color: 'error' })
   }
   finally {
     loading.value = false
@@ -226,7 +226,7 @@ async function handleAdd() {
     domains.value.unshift(res.data)
     newDomain.value = ''
     reset()
-    toast.add({ title: `Домен «${domain}» добавлен`, color: 'success' })
+    toast.add({ title: t('pages.domains.toasts.added', { domain }), color: 'success' })
   }
   catch (error: unknown) {
     const err = error as {
@@ -247,7 +247,7 @@ async function handleAdd() {
       }
     }
     if (!addError.value) {
-      addError.value = data?.message || 'Ошибка добавления домена'
+      addError.value = data?.message || t('pages.domains.toasts.addError')
       setServerErrors({ domain: addError.value })
     }
   }
@@ -275,12 +275,12 @@ async function handleToggle(id: string, isActive: boolean) {
     const idx = domains.value.findIndex(d => d.id === id)
     if (idx !== -1) domains.value[idx] = res.data
     toast.add({
-      title: isActive ? 'Домен включён' : 'Домен отключён',
+      title: isActive ? t('pages.domains.toasts.enabled') : t('pages.domains.toasts.disabled'),
       color: 'success',
     })
   }
   catch {
-    toast.add({ title: 'Ошибка обновления домена', color: 'error' })
+    toast.add({ title: t('pages.domains.toasts.updateError'), color: 'error' })
   }
 }
 
@@ -294,10 +294,10 @@ async function confirmDelete() {
   try {
     await $fetch(`/api/admin/domains/${deletingDomain.value.id}`, { method: 'DELETE' })
     domains.value = domains.value.filter(d => d.id !== deletingDomain.value!.id)
-    toast.add({ title: `Домен «${deletingDomain.value.domain}» удалён`, color: 'success' })
+    toast.add({ title: t('pages.domains.toasts.deleted', { domain: deletingDomain.value.domain }), color: 'success' })
   }
   catch {
-    toast.add({ title: 'Ошибка удаления домена', color: 'error' })
+    toast.add({ title: t('pages.domains.toasts.deleteError'), color: 'error' })
   }
   finally {
     deletingDomain.value = null
@@ -305,7 +305,7 @@ async function confirmDelete() {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('ru-RU', {
+  return new Date(iso).toLocaleDateString(locale.value === 'ru' ? 'ru-RU' : 'en-US', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',

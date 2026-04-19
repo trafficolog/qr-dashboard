@@ -9,12 +9,12 @@
               variant="ghost"
               color="neutral"
               size="sm"
-              aria-label="Назад к QR-коду"
-              title="Назад к QR-коду"
+              :aria-label="$t('pages.qrEdit.backToQr')"
+              :title="$t('pages.qrEdit.backToQr')"
               :to="`/qr/${id}`"
             />
             <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-              Редактирование QR-кода
+              {{ $t('pages.qrEdit.title') }}
             </h1>
           </div>
         </div>
@@ -31,15 +31,15 @@
                   name="i-lucide-link"
                   class="size-5 text-[color:var(--accent)]"
                 />
-                <span class="font-medium">Ссылка</span>
+                <span class="font-medium">{{ $t('forms.sections.link') }}</span>
               </div>
             </template>
 
             <div class="space-y-4">
               <UFormField
-                label="URL назначения"
+                :label="$t('forms.labels.destinationUrl')"
                 :error="urlError"
-                :hint="isStatic ? $t('forms.hints.destinationUrl') + ' — ' + 'URL статического QR нельзя изменить' : $t('forms.hints.destinationUrl')"
+                :hint="isStatic ? $t('forms.hints.destinationUrlStaticLocked') : $t('forms.hints.destinationUrl')"
                 required
               >
                 <UInput
@@ -71,30 +71,30 @@
                   color="neutral"
                   size="sm"
                   icon="i-lucide-tag"
-                  label="UTM-параметры"
+                  :label="$t('forms.labels.utmParams')"
                   class="-ml-2"
                 />
                 <template #content>
                   <div class="grid grid-cols-2 gap-3 pt-3">
-                    <UFormField label="Source">
+                    <UFormField :label="$t('forms.labels.utmSource')">
                       <UInput
                         v-model="form.utmParams.utm_source"
                         size="sm"
                       />
                     </UFormField>
-                    <UFormField label="Medium">
+                    <UFormField :label="$t('forms.labels.utmMedium')">
                       <UInput
                         v-model="form.utmParams.utm_medium"
                         size="sm"
                       />
                     </UFormField>
-                    <UFormField label="Campaign">
+                    <UFormField :label="$t('forms.labels.utmCampaign')">
                       <UInput
                         v-model="form.utmParams.utm_campaign"
                         size="sm"
                       />
                     </UFormField>
-                    <UFormField label="Content">
+                    <UFormField :label="$t('forms.labels.utmContent')">
                       <UInput
                         v-model="form.utmParams.utm_content"
                         size="sm"
@@ -114,13 +114,13 @@
                   name="i-lucide-info"
                   class="size-5 text-[color:var(--accent)]"
                 />
-                <span class="font-medium">Информация</span>
+                <span class="font-medium">{{ $t('forms.sections.info') }}</span>
               </div>
             </template>
 
             <div class="space-y-4">
               <UFormField
-                label="Название"
+                :label="$t('forms.labels.title')"
                 :hint="$t('forms.hints.qrTitle')"
                 :error="titleError"
                 required
@@ -144,21 +144,21 @@
                 </template>
               </UFormField>
 
-              <UFormField label="Описание">
+              <UFormField :label="$t('forms.labels.description')">
                 <UTextarea
                   v-model="form.description"
                   :rows="2"
                 />
               </UFormField>
 
-              <UFormField label="Статус">
+              <UFormField :label="$t('forms.labels.status')">
                 <USelect
                   v-model="form.status"
                   :items="statusOptions"
                 />
               </UFormField>
 
-              <UFormField label="Срок действия">
+              <UFormField :label="$t('forms.labels.expiresAt')">
                 <UInput
                   v-model="form.expiresAt"
                   type="datetime-local"
@@ -175,7 +175,7 @@
                   name="i-lucide-palette"
                   class="size-5 text-[color:var(--accent)]"
                 />
-                <span class="font-medium">Стиль</span>
+                <span class="font-medium">{{ $t('forms.sections.style') }}</span>
               </div>
             </template>
 
@@ -185,7 +185,7 @@
           <!-- Actions -->
           <div class="flex items-center gap-3">
             <UButton
-              label="Сохранить изменения"
+              :label="$t('forms.actions.saveChanges')"
               icon="i-lucide-check"
               size="lg"
               :loading="saving"
@@ -305,9 +305,9 @@ const form = reactive({
 })
 
 const statusOptions = [
-  { label: 'Активен', value: 'active' },
-  { label: 'Пауза', value: 'paused' },
-  { label: 'Архив', value: 'archived' },
+  { label: t('qr.status.active'), value: 'active' },
+  { label: t('qr.status.paused'), value: 'paused' },
+  { label: t('qr.status.archived'), value: 'archived' },
 ]
 
 function validateUrl() {
@@ -386,7 +386,7 @@ async function loadQr() {
     initialSnapshot.value = serializeForm()
   }
   catch {
-    toast.add({ title: 'QR-код не найден', color: 'error' })
+    toast.add({ title: t('forms.errors.qrNotFound'), color: 'error' })
     navigateTo('/qr')
   }
 }
@@ -415,7 +415,7 @@ async function handleSave() {
       expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
     })
 
-    toast.add({ title: 'Изменения сохранены', color: 'success' })
+    toast.add({ title: t('forms.toasts.changesSaved'), color: 'success' })
     // Снимаем unsaved-guard и синхронизируем snapshot
     initialSnapshot.value = serializeForm()
     unsaved.markClean()

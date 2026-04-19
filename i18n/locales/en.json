@@ -309,7 +309,8 @@
       "minLength": "Minimum {n} characters",
       "maxLength": "Maximum {n} characters",
       "generic": "Invalid value",
-      "serverGeneric": "Server error. Please try again."
+      "serverGeneric": "Server error. Please try again.",
+      "qrNotFound": "QR code not found"
     },
     "hints": {
       "qrTitle": "Short name for internal reference",
@@ -317,7 +318,11 @@
       "utmCampaign": "Used for tracking in analytics platforms",
       "domain": "Email domain without protocol (company.com)",
       "expiresAt": "After this date the QR code will stop working",
-      "inviteEmail": "The user will receive a sign-in invitation email"
+      "inviteEmail": "The user will receive a sign-in invitation email",
+      "qrTypeDynamic": "Dynamic QR: the link can be changed after creation",
+      "qrTypeStatic": "Static QR: the URL is embedded into the QR matrix and cannot be changed",
+      "destinationUrlStaticLocked": "Where to redirect users when they scan the QR — static QR URL cannot be changed",
+      "livePreview": "Live preview updates in real time"
     },
     "unsaved": {
       "title": "Unsaved changes",
@@ -337,7 +342,50 @@
       "save": "Save",
       "cancel": "Cancel",
       "create": "Create",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "createQr": "Create QR code",
+      "saveChanges": "Save changes",
+      "invite": "Invite",
+      "add": "Add",
+      "addDomain": "Add domain",
+      "delete": "Delete"
+    },
+    "labels": {
+      "destinationUrl": "Destination URL",
+      "qrType": "Type",
+      "utmParams": "UTM parameters",
+      "utmSource": "Source",
+      "utmMedium": "Medium",
+      "utmCampaign": "Campaign",
+      "utmContent": "Content",
+      "title": "Title",
+      "folder": "Folder",
+      "tags": "Tags",
+      "description": "Description",
+      "expiresAt": "Expiration date",
+      "status": "Status",
+      "role": "Role",
+      "email": "Email"
+    },
+    "sections": {
+      "link": "Link",
+      "info": "Information",
+      "style": "Style"
+    },
+    "options": {
+      "noFolder": "No folder",
+      "qrType": {
+        "dynamic": "Dynamic",
+        "static": "Static"
+      }
+    },
+    "placeholders": {
+      "qrTitle": "Packaging promo campaign",
+      "description": "Short QR code description..."
+    },
+    "toasts": {
+      "qrCreated": "QR “{title}” created",
+      "changesSaved": "Changes saved"
     }
   },
   "onboarding": {
@@ -365,6 +413,84 @@
         "title": "Top QR codes",
         "description": "Use this table to quickly identify the best-performing QR codes."
       }
+    }
+  },
+  "pages": {
+    "qrCreate": {
+      "title": "Create QR code",
+      "subtitle": "Configure the link, style, and settings"
+    },
+    "qrEdit": {
+      "title": "Edit QR code",
+      "backToQr": "Back to QR code"
+    },
+    "team": {
+      "title": "Team",
+      "subtitle": "Manage team members and their roles"
+    },
+    "domains": {
+      "title": "Allowed domains",
+      "subtitle": "Manage email domain whitelist for sign-in",
+      "accessMode": {
+        "title": "Access mode",
+        "openDescription": "The list is empty — all domains are allowed (open mode). Add a domain to enable whitelist mode.",
+        "whitelistDescription": "Whitelist mode is active. Only {active} of {total} domains are allowed."
+      },
+      "listTitle": "Domains list",
+      "empty": {
+        "title": "No domains added",
+        "description": "All email domains are allowed to sign in"
+      },
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled"
+      },
+      "actions": {
+        "deleteDomain": "Delete domain {domain}"
+      },
+      "delete": {
+        "title": "Delete domain?",
+        "description": "Domain “{domain}” will be removed from the whitelist."
+      },
+      "toasts": {
+        "loadError": "Failed to load domains",
+        "added": "Domain “{domain}” added",
+        "addError": "Failed to add domain",
+        "enabled": "Domain enabled",
+        "disabled": "Domain disabled",
+        "updateError": "Failed to update domain",
+        "deleted": "Domain “{domain}” deleted",
+        "deleteError": "Failed to delete domain"
+      }
+    }
+  },
+  "team": {
+    "members": {
+      "title": "Members",
+      "empty": "No members",
+      "qrCount": "{count} QR",
+      "neverLoggedIn": "Never logged in"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "invite": {
+      "modalTitle": "Invite member",
+      "alertDescription": "The user will receive an email with sign-in instructions. OTP is used for authentication."
+    },
+    "delete": {
+      "title": "Delete member?",
+      "message": "User “{name}” will be deleted. Their QR codes will be reassigned to you."
+    },
+    "toasts": {
+      "loadError": "Failed to load team",
+      "roleChanged": "Role changed to “{role}”",
+      "roleChangeError": "Failed to change role",
+      "inviteSent": "Invitation sent to {email}",
+      "memberDeleted": "Member deleted",
+      "deleteError": "Failed to delete member"
     }
   }
 }
