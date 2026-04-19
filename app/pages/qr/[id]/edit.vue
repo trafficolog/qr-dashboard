@@ -231,7 +231,9 @@
 </template>
 
 <script setup lang="ts">
+import { z } from 'zod'
 import type { QrCode, QrStyle, QrStatus } from '~/../types/qr'
+import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
 interface EditableQr extends QrCode {
@@ -247,8 +249,17 @@ const { fetchQrById, updateQr } = useQr()
 const id = computed(() => route.params.id as string)
 const qr = ref<EditableQr | null>(null)
 const saving = ref(false)
-const urlError = ref('')
-const titleError = ref('')
+const schema = z.object({
+  title: z.string().trim().min(1, 'forms.errors.required'),
+  destinationUrl: z.string().trim().min(1, 'forms.errors.required').url('forms.errors.url'),
+})
+const { errors, touched, validate, validateField, setServerErrors } = useFormValidation(schema)
+const urlError = computed(() =>
+  touched.value.destinationUrl ? translateError(errors.value.destinationUrl) : '',
+)
+const titleError = computed(() =>
+  touched.value.title ? translateError(errors.value.title) : '',
+)
 
 const isStatic = computed(() => qr.value?.type === 'static')
 
@@ -274,21 +285,16 @@ const statusOptions = [
 ]
 
 function validateUrl() {
-  if (!form.destinationUrl) {
-    urlError.value = t('forms.errors.required')
-    return
-  }
-  try {
-    new URL(form.destinationUrl)
-    urlError.value = t('forms.errors.url')
-  }
-  catch {
-    urlError.value = 'Некорректный URL'
-  }
+  validateField('destinationUrl', form.destinationUrl)
 }
 
 function validateTitle() {
-  titleError.value = form.title.trim() === '' ? t('forms.errors.required') : ''
+  validateField('title', form.title)
+}
+
+function translateError(message?: string) {
+  if (!message) return ''
+  return message.startsWith('forms.') ? t(message) : message
 }
 
 // Снимок исходной формы для определения dirty-состояния
@@ -347,9 +353,7 @@ async function loadQr() {
 }
 
 async function handleSave() {
-  validateUrl()
-  validateTitle()
-  if (urlError.value || titleError.value) return
+  if (!validate(form)) return
 
   saving.value = true
   try {
@@ -374,7 +378,15 @@ async function handleSave() {
     navigateTo(`/qr/${id.value}`)
   }
   catch (error: unknown) {
-    const err = error as { data?: { message?: string }, statusMessage?: string }
+    const err = error as {
+      statusCode?: number
+      data?: { message?: string, fieldErrors?: Record<string, string> }
+      statusMessage?: string
+    }
+    if (err.statusCode === 422 && err.data?.fieldErrors) {
+      setServerErrors(err.data.fieldErrors)
+      return
+    }
     toast.add({
       title: err?.data?.message || t('forms.errors.serverGeneric'),
       color: 'error',

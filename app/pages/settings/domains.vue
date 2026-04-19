@@ -36,13 +36,14 @@
       >
         <UFormField
           class="flex-1"
-          :error="addError"
+          :error="domainError"
         >
           <UInput
             v-model="newDomain"
             placeholder="example.com"
             icon="i-lucide-globe"
             :disabled="adding"
+            @blur="validateDomain"
           />
         </UFormField>
         <UButton
@@ -145,6 +146,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { z } from 'zod'
+import { useFormValidation } from '~/composables/useFormValidation'
 
 definePageMeta({
   middleware: () => {
@@ -163,14 +166,22 @@ interface Domain {
 }
 
 const toast = useA11yToast()
+const { t } = useI18n()
 
 const loading = ref(true)
 const domains = ref<Domain[]>([])
 const newDomain = ref('')
-const addError = ref('')
 const adding = ref(false)
 const confirmOpen = ref(false)
 const deletingDomain = ref<Domain | null>(null)
+const addDomainSchema = z.object({
+  domain: z.string()
+    .trim()
+    .min(1, 'forms.errors.required')
+    .regex(/^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+$/i, 'Некорректный формат домена (пример: company.com)'),
+})
+const { errors, touched, validate, validateField, setServerErrors, reset } = useFormValidation(addDomainSchema)
+const domainError = computed(() => touched.value.domain ? translateError(errors.value.domain) : '')
 
 const activeDomains = computed(() => domains.value.filter(d => d.isActive).length)
 
@@ -189,16 +200,8 @@ async function fetchDomains() {
 }
 
 async function handleAdd() {
-  addError.value = ''
   const domain = newDomain.value.trim().toLowerCase()
-
-  if (!domain) return
-
-  // Basic validation
-  if (!/^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+$/i.test(domain)) {
-    addError.value = 'Некорректный формат домена (пример: company.com)'
-    return
-  }
+  if (!validate({ domain })) return
 
   adding.value = true
   try {
@@ -208,15 +211,30 @@ async function handleAdd() {
     })
     domains.value.unshift(res.data)
     newDomain.value = ''
+    reset()
     toast.add({ title: `Домен «${domain}» добавлен`, color: 'success' })
   }
   catch (error: unknown) {
-    const err = error as { data?: { message?: string } }
-    addError.value = err?.data?.message || 'Ошибка добавления домена'
+    const err = error as { statusCode?: number, data?: { message?: string, fieldErrors?: Record<string, string> } }
+    if (err.statusCode === 422 && err.data?.fieldErrors) {
+      setServerErrors(err.data.fieldErrors)
+    }
+    else {
+      setServerErrors({ domain: err?.data?.message || 'Ошибка добавления домена' })
+    }
   }
   finally {
     adding.value = false
   }
+}
+
+function validateDomain() {
+  validateField('domain', newDomain.value.trim().toLowerCase())
+}
+
+function translateError(message?: string) {
+  if (!message) return ''
+  return message.startsWith('forms.') ? t(message) : message
 }
 
 async function handleToggle(id: string, isActive: boolean) {
