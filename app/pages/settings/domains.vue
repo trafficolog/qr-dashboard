@@ -36,15 +36,23 @@
       >
         <UFormField
           class="flex-1"
-          :error="domainError"
         >
           <UInput
             v-model="newDomain"
             placeholder="example.com"
             icon="i-lucide-globe"
             :disabled="adding"
+            :aria-invalid="Boolean(domainError)"
+            :aria-describedby="domainError ? domainErrorId : undefined"
             @blur="validateDomain"
           />
+          <p
+            v-if="domainError"
+            :id="domainErrorId"
+            class="mt-1 text-sm text-[color:var(--ui-error)]"
+          >
+            {{ domainError }}
+          </p>
         </UFormField>
         <UButton
           type="submit"
@@ -181,7 +189,9 @@ const addDomainSchema = z.object({
     .regex(/^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+$/i, 'Некорректный формат домена (пример: company.com)'),
 })
 const { errors, touched, validate, validateField, setServerErrors, reset } = useFormValidation(addDomainSchema)
-const domainError = computed(() => touched.value.domain ? translateError(errors.value.domain) : '')
+const addError = ref('')
+const domainErrorId = 'add-domain-error'
+const domainError = computed(() => addError.value || (touched.value.domain ? translateError(errors.value.domain) : ''))
 
 const activeDomains = computed(() => domains.value.filter(d => d.isActive).length)
 
@@ -201,6 +211,7 @@ async function fetchDomains() {
 
 async function handleAdd() {
   const domain = newDomain.value.trim().toLowerCase()
+  addError.value = ''
   if (!validate({ domain })) return
 
   adding.value = true
@@ -215,12 +226,26 @@ async function handleAdd() {
     toast.add({ title: `Домен «${domain}» добавлен`, color: 'success' })
   }
   catch (error: unknown) {
-    const err = error as { statusCode?: number, data?: { message?: string, fieldErrors?: Record<string, string> } }
-    if (err.statusCode === 422 && err.data?.fieldErrors) {
-      setServerErrors(err.data.fieldErrors)
+    const err = error as {
+      statusCode?: number
+      data?: { message?: string, fieldErrors?: Record<string, string> }
     }
-    else {
-      setServerErrors({ domain: err?.data?.message || 'Ошибка добавления домена' })
+    const statusCode = err.statusCode
+    const data = err.data
+    const fieldErrors = data?.fieldErrors
+    const domainFieldError = fieldErrors?.domain
+
+    if (statusCode === 422 && fieldErrors) {
+      setServerErrors(fieldErrors)
+      if (domainFieldError) {
+        addError.value = domainFieldError.startsWith('forms.')
+          ? t(domainFieldError)
+          : domainFieldError
+      }
+    }
+    if (!addError.value) {
+      addError.value = data?.message || 'Ошибка добавления домена'
+      setServerErrors({ domain: addError.value })
     }
   }
   finally {
@@ -229,6 +254,7 @@ async function handleAdd() {
 }
 
 function validateDomain() {
+  addError.value = ''
   validateField('domain', newDomain.value.trim().toLowerCase())
 }
 
