@@ -47,15 +47,20 @@ import {
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
-import type { ScanTimeSeriesPoint } from '~~/types/analytics'
+import type { CompareSeries, ScanTimeSeriesPoint } from '~~/types/analytics'
 
 use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer])
 
 const props = defineProps<{
   data: readonly ScanTimeSeriesPoint[]
+  compareSeries?: CompareSeries<readonly ScanTimeSeriesPoint[]> | null
+  previousData?: readonly ScanTimeSeriesPoint[] | null
   loading?: boolean
   reducedMotion?: boolean
 }>()
+
+const previousSeriesData = computed(() => props.compareSeries?.previous ?? props.previousData ?? [])
+const hasPreviousData = computed(() => previousSeriesData.value.length > 0)
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
@@ -71,13 +76,36 @@ const chartOption = computed(() => ({
     formatter: (params: unknown[]) => {
       const p = params as Array<{ name: string, seriesName: string, value: number, color: string }>
       const date = p[0]?.name ?? ''
-      return `<b>${date}</b><br/>` + p.map(s =>
-        `<span style="color:${s.color}">●</span> ${s.seriesName}: <b>${s.value.toLocaleString('ru-RU')}</b>`,
-      ).join('<br/>')
+      const valuesBySeries = new Map(p.map(item => [item.seriesName, item]))
+      const currentTotal = valuesBySeries.get('Все сканирования')?.value ?? 0
+      const currentUnique = valuesBySeries.get('Уникальные')?.value ?? 0
+      const previousTotal = valuesBySeries.get('Все сканирования (пред. период)')?.value ?? 0
+      const previousUnique = valuesBySeries.get('Уникальные (пред. период)')?.value ?? 0
+
+      const rows = [
+        `<b>${date}</b>`,
+        '<span style="color:#16a34a">●</span> Текущий период (все): <b>' + currentTotal.toLocaleString('ru-RU') + '</b>',
+        '<span style="color:#86efac">●</span> Текущий период (уникальные): <b>' + currentUnique.toLocaleString('ru-RU') + '</b>',
+      ]
+
+      if (hasPreviousData.value) {
+        rows.push(
+          '<span style="color:#15803d">●</span> Предыдущий период (все): <b>' + previousTotal.toLocaleString('ru-RU') + '</b>',
+          '<span style="color:#65a30d">●</span> Предыдущий период (уникальные): <b>' + previousUnique.toLocaleString('ru-RU') + '</b>',
+        )
+      }
+
+      return rows.join('<br/>')
     },
   },
   legend: {
-    data: ['Все сканирования', 'Уникальные'],
+    data: [
+      'Все сканирования',
+      'Уникальные',
+      ...(hasPreviousData.value
+        ? ['Все сканирования (пред. период)', 'Уникальные (пред. период)']
+        : []),
+    ],
     bottom: 0,
     textStyle: { fontSize: 12 },
   },
@@ -118,6 +146,32 @@ const chartOption = computed(() => ({
       lineStyle: { color: '#86efac', width: 2, type: 'dashed' },
       itemStyle: { color: '#86efac' },
     },
+    ...(hasPreviousData.value
+      ? [
+          {
+            name: 'Все сканирования (пред. период)',
+            type: 'line',
+            data: previousSeriesData.value.map(d => d.totalScans),
+            animation: !props.reducedMotion,
+            smooth: true,
+            symbol: 'none',
+            lineStyle: { color: '#15803d', width: 2, type: 'dashed' },
+            itemStyle: { color: '#15803d' },
+            connectNulls: true,
+          },
+          {
+            name: 'Уникальные (пред. период)',
+            type: 'line',
+            data: previousSeriesData.value.map(d => d.uniqueScans),
+            animation: !props.reducedMotion,
+            smooth: true,
+            symbol: 'none',
+            lineStyle: { color: '#65a30d', width: 2, type: 'dashed' },
+            itemStyle: { color: '#65a30d' },
+            connectNulls: true,
+          },
+        ]
+      : []),
   ],
 }))
 </script>

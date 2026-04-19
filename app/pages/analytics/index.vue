@@ -116,6 +116,7 @@
       <AnalyticsScanChart
         v-else
         :data="timeSeries"
+        :compare-series="comparePrevious ? compareSeries : null"
         :loading="loadingSections.timeSeries"
         :reduced-motion="reducedMotion"
       />
@@ -447,7 +448,10 @@ function weekdayLabel(weekday: number) {
 }
 
 async function toggleCompare() {
-  comparePrevious.value = !comparePrevious.value
-  await fetchTimeSeries(dateRange.value)
+  const nextValue = !comparePrevious.value
+  comparePrevious.value = nextValue
+
+  if (nextValue)
+    await fetchTimeSeries(dateRange.value)
 }
 </script>
