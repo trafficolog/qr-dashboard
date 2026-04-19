@@ -310,14 +310,14 @@ watch(inviteOpen, (open) => {
   else focusReturn.restore()
 })
 
-const roleItems = [
-  { label: t('team.roles.admin'), value: 'admin' },
-  { label: t('team.roles.editor'), value: 'editor' },
-  { label: t('team.roles.viewer'), value: 'viewer' },
-]
+const roleItems = computed(() => [
+  { label: t('team.roles.admin'), value: 'admin' as RoleValue },
+  { label: t('team.roles.editor'), value: 'editor' as RoleValue },
+  { label: t('team.roles.viewer'), value: 'viewer' as RoleValue },
+])
 
 function roleLabel(role: RoleValue) {
-  return roleItems.find(r => r.value === role)?.label ?? role
+  return roleItems.value.find(r => r.value === role)?.label ?? role
 }
 
 function roleColor(role: RoleValue): 'error' | 'warning' | 'neutral' {
