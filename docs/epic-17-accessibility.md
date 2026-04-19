@@ -128,11 +128,12 @@ a:focus-visible,
 ### 17.7 alt-тексты на изображения
  
 **Изменённые файлы:**
-- `app/components/qr/Preview.vue` — `<img :alt="t('qr.preview.alt', { title })">`.
+- `app/components/qr/Preview.vue` — контейнер QR-превью с `role="img"` и `:aria-label="t('qr.preview.alt', { title })"` (локализованное текстовое описание для screen reader).
 - `app/components/app/UserMenu.vue` — `<UAvatar :alt="user.name || user.email">`.
 - `app/pages/qr/[id]/index.vue` — превью на детальной.
  
-Если картинка декоративная — `alt=""` (пустая строка), а не удалять атрибут.
+Для QR-превью используется SVG-разметка через `v-html`, поэтому семантика изображения задаётся через ARIA (`role="img"` + `aria-label`), а не через тег `<img>`.
+Для обычных изображений сохраняется правило: если картинка декоративная — `alt=""` (пустая строка), а не удалять атрибут.
  
 ### 17.8 axe-core в CI
  
@@ -181,7 +182,7 @@ test('dashboard has no blocking a11y violations', async ({ page }) => {
 - [ ] `:focus-visible` ring виден на tab-навигации в обеих темах.
 - [ ] Screen-reader получает текст toast'а через `aria-live`.
 - [ ] Каждый статус-бейдж содержит иконку + текст (проверка: убрать цвет — значение всё ещё понятно).
-- [ ] Все `<img>` имеют `alt` (пустой или осмысленный).
+- [ ] Изображения имеют корректное текстовое описание: для `<img>` задан `alt` (пустой или осмысленный), для SVG QR-preview используется `role="img"` + локализованный `aria-label`.
 - [x] `npm run test:e2e -- a11y.spec.ts` выполняется в CI workflow `Playwright A11y Gate` (job `playwright-a11y`) как merge-gate; blocking-policy: нет `serious`/`critical` + `color-contrast`.
 - [ ] `npm run typecheck`, `npm run lint` — зелёные.
  
