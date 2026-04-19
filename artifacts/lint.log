@@ -1,0 +1,21 @@
+
+> splat-qr@0.12.1 lint
+> eslint .
+
+
+/workspace/qr-dashboard/app/components/app/SearchItem.vue
+  20:9  warning  'v-html' directive can lead to XSS attack  vue/no-v-html
+  26:9  warning  'v-html' directive can lead to XSS attack  vue/no-v-html
+
+/workspace/qr-dashboard/app/components/qr/Preview.vue
+  13:9  warning  'v-html' directive can lead to XSS attack  vue/no-v-html
+
+/workspace/qr-dashboard/app/components/qr/PreviewMini.vue
+  5:5  warning  'v-html' directive can lead to XSS attack  vue/no-v-html
+
+/workspace/qr-dashboard/app/components/qr/StyleEditor.vue
+   82:13  warning  'v-html' directive can lead to XSS attack  vue/no-v-html
+  108:13  warning  'v-html' directive can lead to XSS attack  vue/no-v-html
+
+✖ 6 problems (0 errors, 6 warnings)
+
