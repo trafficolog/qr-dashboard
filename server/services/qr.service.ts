@@ -17,7 +17,7 @@ interface CreateQrData {
   description?: string
   style?: Record<string, unknown>
   utmParams?: Record<string, string>
-  folderId?: string
+  folderId?: string | null
   tagIds?: string[]
   expiresAt?: string
 }
@@ -294,7 +294,7 @@ export const qrService = {
         destinationUrl: data.destinationUrl,
         style,
         utmParams: data.utmParams,
-        folderId: data.folderId,
+        folderId: data.folderId ?? null,
         createdBy: user.id,
         expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
         visibility,
