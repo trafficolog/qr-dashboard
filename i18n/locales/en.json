@@ -74,6 +74,54 @@
     "subtitle": "Scan statistics for your QR codes",
     "errors": {
       "loadFailed": "Failed to load analytics"
+    },
+    "kpi": {
+      "title": "Key metrics",
+      "empty": "No KPI data",
+      "totalQr": "Total QR codes",
+      "totalScans": "Total scans",
+      "uniqueScans": "Unique scans",
+      "today": "Today"
+    },
+    "topQr": {
+      "title": "Top QR codes by scans",
+      "empty": "No QR data"
+    },
+    "geo": {
+      "title": "Geography",
+      "empty": "No geography data",
+      "mapTitle": "GeoMap",
+      "tableTitle": "GeoTable"
+    },
+    "devices": {
+      "title": "Devices",
+      "empty": "No device data",
+      "categories": {
+        "devices": "Device types",
+        "os": "Operating systems",
+        "browsers": "Browsers"
+      }
+    },
+    "time": {
+      "title": "Time distribution",
+      "empty": "No time distribution data",
+      "hourly": "Hourly",
+      "weekday": "Weekday",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      }
+    },
+    "compare": {
+      "scanChartTitle": "Scan dynamics",
+      "toggle": "Compare with previous period",
+      "empty": "No data for selected period",
+      "enabledHint": "Current period is shown; previous-period compare mode is enabled."
     }
   },
   "search": {
