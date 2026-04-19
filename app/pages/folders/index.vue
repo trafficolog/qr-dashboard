@@ -76,12 +76,15 @@
             />
           </div>
 
-          <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div
+            class="flex gap-1 opacity-100 transition-opacity lg:opacity-0 lg:pointer-events-none lg:group-hover:opacity-100 lg:group-hover:pointer-events-auto lg:group-focus-within:opacity-100 lg:group-focus-within:pointer-events-auto"
+          >
             <UButton
               icon="i-lucide-pencil"
               variant="ghost"
               color="neutral"
               size="xs"
+              class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-success)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-0)] dark:focus-visible:ring-offset-[color:var(--surface-2)]"
               :aria-label="`Редактировать папку ${folder.name}`"
               :title="`Редактировать папку ${folder.name}`"
               @click.stop="openEdit(folder)"
@@ -91,6 +94,7 @@
               variant="ghost"
               color="error"
               size="xs"
+              class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-error)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-0)] dark:focus-visible:ring-offset-[color:var(--surface-2)]"
               :aria-label="`Удалить папку ${folder.name}`"
               :title="`Удалить папку ${folder.name}`"
               @click.stop="confirmDeleteFolder(folder)"
