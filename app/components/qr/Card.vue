@@ -1,5 +1,5 @@
 <template>
-  <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)] transition-shadow hover:shadow-md hover:shadow-black/5">
+  <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)] transition-interactive hover-lift">
     <NuxtLink
       :to="`/qr/${qr.id}`"
       class="mb-3 block"
@@ -45,19 +45,31 @@
         :title="qr.destinationUrl"
         @click="copyDestination"
       >
-        <UIcon name="i-lucide-link" class="size-3 shrink-0" />
+        <UIcon
+          name="i-lucide-link"
+          class="size-3 shrink-0"
+        />
         <span class="truncate">{{ qr.destinationUrl }}</span>
-        <UIcon name="i-lucide-copy" class="size-3 shrink-0" />
+        <UIcon
+          name="i-lucide-copy"
+          class="size-3 shrink-0"
+        />
       </button>
 
       <div class="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
         <span class="inline-flex items-center gap-1">
-          <UIcon name="i-lucide-calendar" class="size-3" />
+          <UIcon
+            name="i-lucide-calendar"
+            class="size-3"
+          />
           {{ formatEpicDate(qr.createdAt) }}
         </span>
         <span>·</span>
         <span class="inline-flex items-center gap-1">
-          <UIcon name="i-lucide-bar-chart-3" class="size-3" />
+          <UIcon
+            name="i-lucide-bar-chart-3"
+            class="size-3"
+          />
           {{ qr.totalScans.toLocaleString('ru-RU') }}
         </span>
       </div>
