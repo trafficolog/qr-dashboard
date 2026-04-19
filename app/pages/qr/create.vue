@@ -325,10 +325,25 @@ const form = reactive({
 
 // Draft autosave — ключ уникален на пользователя
 const draftKey = computed(() => `qr-create:${user.value?.id ?? 'anon'}`)
-const draft = useFormDraft(draftKey.value, form, {
+const draft = useFormDraft(draftKey, form, {
   debounceMs: 1000,
   // style — большой объект, не считаем черновиком
   exclude: ['style', 'tagIds'] as (keyof typeof form)[],
+})
+
+watch(() => user.value?.id, (newUserId, oldUserId) => {
+  if (typeof window === 'undefined') return
+  if (!newUserId || oldUserId) return
+
+  const anonStorageKey = 'draft:qr-create:anon'
+  const personalStorageKey = `draft:qr-create:${newUserId}`
+  const anonDraft = localStorage.getItem(anonStorageKey)
+  if (!anonDraft) return
+
+  if (!localStorage.getItem(personalStorageKey)) {
+    localStorage.setItem(personalStorageKey, anonDraft)
+  }
+  localStorage.removeItem(anonStorageKey)
 })
 
 // Unsaved changes guard — форма "грязная", если есть заполненные ключевые поля
