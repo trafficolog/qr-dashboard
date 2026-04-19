@@ -51,10 +51,14 @@ const props = withDefaults(defineProps<{
   shortCode?: string
   destinationUrl: string
   status: string
+  visibility?: 'private' | 'department' | 'public'
+  departmentId?: string | null
   compact?: boolean
   makeDepartmentTooltip?: string
 }>(), {
   shortCode: '',
+  visibility: 'private',
+  departmentId: null,
   compact: false,
   makeDepartmentTooltip: '',
 })
@@ -64,6 +68,7 @@ const emit = defineEmits<{
   duplicate: [id: string]
   delete: [id: string]
   toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
+  changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }]
 }>()
 
 const toast = useA11yToast()
@@ -75,6 +80,7 @@ const containerClass = computed(() => props.compact
   : 'flex flex-col gap-2 sm:flex-row sm:items-center')
 
 const nextStatus = computed<'active' | 'paused'>(() => (props.status === 'active' ? 'paused' : 'active'))
+const canShareWithDepartment = computed(() => !props.makeDepartmentTooltip)
 
 const moreActions = computed(() => [
   [
@@ -86,6 +92,30 @@ const moreActions = computed(() => [
       label: props.status === 'active' ? 'Приостановить' : 'Активировать',
       icon: props.status === 'active' ? 'i-lucide-pause' : 'i-lucide-play',
       onSelect: () => emit('toggleStatus', { id: props.qrId, status: nextStatus.value }),
+    },
+  ],
+  [
+    {
+      label: 'Сделать публичным',
+      icon: 'i-lucide-globe',
+      disabled: props.visibility === 'public',
+      onSelect: () => emit('changeVisibility', { id: props.qrId, visibility: 'public' }),
+    },
+    {
+      label: 'Сделать приватным',
+      icon: 'i-lucide-lock',
+      disabled: props.visibility === 'private',
+      onSelect: () => emit('changeVisibility', { id: props.qrId, visibility: 'private' }),
+    },
+    {
+      label: 'Поделиться с отделом',
+      icon: 'i-lucide-building-2',
+      disabled: !canShareWithDepartment.value,
+      onSelect: () => emit('changeVisibility', {
+        id: props.qrId,
+        visibility: 'department',
+        departmentId: props.departmentId,
+      }),
     },
   ],
   [

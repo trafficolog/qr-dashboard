@@ -73,11 +73,14 @@
         :short-code="qr.shortCode"
         :destination-url="qr.destinationUrl"
         :status="qr.status"
+        :visibility="qr.visibility"
+        :department-id="qr.departmentId"
         :make-department-tooltip="makeDepartmentTooltip"
         @edit="emit('edit', $event)"
         @duplicate="emit('duplicate', $event)"
         @delete="emit('delete', $event)"
         @toggle-status="emit('toggleStatus', $event)"
+        @change-visibility="emit('changeVisibility', $event)"
       />
     </div>
   </UCard>
@@ -94,6 +97,8 @@ interface QrItem {
   createdAt: string | Date
   style?: Record<string, unknown>
   tags?: { id: string, name: string, color: string | null }[]
+  visibility?: 'private' | 'department' | 'public'
+  departmentId?: string | null
 }
 
 const props = defineProps<{
@@ -106,6 +111,7 @@ const emit = defineEmits<{
   duplicate: [id: string]
   delete: [id: string]
   toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
+  changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }]
 }>()
 
 const toast = useA11yToast()

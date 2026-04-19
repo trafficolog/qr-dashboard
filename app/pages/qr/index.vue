@@ -163,6 +163,7 @@
       @duplicate="handleDuplicate"
       @delete="handleDelete"
       @toggle-status="handleToggleStatus"
+      @change-visibility="handleChangeVisibility"
     />
 
     <!-- Grid view -->
@@ -179,6 +180,7 @@
         @duplicate="handleDuplicate"
         @delete="handleDelete"
         @toggle-status="handleToggleStatus"
+        @change-visibility="handleChangeVisibility"
       />
     </div>
 
@@ -241,7 +243,7 @@ const toast = useA11yToast()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, updateQr, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
+const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, updateQr, updateQrVisibility, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
 const ALL_VISIBILITY = '__all_visibility__'
@@ -367,17 +369,59 @@ async function confirmDepartmentVisibilityChange() {
   }
 
   try {
-    await updateQr(pendingDepartmentVisibilityQrId.value, {
+    await updateQrVisibility(pendingDepartmentVisibilityQrId.value, {
       visibility: 'department',
       departmentId: selectedDepartmentId.value,
     })
     toast.add({ title: t('qr.visibility.updated'), color: 'success' })
     closeDepartmentPicker()
-    fetchQrList()
+    await fetchQrList()
   }
-  catch {
-    toast.add({ title: t('qr.visibility.updateError'), color: 'error' })
+  catch (error) {
+    toast.add({ title: resolveApiErrorMessage(error, t('qr.visibility.updateError')), color: 'error' })
   }
+}
+
+type VisibilityPayload = { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }
+
+async function handleChangeVisibility(payload: VisibilityPayload) {
+  if (payload.visibility === 'department') {
+    if (departmentActionDisabled.value) {
+      toast.add({ title: departmentActionTooltip.value || t('qr.visibility.updateError'), color: 'warning' })
+      return
+    }
+
+    pendingDepartmentVisibilityQrId.value = payload.id
+    selectedDepartmentId.value = payload.departmentId || userDepartments.value[0]?.id || ''
+    departmentPickerOpen.value = true
+    return
+  }
+
+  try {
+    await updateQrVisibility(payload.id, { visibility: payload.visibility })
+    toast.add({ title: t('qr.visibility.updated'), color: 'success' })
+    await fetchQrList()
+  }
+  catch (error) {
+    toast.add({ title: resolveApiErrorMessage(error, t('qr.visibility.updateError')), color: 'error' })
+  }
+}
+
+function resolveApiErrorMessage(error: unknown, fallbackMessage: string) {
+  if (!error || typeof error !== 'object') return fallbackMessage
+
+  const typedError = error as {
+    data?: { message?: string, statusMessage?: string, error?: { message?: string } }
+    message?: string
+    statusMessage?: string
+  }
+
+  return typedError.data?.error?.message
+    || typedError.data?.message
+    || typedError.data?.statusMessage
+    || typedError.statusMessage
+    || typedError.message
+    || fallbackMessage
 }
 
 // Single delete with Undo (optimistic UI)

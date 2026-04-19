@@ -150,6 +150,14 @@ export function useQr() {
     return response.data
   }
 
+  async function updateQrVisibility(id: string, data: { visibility: 'private' | 'department' | 'public', departmentId?: string }) {
+    const response = await $fetch<{ data: QrCode }>(`/api/qr/${id}/visibility`, {
+      method: 'PATCH',
+      body: data,
+    })
+    return response.data
+  }
+
   async function deleteQr(id: string) {
     await $fetch(`/api/qr/${id}`, { method: 'DELETE' })
   }
@@ -197,6 +205,7 @@ export function useQr() {
     fetchQrById,
     createQr,
     updateQr,
+    updateQrVisibility,
     deleteQr,
     bulkDeleteQr,
     duplicateQr,
