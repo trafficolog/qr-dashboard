@@ -123,7 +123,7 @@ a:focus-visible,
 </UBadge>
 ```
  
-Маппинг: `active → i-lucide-circle-check`, `paused → i-lucide-pause-circle`, `archived → i-lucide-archive`, `expired → i-lucide-clock-off`.
+Маппинг (синхронизирован с реализацией `StatusBadge.vue`): `active → i-lucide-circle-check`, `paused → i-lucide-pause-circle`, `archived → i-lucide-archive`, `expired → i-lucide-clock-3`.
  
 ### 17.7 alt-тексты на изображения
  

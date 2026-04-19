@@ -806,7 +806,7 @@ UI: показывает modal с ключом + кнопка копирован
 - `app/app.vue` — добавлен screen-reader регион `role="status"` / `aria-live`.
 - `assets/css/main.css` — добавлены глобальные `:focus-visible` стили.
 - `app/components/qr/Table.vue`, `app/components/analitics/TopQrTable.vue` — улучшена семантика таблиц (`role="table"`, `scope="col"`), aria-label у интерактивных элементов.
-- `app/components/qr/StatusBadge.vue` — статус QR теперь содержит иконку + текст.
+- `app/components/qr/StatusBadge.vue` — статус QR теперь содержит иконку + текст; канонический маппинг иконок: `active → i-lucide-circle-check`, `paused → i-lucide-pause-circle`, `archived → i-lucide-archive`, `expired → i-lucide-clock-3`.
 - `app/components/shared/ConfirmDialog.vue`, `app/components/shared/unsavedChangesDialog.vue` — `Esc` закрытие и восстановление фокуса.
 - `e2e/a11y.spec.ts` + `@axe-core/playwright` — базовый a11y smoke в e2e.
 
