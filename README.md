@@ -2,7 +2,7 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
-**Версия:** 0.12.1 — см. [CHANGELOG](./CHANGELOG.md).
+**Версия:** 0.13.0 (Unreleased) — см. [CHANGELOG](./CHANGELOG.md).
 
 ## Стек
 
@@ -117,7 +117,7 @@ docker compose up postgres -d
  
 - [CHANGELOG](./CHANGELOG.md) — история изменений
 - [Выполненные задачи (Эпики 1–4)](./docs/splat-qr-docs-done.md)
-- [Инвентарь файлов](./docs/completed-epics.md)
+- [Инвентарь файлов (включая Эпик 20)](./docs/completed-epics.md)
 - [План разработки (Эпики 5–14)](./docs/splat-qr-cursor-plan.md)
 - [Code Review (Эпики 1–4)](./docs/reviews/epics-1-4-review.md)
 - [UX/UI ревизия v0.11.0](./docs/splat-qr-ux-ui-review.md) — снимок состояния интерфейса
@@ -125,7 +125,15 @@ docker compose up postgres -d
 - [EPIC 15 — Forms UX Enhancement](./docs/epic-15-forms-ux.md) — детализация первого эпика итерации 1
 - [EPIC 16 — Interactive Shell & Settings Redesign](./docs/epic-16-interactive-shell.md) — закрытый эпик и синхронизированный документ
 - [EPIC 17 — Accessibility (a11y) Baseline](./docs/epic-17-accessibility.md) — активный эпик (выполнен phase 1: aria/focus/announcer/axe-baseline)
+- [EPIC 20 — UX/UI Enhancement Pack](./docs/epic-20-ux-analytics-cards.md) — статус `Done with notes` (analytics/cards/empty states/onboarding завершены)
 - [Review — EPIC 16/17 docs sync](./docs/review/epic-16-17-docs-review.md) — ревью выполненной работы
+
+### Ключевые возможности EPIC 20
+
+- Analytics: GeoMap + GeoTable, Device/OS/Browser breakdown, Hourly/Weekday charts, compare previous period.
+- QR cards: расширенные карточки списка, inline quick actions (Download/Copy URL), hover-preview в таблице.
+- Empty states: пакет SVG-иллюстраций для пустых разделов и error-сценариев.
+- Onboarding: сценарий первого входа на 3 шага с ru/en локализацией.
 
 | Команда | Описание |
 |---------|----------|
