@@ -26,6 +26,7 @@
 - **`i18n/locales/ru.json`**, **`i18n/locales/en.json`** — добавлены ключи `a11y.actions.*`, `a11y.labels.*`, `qr.status.*`, `qr.preview.alt`.
 - **`package.json`** — добавлен скрипт `test:e2e` и dev dependency `@axe-core/playwright`.
 - **`README.md`**, **`docs/completed-epics.md`**, **`docs/splat-qr-docs-done.md`**, **`docs/splat-qr-cursor-plan.md`** — синхронизированы статусы EPIC 17 по фактически выполненному phase 1.
+- **`server/api/analytics/top-qr.get.ts`** — endpoint переименован по Nuxt/Nitro паттерну (`kebab-case` + `.get.ts`): корректный путь `GET /api/analytics/top-qr`; использовать тот же шаблон для будущих роутов `geo`, `devices`, `time-distribution`.
 
 ---
 
