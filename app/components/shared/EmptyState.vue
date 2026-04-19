@@ -1,6 +1,14 @@
 <template>
   <div class="flex flex-col items-center justify-center py-16 text-center">
-    <div class="mb-4 rounded-full bg-[color:var(--surface-2)] p-4">
+    <SharedEmptyIllustration
+      v-if="illustration"
+      :src="illustration"
+      :alt="illustrationAlt || title"
+    />
+    <div
+      v-else
+      class="mb-4 rounded-full bg-[color:var(--surface-2)] p-4"
+    >
       <UIcon
         :name="icon || 'i-lucide-package-open'"
         class="size-8 text-[color:var(--text-muted)]"
@@ -22,6 +30,8 @@
 <script setup lang="ts">
 defineProps<{
   icon?: string
+  illustration?: string
+  illustrationAlt?: string
   title: string
   description?: string
 }>()

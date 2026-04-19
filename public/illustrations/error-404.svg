@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <rect x="34" y="34" width="132" height="132" rx="18" fill="var(--surface-2)"/>
+  <text x="56" y="92" font-size="34" font-weight="700" fill="var(--text-primary)" font-family="Inter,Arial,sans-serif">404</text>
+  <path d="M58 124l24-24m0 24-24-24" stroke="var(--danger)" stroke-width="8" stroke-linecap="round"/>
+  <rect x="98" y="102" width="44" height="44" rx="8" stroke="var(--text-muted)" stroke-width="6" stroke-dasharray="8 6"/>
+</svg>

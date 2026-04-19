@@ -32,14 +32,15 @@
     <!-- Empty -->
     <SharedEmptyState
       v-else-if="!folders.length"
-      icon="i-lucide-folder-open"
-      title="Нет папок"
-      description="Создайте первую папку, чтобы организовать QR-коды."
+      illustration="/illustrations/empty-folders.svg"
+      :illustration-alt="t('folders.empty.illustrationAlt')"
+      :title="t('folders.empty.title')"
+      :description="t('folders.empty.description')"
     >
       <template #action>
         <UButton
           icon="i-lucide-folder-plus"
-          label="Создать папку"
+          :label="t('folders.empty.createAction')"
           @click="openCreate"
         />
       </template>
@@ -132,6 +133,7 @@
 import type { Folder } from '~/composables/useFolders'
 
 const toast = useA11yToast()
+const { t } = useI18n()
 const { folders, loading, fetchFolders, deleteFolder } = useFolders()
 
 onMounted(() => fetchFolders())
