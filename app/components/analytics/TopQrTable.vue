@@ -100,7 +100,7 @@
 import type { TopQrCode } from '~~/types/analytics'
 
 defineProps<{
-  data: TopQrCode[]
+  data: readonly TopQrCode[]
   loading?: boolean
 }>()
 </script>

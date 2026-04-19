@@ -170,6 +170,7 @@ export function useAnalytics() {
     fetchGeo,
     fetchDevices,
     fetchTimeDistribution,
+    fetchTimeSeries,
     fetchAll,
   }
 }

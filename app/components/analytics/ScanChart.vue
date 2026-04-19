@@ -52,7 +52,7 @@ import type { ScanTimeSeriesPoint } from '~~/types/analytics'
 use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer])
 
 const props = defineProps<{
-  data: ScanTimeSeriesPoint[]
+  data: readonly ScanTimeSeriesPoint[]
   loading?: boolean
   reducedMotion?: boolean
 }>()
