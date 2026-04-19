@@ -1,3 +1,5 @@
+import type { Ref } from 'vue'
+
 export type SearchResult =
   | { kind: 'qr', id: string, title: string, shortCode: string }
   | { kind: 'folder', id: string, name: string }
@@ -29,6 +31,9 @@ const staticPages: Extract<SearchResult, { kind: 'page' }>[] = [
   { kind: 'page', path: '/settings/integrations', label: 'Настройки — Интеграции', icon: 'i-lucide-plug' },
 ]
 
+let abortController: AbortController | null = null
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
 export function escapeHtml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
@@ -53,27 +58,34 @@ interface ApiSearchResult {
   folders: Array<{ id: string, name: string }>
 }
 
-export function useGlobalSearch() {
-  const isOpen = ref(false)
-  const query = ref('')
-  const loading = ref(false)
-  const apiResults = ref<ApiSearchResult>({ qrs: [], folders: [] })
+function clearTransientState(query: Ref<string>, loading: Ref<boolean>, apiResults: Ref<ApiSearchResult>) {
+  query.value = ''
+  loading.value = false
+  apiResults.value = { qrs: [], folders: [] }
 
-  // Persist recent history in localStorage (native, no VueUse dependency)
-  const recent = ref<SearchEntry[]>([])
-  if (typeof window !== 'undefined') {
-    try {
-      recent.value = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') as SearchEntry[]
-    }
-    catch { /* ignore */ }
-    watch(recent, v => localStorage.setItem(RECENT_KEY, JSON.stringify(v)), { deep: true })
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
   }
 
-  let abortController: AbortController | null = null
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null
+  if (abortController) {
+    abortController.abort()
+    abortController = null
+  }
+}
+
+export function useGlobalSearch() {
+  const isOpen = useState<boolean>('global-search:is-open', () => false)
+  const query = useState<string>('global-search:query', () => '')
+  const loading = useState<boolean>('global-search:loading', () => false)
+  const apiResults = useState<ApiSearchResult>('global-search:api-results', () => ({ qrs: [], folders: [] }))
+  const recent = useState<SearchEntry[]>('global-search:recent', () => [])
+
+  const isInitialized = useState<boolean>('global-search:is-initialized', () => false)
 
   function debouncedFetch(q: string) {
     if (debounceTimer) clearTimeout(debounceTimer)
+
     debounceTimer = setTimeout(async () => {
       if (!q.trim()) {
         apiResults.value = { qrs: [], folders: [] }
@@ -101,7 +113,28 @@ export function useGlobalSearch() {
     }, 250)
   }
 
-  watch(query, q => debouncedFetch(q))
+  if (!isInitialized.value) {
+    isInitialized.value = true
+
+    if (typeof window !== 'undefined') {
+      try {
+        recent.value = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') as SearchEntry[]
+      }
+      catch {
+        // ignore
+      }
+
+      watch(recent, v => localStorage.setItem(RECENT_KEY, JSON.stringify(v)), { deep: true })
+    }
+
+    watch(query, q => debouncedFetch(q))
+
+    watch(isOpen, (open) => {
+      if (!open) {
+        clearTransientState(query, loading, apiResults)
+      }
+    })
+  }
 
   const results = computed<SearchResult[]>(() => {
     const q = query.value.trim().toLowerCase()
@@ -133,8 +166,6 @@ export function useGlobalSearch() {
 
   function close() {
     isOpen.value = false
-    query.value = ''
-    apiResults.value = { qrs: [], folders: [] }
   }
 
   function select(result: SearchResult) {
