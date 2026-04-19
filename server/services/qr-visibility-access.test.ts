@@ -53,3 +53,16 @@ test('department scope without departmentId for admin returns all department QR'
   assert.equal(access.allowedDepartmentIds, null)
   assert.equal(access.denyAll, false)
 })
+
+test('company/all scope is denied for non-admin users', () => {
+  const access = resolveVisibilityAccess({
+    scope: 'company',
+    userRole: 'editor',
+    userDepartmentIds: ['dep-1'],
+  })
+
+  assert.equal(access.denyAll, true)
+  assert.equal(access.includeMine, false)
+  assert.equal(access.includePublic, false)
+  assert.deepEqual(access.allowedDepartmentIds, [])
+})
