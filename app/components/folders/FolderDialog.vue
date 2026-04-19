@@ -46,7 +46,7 @@
             :key="preset"
             :style="{ backgroundColor: preset }"
             class="size-6 rounded-full border-2 transition-transform hover:scale-110"
-            :class="form.color === preset ? 'border-gray-900 dark:border-white' : 'border-transparent'"
+            :class="form.color === preset ? 'border-[color:var(--text-primary)] dark:border-[color:var(--text-primary)]' : 'border-transparent'"
             @click="form.color = preset"
           />
         </div>

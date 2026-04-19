@@ -48,7 +48,7 @@
         <UIcon
           v-if="i < stepLabels.length - 1"
           name="i-lucide-chevron-right"
-          class="size-4 text-gray-300 dark:text-[color:var(--text-secondary)]"
+          class="size-4 text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)]"
         />
       </div>
     </div>
@@ -85,8 +85,8 @@
       <div
         class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-colors cursor-pointer"
         :class="isDragging
-          ? 'border-green-400 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)]'
-          : 'border-[color:var(--border)] dark:border-[color:var(--border)] hover:border-green-300 hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/50'"
+          ? 'border-[color:var(--success)] bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)]'
+          : 'border-[color:var(--border)] dark:border-[color:var(--border)] hover:border-[color:var(--success)] hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/50'"
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop.prevent="onFileDrop"
@@ -101,9 +101,9 @@
         >
         <UIcon
           name="i-lucide-upload-cloud"
-          class="size-12 text-gray-300 dark:text-[color:var(--text-secondary)] mb-3"
+          class="size-12 text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)] mb-3"
         />
-        <p class="font-medium text-[color:var(--text-secondary)] dark:text-gray-300">
+        <p class="font-medium text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)]">
           Перетащите CSV-файл или нажмите для выбора
         </p>
         <p class="text-sm text-[color:var(--text-muted)] mt-1">
@@ -113,7 +113,7 @@
 
       <div
         v-if="selectedFile"
-        class="mt-4 flex items-center gap-3 rounded-lg border border-green-100 dark:border-green-900 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] px-4 py-3"
+        class="mt-4 flex items-center gap-3 rounded-lg border border-[color:color-mix(in_srgb,var(--success)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--success)_45%,var(--border))] bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] px-4 py-3"
       >
         <UIcon
           name="i-lucide-file-text"
@@ -176,7 +176,7 @@
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-gray-100 dark:border-gray-800">
+            <tr class="border-b border-[color:var(--border)] dark:border-[color:var(--border)]">
               <th
                 v-for="col in detectedHeaders"
                 :key="col"
@@ -197,12 +197,12 @@
             <tr
               v-for="(row, i) in previewRows"
               :key="i"
-              class="border-b border-gray-50 dark:border-gray-800/50"
+              class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60"
             >
               <td
                 v-for="col in detectedHeaders"
                 :key="col"
-                class="py-2 pr-4 max-w-[200px] truncate text-[color:var(--text-secondary)] dark:text-gray-300"
+                class="py-2 pr-4 max-w-[200px] truncate text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)]"
               >
                 {{ row[col] || '—' }}
               </td>
@@ -265,7 +265,7 @@
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-gray-100 dark:border-gray-800">
+            <tr class="border-b border-[color:var(--border)] dark:border-[color:var(--border)]">
               <th class="py-2 pr-3 w-10 text-left text-xs text-[color:var(--text-muted)]">
                 #
               </th>
@@ -284,7 +284,7 @@
             <tr
               v-for="item in validationItems"
               :key="item.row"
-              class="border-b border-gray-50 dark:border-gray-800/50"
+              class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60"
               :class="item.valid ? '' : 'bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)]'"
             >
               <td class="py-2.5 pr-3 text-[color:var(--text-muted)] tabular-nums">
@@ -350,7 +350,7 @@
 
       <div class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="rounded-xl border border-green-100 dark:border-green-900 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] p-4 text-center">
+          <div class="rounded-xl border border-[color:color-mix(in_srgb,var(--success)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--success)_45%,var(--border))] bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] p-4 text-center">
             <p class="text-3xl font-bold text-[color:var(--success)] dark:text-[color:var(--success)]">
               {{ validRows.length }}
             </p>
@@ -358,7 +358,7 @@
               Будет создано
             </p>
           </div>
-          <div class="rounded-xl border border-gray-100 dark:border-gray-800 bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)]/50 p-4 text-center">
+          <div class="rounded-xl border border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)]/50 p-4 text-center">
             <p class="text-3xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
               {{ parsedRows.length }}
             </p>
@@ -366,7 +366,7 @@
               Всего строк
             </p>
           </div>
-          <div class="rounded-xl border border-red-100 dark:border-red-900 bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] p-4 text-center">
+          <div class="rounded-xl border border-[color:color-mix(in_srgb,var(--danger)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--danger)_45%,var(--border))] bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] p-4 text-center">
             <p class="text-3xl font-bold text-[color:var(--danger)]">
               {{ rowErrors.length }}
             </p>
@@ -421,7 +421,7 @@
         <!-- Success -->
         <div
           v-if="result.created > 0"
-          class="flex items-center gap-4 rounded-xl border border-green-100 dark:border-green-900 bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] p-5"
+          class="flex items-center gap-4 rounded-xl border border-[color:color-mix(in_srgb,var(--success)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--success)_45%,var(--border))] bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--success)_20%,transparent)] p-5"
         >
           <UIcon
             name="i-lucide-check-circle"
@@ -439,10 +439,10 @@
 
         <!-- Errors -->
         <div v-if="result.failed > 0">
-          <p class="text-sm font-medium text-[color:var(--text-secondary)] dark:text-gray-300 mb-2">
+          <p class="text-sm font-medium text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)] mb-2">
             Ошибки ({{ result.failed }}):
           </p>
-          <div class="rounded-lg border border-red-100 dark:border-red-900 overflow-hidden">
+          <div class="rounded-lg border border-[color:color-mix(in_srgb,var(--danger)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--danger)_45%,var(--border))] overflow-hidden">
             <table class="w-full text-sm">
               <thead>
                 <tr class="bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--danger)_16%,transparent)]">
@@ -461,7 +461,7 @@
                 <tr
                   v-for="(err, i) in result.errors.slice(0, 20)"
                   :key="i"
-                  class="border-t border-red-50 dark:border-red-900/50"
+                  class="border-t border-[color:color-mix(in_srgb,var(--danger)_25%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--danger)_45%,var(--border))]/50"
                 >
                   <td class="py-2 px-3 tabular-nums">
                     {{ err.row }}

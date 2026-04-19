@@ -12,7 +12,7 @@
           type="button"
           class="rounded-md px-3 py-1 text-xs transition"
           :class="activeMode === mode
-            ? 'bg-[color:var(--success)] text-white'
+            ? 'bg-[color:var(--success)] text-[color:var(--text-primary)]'
             : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]'"
           @click="activeMode = mode"
         >

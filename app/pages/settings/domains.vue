@@ -81,7 +81,7 @@
       >
         <UIcon
           name="i-lucide-globe"
-          class="size-10 mx-auto mb-2 text-gray-300"
+          class="size-10 mx-auto mb-2 text-[color:var(--text-secondary)]"
         />
         <p>Домены не добавлены</p>
         <p class="text-sm text-[color:var(--text-muted)] mt-1">
@@ -91,7 +91,7 @@
 
       <ul
         v-else
-        class="divide-y divide-gray-100 dark:divide-gray-800"
+        class="divide-y divide-[color:var(--border)] dark:divide-[color:var(--border)]"
       >
         <li
           v-for="d in domains"

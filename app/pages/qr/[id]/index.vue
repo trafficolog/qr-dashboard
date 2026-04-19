@@ -172,7 +172,7 @@
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="border-b border-gray-100 dark:border-gray-800">
+                <tr class="border-b border-[color:var(--border)] dark:border-[color:var(--border)]">
                   <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)]">
                     Вариант
                   </th>
@@ -194,7 +194,7 @@
                 <tr
                   v-for="(dest, i) in destinations"
                   :key="dest.id"
-                  class="border-b border-gray-50 dark:border-gray-800/50"
+                  class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60"
                   :class="!dest.isActive && 'opacity-50'"
                 >
                   <td class="py-2.5 pr-3">

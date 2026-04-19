@@ -3,11 +3,11 @@
     <!-- Skeleton -->
     <div
       v-if="loading"
-      class="h-64 w-full bg-[color:var(--surface-0)] dark:bg-gray-900 rounded-lg animate-pulse flex items-center justify-center"
+      class="h-64 w-full bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)] rounded-lg animate-pulse flex items-center justify-center"
     >
       <UIcon
         name="i-lucide-bar-chart-3"
-        class="size-10 text-gray-200 dark:text-[color:var(--text-secondary)]"
+        class="size-10 text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)]"
       />
     </div>
 
