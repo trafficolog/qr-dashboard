@@ -169,6 +169,17 @@ export function useQr() {
     })
   }
 
+  async function bulkUpdateQrVisibility(data: {
+    ids: string[]
+    visibility: 'private' | 'department' | 'public'
+    departmentId?: string
+  }) {
+    await $fetch('/api/qr/bulk-visibility', {
+      method: 'PATCH',
+      body: data,
+    })
+  }
+
   async function duplicateQr(id: string) {
     const response = await $fetch<{ data: QrCode }>(`/api/qr/${id}/duplicate`, {
       method: 'POST',
@@ -206,6 +217,7 @@ export function useQr() {
     createQr,
     updateQr,
     updateQrVisibility,
+    bulkUpdateQrVisibility,
     deleteQr,
     bulkDeleteQr,
     duplicateQr,
