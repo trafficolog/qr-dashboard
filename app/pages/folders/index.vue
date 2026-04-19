@@ -54,7 +54,7 @@
       <div
         v-for="folder in folders"
         :key="folder.id"
-        class="group relative rounded-xl border border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)] p-5 hover:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] dark:hover:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] hover:shadow-sm transition-interactive cursor-pointer"
+        class="group relative rounded-xl border border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)] p-5 hover:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] dark:hover:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] transition-interactive hover-lift cursor-pointer"
         @click="navigateTo(`/folders/${folder.id}`)"
       >
         <!-- Color accent -->

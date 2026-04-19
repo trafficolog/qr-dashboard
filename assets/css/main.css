@@ -51,6 +51,24 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--text-primary) 8%, transparent);
+}
+
+.hover-accent:hover {
+  color: var(--accent);
+}
+
+.active-scale:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+button[data-color='primary']:active:not(:disabled),
+a[data-color='primary']:active:not([aria-disabled='true']) {
+  transform: scale(0.98);
+}
+
 :root {
   --fs-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
   --fs-sm: clamp(0.875rem, 0.84rem + 0.18vw, 0.9375rem);
@@ -445,7 +463,11 @@ html.dark .score-high {
   }
 
   .hover\:-translate-y-0\.5:hover,
-  .active\:scale-95:active {
+  .active\:scale-95:active,
+  .hover-lift:hover,
+  .active-scale:active:not(:disabled),
+  button[data-color='primary']:active:not(:disabled),
+  a[data-color='primary']:active:not([aria-disabled='true']) {
     transform: none !important;
   }
 }
