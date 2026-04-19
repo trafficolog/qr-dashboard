@@ -67,6 +67,8 @@
 </template>
 
 <script setup lang="ts">
+import { isActiveRoute } from '~/app/utils/navigation/isActiveRoute'
+
 const isOpen = defineModel<boolean>('open', { default: false })
 
 const route = useRoute()
@@ -100,8 +102,7 @@ const initials = computed(() => {
 })
 
 function isActive(path: string): boolean {
-  if (path === '/dashboard') return route.path === '/dashboard'
-  return route.path.startsWith(path)
+  return isActiveRoute(route.path, path)
 }
 
 async function handleLogout() {
