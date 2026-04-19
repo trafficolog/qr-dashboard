@@ -143,18 +143,27 @@ a:focus-visible,
 ```ts
 import AxeBuilder from '@axe-core/playwright'
  
-test('dashboard has no a11y violations', async ({ page }) => {
+test('dashboard has no blocking a11y violations', async ({ page }) => {
   await page.goto('/dashboard')
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa'])
-    .disableRules(['color-contrast']) // вынесено в 18.7
     .analyze()
-  expect(results.violations).toEqual([])
+
+  const blockingViolations = results.violations.filter((violation) => {
+    const isHighImpact = violation.impact === 'serious' || violation.impact === 'critical'
+    const isContrastViolation = violation.id === 'color-contrast'
+    return isHighImpact || isContrastViolation
+  })
+
+  expect(blockingViolations).toEqual([])
 })
 ```
  
 - Покрыть: `/dashboard`, `/qr`, `/qr/create`, `/settings/profile`, `/analytics`.
-- В CI падает PR, если `violations.length > 0`.
+- **Целевая gate-политика EPIC 17:** PR в CI падает, если есть хотя бы одно **blocking-нарушение**:
+  - любое `serious` или `critical`;
+  - любое `color-contrast` (независимо от impact).
+- Нарушения с impact `minor` / `moderate` считаются backlog для последующих итераций и не блокируют merge в рамках EPIC 17.
  
 ## Критерии приёмки
  
@@ -165,7 +174,7 @@ test('dashboard has no a11y violations', async ({ page }) => {
 - [ ] Screen-reader получает текст toast'а через `aria-live`.
 - [ ] Каждый статус-бейдж содержит иконку + текст (проверка: убрать цвет — значение всё ещё понятно).
 - [ ] Все `<img>` имеют `alt` (пустой или осмысленный).
-- [ ] `npm run test:e2e -- a11y.spec.ts` зелёный.
+- [ ] `npm run test:e2e -- a11y.spec.ts` зелёный по blocking-gate (нет `serious`/`critical` + `color-contrast`).
 - [ ] `npm run typecheck`, `npm run lint` — зелёные.
  
 ## Изменённые/созданные файлы
@@ -212,10 +221,10 @@ i18n/locales/en.json
 3. **Focus-ring:** `Tab` по dashboard — везде видно ring с контрастом ≥ 3:1.
 4. **Status без цвета:** DevTools → Rendering → Emulate vision deficiency → Achromatopsia — статусы всё ещё различимы.
 5. **Escape в модали:** открыть `unsavedChangesDialog` → `Esc` → диалог закрыт, фокус на «Сохранить».
-6. **axe-core:** `npm run test:e2e -- a11y` — 0 violations на покрытых страницах.
+6. **axe-core:** `npm run test:e2e -- a11y` — 0 blocking violations (`serious`/`critical` + `color-contrast`) на покрытых страницах.
  
 ## Метрики успеха
  
-- **axe-core violations:** 0 на `/dashboard`, `/qr`, `/qr/create`, `/settings/*`, `/analytics`.
+- **axe-core blocking violations:** 0 на `/dashboard`, `/qr`, `/qr/create`, `/settings/*`, `/analytics` (по gate-политике EPIC 17: `serious`/`critical` + `color-contrast`).
 - **Lighthouse Accessibility score:** ≥ 95 (замерять на тех же страницах).
 - **Keyboard-trap:** 0 (не должно быть мест, где Tab «залипает»).

@@ -41,6 +41,9 @@ test.describe('Accessibility smoke (axe)', () => {
           .withTags(['wcag2a', 'wcag2aa'])
           .analyze()
 
+        // EPIC-17 gate policy: блокирующими считаются
+        // 1) все serious/critical нарушения,
+        // 2) любые нарушения color-contrast.
         const blockingViolations = results.violations.filter((violation) => {
           const isHighImpact = violation.impact === 'serious' || violation.impact === 'critical'
           const isContrastViolation = violation.id === 'color-contrast'
