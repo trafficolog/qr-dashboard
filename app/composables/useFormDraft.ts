@@ -17,7 +17,7 @@
  *  - При изменении state запускает debounced save().
  *  - clear() вызывается после успешной отправки формы.
  */
-import { ref, watch, onMounted } from 'vue'
+import { computed, onMounted, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 interface DraftEnvelope<T> {
@@ -34,13 +34,13 @@ interface UseFormDraftOptions<T> {
 }
 
 export function useFormDraft<T extends Record<string, unknown>>(
-  key: string,
+  key: string | Ref<string> | ComputedRef<string>,
   state: T,
   opts: UseFormDraftOptions<T> = {},
 ) {
   const debounceMs = opts.debounceMs ?? 1000
   const exclude = new Set(opts.exclude ?? [])
-  const storageKey = `draft:${key}`
+  const storageKey = computed(() => `draft:${unref(key)}`)
 
   const hasDraft = ref(false)
   const draftSavedAt = ref<string | null>(null)
@@ -77,7 +77,7 @@ export function useFormDraft<T extends Record<string, unknown>>(
       data,
     }
     try {
-      localStorage.setItem(storageKey, JSON.stringify(envelope))
+      localStorage.setItem(storageKey.value, JSON.stringify(envelope))
       draftSavedAt.value = envelope.savedAt
     }
     catch {
@@ -88,7 +88,7 @@ export function useFormDraft<T extends Record<string, unknown>>(
   function load(): DraftEnvelope<T> | null {
     if (typeof window === 'undefined') return null
     try {
-      const raw = localStorage.getItem(storageKey)
+      const raw = localStorage.getItem(storageKey.value)
       if (!raw) return null
       return JSON.parse(raw) as DraftEnvelope<T>
     }
@@ -111,7 +111,7 @@ export function useFormDraft<T extends Record<string, unknown>>(
   function discard() {
     if (typeof window === 'undefined') return
     try {
-      localStorage.removeItem(storageKey)
+      localStorage.removeItem(storageKey.value)
     }
     catch {
       // ignore
@@ -131,6 +131,18 @@ export function useFormDraft<T extends Record<string, unknown>>(
   watch(state, () => save(), { deep: true })
 
   onMounted(() => {
+    const envelope = load()
+    if (envelope && !isEmpty(envelope.data)) {
+      hasDraft.value = true
+      draftSavedAt.value = envelope.savedAt
+    }
+  })
+
+  watch(storageKey, (newKey, oldKey) => {
+    if (newKey === oldKey) return
+    hasDraft.value = false
+    draftSavedAt.value = null
+
     const envelope = load()
     if (envelope && !isEmpty(envelope.data)) {
       hasDraft.value = true
