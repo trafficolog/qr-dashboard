@@ -25,7 +25,7 @@ export function useFolders() {
     }
   }
 
-  async function createFolder(data: { name: string, parentId?: string, color?: string }) {
+  async function createFolder(data: { name: string, parentId?: string | null, color?: string | null }) {
     const res = await $fetch<ApiData<Folder>>('/api/folders', {
       method: 'POST',
       body: data,

@@ -136,8 +136,8 @@ async function handleSubmit() {
   try {
     const payload = {
       name: form.name.trim(),
-      color: form.color || undefined,
-      parentId: form.parentId || undefined,
+      color: form.color || null,
+      parentId: form.parentId || null,
     }
 
     if (props.folder) {
