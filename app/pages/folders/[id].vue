@@ -108,11 +108,11 @@
 
     <!-- Pagination -->
     <SharedPagination
-      v-if="meta.totalPages > 1"
+      v-if="(meta.totalPages ?? 0) > 1"
       :page="page"
       :limit="limit"
-      :total="meta.total"
-      :total-pages="meta.totalPages"
+      :total="meta.total ?? 0"
+      :total-pages="meta.totalPages ?? 1"
       @update:page="p => { page = p; fetchQr() }"
     />
 

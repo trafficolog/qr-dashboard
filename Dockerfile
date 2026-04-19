@@ -9,14 +9,17 @@ RUN npm ci
 
 FROM deps AS builder
 COPY . .
-ENV NODE_ENV=production
 ENV NUXT_TELEMETRY_DISABLED=1
+# Install before NODE_ENV=production: npm ci skips devDependencies when NODE_ENV=production,
+# but @nuxt/ui and other build-time modules live in devDependencies.
 RUN npm ci
+ENV NODE_ENV=production
+RUN npm run build
 
 FROM deps AS migrator
 COPY drizzle.config.ts tsconfig.json ./
 COPY server/db ./server/db
-CMD ["npx", "tsx", "server/db/migrate.ts"]
+CMD ["npx", "tsx", "server/db/migrations/migrate.ts"]
 
 FROM node:22-alpine AS runner
 WORKDIR /app

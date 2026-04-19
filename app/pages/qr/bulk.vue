@@ -506,9 +506,10 @@
 </template>
 
 <script setup lang="ts">
-interface ParsedRow {
-  [key: string]: string
-}
+/** CSV row from Papa Parse; values are strings */
+type ParsedRow = Record<string, string | undefined>
+/** Row after validation — `_rowIndex` is the 1-based CSV line number */
+type ValidatedCsvRow = ParsedRow & { _rowIndex: number }
 
 interface RowError {
   row: number
@@ -528,7 +529,7 @@ const parsedRows = ref<ParsedRow[]>([])
 const detectedHeaders = ref<string[]>([])
 
 // Validation state
-const validRows = ref<(ParsedRow & { _rowIndex: number })[]>([])
+const validRows = ref<ValidatedCsvRow[]>([])
 const rowErrors = ref<RowError[]>([])
 
 // Create state
@@ -604,7 +605,7 @@ async function parseFile(file: File) {
   const result = Papa.default.parse<ParsedRow>(text, {
     header: true,
     skipEmptyLines: true,
-    transformHeader: h => h.trim().toLowerCase().replace(/[\s-]+/g, '_'),
+    transformHeader: (h: string) => h.trim().toLowerCase().replace(/[\s-]+/g, '_'),
   })
 
   if (result.errors.length > 0 && result.data.length === 0) {
@@ -644,7 +645,7 @@ function onFileDrop(e: DragEvent) {
 
 function runValidation() {
   const errors: RowError[] = []
-  const valid: (ParsedRow & { _rowIndex: number })[] = []
+  const valid: ValidatedCsvRow[] = []
 
   for (let i = 0; i < parsedRows.value.length; i++) {
     const row = parsedRows.value[i]!
@@ -672,7 +673,7 @@ function runValidation() {
       errors.push(...rowErrors)
     }
     else {
-      valid.push({ ...row, _rowIndex: rowNum })
+      valid.push({ ...row, _rowIndex: rowNum } as ValidatedCsvRow)
     }
   }
 
