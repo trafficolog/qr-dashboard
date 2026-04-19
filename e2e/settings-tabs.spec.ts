@@ -1,64 +1,32 @@
 import { test, expect } from '@playwright/test'
+import { applyAuthCookie } from './helpers/auth'
 
 test.describe('Settings navigation', () => {
+  test.beforeEach(async ({ context }) => {
+    await applyAuthCookie(context)
+  })
+
   test('navigating to /settings redirects to /settings/general', async ({ page }) => {
     await page.goto('/settings')
-    // Either redirected to /settings/general or to login
-    const url = page.url()
-    expect(url.includes('/settings/general') || url.includes('/auth/login')).toBeTruthy()
+    await expect(page).toHaveURL(/\/settings\/general/)
+    await expect(page.locator('#theme')).toBeVisible()
   })
 
-  test('/settings/general renders theme section', async ({ page }) => {
+  test('settings search filters menu and allows navigation via links', async ({ page }) => {
     await page.goto('/settings/general')
-    // If authenticated, expect theme section; if not, expect redirect
-    const url = page.url()
-    if (url.includes('/settings/general')) {
-      await expect(page.locator('#theme')).toBeVisible()
-    }
-    else {
-      expect(url).toContain('/auth/login')
-    }
-  })
+    await expect(page).toHaveURL(/\/settings\/general/)
 
-  test('/settings/profile renders profile form', async ({ page }) => {
-    await page.goto('/settings/profile')
-    const url = page.url()
-    if (url.includes('/settings/profile')) {
-      // Profile page should have a name input
-      await expect(page.locator('input[placeholder]').first()).toBeVisible()
-    }
-    else {
-      expect(url).toContain('/auth/login')
-    }
-  })
+    await expect(page.getByTestId('settings-nav-general')).toBeVisible()
+    await expect(page.getByTestId('settings-nav-profile')).toBeVisible()
 
-  test('settings sidebar navigation links are present', async ({ page }) => {
-    await page.goto('/settings/general')
-    const url = page.url()
-    if (url.includes('/settings/general')) {
-      await expect(page.getByTestId('settings-nav-general')).toBeVisible()
-      await expect(page.getByTestId('settings-nav-profile')).toBeVisible()
-    }
-  })
+    const searchInput = page.getByPlaceholder(/поиск в настройках|search settings/i)
+    await expect(searchInput).toBeVisible()
+    await searchInput.fill('Профиль')
 
-  test('clicking profile nav link navigates to /settings/profile', async ({ page }) => {
-    await page.goto('/settings/general')
-    if (page.url().includes('/settings/general')) {
-      await page.getByTestId('settings-nav-profile').click()
-      await expect(page).toHaveURL(/\/settings\/profile/)
-    }
-  })
+    await expect(page.getByTestId('settings-nav-profile')).toBeVisible()
+    await expect(page.getByTestId('settings-nav-general')).toHaveCount(0)
 
-  test('settings search filters nav items', async ({ page }) => {
-    await page.goto('/settings/general')
-    if (page.url().includes('/settings/general')) {
-      const searchInput = page.getByPlaceholder(/поиск в настройках|search settings/i)
-      if (await searchInput.isVisible()) {
-        await searchInput.fill('профиль')
-        // Only profile nav item should remain
-        await expect(page.getByTestId('settings-nav-general')).not.toBeVisible()
-        await expect(page.getByTestId('settings-nav-profile')).toBeVisible()
-      }
-    }
+    await page.getByTestId('settings-nav-profile').click()
+    await expect(page).toHaveURL(/\/settings\/profile/)
   })
 })
