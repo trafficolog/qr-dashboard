@@ -764,6 +764,41 @@ UI: показывает modal с ключом + кнопка копирован
 
 ---
 
+## Эпик 20 — UX/UI Enhancement Pack (Done with notes, Unreleased v0.13.0)
+
+Подробно: [epic-20-ux-analytics-cards.md](./epic-20-ux-analytics-cards.md), [CHANGELOG.md](../CHANGELOG.md) `[Unreleased]`.
+
+### Файлы (основной объём)
+| Группа | Файлы |
+|---|---|
+| Analytics API | `server/api/analytics/geo.get.ts`, `devices.get.ts`, `time-distribution.get.ts` |
+| Analytics UI | `app/components/analytics/GeoMap.vue`, `GeoTable.vue`, `DevicePieChart.vue`, `DeviceBreakdown.vue`, `HourlyChart.vue`, `WeekdayChart.vue`, `ScanChart.vue` |
+| QR Cards | `app/components/qr/Card.vue`, `Table.vue`, `QuickActions.vue`, `HoverPreview.vue` |
+| Empty states | `app/components/shared/EmptyState.vue`, `EmptyIllustration.vue`, `public/illustrations/*.svg`, `app/pages/not-found.vue`, `app/pages/expired.vue` |
+| Onboarding | `app/components/shared/OnboardingOverlay.vue`, `app/composables/useOnboarding.ts`, `app/pages/dashboard/index.vue` |
+| Shared data layer | `server/services/analytics.service.ts`, `app/composables/useAnalytics.ts`, `app/pages/analytics/index.vue`, `locales/ru.json`, `locales/en.json` |
+
+### API
+| Метод | URL | Назначение |
+|---|---|---|
+| GET | `/api/analytics/geo` | Гео-разбивка country/city для карты и таблицы |
+| GET | `/api/analytics/devices` | Разбивка по device type / OS / browser |
+| GET | `/api/analytics/time-distribution` | Разбивка по часу и дню недели |
+
+### Компоненты
+- **Analytics:** `GeoMap`, `GeoTable`, `DeviceBreakdown`, `HourlyChart`, `WeekdayChart`, обновлённый `ScanChart` с compare previous period.
+- **QR List:** `QuickActions`, `HoverPreview`, обновлённые `Card` и `Table`.
+- **Shared UX:** `EmptyIllustration`, расширенный `EmptyState`, `OnboardingOverlay`.
+
+### Критерии приёмки (итог)
+- ✅ Закрыт блок **analytics**: geo/devices/time distribution + compare previous period.
+- ✅ Закрыт блок **cards**: enriched cards + inline actions + hover-preview.
+- ✅ Закрыт блок **empty states**: SVG-иллюстрации + интеграция в пустые/error-экраны.
+- ✅ Закрыт блок **onboarding**: first-run overlay, skip/complete, повторный вход без показа, ru/en.
+- ℹ️ **Usage Widget (20.8)** оставлен за рамками релизного объёма EPIC 20 и вынесен в следующий UX-пакет.
+
+---
+
 ## EPIC 17 (phase 1) — Accessibility baseline (в процессе)
 
 ### Реализовано в phase 1
