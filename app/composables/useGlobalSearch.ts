@@ -31,9 +31,6 @@ const staticPages: Extract<SearchResult, { kind: 'page' }>[] = [
   { kind: 'page', path: '/settings/integrations', label: 'Настройки — Интеграции', icon: 'i-lucide-plug' },
 ]
 
-let abortController: AbortController | null = null
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
-
 export function escapeHtml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
@@ -58,19 +55,25 @@ interface ApiSearchResult {
   folders: Array<{ id: string, name: string }>
 }
 
-function clearTransientState(query: Ref<string>, loading: Ref<boolean>, apiResults: Ref<ApiSearchResult>) {
+function clearTransientState(
+  query: Ref<string>,
+  loading: Ref<boolean>,
+  apiResults: Ref<ApiSearchResult>,
+  abortController: Ref<AbortController | null>,
+  debounceTimer: Ref<ReturnType<typeof setTimeout> | null>,
+) {
   query.value = ''
   loading.value = false
   apiResults.value = { qrs: [], folders: [] }
 
-  if (debounceTimer) {
-    clearTimeout(debounceTimer)
-    debounceTimer = null
+  if (debounceTimer.value) {
+    clearTimeout(debounceTimer.value)
+    debounceTimer.value = null
   }
 
-  if (abortController) {
-    abortController.abort()
-    abortController = null
+  if (abortController.value) {
+    abortController.value.abort()
+    abortController.value = null
   }
 }
 
@@ -80,27 +83,29 @@ export function useGlobalSearch() {
   const loading = useState<boolean>('global-search:loading', () => false)
   const apiResults = useState<ApiSearchResult>('global-search:api-results', () => ({ qrs: [], folders: [] }))
   const recent = useState<SearchEntry[]>('global-search:recent', () => [])
+  const abortController = useState<AbortController | null>('global-search:abort-controller', () => null)
+  const debounceTimer = useState<ReturnType<typeof setTimeout> | null>('global-search:debounce-timer', () => null)
 
   const isInitialized = useState<boolean>('global-search:is-initialized', () => false)
 
   function debouncedFetch(q: string) {
-    if (debounceTimer) clearTimeout(debounceTimer)
+    if (debounceTimer.value) clearTimeout(debounceTimer.value)
 
-    debounceTimer = setTimeout(async () => {
+    debounceTimer.value = setTimeout(async () => {
       if (!q.trim()) {
         apiResults.value = { qrs: [], folders: [] }
         loading.value = false
         return
       }
 
-      if (abortController) abortController.abort()
-      abortController = new AbortController()
+      if (abortController.value) abortController.value.abort()
+      abortController.value = new AbortController()
 
       loading.value = true
       try {
         const res = await $fetch<{ data: ApiSearchResult }>(
           `/api/search?q=${encodeURIComponent(q)}`,
-          { signal: abortController.signal },
+          { signal: abortController.value.signal },
         )
         apiResults.value = res.data
       }
@@ -127,11 +132,21 @@ export function useGlobalSearch() {
       watch(recent, v => localStorage.setItem(RECENT_KEY, JSON.stringify(v)), { deep: true })
     }
 
-    watch(query, q => debouncedFetch(q))
+    watch(query, (q) => {
+      if (!isOpen.value) {
+        if (debounceTimer.value) {
+          clearTimeout(debounceTimer.value)
+          debounceTimer.value = null
+        }
+        return
+      }
+
+      debouncedFetch(q)
+    })
 
     watch(isOpen, (open) => {
       if (!open) {
-        clearTransientState(query, loading, apiResults)
+        clearTransientState(query, loading, apiResults, abortController, debounceTimer)
       }
     })
   }
