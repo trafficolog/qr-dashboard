@@ -510,6 +510,8 @@ interface ParsedRow {
   [key: string]: string
 }
 
+type ValidatedRow = { row: ParsedRow, rowIndex: number }
+
 interface RowError {
   row: number
   field: string
@@ -528,7 +530,7 @@ const parsedRows = ref<ParsedRow[]>([])
 const detectedHeaders = ref<string[]>([])
 
 // Validation state
-const validRows = ref<(ParsedRow & { _rowIndex: number })[]>([])
+const validRows = ref<ValidatedRow[]>([])
 const rowErrors = ref<RowError[]>([])
 
 // Create state
@@ -604,7 +606,7 @@ async function parseFile(file: File) {
   const result = Papa.default.parse<ParsedRow>(text, {
     header: true,
     skipEmptyLines: true,
-    transformHeader: h => h.trim().toLowerCase().replace(/[\s-]+/g, '_'),
+    transformHeader: (h: string) => h.trim().toLowerCase().replace(/[\s-]+/g, '_'),
   })
 
   if (result.errors.length > 0 && result.data.length === 0) {
@@ -644,7 +646,7 @@ function onFileDrop(e: DragEvent) {
 
 function runValidation() {
   const errors: RowError[] = []
-  const valid: (ParsedRow & { _rowIndex: number })[] = []
+  const valid = [] as ValidatedRow[]
 
   for (let i = 0; i < parsedRows.value.length; i++) {
     const row = parsedRows.value[i]!
@@ -672,7 +674,7 @@ function runValidation() {
       errors.push(...rowErrors)
     }
     else {
-      valid.push({ ...row, _rowIndex: rowNum })
+      valid.push({ row, rowIndex: rowNum })
     }
   }
 
@@ -685,7 +687,7 @@ async function handleCreate() {
   creating.value = true
   try {
     // Normalize row keys to match server schema
-    const rows = validRows.value.map(({ _rowIndex: _, ...row }) => row)
+    const rows = validRows.value.map(({ row }) => row)
 
     const res = await $fetch<{ data: { created: number, failed: number, total: number, errors: RowError[] } }>(
       '/api/qr/bulk',
