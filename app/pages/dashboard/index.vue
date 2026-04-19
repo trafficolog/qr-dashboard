@@ -5,7 +5,10 @@
       <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
         {{ $t('nav.dashboard') }}
       </h1>
-      <div class="flex gap-3">
+      <div
+        class="flex gap-3"
+        data-onboarding="dashboard-actions"
+      >
         <UButton
           icon="i-lucide-plus"
           label="Создать QR"
@@ -22,7 +25,9 @@
       </div>
     </div>
     <!-- Date range picker -->
-    <AnalyticsDateRangePicker v-model="dateRange" />
+    <div data-onboarding="dashboard-date-range">
+      <AnalyticsDateRangePicker v-model="dateRange" />
+    </div>
     <!-- Error -->
     <UAlert
       v-if="error"
@@ -45,6 +50,7 @@
     <div
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      data-onboarding="dashboard-stats"
     >
       <AnalyticsStatCard
         icon="i-lucide-qr-code"
@@ -93,7 +99,7 @@
       />
     </UCard>
     <!-- Top QR -->
-    <UCard>
+    <UCard data-onboarding="dashboard-top-qr">
       <template #header>
         <div class="flex items-center justify-between">
           <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
@@ -113,6 +119,11 @@
         :loading="loading"
       />
     </UCard>
+
+    <SharedOnboardingOverlay
+      v-if="shouldShow"
+      @close="complete"
+    />
   </div>
 </template>
 
@@ -120,6 +131,7 @@
 import type { DateRange } from '~~/types/analytics'
 
 const { overview, timeSeries, topQr, loading, error, fetchAll } = useAnalytics()
+const { shouldShow, complete } = useOnboarding()
 
 const dateRange = ref<DateRange>({
   from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!,
