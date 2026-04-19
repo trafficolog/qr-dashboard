@@ -25,4 +25,20 @@ test.describe('Analytics Page', () => {
     // Date range control should be present
     await expect(page.locator('[data-testid="date-range"], select, [role="combobox"]').first()).toBeVisible()
   })
+
+  test('analytics endpoints smoke-check return { data }', async ({ page }) => {
+    const endpoints = [
+      '/api/analytics/geo',
+      '/api/analytics/devices',
+      '/api/analytics/time-distribution',
+    ]
+
+    for (const endpoint of endpoints) {
+      const response = await page.request.get(endpoint)
+      expect(response.ok(), `${endpoint} should return successful response`).toBeTruthy()
+
+      const body = await response.json() as { data?: unknown }
+      expect(body).toHaveProperty('data')
+    }
+  })
 })
