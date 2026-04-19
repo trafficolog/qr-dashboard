@@ -250,8 +250,10 @@
 </template>
 
 <script setup lang="ts">
+import { z } from 'zod'
 import type { QrStyle } from '~/../types/qr'
 import { useFormDraft } from '~/composables/useFormDraft'
+import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 
 const toast = useA11yToast()
@@ -261,8 +263,17 @@ const { user } = useAuth()
 const route = useRoute()
 
 const saving = ref(false)
-const urlError = ref('')
-const titleError = ref('')
+const schema = z.object({
+  title: z.string().trim().min(1, 'forms.errors.required'),
+  destinationUrl: z.string().trim().min(1, 'forms.errors.required').url('forms.errors.url'),
+})
+const { errors, touched, validate, validateField, setServerErrors, reset } = useFormValidation(schema)
+const urlError = computed(() =>
+  touched.value.destinationUrl ? translateError(errors.value.destinationUrl) : '',
+)
+const titleError = computed(() =>
+  touched.value.title ? translateError(errors.value.title) : '',
+)
 
 const form = reactive({
   title: '',
@@ -331,32 +342,25 @@ onMounted(() => loadTagsAndFolders())
 const isValid = computed(() => {
   return form.title.trim() !== ''
     && form.destinationUrl.trim() !== ''
-    && !urlError.value
-    && !titleError.value
+    && !errors.value.destinationUrl
+    && !errors.value.title
 })
 
+function translateError(message?: string) {
+  if (!message) return ''
+  return message.startsWith('forms.') ? t(message) : message
+}
+
 function validateUrl() {
-  if (!form.destinationUrl) {
-    urlError.value = t('forms.errors.required')
-    return
-  }
-  try {
-    new URL(form.destinationUrl)
-    urlError.value = ''
-  }
-  catch {
-    urlError.value = t('forms.errors.url')
-  }
+  validateField('destinationUrl', form.destinationUrl)
 }
 
 function validateTitle() {
-  titleError.value = form.title.trim() === '' ? t('forms.errors.required') : ''
+  validateField('title', form.title)
 }
 
 async function handleCreate() {
-  validateUrl()
-  validateTitle()
-  if (!isValid.value) return
+  if (!validate(form)) return
 
   saving.value = true
   try {
@@ -378,11 +382,20 @@ async function handleCreate() {
     toast.add({ title: `QR «${qr.title}» создан`, color: 'success' })
     // Чистим черновик и снимаем unsaved-guard перед навигацией
     draft.clear()
+    reset()
     unsaved.markClean()
     await navigateTo(`/qr/${qr.id}`)
   }
   catch (error: unknown) {
-    const err = error as { data?: { message?: string }, statusMessage?: string }
+    const err = error as {
+      statusCode?: number
+      data?: { message?: string, fieldErrors?: Record<string, string> }
+      statusMessage?: string
+    }
+    if (err.statusCode === 422 && err.data?.fieldErrors) {
+      setServerErrors(err.data.fieldErrors)
+      return
+    }
     toast.add({
       title: err?.data?.message || err?.statusMessage || t('forms.errors.serverGeneric'),
       color: 'error',

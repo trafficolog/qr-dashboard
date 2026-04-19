@@ -147,7 +147,7 @@
         >
           <UFormField
             label="Email"
-            :error="inviteErrors.email"
+            :error="inviteEmailError"
             :hint="$t('forms.hints.inviteEmail')"
             required
           >
@@ -156,20 +156,22 @@
               type="email"
               placeholder="user@company.com"
               icon="i-lucide-mail"
-              :aria-invalid="!!inviteErrors.email"
+              :aria-invalid="!!inviteEmailError"
               autofocus
+              @blur="validateInviteEmail"
             />
           </UFormField>
 
           <UFormField
             label="Роль"
-            :error="inviteErrors.role"
+            :error="inviteRoleError"
           >
             <USelect
               v-model="inviteForm.role"
               :items="roleItems"
               class="w-full"
-              :aria-invalid="!!inviteErrors.role"
+              :aria-invalid="!!inviteRoleError"
+              @update:model-value="validateInviteRole"
             />
           </UFormField>
 
@@ -214,6 +216,8 @@
 </template>
 
 <script setup lang="ts">
+import { z } from 'zod'
+import { useFormValidation } from '~/composables/useFormValidation'
 import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 definePageMeta({
@@ -252,7 +256,13 @@ const inviteOpen = ref(false)
 const focusReturn = createDialogFocusReturn()
 const inviting = ref(false)
 const inviteForm = ref({ email: '', role: 'editor' as RoleValue })
-const inviteErrors = ref({ email: '', role: '' })
+const inviteSchema = z.object({
+  email: z.string().trim().min(1, 'forms.errors.required').email('Некорректный email'),
+  role: z.enum(['admin', 'editor', 'viewer'], { message: 'forms.errors.required' }),
+})
+const { errors: inviteErrors, touched: inviteTouched, validate: validateInvite, validateField: validateInviteField, setServerErrors: setInviteServerErrors, reset: resetInviteValidation } = useFormValidation(inviteSchema)
+const inviteEmailError = computed(() => inviteTouched.value.email ? translateError(inviteErrors.value.email) : '')
+const inviteRoleError = computed(() => inviteTouched.value.role ? translateError(inviteErrors.value.role) : '')
 
 // Delete confirmation
 const deleteOpen = ref(false)
@@ -323,12 +333,7 @@ async function handleRoleChange(member: TeamMember, newRole: RoleValue) {
 }
 
 async function handleInvite() {
-  inviteErrors.value = { email: '', role: '' }
-
-  if (!inviteForm.value.email) {
-    inviteErrors.value.email = t('forms.errors.required')
-    return
-  }
+  if (!validateInvite(inviteForm.value)) return
 
   inviting.value = true
   try {
@@ -340,6 +345,7 @@ async function handleInvite() {
     toast.add({ title: `Приглашение отправлено на ${inviteForm.value.email}`, color: 'success' })
     inviteOpen.value = false
     inviteForm.value = { email: '', role: 'editor' }
+    resetInviteValidation()
   }
   catch (err: unknown) {
     const e = err as {
@@ -351,23 +357,29 @@ async function handleInvite() {
     }
     // 422 → server-side field errors
     if (e?.statusCode === 422 && e.data?.fieldErrors) {
-      for (const [field, msg] of Object.entries(e.data.fieldErrors)) {
-        const translated = msg.startsWith('forms.')
-          ? t(msg)
-          : msg
-        if (field === 'email' || field === 'role') {
-          inviteErrors.value[field as 'email' | 'role'] = translated
-        }
-      }
+      setInviteServerErrors(e.data.fieldErrors)
     }
     else {
       const msg = e?.data?.message ?? t('forms.errors.serverGeneric')
-      inviteErrors.value.email = msg
+      setInviteServerErrors({ email: msg })
     }
   }
   finally {
     inviting.value = false
   }
+}
+
+function validateInviteEmail() {
+  validateInviteField('email', inviteForm.value.email)
+}
+
+function validateInviteRole() {
+  validateInviteField('role', inviteForm.value.role)
+}
+
+function translateError(message?: string) {
+  if (!message) return ''
+  return message.startsWith('forms.') ? t(message) : message
 }
 
 function handleDelete(member: TeamMember) {
