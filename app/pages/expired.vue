@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[color:var(--surface-0)] dark:bg-gray-950 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)] px-4">
     <div class="text-center max-w-sm">
       <img
         src="/splat-logo.svg"

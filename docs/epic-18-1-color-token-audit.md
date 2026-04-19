@@ -14,18 +14,26 @@
 - `text-red-*`, `bg-red-*` → danger tokens (`--danger`)
 - `text-green-*`, `bg-green-*` → success tokens (`--success`)
 
-## Allowed exceptions (for clean grep-audit)
-The following categories are intentionally allowed and are **not** part of this audit rule set:
+## Allowed exceptions (EPIC 18 registry)
+Document only explicit, justified exclusions from this audit scope.
 
-1. Illustration-only colors and SVG/preview palettes (brand/semantic drawing colors).
-2. Component-specific hover/accent shades not in EPIC 18.1 replacement matrix.
-3. Legacy colors outside `app/**/*.vue` and `app/**/*.ts` (e.g. external styles, docs, snapshots).
+### Current exceptions list
+- No active exceptions in `app/**/*.vue` and `app/**/*.ts`.
+
+### Out of scope by definition
+1. Legacy colors outside `app/**/*.vue` and `app/**/*.ts` (e.g. external styles, docs, snapshots).
+2. Non-class color values in TS/JS objects (for chart palettes, preview/illustration drawing).
 
 ## Audit command
 Use this command to validate EPIC 18.1 in-scope classes:
 
 ```bash
-rg -n "text-gray-(900|700|600|500|400)|text-white|bg-white|bg-gray-50|bg-gray-100|bg-gray-800|border-gray-(200|700)|text-red-[^\\s\"']+|bg-red-[^\\s\"']+|text-green-[^\\s\"']+|bg-green-[^\\s\"']+" app --glob '**/*.vue' --glob '**/*.ts'
+rg -n --glob 'app/**/*.vue' --glob 'app/**/*.ts' \
+  -e "gray-[^[:space:]\\\"']+" \
+  -e "text-white" \
+  -e "bg-white" \
+  -e "red-[^[:space:]\\\"']+" \
+  -e "green-[^[:space:]\\\"']+"
 ```
 
 Expected result: no matches.

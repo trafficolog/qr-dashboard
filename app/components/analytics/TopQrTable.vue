@@ -36,7 +36,7 @@
         role="table"
       >
         <thead>
-          <tr class="border-b border-gray-100 dark:border-gray-800">
+          <tr class="border-b border-[color:var(--border)] dark:border-[color:var(--border)]">
             <th
               scope="col"
               class="py-2 pr-4 text-left font-medium text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] w-8"
@@ -67,7 +67,7 @@
           <tr
             v-for="(qr, idx) in data"
             :key="qr.id"
-            class="border-b border-gray-50 dark:border-gray-800/50 hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/30 transition-colors"
+            class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60 hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/30 transition-colors"
           >
             <td class="py-2.5 pr-4 text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)] tabular-nums">
               {{ idx + 1 }}
