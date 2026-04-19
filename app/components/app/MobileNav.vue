@@ -22,7 +22,7 @@
           :key="item.route"
           :to="item.route"
           :class="[
-            'flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors',
+            'flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-interactive',
             isActive(item.route)
               ? 'bg-[color:var(--accent-light)] text-[color:var(--accent)]'
               : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]',

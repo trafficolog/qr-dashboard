@@ -70,7 +70,7 @@
           v-for="ms in moduleStyles"
           :key="ms.value"
           :class="[
-            'flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-colors',
+            'flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-interactive',
             style.moduleStyle === ms.value
               ? 'border-[color:var(--accent)] bg-[color:var(--accent-light)] text-[color:var(--accent)]'
               : 'border-[color:var(--border)] text-[color:var(--text-secondary)] hover:border-[color:var(--accent)]/40 hover:bg-[color:var(--surface-2)]',
@@ -96,7 +96,7 @@
           v-for="cs in cornerStyles"
           :key="cs.value"
           :class="[
-            'flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-colors',
+            'flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-interactive',
             style.cornerStyle === cs.value
               ? 'border-[color:var(--accent)] bg-[color:var(--accent-light)] text-[color:var(--accent)]'
               : 'border-[color:var(--border)] text-[color:var(--text-secondary)] hover:border-[color:var(--accent)]/40 hover:bg-[color:var(--surface-2)]',

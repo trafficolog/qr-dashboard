@@ -4,7 +4,7 @@
 
     <div
       v-if="highlightStyle"
-      class="absolute rounded-xl border-2 border-primary-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.6)] transition-all duration-200"
+      class="absolute rounded-xl border-2 border-primary-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.6)] transition-[top,left,width,height] duration-200"
       :style="highlightStyle"
     />
 

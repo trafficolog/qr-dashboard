@@ -29,7 +29,7 @@
         class="flex items-center gap-2"
       >
         <div
-          class="flex items-center justify-center size-7 rounded-full text-xs font-semibold transition-colors"
+          class="flex items-center justify-center size-7 rounded-full text-xs font-semibold transition-interactive"
           :class="stepCircleClass(i + 1)"
         >
           <UIcon
@@ -83,7 +83,7 @@
 
       <!-- Drop zone -->
       <div
-        class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-colors cursor-pointer"
+        class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-interactive cursor-pointer"
         :class="isDragging
           ? 'border-[color:var(--color-success)] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)]'
           : 'border-[color:var(--border)] dark:border-[color:var(--border)] hover:border-[color:var(--color-success)] hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/50'"

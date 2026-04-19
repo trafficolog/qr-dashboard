@@ -67,7 +67,7 @@
           <tr
             v-for="(qr, idx) in data"
             :key="qr.id"
-            class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60 hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/30 transition-colors"
+            class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60 hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/30 transition-interactive"
           >
             <td class="py-2.5 pr-4 text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)] tabular-nums">
               {{ idx + 1 }}
@@ -75,7 +75,7 @@
             <td class="py-2.5 pr-4">
               <NuxtLink
                 :to="`/qr/${qr.id}`"
-                class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] hover:text-[color:var(--color-success)] dark:hover:text-[color:var(--color-success)] transition-colors"
+                class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] hover:text-[color:var(--color-success)] dark:hover:text-[color:var(--color-success)] transition-interactive"
               >
                 {{ qr.title || qr.shortCode }}
               </NuxtLink>

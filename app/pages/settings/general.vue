@@ -34,7 +34,7 @@
           v-for="theme in themes"
           :key="theme.value"
           :class="[
-            'flex flex-1 items-center gap-3 rounded-lg border-2 p-3 transition-colors text-left',
+            'flex flex-1 items-center gap-3 rounded-lg border-2 p-3 transition-interactive text-left',
             colorMode.preference === theme.value
               ? 'border-[color:var(--accent)] bg-[color:var(--accent-light)]'
               : 'border-[color:var(--border)] hover:border-[color:var(--accent)]/50',

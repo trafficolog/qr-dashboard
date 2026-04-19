@@ -60,7 +60,7 @@
       <div class="flex overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)]">
         <button
           :class="[
-            'p-2 transition-colors',
+            'p-2 transition-interactive',
             viewMode === 'table'
               ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
               : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
@@ -74,7 +74,7 @@
         </button>
         <button
           :class="[
-            'p-2 transition-colors',
+            'p-2 transition-interactive',
             viewMode === 'grid'
               ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
               : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
