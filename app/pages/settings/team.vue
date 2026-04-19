@@ -136,9 +136,10 @@
 
     <!-- Invite modal -->
     <UModal
-      v-model:open="inviteOpen"
+      :open="inviteOpen"
       :title="$t('team.invite.modalTitle')"
       :close-on-escape="true"
+      @update:open="handleInviteModalOpenChange"
     >
       <template #body>
         <form
@@ -215,7 +216,7 @@
             :label="$t('forms.actions.cancel')"
             variant="outline"
             color="neutral"
-            @click="inviteOpen = false"
+            @click="requestInviteClose"
           />
           <UButton
             :label="$t('forms.actions.invite')"
@@ -226,6 +227,12 @@
         </div>
       </template>
     </UModal>
+
+    <SharedUnsavedChangesDialog
+      v-model:open="inviteUnsaved.showDialog.value"
+      @confirm="confirmInviteDiscard"
+      @cancel="inviteUnsaved.cancel"
+    />
 
     <!-- Confirm delete -->
     <SharedConfirmDialog
@@ -243,6 +250,7 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import { useFormValidation } from '~/composables/useFormValidation'
+import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 definePageMeta({
@@ -290,6 +298,8 @@ const inviteSchema = z.object({
 const { errors: inviteErrors, touched: inviteTouched, validate: validateInvite, validateField: validateInviteField, setServerErrors: setInviteServerErrors, reset: resetInviteValidation } = useFormValidation(inviteSchema)
 const inviteEmailError = computed(() => inviteTouched.value.email ? translateError(inviteErrors.value.email) : '')
 const inviteRoleError = computed(() => inviteTouched.value.role ? translateError(inviteErrors.value.role) : '')
+const isInviteDirty = computed(() => inviteOpen.value && inviteForm.value.email.trim() !== '')
+const inviteUnsaved = useUnsavedChanges(isInviteDirty)
 
 // Delete confirmation
 const deleteOpen = ref(false)
@@ -371,8 +381,7 @@ async function handleInvite() {
     members.value.push(res.data)
     toast.add({ title: t('team.toasts.inviteSent', { email: inviteForm.value.email }), color: 'success' })
     inviteOpen.value = false
-    inviteForm.value = { email: '', role: 'editor' }
-    resetInviteValidation()
+    cleanInviteForm()
   }
   catch (err: unknown) {
     const e = err as {
@@ -407,6 +416,36 @@ function validateInviteRole() {
 function translateError(message?: string) {
   if (!message) return ''
   return message.startsWith('forms.') ? t(message) : message
+}
+
+function cleanInviteForm() {
+  inviteUnsaved.markClean()
+  inviteForm.value = { email: '', role: 'editor' }
+  resetInviteValidation()
+}
+
+function requestInviteClose() {
+  handleInviteModalOpenChange(false)
+}
+
+function handleInviteModalOpenChange(nextOpen: boolean) {
+  if (nextOpen) {
+    inviteOpen.value = true
+    return
+  }
+
+  if (isInviteDirty.value) {
+    inviteUnsaved.showDialog.value = true
+    return
+  }
+
+  inviteOpen.value = false
+}
+
+function confirmInviteDiscard() {
+  cleanInviteForm()
+  inviteOpen.value = false
+  inviteUnsaved.confirm()
 }
 
 function handleDelete(member: TeamMember) {
