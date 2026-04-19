@@ -151,6 +151,22 @@
                 />
               </UFormField>
 
+              <UFormField :label="$t('forms.labels.folder')">
+                <USelect
+                  v-model="form.folderId"
+                  :items="folderOptions"
+                  :placeholder="$t('forms.options.noFolder')"
+                />
+              </UFormField>
+
+              <UFormField :label="$t('forms.labels.tags')">
+                <SharedTagInput
+                  v-model="form.tagIds"
+                  :available-tags="availableTags"
+                  @create-tag="handleCreateTag"
+                />
+              </UFormField>
+
               <UFormField :label="$t('forms.labels.status')">
                 <USelect
                   v-model="form.status"
@@ -295,6 +311,8 @@ const form = reactive({
   description: '',
   status: 'active' as QrStatus,
   expiresAt: '',
+  folderId: '',
+  tagIds: [] as string[],
   style: {} as Partial<QrStyle>,
   utmParams: {
     utm_source: '',
@@ -309,6 +327,16 @@ const statusOptions = [
   { label: t('qr.status.paused'), value: 'paused' },
   { label: t('qr.status.archived'), value: 'archived' },
 ]
+
+const { folders, fetchFolders } = useFolders()
+const folderOptions = computed(() => [
+  { label: t('forms.options.noFolder'), value: '' },
+  ...folders.value.map(f => ({ label: f.name, value: f.id })),
+])
+
+interface Tag { id: string, name: string, color: string | null }
+const allTags = ref<Tag[]>([])
+const availableTags = computed(() => allTags.value)
 
 function validateUrl() {
   validateField('destinationUrl', form.destinationUrl)
@@ -346,6 +374,8 @@ function serializeForm(): string {
     description: form.description,
     status: form.status,
     expiresAt: form.expiresAt,
+    folderId: form.folderId,
+    tagIds: form.tagIds,
     style: form.style,
     utmParams: form.utmParams,
   })
@@ -367,6 +397,8 @@ async function loadQr() {
     form.destinationUrl = qr.value.destinationUrl
     form.description = qr.value.description || ''
     form.status = qr.value.status
+    form.folderId = qr.value.folder?.id || ''
+    form.tagIds = qr.value.tags?.map(tag => tag.id) || []
     form.style = { ...(qr.value.style || {}) }
 
     if (qr.value.expiresAt) {
@@ -391,6 +423,18 @@ async function loadQr() {
   }
 }
 
+async function loadTagsAndFolders() {
+  fetchFolders()
+  const res = await $fetch<{ data: Tag[] }>('/api/tags')
+  allTags.value = res.data
+}
+
+async function handleCreateTag(name: string) {
+  const res = await $fetch<{ data: Tag }>('/api/tags', { method: 'POST', body: { name } })
+  allTags.value.push(res.data)
+  form.tagIds.push(res.data.id)
+}
+
 async function handleSave() {
   if (!validate(form)) {
     urlError.value = translateError(errors.value.destinationUrl)
@@ -410,6 +454,8 @@ async function handleSave() {
       destinationUrl: isStatic.value ? undefined : form.destinationUrl,
       description: form.description || null,
       status: form.status,
+      folderId: form.folderId || null,
+      tagIds: form.tagIds,
       style: form.style,
       utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
       expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
@@ -441,5 +487,10 @@ async function handleSave() {
   }
 }
 
-onMounted(loadQr)
+onMounted(async () => {
+  await Promise.all([
+    loadQr(),
+    loadTagsAndFolders(),
+  ])
+})
 </script>
