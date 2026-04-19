@@ -22,7 +22,7 @@ test.describe('Accessibility smoke (axe)', () => {
 
     await page.context().addCookies([
       {
-        name: 'session',
+        name: process.env.PLAYWRIGHT_AUTH_COOKIE_NAME || 'session_token',
         value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
         domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001').hostname,
         path: '/',
