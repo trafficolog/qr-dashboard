@@ -164,6 +164,14 @@ test('dashboard has no blocking a11y violations', async ({ page }) => {
   - любое `serious` или `critical`;
   - любое `color-contrast` (независимо от impact).
 - Нарушения с impact `minor` / `moderate` считаются backlog для последующих итераций и не блокируют merge в рамках EPIC 17.
+
+
+- **CI workflow (merge gate):** `.github/workflows/playwright-a11y-gate.yml`, job `playwright-a11y`.
+  - Шаг `Run accessibility e2e gate` запускает обязательную команду `npm run test:e2e -- a11y.spec.ts`.
+  - Job получает `PLAYWRIGHT_AUTH_COOKIE` через seeded `admin@splat.com` session (`session_token`) и поднимает app+postgres окружение.
+  - **Fail condition:** job завершается с ошибкой, если команда вернула non-zero (т.е. найдено хотя бы одно blocking-нарушение из `serious`/`critical` или `color-contrast`, либо не поднялась инфраструктура e2e).
+  - **Pass condition:** job зелёный только если окружение поднято и `a11y.spec.ts` полностью проходит; в branch protection этот check должен быть отмечен как Required.
+  - При падении публикуется артефакт `playwright-report-a11y` (папка `playwright-report`).
  
 ## Критерии приёмки
  
@@ -174,7 +182,7 @@ test('dashboard has no blocking a11y violations', async ({ page }) => {
 - [ ] Screen-reader получает текст toast'а через `aria-live`.
 - [ ] Каждый статус-бейдж содержит иконку + текст (проверка: убрать цвет — значение всё ещё понятно).
 - [ ] Все `<img>` имеют `alt` (пустой или осмысленный).
-- [ ] `npm run test:e2e -- a11y.spec.ts` зелёный по blocking-gate (нет `serious`/`critical` + `color-contrast`).
+- [x] `npm run test:e2e -- a11y.spec.ts` выполняется в CI workflow `Playwright A11y Gate` (job `playwright-a11y`) как merge-gate; blocking-policy: нет `serious`/`critical` + `color-contrast`.
 - [ ] `npm run typecheck`, `npm run lint` — зелёные.
  
 ## Изменённые/созданные файлы
@@ -185,6 +193,7 @@ app/components/qr/StatusBadge.vue
 app/composables/useA11yAnnouncer.ts
 app/utils/dialog-focus-return.ts
 e2e/a11y.spec.ts
+.github/workflows/playwright-a11y-gate.yml
 ```
  
 ### Изменённые
