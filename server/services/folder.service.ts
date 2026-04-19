@@ -5,8 +5,8 @@ import type { User } from '~~/types/auth'
 
 interface CreateFolderData {
   name: string
-  parentId?: string
-  color?: string
+  parentId?: string | null
+  color?: string | null
 }
 
 interface UpdateFolderData {
