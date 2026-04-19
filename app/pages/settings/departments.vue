@@ -122,6 +122,7 @@
     <UModal
       v-model:open="formOpen"
       :title="editingDepartment ? 'Редактировать подразделение' : 'Создать подразделение'"
+      :close-on-escape="true"
     >
       <template #body>
         <form
@@ -194,6 +195,8 @@
 </template>
 
 <script setup lang="ts">
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+
 definePageMeta({
   middleware: 'admin-only',
 })
@@ -224,6 +227,7 @@ const selectedMembersByDepartment = ref<Record<string, string[]>>({})
 const savingMembersId = ref<string | null>(null)
 
 const formOpen = ref(false)
+const formDialogFocusReturn = createDialogFocusReturn()
 const savingForm = ref(false)
 const editingDepartment = ref<Department | null>(null)
 const form = reactive({
@@ -241,6 +245,11 @@ const memberOptions = computed(() => members.value.map(m => ({
   label: m.name || m.email,
   value: m.id,
 })))
+
+watch(formOpen, (open) => {
+  if (open) formDialogFocusReturn.save()
+  else formDialogFocusReturn.restore()
+})
 
 async function fetchData() {
   loading.value = true

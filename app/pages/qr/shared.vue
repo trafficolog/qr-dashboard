@@ -42,7 +42,10 @@
       />
     </div>
 
-    <UModal v-model:open="departmentPickerOpen">
+    <UModal
+      v-model:open="departmentPickerOpen"
+      :close-on-escape="true"
+    >
       <template #content>
         <div class="space-y-4 p-5">
           <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
@@ -75,6 +78,7 @@
 
 <script setup lang="ts">
 import type { QrCode } from '~~/types/qr'
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 const toast = useA11yToast()
 const { duplicateQr, deleteQr, updateQrVisibility } = useQr()
@@ -85,6 +89,7 @@ const { data, pending, refresh } = await useFetch<{ data: QrCode[] }>('/api/qr/s
 const sharedQr = computed(() => data.value?.data ?? [])
 const userDepartments = ref<Array<{ id: string, name: string }>>([])
 const departmentPickerOpen = ref(false)
+const departmentPickerFocusReturn = createDialogFocusReturn()
 const selectedDepartmentId = ref('')
 const pendingQrId = ref<string | null>(null)
 const departmentSelectItems = computed(() =>
@@ -92,6 +97,11 @@ const departmentSelectItems = computed(() =>
 )
 
 type VisibilityPayload = { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }
+
+watch(departmentPickerOpen, (open) => {
+  if (open) departmentPickerFocusReturn.save()
+  else departmentPickerFocusReturn.restore()
+})
 
 async function fetchUserDepartments() {
   try {

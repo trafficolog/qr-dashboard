@@ -209,7 +209,10 @@
       @confirm="confirmBulkDelete"
     />
 
-    <UModal v-model:open="bulkVisibilityDialogOpen">
+    <UModal
+      v-model:open="bulkVisibilityDialogOpen"
+      :close-on-escape="true"
+    >
       <template #content>
         <div class="space-y-4 p-5">
           <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
@@ -245,7 +248,10 @@
       </template>
     </UModal>
 
-    <UModal v-model:open="departmentPickerOpen">
+    <UModal
+      v-model:open="departmentPickerOpen"
+      :close-on-escape="true"
+    >
       <template #content>
         <div class="space-y-4 p-5">
           <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
@@ -281,6 +287,7 @@
 
 <script setup lang="ts">
 import type { QrCode } from '~~/types/qr'
+import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 const toast = useA11yToast()
 const route = useRoute()
@@ -321,6 +328,7 @@ const departmentSelectItems = computed(() =>
   userDepartments.value.map(item => ({ label: item.name, value: item.id })),
 )
 const departmentPickerOpen = ref(false)
+const departmentPickerFocusReturn = createDialogFocusReturn()
 const selectedDepartmentId = ref<string>('')
 const pendingDepartmentVisibilityQrId = ref<string | null>(null)
 
@@ -511,6 +519,7 @@ function handleDelete(id: string) {
 const bulkDeleteDialogOpen = ref(false)
 const pendingBulkIds = ref<string[]>([])
 const bulkVisibilityDialogOpen = ref(false)
+const bulkVisibilityFocusReturn = createDialogFocusReturn()
 const bulkVisibilityLoading = ref(false)
 const bulkVisibility = ref<'private' | 'department' | 'public'>('private')
 const bulkDepartmentId = ref<string>('')
@@ -656,6 +665,22 @@ onMounted(() => {
   fetchQrList()
   fetchFolders()
 })
+
+watch(
+  bulkVisibilityDialogOpen,
+  (open) => {
+    if (open) bulkVisibilityFocusReturn.save()
+    else bulkVisibilityFocusReturn.restore()
+  },
+)
+
+watch(
+  departmentPickerOpen,
+  (open) => {
+    if (open) departmentPickerFocusReturn.save()
+    else departmentPickerFocusReturn.restore()
+  },
+)
 
 watch(
   () => [filters.value.status, filters.value.folderId, filters.value.scope, filters.value.sortBy, filters.value.sortOrder],
