@@ -44,11 +44,14 @@
             :disabled="adding"
             :aria-invalid="Boolean(domainError)"
             :aria-describedby="domainError ? domainErrorId : undefined"
+            :aria-required="true"
             @blur="validateDomain"
           />
           <p
             v-if="domainError"
             :id="domainErrorId"
+            role="alert"
+            aria-live="polite"
             class="mt-1 text-sm text-[color:var(--ui-error)]"
           >
             {{ domainError }}

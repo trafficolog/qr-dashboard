@@ -157,22 +157,47 @@
               placeholder="user@company.com"
               icon="i-lucide-mail"
               :aria-invalid="!!inviteEmailError"
+              :aria-describedby="inviteEmailError ? inviteEmailErrorId : undefined"
+              :aria-required="true"
               autofocus
               @blur="validateInviteEmail"
             />
+            <template #error="{ error }">
+              <p
+                v-if="error"
+                :id="inviteEmailErrorId"
+                role="alert"
+                aria-live="polite"
+              >
+                {{ error }}
+              </p>
+            </template>
           </UFormField>
 
           <UFormField
             label="Роль"
             :error="inviteRoleError"
+            required
           >
             <USelect
               v-model="inviteForm.role"
               :items="roleItems"
               class="w-full"
               :aria-invalid="!!inviteRoleError"
+              :aria-describedby="inviteRoleError ? inviteRoleErrorId : undefined"
+              :aria-required="true"
               @update:model-value="validateInviteRole"
             />
+            <template #error="{ error }">
+              <p
+                v-if="error"
+                :id="inviteRoleErrorId"
+                role="alert"
+                aria-live="polite"
+              >
+                {{ error }}
+              </p>
+            </template>
           </UFormField>
 
           <UAlert
@@ -245,6 +270,8 @@ interface TeamMember {
 const { user: currentUser } = useAuth()
 const toast = useA11yToast()
 const { t } = useI18n()
+const inviteEmailErrorId = 'settings-team-invite-email-error'
+const inviteRoleErrorId = 'settings-team-invite-role-error'
 
 const loading = ref(true)
 const members = ref<TeamMember[]>([])
