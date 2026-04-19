@@ -23,6 +23,7 @@ export interface GeoCoordinates {
 export interface GeoCountryBreakdownItem {
   country: string
   scans: number
+  uniqueScans: number
   percentage: number
   coordinates?: GeoCoordinates | null
 }
@@ -31,6 +32,7 @@ export interface GeoCityBreakdownItem {
   country: string
   city: string
   scans: number
+  uniqueScans: number
   percentage: number
   coordinates?: GeoCoordinates | null
 }

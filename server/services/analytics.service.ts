@@ -105,7 +105,8 @@ export const analyticsService = {
     const countryResult = await db.execute(sql`
       SELECT
         se.country,
-        COUNT(*) AS scans
+        COUNT(*) AS scans,
+        COUNT(*) FILTER (WHERE se.is_unique = true) AS unique_scans
       FROM scan_events se
       INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
       WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
@@ -120,7 +121,10 @@ export const analyticsService = {
       SELECT
         se.country,
         se.city,
-        COUNT(*) AS scans
+        COUNT(*) AS scans,
+        COUNT(*) FILTER (WHERE se.is_unique = true) AS unique_scans,
+        AVG(se.latitude) AS lat,
+        AVG(se.longitude) AS lng
       FROM scan_events se
       INNER JOIN qr_codes qr ON se.qr_code_id = qr.id
       WHERE se.scanned_at >= ${from} AND se.scanned_at <= ${to}
@@ -138,6 +142,7 @@ export const analyticsService = {
       return {
         country: row.country as string,
         scans,
+        uniqueScans: Number(row.unique_scans ?? 0),
         percentage: totalScans > 0 ? Math.round((scans / totalScans) * 10000) / 100 : 0,
       }
     })
@@ -148,7 +153,12 @@ export const analyticsService = {
         country: row.country as string,
         city: row.city as string,
         scans,
+        uniqueScans: Number(row.unique_scans ?? 0),
         percentage: totalScans > 0 ? Math.round((scans / totalScans) * 10000) / 100 : 0,
+        coordinates: {
+          lat: row.lat === null ? null : Number(row.lat),
+          lng: row.lng === null ? null : Number(row.lng),
+        },
       }
     })
 

@@ -22,39 +22,83 @@
       {{ $t('analytics.time.empty') }}
     </div>
 
-    <div
+    <VChart
       v-else
-      class="space-y-2"
-    >
-      <div
-        v-for="item in items"
-        :key="item.hour"
-        class="flex items-center gap-3"
-      >
-        <span class="w-12 text-xs text-[color:var(--text-muted)]">{{ item.hour }}:00</span>
-        <div class="h-2 flex-1 rounded-full bg-[color:var(--surface-2)]">
-          <div
-            class="h-2 rounded-full bg-[color:var(--success)]"
-            :style="{ width: `${Math.max(item.percentage, 2)}%` }"
-          />
-        </div>
-        <span class="w-14 text-right text-xs text-[color:var(--text-muted)]">{{ formatPercent(item.percentage) }}</span>
-      </div>
-    </div>
+      class="h-72 w-full"
+      :option="chartOption"
+      :autoresize="true"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { use } from 'echarts/core'
+import { BarChart } from 'echarts/charts'
+import { GridComponent, TooltipComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+import VChart from 'vue-echarts'
 import type { HourlyDistributionItem } from '~~/types/analytics'
 
-withDefaults(defineProps<{
+use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
+
+const props = withDefaults(defineProps<{
   items: readonly HourlyDistributionItem[]
   loading?: boolean
 }>(), {
   loading: false,
 })
 
-function formatPercent(value: number) {
-  return `${value.toFixed(1)}%`
-}
+const hourly = computed(() => {
+  const buckets = Array.from({ length: 24 }, (_, hour) => ({ hour, scans: 0 }))
+  for (const item of props.items) {
+    if (item.hour >= 0 && item.hour <= 23)
+      buckets[item.hour] = { hour: item.hour, scans: item.scans }
+  }
+  return buckets
+})
+
+const peakValue = computed(() => Math.max(...hourly.value.map(item => item.scans), 0))
+
+const chartOption = computed(() => ({
+  tooltip: {
+    trigger: 'axis',
+    formatter: (params: unknown[]) => {
+      const current = (params[0] ?? { axisValue: '', value: 0 }) as { axisValue: string, value: number }
+      return `${current.axisValue}:00 — <b>${Number(current.value).toLocaleString('ru-RU')}</b>`
+    },
+  },
+  grid: { top: 8, left: 8, right: 8, bottom: 8, containLabel: true },
+  xAxis: {
+    type: 'category',
+    data: hourly.value.map(item => item.hour.toString().padStart(2, '0')),
+    axisLine: { show: false },
+    axisTick: { show: false },
+    axisLabel: { fontSize: 11, color: '#6b7280' },
+  },
+  yAxis: {
+    type: 'value',
+    splitLine: { lineStyle: { color: '#f3f4f6' } },
+    axisLabel: { fontSize: 11, color: '#6b7280' },
+  },
+  series: [
+    {
+      type: 'bar',
+      barWidth: '65%',
+      data: hourly.value.map(item => ({
+        value: item.scans,
+        itemStyle: {
+          color: item.scans > 0 && item.scans === peakValue.value ? '#15803d' : '#86efac',
+          borderRadius: [6, 6, 0, 0],
+        },
+      })),
+      label: {
+        show: true,
+        position: 'top',
+        fontSize: 10,
+        color: '#6b7280',
+        formatter: ({ value }: { value: number }) => (value > 0 ? value.toLocaleString('ru-RU') : ''),
+      },
+    },
+  ],
+}))
 </script>

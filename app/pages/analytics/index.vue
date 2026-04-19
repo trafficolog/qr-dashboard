@@ -180,6 +180,7 @@
           <AnalyticsGeoMap
             class="lg:col-span-2"
             :countries="geoTopCountries"
+            :cities="geoTopCities"
             :loading="loadingSections.geo"
           />
           <AnalyticsGeoTable
@@ -274,7 +275,7 @@ const deviceDonuts = computed(() => ([
   { key: 'browsers', title: t('analytics.devices.categories.browsers'), items: devices.value?.browsers ?? [] },
 ]))
 
-const topHourly = computed(() => (timeDistribution.value?.hourly ?? []).slice().sort((a, b) => b.scans - a.scans).slice(0, 8))
+const topHourly = computed(() => (timeDistribution.value?.hourly ?? []).slice().sort((a, b) => a.hour - b.hour))
 const sortedWeekly = computed(() => (timeDistribution.value?.weekly ?? []).slice().sort((a, b) => a.weekday - b.weekday))
 const showEmptyAnalytics = computed(() => (
   !loadingSections.value.overview
