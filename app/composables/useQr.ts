@@ -17,6 +17,20 @@ interface QrFilters {
   limit: number
 }
 
+interface UpdateQrInput {
+  title?: string
+  destinationUrl?: string
+  description?: string | null
+  status?: 'active' | 'paused' | 'expired' | 'archived'
+  visibility?: 'private' | 'department' | 'public'
+  departmentId?: string | null
+  style?: QrStyle | Record<string, unknown>
+  utmParams?: UtmParams
+  folderId?: string | null
+  tagIds?: string[]
+  expiresAt?: string | null
+}
+
 const defaultFilters: QrFilters = {
   search: '',
   status: '',
@@ -142,7 +156,7 @@ export function useQr() {
     return response.data
   }
 
-  async function updateQr(id: string, data: Record<string, unknown>) {
+  async function updateQr(id: string, data: UpdateQrInput) {
     const response = await $fetch<{ data: QrCode }>(`/api/qr/${id}`, {
       method: 'PUT',
       body: data,
