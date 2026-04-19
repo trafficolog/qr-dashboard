@@ -23,9 +23,9 @@
   --color-splat-accent: var(--accent);
   --color-splat-accent-light: var(--accent-light);
   --color-splat-border: var(--border);
-  --color-splat-danger: var(--danger);
-  --color-splat-warning: var(--warning);
-  --color-splat-info: var(--info);
+  --color-splat-danger: var(--color-error);
+  --color-splat-warning: var(--color-warning);
+  --color-splat-info: var(--color-info);
 
   /*
    * Tailwind + Nuxt UI utilities (`text-primary`, `bg-primary`, `ring-primary/50`, …)
@@ -70,10 +70,15 @@
   --accent: #ba0c2f;
   --accent-light: #fce8ed;
   --border: #ebcdd4;
-  --danger: #d9363e;
-  --success: #2f9e44;
-  --warning: #b46b00;
-  --info: #0d5bd4;
+  --color-error: #d9363e;
+  --color-error-soft: #fef2f2;
+  --color-success: #2f9e44;
+  --color-warning: #b46b00;
+  --color-info: #0d5bd4;
+  --danger: var(--color-error);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --info: var(--color-info);
 }
 
 html {
@@ -92,10 +97,15 @@ html.dark {
   --accent: #ff5a78;
   --accent-light: #43101d;
   --border: #4a202c;
-  --danger: #ff8c95;
-  --success: #4ddc78;
-  --warning: #f4c15d;
-  --info: #7eafff;
+  --color-error: #ff8c95;
+  --color-error-soft: #3d1a22;
+  --color-success: #4ddc78;
+  --color-warning: #f4c15d;
+  --color-info: #7eafff;
+  --danger: var(--color-error);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --info: var(--color-info);
 }
 
 * {
