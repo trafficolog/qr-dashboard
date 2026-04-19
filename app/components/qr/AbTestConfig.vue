@@ -44,7 +44,7 @@
       <div
         v-for="(dest, idx) in localDests"
         :key="dest.id ?? `new-${idx}`"
-        class="rounded-lg border p-3 space-y-3 transition-colors"
+        class="rounded-lg border p-3 space-y-3 transition-interactive"
         :class="dest.isActive
           ? 'border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)]'
           : 'border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)]/50 opacity-60'"

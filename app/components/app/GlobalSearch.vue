@@ -135,7 +135,7 @@
                   {{ $t('search.recent') }}
                 </span>
                 <button
-                  class="text-xs text-[color:var(--text-muted)] hover:text-[color:var(--accent)] transition-colors"
+                  class="text-xs text-[color:var(--text-muted)] hover:text-[color:var(--accent)] transition-interactive"
                   @click="discardRecent"
                 >
                   {{ $t('search.clearHistory') }}
