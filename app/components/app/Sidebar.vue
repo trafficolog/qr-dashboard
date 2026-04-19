@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { isActiveRoute } from '~/app/utils/navigation/isActiveRoute'
+import { isActiveRoute } from '~/utils/navigation/isActiveRoute'
 
 defineProps<{
   collapsed: boolean
