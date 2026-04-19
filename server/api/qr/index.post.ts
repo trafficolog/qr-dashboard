@@ -23,7 +23,7 @@ const createSchema = z.object({
     z.string().uuid().optional(),
   ),
   tagIds: z.preprocess(
-    value => Array.isArray(value) && value.length === 0 ? undefined : value,
+    value => (value === null || (Array.isArray(value) && value.length === 0)) ? undefined : value,
     z.array(z.string().uuid()).optional(),
   ),
   expiresAt: z.string().datetime().optional(),
