@@ -20,13 +20,23 @@
         >
           {{ qr.title }}
         </NuxtLink>
-        <UBadge
-          :color="statusColor"
-          variant="soft"
-          size="xs"
-        >
-          {{ statusLabel }}
-        </UBadge>
+        <div class="flex flex-col items-end gap-1">
+          <UBadge
+            :color="statusColor"
+            variant="soft"
+            size="xs"
+          >
+            {{ statusLabel }}
+          </UBadge>
+          <UBadge
+            :icon="visibilityBadge.icon"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ visibilityBadge.label }}
+          </UBadge>
+        </div>
       </div>
 
       <button
@@ -99,6 +109,7 @@ interface QrItem {
   tags?: { id: string, name: string, color: string | null }[]
   visibility?: 'private' | 'department' | 'public'
   departmentId?: string | null
+  departmentName?: string | null
 }
 
 const props = defineProps<{
@@ -116,6 +127,7 @@ const emit = defineEmits<{
 
 const toast = useA11yToast()
 const { copy } = useClipboard()
+const { t } = useI18n()
 
 type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
 
@@ -127,6 +139,21 @@ const statusColor = computed<StatusBadgeColor>(() => {
 const statusLabel = computed(() => {
   const map: Record<string, string> = { active: 'Активен', paused: 'Пауза', expired: 'Истёк', archived: 'Архив' }
   return map[props.qr.status] || props.qr.status
+})
+
+const visibilityBadge = computed(() => {
+  if (props.qr.visibility === 'department') {
+    return {
+      icon: 'i-lucide-building-2',
+      label: props.qr.departmentName ? t('qr.visibility.departmentWithName', { name: props.qr.departmentName }) : t('qr.visibility.department'),
+    }
+  }
+
+  if (props.qr.visibility === 'public') {
+    return { icon: 'i-lucide-globe', label: t('qr.visibility.public') }
+  }
+
+  return { icon: 'i-lucide-lock', label: t('qr.visibility.private') }
 })
 
 function formatEpicDate(date: string | Date) {

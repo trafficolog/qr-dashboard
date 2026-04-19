@@ -113,6 +113,13 @@
           size="sm"
           @click="handleBulkDelete"
         />
+        <UButton
+          icon="i-lucide-eye"
+          label="Изменить видимость"
+          variant="outline"
+          size="sm"
+          @click="openBulkVisibilityDialog"
+        />
       </div>
     </Transition>
 
@@ -202,6 +209,42 @@
       @confirm="confirmBulkDelete"
     />
 
+    <UModal v-model:open="bulkVisibilityDialogOpen">
+      <template #content>
+        <div class="space-y-4 p-5">
+          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+            Изменить видимость выбранных QR
+          </h3>
+          <USelect
+            v-model="bulkVisibility"
+            :items="bulkVisibilityItems"
+            value-key="value"
+          />
+          <USelect
+            v-if="bulkVisibility === 'department'"
+            v-model="bulkDepartmentId"
+            :items="departmentSelectItems"
+            value-key="value"
+            placeholder="Выберите отдел"
+          />
+          <div class="flex justify-end gap-2">
+            <UButton
+              variant="ghost"
+              color="neutral"
+              label="Отмена"
+              @click="bulkVisibilityDialogOpen = false"
+            />
+            <UButton
+              label="Применить"
+              :disabled="bulkVisibility === 'department' && !bulkDepartmentId"
+              :loading="bulkVisibilityLoading"
+              @click="confirmBulkVisibilityChange"
+            />
+          </div>
+        </div>
+      </template>
+    </UModal>
+
     <UModal v-model:open="departmentPickerOpen">
       <template #content>
         <div class="space-y-4 p-5">
@@ -243,7 +286,7 @@ const toast = useA11yToast()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, updateQr, updateQrVisibility, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
+const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, bulkUpdateQrVisibility, updateQr, updateQrVisibility, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
 const ALL_VISIBILITY = '__all_visibility__'
@@ -467,10 +510,30 @@ function handleDelete(id: string) {
 // Bulk delete with confirmation + Undo
 const bulkDeleteDialogOpen = ref(false)
 const pendingBulkIds = ref<string[]>([])
+const bulkVisibilityDialogOpen = ref(false)
+const bulkVisibilityLoading = ref(false)
+const bulkVisibility = ref<'private' | 'department' | 'public'>('private')
+const bulkDepartmentId = ref<string>('')
+
+const bulkVisibilityItems = [
+  { label: 'Приватные', value: 'private' },
+  { label: 'Отдела', value: 'department' },
+  { label: 'Публичные', value: 'public' },
+]
 
 function handleBulkDelete() {
   pendingBulkIds.value = [...selectedIds.value]
   bulkDeleteDialogOpen.value = true
+}
+
+function openBulkVisibilityDialog() {
+  if (selectedIds.value.length === 0) {
+    return
+  }
+
+  bulkVisibility.value = 'private'
+  bulkDepartmentId.value = userDepartments.value[0]?.id || ''
+  bulkVisibilityDialogOpen.value = true
 }
 
 async function confirmBulkDelete() {
@@ -509,6 +572,36 @@ async function confirmBulkDelete() {
       },
     ],
   })
+}
+
+async function confirmBulkVisibilityChange() {
+  if (selectedIds.value.length === 0) {
+    return
+  }
+
+  if (bulkVisibility.value === 'department' && !bulkDepartmentId.value) {
+    toast.add({ title: 'Выберите отдел', color: 'warning' })
+    return
+  }
+
+  bulkVisibilityLoading.value = true
+  try {
+    await bulkUpdateQrVisibility({
+      ids: selectedIds.value,
+      visibility: bulkVisibility.value,
+      departmentId: bulkVisibility.value === 'department' ? bulkDepartmentId.value : undefined,
+    })
+    toast.add({ title: 'Видимость обновлена', color: 'success' })
+    bulkVisibilityDialogOpen.value = false
+    selectedIds.value = []
+    await fetchQrList()
+  }
+  catch (error) {
+    toast.add({ title: resolveApiErrorMessage(error, t('qr.visibility.updateError')), color: 'error' })
+  }
+  finally {
+    bulkVisibilityLoading.value = false
+  }
 }
 
 // Folder options — fetch from API
