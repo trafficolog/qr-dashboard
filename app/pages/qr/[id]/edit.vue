@@ -404,6 +404,9 @@ async function loadQr() {
     if (qr.value.expiresAt) {
       form.expiresAt = new Date(qr.value.expiresAt).toISOString().slice(0, 16)
     }
+    else {
+      form.expiresAt = ''
+    }
 
     const utm = qr.value.utmParams as Record<string, string> | null
     if (utm) {
@@ -411,6 +414,12 @@ async function loadQr() {
       form.utmParams.utm_medium = utm.utm_medium || ''
       form.utmParams.utm_campaign = utm.utm_campaign || ''
       form.utmParams.utm_content = utm.utm_content || ''
+    }
+    else {
+      form.utmParams.utm_source = ''
+      form.utmParams.utm_medium = ''
+      form.utmParams.utm_campaign = ''
+      form.utmParams.utm_content = ''
     }
 
     // Фиксируем исходное состояние после загрузки — используется для isDirty
