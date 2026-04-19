@@ -134,10 +134,13 @@ async function handleSubmit() {
   if (!form.name.trim()) return
   saving.value = true
   try {
+    const normalizedParentId = form.parentId.trim()
+    const normalizedColor = form.color.trim()
+
     const payload = {
       name: form.name.trim(),
-      color: form.color || null,
-      parentId: form.parentId || null,
+      color: normalizedColor || null,
+      parentId: normalizedParentId || null,
     }
 
     if (props.folder) {
