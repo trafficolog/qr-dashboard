@@ -7,6 +7,23 @@
  
 ## [Unreleased]
 
+### Added — EPIC 21 Security Hardening (completed 2026-04-20)
+
+- **SEC-01 / 21.1 — CSRF Protection:** session CSRF token, origin/referer checks, enforcement for mutating cookie-auth requests.
+- **SEC-02 / 21.2 — OTP hashing:** peppered hashing for OTP codes вместо хранения plaintext.
+- **SEC-04 / 21.3 — Admin bootstrap hardening:** первый admin только через `ADMIN_EMAIL`, безопасный default-role для остальных пользователей.
+- **SEC-12 / 21.4 — Security headers:** глобальные security headers + CSP только для HTML-страниц.
+- **SEC-03 / 21.5 — Audit log:** schema/migration + audit recording utilities + admin API/UI (`/settings/audit`).
+- **SEC-05 / 21.6 — Persistent rate limiting:** DB-backed lockout для OTP brute-force и fallback-проверки лимитов.
+- **SEC-06 / 21.7 — Session invalidation:** инвалидирование активных сессий пользователя при смене роли.
+- **SEC-07 / 21.8 — Destination whitelist:** управление разрешёнными доменами назначения + warning redirect page.
+- **SEC-08 / 21.9 — API key scoping:** permissions, IP allowlist, обязательный expiry, лимиты/валидация ключей.
+- **SEC-09 / 21.10 — Body/JSONB hardening:** лимиты payload + strict validation для JSONB полей QR API.
+- **SEC-11 / 21.11 — Transactional bulk:** bulk create/delete с транзакционной защитой и предсказуемым контрактом ошибок.
+- **SEC-13 + SEC-16 / 21.12 — Trusted proxy & session caps:** hardened IP extraction и ограничение числа активных сессий.
+- **SEC-15 + SEC-18 / 21.13 — API v1 CORS & shortCode hardening:** целевой CORS для `/api/v1/**`, усиление anti-abuse redirect limits, новые shortCode правила.
+- Документация итоговой верификации: `docs/reports/epic-21-security-checklist-2026-04-20.md`.
+
 ### Added — EPIC 20 UX/UI Enhancement Pack (Done with notes)
 
 - **Analytics**: гео-блок (`GeoMap`, `GeoTable`), breakdown по устройствам/OS/браузерам, графики по часам и дням недели, compare previous period в `ScanChart`.

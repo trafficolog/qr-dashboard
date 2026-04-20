@@ -799,6 +799,32 @@ UI: показывает modal с ключом + кнопка копирован
 
 ---
 
+## Эпик 21 — Security Hardening (Завершён 2026-04-20)
+
+Подробно: [epic-21-security-hardening.md](./epic-21-security-hardening.md), итоговая верификация: [EPIC 21 Security Checklist (2026-04-20)](./reports/epic-21-security-checklist-2026-04-20.md).
+
+### Статус по фазам
+- ✅ **Фаза 0 (deploy blocker):** закрыта (SEC-01, SEC-02, SEC-04, SEC-12, SEC-09).
+- ✅ **Фаза 1:** закрыта (SEC-03, SEC-05, SEC-06, SEC-07, SEC-11).
+- ✅ **Фаза 2:** закрыта (SEC-08, SEC-13/SEC-16, SEC-15/SEC-18).
+
+### Ключевые security-блоки EPIC 21
+- CSRF protection + SameSite strict cookies + origin/referer checks.
+- OTP hashing with pepper и безопасный bootstrap первого admin через `ADMIN_EMAIL`.
+- Глобальные security headers + HTML-only CSP.
+- Audit log (DB schema + admin API/UI) для мутирующих действий.
+- Persistent rate limiting, lockout для OTP и session invalidation при смене роли.
+- Destination-domain whitelist + warning-page на redirect для неизвестных доменов.
+- API key scopes, IP allowlist, обязательный expiry и лимиты ключей.
+- Body-size/JSONB hardening, transactional bulk операции, trusted proxies, session caps, CORS для API v1 и shortCode hardening.
+
+### Критерий перехода к 1.0.0
+- EPIC 21 выполнен в полном объёме (все фазы завершены).
+- Security checklist/report оформлен и привязан к документации.
+- Production-ready условия зафиксированы в [epic-21-security-hardening.md](./epic-21-security-hardening.md).
+
+---
+
 ## EPIC 17 (phase 1) — Accessibility baseline (в процессе)
 
 ### Реализовано в phase 1
