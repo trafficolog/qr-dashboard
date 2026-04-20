@@ -35,6 +35,15 @@ describe('auth cookie policy & same-origin API flow', () => {
   const getCookieMock = vi.fn()
 
   const originalNodeEnv = process.env.NODE_ENV
+  const originalGlobals = {
+    defineEventHandler: (globalThis as { defineEventHandler?: unknown }).defineEventHandler,
+    readValidatedBody: (globalThis as { readValidatedBody?: unknown }).readValidatedBody,
+    setCookie: (globalThis as { setCookie?: unknown }).setCookie,
+    deleteCookie: (globalThis as { deleteCookie?: unknown }).deleteCookie,
+    getCookie: (globalThis as { getCookie?: unknown }).getCookie,
+    apiSuccess: (globalThis as { apiSuccess?: unknown }).apiSuccess,
+    createError: (globalThis as { createError?: unknown }).createError,
+  }
 
   beforeEach(() => {
     vi.resetModules()
@@ -54,6 +63,13 @@ describe('auth cookie policy & same-origin API flow', () => {
 
   afterEach(() => {
     process.env.NODE_ENV = originalNodeEnv
+    ;(globalThis as { defineEventHandler?: unknown }).defineEventHandler = originalGlobals.defineEventHandler
+    ;(globalThis as { readValidatedBody?: unknown }).readValidatedBody = originalGlobals.readValidatedBody
+    ;(globalThis as { setCookie?: unknown }).setCookie = originalGlobals.setCookie
+    ;(globalThis as { deleteCookie?: unknown }).deleteCookie = originalGlobals.deleteCookie
+    ;(globalThis as { getCookie?: unknown }).getCookie = originalGlobals.getCookie
+    ;(globalThis as { apiSuccess?: unknown }).apiSuccess = originalGlobals.apiSuccess
+    ;(globalThis as { createError?: unknown }).createError = originalGlobals.createError
   })
 
   it('sets SameSite=strict and secure=true in production on OTP verify', async () => {

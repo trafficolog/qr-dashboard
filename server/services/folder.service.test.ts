@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { folderService } from './folder.service'
 import type { User } from '~/shared/types/auth'
 
@@ -25,10 +25,7 @@ vi.mock('../db', () => ({
   },
 }))
 
-;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError = ({
-  statusCode,
-  message,
-}) => Object.assign(new Error(message), { statusCode })
+const originalCreateError = (globalThis as { createError?: unknown }).createError
 
 const user: User = {
   id: 'user-1',
@@ -44,6 +41,14 @@ const user: User = {
 describe('folderService.update parent cycle validation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    ;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError = ({
+      statusCode,
+      message,
+    }) => Object.assign(new Error(message), { statusCode })
+  })
+
+  afterAll(() => {
+    ;(globalThis as { createError?: unknown }).createError = originalCreateError
   })
 
   it('returns 422 when parentId equals folder id', async () => {

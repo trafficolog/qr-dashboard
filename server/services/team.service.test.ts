@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { sessions } from '../db/schema'
 import { teamService } from './team.service'
 import type { User } from '~/shared/types/auth'
@@ -53,10 +53,7 @@ const auditMocks = vi.hoisted(() => ({
 }))
 vi.mock('../utils/audit', () => ({ recordAudit: auditMocks.recordAudit }))
 
-;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError = ({
-  statusCode,
-  message,
-}) => Object.assign(new Error(message), { statusCode })
+const originalCreateError = (globalThis as { createError?: unknown }).createError
 
 const adminUser: User = {
   id: 'admin-1',
@@ -72,6 +69,14 @@ const adminUser: User = {
 describe('teamService.updateRole', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    ;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError = ({
+      statusCode,
+      message,
+    }) => Object.assign(new Error(message), { statusCode })
+  })
+
+  afterAll(() => {
+    ;(globalThis as { createError?: unknown }).createError = originalCreateError
   })
 
   it('invalidates only target user sessions and writes team.role_change audit event', async () => {

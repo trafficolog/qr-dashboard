@@ -45,7 +45,7 @@
 | MG-23-A (Build readiness) | ✅ Green | `pnpm build` проходит (см. baseline). |
 | MG-23-B (E2E environment readiness) | ✅ Green | Playwright browsers/system deps устанавливаются. |
 | MG-23-C (Quality debt triage) | ✅ Green | Must-fix/can-defer классификация зафиксирована в baseline (раздел 5.1). |
-| MG-23-D (Core quality gate) | ✅ Green (закрыт 2026-04-20) | Закрыты критичные must-fix из core flow: auth/session unit path, DTO type safety v1 API, `useSecurityError` type safety, core service tests (подтверждено целевыми `eslint`/`vitest`). |
+| MG-23-D (Core quality gate) | ✅ Green (закрыт 2026-04-20) | Закрыты критичные must-fix из core flow: `auth/session`, DTO type safety v1 API, `useSecurityError` type safety, core service tests; подтверждено целевыми `eslint` + `vitest`, тесты изолированы от нестабильного внешнего runtime. |
 
 **Gate policy:** запуск 23.4/23.5 разрешается только при `MG-23-D = ✅` (и сохранении `MG-23-A..C = ✅`).
 
