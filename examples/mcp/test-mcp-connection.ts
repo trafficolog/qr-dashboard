@@ -1,8 +1,27 @@
 const API_BASE_URL = process.env.API_BASE_URL ?? 'http://localhost:3000'
 const API_TOKEN = process.env.API_TOKEN
+const API_KEY_PERMISSIONS = (process.env.API_KEY_PERMISSIONS ?? '')
+  .split(',')
+  .map(scope => scope.trim())
+  .filter(Boolean)
 
 if (!API_TOKEN) {
   throw new Error('API_TOKEN is required')
+}
+
+const TOOL_SCOPE_REQUIREMENTS: Record<string, string[]> = {
+  list_qr_codes: ['qr:read'],
+  get_qr_code: ['qr:read'],
+  create_qr_code: ['qr:write'],
+  update_qr_code: ['qr:write'],
+  archive_qr_code: ['qr:write'],
+  duplicate_qr_code: ['qr:write'],
+  list_folders: ['qr:read'],
+  create_folder: ['qr:write'],
+  list_tags: ['qr:read'],
+  create_tag: ['qr:write'],
+  get_analytics_overview: ['qr:stats:read'],
+  get_top_qr_codes: ['qr:stats:read'],
 }
 
 type JsonRpcSuccess<T = unknown> = {
@@ -22,6 +41,10 @@ type JsonRpcError = {
 }
 
 type JsonRpcResponse<T = unknown> = JsonRpcSuccess<T> | JsonRpcError
+
+type McpToolSummary = {
+  name: string
+}
 
 function isJsonRpcError<T>(response: JsonRpcResponse<T>): response is JsonRpcError {
   return 'error' in response
@@ -89,7 +112,7 @@ async function testConnection() {
 
   console.log('initialize result:', initializeResult)
 
-  const toolsListResult = await postJsonRpc<{ tools?: unknown[] }>(
+  const toolsListResult = await postJsonRpc<{ tools?: McpToolSummary[] }>(
     {
       id: 2,
       method: 'tools/list',
@@ -98,13 +121,48 @@ async function testConnection() {
   )
 
   const tools = Array.isArray(toolsListResult?.tools) ? toolsListResult.tools : []
+  const toolNames = new Set(
+    tools
+      .filter((tool): tool is McpToolSummary => Boolean(tool && typeof tool.name === 'string'))
+      .map(tool => tool.name),
+  )
 
-  if (tools.length === 0) {
+  if (toolNames.size === 0) {
     console.error('[tools/list] Empty tools list')
     process.exit(1)
   }
 
-  console.log('[tools/list] tools count:', tools.length)
+  console.log('[tools/list] tools count:', toolNames.size)
+
+  if (API_KEY_PERMISSIONS.length > 0) {
+    const expectedToolNames = Object.entries(TOOL_SCOPE_REQUIREMENTS)
+      .filter(([, scopes]) => scopes.every(scope => API_KEY_PERMISSIONS.includes(scope)))
+      .map(([name]) => name)
+      .sort()
+
+    const visibleKnownTools = Array.from(toolNames)
+      .filter(name => name in TOOL_SCOPE_REQUIREMENTS)
+      .sort()
+
+    const missingTools = expectedToolNames.filter(name => !toolNames.has(name))
+    const forbiddenTools = visibleKnownTools.filter(name => !expectedToolNames.includes(name))
+
+    if (missingTools.length > 0 || forbiddenTools.length > 0) {
+      console.error('[tools/list] Scope mismatch for provided API_KEY_PERMISSIONS', {
+        apiKeyPermissions: API_KEY_PERMISSIONS,
+        expectedToolNames,
+        visibleKnownTools,
+        missingTools,
+        forbiddenTools,
+      })
+      process.exit(1)
+    }
+  }
+
+  if (!toolNames.has('list_qr_codes')) {
+    console.log('[tools/call] Skip list_qr_codes call: API key has no qr:read scope')
+    return
+  }
 
   const toolCallResult = await postJsonRpc(
     {

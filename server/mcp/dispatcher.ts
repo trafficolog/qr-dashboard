@@ -22,6 +22,10 @@ export const allMcpResources: McpResourceDefinition[] = [
 
 const toolsByName = new Map(allMcpTools.map(tool => [tool.name, tool]))
 
+function hasRequiredScopes(requiredScopes: string[], permissions: string[]) {
+  return requiredScopes.every(scope => permissions.includes(scope))
+}
+
 function ensureScope(requiredScopes: string[], permissions: string[]) {
   const missingScope = requiredScopes.find(scope => !permissions.includes(scope))
   if (missingScope) {
@@ -30,6 +34,14 @@ function ensureScope(requiredScopes: string[], permissions: string[]) {
       message: `API key lacks required scope: ${missingScope}`,
     })
   }
+}
+
+export function filterToolsByPermissions(permissions: string[]): McpToolDefinition[] {
+  return allMcpTools.filter(tool => hasRequiredScopes(tool.requiredScopes, permissions))
+}
+
+export function filterResourcesByPermissions(permissions: string[]): McpResourceDefinition[] {
+  return allMcpResources.filter(resource => hasRequiredScopes(resource.requiredScopes, permissions))
 }
 
 function ensureObjectArgs(args: unknown): Record<string, unknown> {
@@ -112,18 +124,13 @@ export async function dispatchToolCall(name: string, args: unknown, ctx: McpCont
 }
 
 export async function dispatchResourceList(ctx: McpContext): Promise<McpResourceListItem[]> {
-  const listed = await Promise.all(allMcpResources.map(async (resource) => {
+  const accessibleResources = filterResourcesByPermissions(ctx.apiKey.permissions)
+  const listed = await Promise.all(accessibleResources.map(async (resource) => {
     if (!resource.list) {
       return []
     }
 
-    try {
-      ensureScope(resource.requiredScopes, ctx.apiKey.permissions)
-      return await resource.list(ctx)
-    }
-    catch {
-      return []
-    }
+    return await resource.list(ctx)
   }))
 
   return listed.flat()
