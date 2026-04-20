@@ -4,6 +4,7 @@ import { and, eq, gt } from 'drizzle-orm'
 import { db } from '../db'
 import { sessions } from '../db/schema'
 import { hashToken } from '../utils/hash'
+import { logSecurityRejection } from '../utils/security-observability'
 import { throwSecurityError } from '../utils/security-error'
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
@@ -23,6 +24,12 @@ function validateOriginOrReferer(event: H3Event, appOrigin: string) {
   const refererHeader = getHeader(event, 'referer')
 
   if (!originHeader && !refererHeader) {
+    logSecurityRejection({
+      event,
+      eventCode: 'SEC_CSRF_MISSING_ORIGIN_OR_REFERER',
+      statusCode: 403,
+      reason: 'Missing Origin/Referer header on mutating API request',
+    })
     throwSecurityError(event, {
       statusCode: 403,
       code: 'csrf.missing_origin_or_referer',
@@ -33,6 +40,12 @@ function validateOriginOrReferer(event: H3Event, appOrigin: string) {
   if (originHeader) {
     try {
       if (new URL(originHeader).origin !== appOrigin) {
+        logSecurityRejection({
+          event,
+          eventCode: 'SEC_CSRF_ORIGIN_MISMATCH',
+          statusCode: 403,
+          reason: 'Origin header does not match app origin',
+        })
         throwSecurityError(event, {
           statusCode: 403,
           code: 'csrf.origin_mismatch',
@@ -43,6 +56,12 @@ function validateOriginOrReferer(event: H3Event, appOrigin: string) {
       return
     }
     catch {
+      logSecurityRejection({
+        event,
+        eventCode: 'SEC_CSRF_ORIGIN_INVALID',
+        statusCode: 403,
+        reason: 'Origin header cannot be parsed',
+      })
       throwSecurityError(event, {
         statusCode: 403,
         code: 'csrf.origin_mismatch',
@@ -54,6 +73,12 @@ function validateOriginOrReferer(event: H3Event, appOrigin: string) {
 
   try {
     if (new URL(refererHeader!).origin !== appOrigin) {
+      logSecurityRejection({
+        event,
+        eventCode: 'SEC_CSRF_REFERER_MISMATCH',
+        statusCode: 403,
+        reason: 'Referer header does not match app origin',
+      })
       throwSecurityError(event, {
         statusCode: 403,
         code: 'csrf.referer_mismatch',
@@ -63,6 +88,12 @@ function validateOriginOrReferer(event: H3Event, appOrigin: string) {
     }
   }
   catch {
+    logSecurityRejection({
+      event,
+      eventCode: 'SEC_CSRF_REFERER_INVALID',
+      statusCode: 403,
+      reason: 'Referer header cannot be parsed',
+    })
     throwSecurityError(event, {
       statusCode: 403,
       code: 'csrf.referer_mismatch',
@@ -112,6 +143,12 @@ export default defineEventHandler(async (event) => {
   const csrfHeaderName = runtimeConfig.public.csrfHeaderName.toLowerCase()
   const csrfHeader = getHeader(event, csrfHeaderName)
   if (!csrfHeader) {
+    logSecurityRejection({
+      event,
+      eventCode: 'SEC_CSRF_TOKEN_MISSING',
+      statusCode: 403,
+      reason: 'Missing CSRF token header',
+    })
     throwSecurityError(event, {
       statusCode: 403,
       code: 'csrf.missing_token',
@@ -123,6 +160,12 @@ export default defineEventHandler(async (event) => {
   const actual = Buffer.from(csrfHeader)
 
   if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
+    logSecurityRejection({
+      event,
+      eventCode: 'SEC_CSRF_TOKEN_INVALID',
+      statusCode: 403,
+      reason: 'Invalid CSRF token',
+    })
     throwSecurityError(event, {
       statusCode: 403,
       code: 'csrf.invalid_token',

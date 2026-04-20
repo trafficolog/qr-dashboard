@@ -4,6 +4,7 @@ import { eq, and, gt, isNull, desc, asc, count, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { otpCodes, allowedDomains, users, sessions, authEmailLocks } from '../db/schema'
 import { hashToken, hashOtpWithPepper } from '../utils/hash'
+import { logSecurityRejection, recordSecuritySignal } from '../utils/security-observability'
 import { throwSecurityError } from '../utils/security-error'
 import { emailService } from './email.service'
 
@@ -135,6 +136,13 @@ export const authService = {
         setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(activeEmailLock.lockedUntil.getTime() / 1000))
       }
 
+      logSecurityRejection({
+        event,
+        eventCode: 'SEC_AUTH_LOCKOUT_ACTIVE',
+        statusCode: 429,
+        reason: 'Email is currently locked due to failed OTP verification attempts',
+      })
+      recordSecuritySignal('auth.lockout')
       throwSecurityError(event, {
         statusCode: 429,
         code: 'auth.otp_locked',
@@ -181,6 +189,16 @@ export const authService = {
         setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(lockUntil.getTime() / 1000))
       }
 
+      logSecurityRejection({
+        event,
+        eventCode: 'SEC_AUTH_LOCKOUT_TRIGGERED',
+        statusCode: 429,
+        reason: 'OTP attempts exhausted; lockout created',
+        context: {
+          lockoutMinutes: 30,
+        },
+      })
+      recordSecuritySignal('auth.lockout')
       throwSecurityError(event, {
         statusCode: 429,
         code: 'auth.otp_locked',
@@ -217,6 +235,16 @@ export const authService = {
           setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(lockUntil.getTime() / 1000))
         }
 
+        logSecurityRejection({
+          event,
+          eventCode: 'SEC_AUTH_LOCKOUT_TRIGGERED',
+          statusCode: 429,
+          reason: 'OTP attempts exhausted after invalid code; lockout created',
+          context: {
+            lockoutMinutes: 30,
+          },
+        })
+        recordSecuritySignal('auth.lockout')
         throwSecurityError(event, {
           statusCode: 429,
           code: 'auth.otp_locked',

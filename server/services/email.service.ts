@@ -42,17 +42,11 @@ class SmtpProvider implements EmailProvider {
 }
 
 class ConsoleProvider implements EmailProvider {
-  async send(to: string, subject: string, html: string) {
-    const plainText = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
-    const otpCode = plainText.match(/\b(\d{6})\b/u)?.[1]
-
+  async send(to: string, subject: string) {
     console.log(`\n📧 ─────────────────────────────────`)
     console.log(`   TO:      ${to}`)
     console.log(`   SUBJECT: ${subject}`)
-    if (otpCode) {
-      console.log(`   OTP:     ${otpCode}`)
-    }
-    console.log(`   BODY:    ${plainText.substring(0, 200)}...`)
+    console.log(`   BODY:    [REDACTED_IN_CONSOLE_PROVIDER]`)
     console.log(`─────────────────────────────────────\n`)
   }
 }

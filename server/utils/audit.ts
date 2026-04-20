@@ -1,6 +1,7 @@
 import { db } from '../db'
 import { auditLog } from '../db/schema'
 import type { auditActionEnum } from '../db/schema'
+import { recordSecuritySignal } from './security-observability'
 
 export type AuditAction = typeof auditActionEnum.enumValues[number]
 
@@ -15,6 +16,11 @@ interface RecordAuditParams {
   details?: Record<string, unknown>
 }
 
+const auditWriteCounters = {
+  success: 0,
+  failure: 0,
+}
+
 export function recordAudit(event: AuditEvent, params: RecordAuditParams = {}) {
   void db
     .insert(auditLog)
@@ -25,12 +31,20 @@ export function recordAudit(event: AuditEvent, params: RecordAuditParams = {}) {
       entityId: event.entityId ?? null,
       details: params.details ?? {},
     })
+    .then(() => {
+      auditWriteCounters.success += 1
+    })
     .catch((error) => {
-      console.error('[audit] Failed to write audit log', {
+      auditWriteCounters.failure += 1
+      recordSecuritySignal('audit.failure')
+      console.error('[audit.write_failed]', {
+        eventCode: 'SEC_AUDIT_WRITE_FAILED',
         action: event.action,
         entityType: event.entityType,
         entityId: event.entityId ?? null,
-        error,
+        auditWriteSuccessCount: auditWriteCounters.success,
+        auditWriteFailureCount: auditWriteCounters.failure,
+        errorMessage: error instanceof Error ? error.message : String(error),
       })
     })
 }
