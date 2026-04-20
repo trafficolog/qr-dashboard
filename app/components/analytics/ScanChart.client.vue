@@ -47,7 +47,7 @@ import {
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
-import type { CompareSeries, ScanTimeSeriesPoint } from '~~/types/analytics'
+import type { CompareSeries, ScanTimeSeriesPoint } from '~/shared/types/analytics'
 
 use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer])
 

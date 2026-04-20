@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { User } from '~~/types/auth'
+import type { User } from '~/shared/types/auth'
 
 export function requireAuth(event: H3Event): User {
   const user = event.context.user

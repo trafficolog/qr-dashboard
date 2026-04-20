@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  css: ['~~/assets/css/main.css', '@scalar/api-reference/style.css'],
+  css: ['~/assets/css/main.css', '@scalar/api-reference/style.css'],
 
   colorMode: {
     preference: 'system',

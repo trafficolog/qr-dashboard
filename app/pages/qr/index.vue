@@ -286,7 +286,7 @@
 </template>
 
 <script setup lang="ts">
-import type { QrCode } from '~~/types/qr'
+import type { QrCode } from '~/shared/types/qr'
 import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
 const toast = useA11yToast()

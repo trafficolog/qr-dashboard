@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { User } from '~~/types/auth'
+import type { User } from '~/shared/types/auth'
 
 vi.mock('../db', () => {
   const findFirst = vi.fn()

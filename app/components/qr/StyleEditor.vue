@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import type { QrStyle } from '~/../types/qr'
+import type { QrStyle } from '~/shared/types/qr'
 
 const props = defineProps<{
   modelValue: Partial<QrStyle>

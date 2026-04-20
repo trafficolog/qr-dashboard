@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { resolveDeviceColor } from './deviceColors'
-import type { DeviceBreakdownItem } from '~~/types/analytics'
+import type { DeviceBreakdownItem } from '~/shared/types/analytics'
 
 const props = withDefaults(defineProps<{
   items: readonly DeviceBreakdownItem[]

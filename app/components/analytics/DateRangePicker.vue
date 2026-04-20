@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DateRange } from '~~/types/analytics'
+import type { DateRange } from '~/shared/types/analytics'
 
 const props = defineProps<{
   modelValue: DateRange

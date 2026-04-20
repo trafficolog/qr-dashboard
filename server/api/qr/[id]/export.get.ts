@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { requireAuth } from '../../../utils/auth'
 import { qrService } from '../../../services/qr.service'
 import { exportService } from '../../../services/export.service'
-import type { QrStyle } from '~~/types/qr'
+import type { QrStyle } from '~/shared/types/qr'
 
 const querySchema = z.object({
   format: z.enum(['svg', 'png', 'pdf']).default('png'),

@@ -1,5 +1,5 @@
 import QRCode from 'qrcode'
-import type { QrStyle } from '~~/types/qr'
+import type { QrStyle } from '~/shared/types/qr'
 
 const DEFAULT_STYLE: Required<Pick<QrStyle, 'foregroundColor' | 'backgroundColor' | 'moduleStyle' | 'cornerStyle' | 'errorCorrectionLevel'>> = {
   foregroundColor: '#000000',

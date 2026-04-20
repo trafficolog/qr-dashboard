@@ -7,7 +7,7 @@
 import QRCode from 'qrcode'
 import sharp from 'sharp'
 import PDFDocument from 'pdfkit'
-import type { QrStyle } from '~~/types/qr'
+import type { QrStyle } from '~/shared/types/qr'
 
 // ─── SVG rendering (mirrors app/utils/qr-svg.ts) ────────────────────────────
 
