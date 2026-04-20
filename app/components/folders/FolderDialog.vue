@@ -3,81 +3,96 @@
     v-model:open="open"
     :close-on-escape="true"
   >
-    <template #header>
-      <h3 class="text-base font-semibold">
-        {{ folder ? 'Редактировать папку' : 'Новая папка' }}
-      </h3>
-    </template>
-
-    <div class="space-y-4">
-      <UFormField
-        label="Название"
-        required
-      >
-        <UInput
-          v-model="form.name"
-          placeholder="Например: Промо-акции 2025"
-          autofocus
-        />
-      </UFormField>
-
-      <UFormField label="Цвет">
-        <div class="flex items-center gap-3">
-          <input
-            v-model="form.color"
-            type="color"
-            class="h-8 w-10 cursor-pointer rounded border border-[color:var(--border)] dark:border-[color:var(--border)] p-0.5"
+    <template #content>
+      <div class="bg-[color:var(--surface-0)] p-6">
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+            {{ folder ? 'Редактировать папку' : 'Новая папка' }}
+          </h3>
+          <span
+            v-if="saving"
+            class="text-sm text-[color:var(--text-muted)]"
+            aria-live="polite"
           >
-          <span class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] font-mono">{{ form.color || '#6b7280' }}</span>
+            {{ folder ? 'Сохранение...' : 'Создание...' }}
+          </span>
+        </div>
+
+        <div class="mt-4 space-y-4">
+          <UFormField
+            label="Название"
+            required
+            :error="nameError"
+          >
+            <UInput
+              v-model="form.name"
+              placeholder="Например: Промо-акции 2025"
+              autofocus
+              :disabled="saving"
+            />
+          </UFormField>
+
+          <UFormField label="Цвет">
+            <div class="flex items-center gap-3">
+              <input
+                v-model="form.color"
+                type="color"
+                class="h-8 w-10 cursor-pointer rounded border border-[color:var(--border)] dark:border-[color:var(--border)] p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="saving"
+              >
+              <span class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] font-mono">{{ form.color || '#6b7280' }}</span>
+              <UButton
+                v-if="form.color"
+                variant="ghost"
+                color="neutral"
+                size="xs"
+                icon="i-lucide-x"
+                aria-label="Сбросить выбранный цвет"
+                title="Сбросить выбранный цвет"
+                :disabled="saving"
+                @click="form.color = ''"
+              />
+            </div>
+            <div class="flex gap-2 mt-2">
+              <button
+                v-for="preset in colorPresets"
+                :key="preset"
+                :style="{ backgroundColor: preset }"
+                class="size-6 rounded-full border-2 transition-transform hover:scale-110"
+                :class="form.color === preset ? 'border-[color:var(--text-primary)] dark:border-[color:var(--text-primary)]' : 'border-transparent'"
+                :disabled="saving"
+                @click="form.color = preset"
+              />
+            </div>
+          </UFormField>
+
+          <UFormField
+            v-if="parentOptions.length > 1"
+            label="Родительская папка"
+          >
+            <USelect
+              v-model="form.parentId"
+              :items="parentOptions"
+              placeholder="Корневая папка"
+              :disabled="saving"
+            />
+          </UFormField>
+        </div>
+
+        <div class="mt-6 flex justify-end gap-3">
           <UButton
-            v-if="form.color"
-            variant="ghost"
+            label="Отмена"
+            variant="outline"
             color="neutral"
-            size="xs"
-            icon="i-lucide-x"
-            aria-label="Сбросить выбранный цвет"
-            title="Сбросить выбранный цвет"
-            @click="form.color = ''"
+            @click="open = false"
+          />
+          <UButton
+            :label="submitButtonLabel"
+            :loading="saving"
+            :disabled="!form.name.trim() || saving"
+            @click="handleSubmit"
           />
         </div>
-        <div class="flex gap-2 mt-2">
-          <button
-            v-for="preset in colorPresets"
-            :key="preset"
-            :style="{ backgroundColor: preset }"
-            class="size-6 rounded-full border-2 transition-transform hover:scale-110"
-            :class="form.color === preset ? 'border-[color:var(--text-primary)] dark:border-[color:var(--text-primary)]' : 'border-transparent'"
-            @click="form.color = preset"
-          />
-        </div>
-      </UFormField>
-
-      <UFormField
-        v-if="parentOptions.length > 1"
-        label="Родительская папка"
-      >
-        <USelect
-          v-model="form.parentId"
-          :items="parentOptions"
-          placeholder="Корневая папка"
-        />
-      </UFormField>
-    </div>
-
-    <template #footer>
-      <div class="flex justify-end gap-2">
-        <UButton
-          label="Отмена"
-          variant="outline"
-          color="neutral"
-          @click="open = false"
-        />
-        <UButton
-          :label="folder ? 'Сохранить' : 'Создать'"
-          :loading="saving"
-          :disabled="!form.name.trim() || saving"
-          @click="handleSubmit"
-        />
       </div>
     </template>
   </UModal>
@@ -100,10 +115,12 @@ const emit = defineEmits<{
 
 const open = defineModel<boolean>('open', { default: false })
 const focusReturn = createDialogFocusReturn()
+const toast = useA11yToast()
 
 const colorPresets = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899']
 
 const saving = ref(false)
+const nameError = ref('')
 
 const form = reactive({
   name: '',
@@ -116,11 +133,21 @@ watch(open, (val) => {
     focusReturn.save()
     form.name = props.folder?.name ?? ''
     form.color = props.folder?.color ?? ''
-    form.parentId = props.folder?.parentId?.trim() || SELECT_VALUE_NONE
+    form.parentId = props.folder?.parentId ?? ''
+    nameError.value = ''
   }
   else {
     focusReturn.restore()
   }
+})
+
+watch(() => form.name, () => {
+  if (nameError.value) nameError.value = ''
+})
+
+const submitButtonLabel = computed(() => {
+  if (saving.value) return props.folder ? 'Сохранение...' : 'Создание...'
+  return props.folder ? 'Сохранить' : 'Создать'
 })
 
 const parentOptions = computed(() => {
@@ -132,8 +159,9 @@ const parentOptions = computed(() => {
 })
 
 async function handleSubmit() {
-  if (!form.name.trim()) return
+  if (saving.value || !form.name.trim()) return
   saving.value = true
+  nameError.value = ''
   try {
     const normalizedColor = form.color.trim()
 
@@ -159,6 +187,35 @@ async function handleSubmit() {
     }
 
     open.value = false
+  }
+  catch (error: unknown) {
+    const err = error as {
+      statusCode?: number
+      statusMessage?: string
+      message?: string
+      data?: {
+        message?: string
+        fieldErrors?: Record<string, string>
+        data?: { issues?: Array<{ path?: Array<string | number>, message?: string }> }
+      }
+    }
+
+    const statusCode = err.statusCode ?? 0
+    const fieldErrors = err.data?.fieldErrors
+    const zodIssueNameError = err.data?.data?.issues?.find((issue) => {
+      const fieldPath = issue.path?.map(String).join('.') ?? ''
+      return fieldPath === 'name'
+    })?.message
+
+    if ((statusCode === 400 || statusCode === 422) && (fieldErrors?.name || zodIssueNameError)) {
+      nameError.value = fieldErrors?.name || zodIssueNameError || 'Некорректное значение поля'
+    }
+
+    const fallbackMessage = 'Не удалось сохранить папку. Проверьте соединение и попробуйте снова.'
+    toast.add({
+      title: err.data?.message || err.statusMessage || err.message || fallbackMessage,
+      color: 'error',
+    })
   }
   finally {
     saving.value = false

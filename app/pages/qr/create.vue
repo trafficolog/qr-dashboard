@@ -417,7 +417,8 @@ async function handleCreate() {
       description: form.description || undefined,
       style: form.style as QrStyle,
       utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
-      folderId: selectValueToOptionalId(form.folderId),
+      // Optional fields should be omitted from payload when empty
+      folderId: form.folderId || undefined,
       tagIds: form.tagIds.length ? form.tagIds : undefined,
       expiresAt: form.expiresAt || undefined,
     })
