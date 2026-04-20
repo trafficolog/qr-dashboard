@@ -74,15 +74,15 @@
 | `pnpm lint` | ❌ fail | 81 проблем: **21 errors**, **60 warnings**. Время: `real 0m11.338s`. |
 | `pnpm test:unit` | ❌ fail | 22 test files: **18 failed**, **4 passed**; 14 tests: **3 failed**, **11 passed**. Время: `real 0m17.579s`. |
 | `pnpm test:e2e` | ⚠️ env fail | **84 failed**. Основная причина: не установлены Playwright browsers (`pnpm exec playwright install`). Время: `real 1m20.955s`. |
-| `pnpm build` | ❌ fail | Сбой сборки: `Can't resolve 'tailwindcss' in /workspace/qr-dashboard/assets/css/main.css`; дополнительно сетевые ошибки font providers (`@nuxt/fonts/unifont`). Время: `real 0m10.327s`. |
+| `pnpm build` | ✅ pass | Сборка проходит после фиксов Tailwind/i18n; `tailwindcss` resolve-ошибка устранена. Остались non-blocking предупреждения от `@nuxt/fonts/unifont` (провайдеры шрифтов недоступны по сети) и предупреждение о крупных chunk'ах. |
 | `timeout 40s pnpm dev` | ⚠️ partial | Dev-сервер поднимается (`Local: http://localhost:3000/`), но есть pre-transform ошибка `Can't resolve 'tailwindcss'`. Измерение ограничено `timeout 40s`. |
 
 ---
 
 ## 4) Bundle size baseline
 
-- `pnpm build` завершился с ошибкой, поэтому размер `.output/public` **не зафиксирован** на этом шаге.
-- Нужно повторить метрику после исправления `tailwindcss` resolve и/или отключения проблемных font providers в CI-контуре.
+- `pnpm build` завершился успешно; build-артефакты сформированы в `.output/` (включая `.output/public` и `.output/server`).
+- В логах остались non-blocking предупреждения по `@nuxt/fonts` (сетевой доступ к внешним font providers), но они не прерывают сборку.
 
 ---
 
@@ -96,7 +96,7 @@
 
 | Gate | Минимальное условие | Owner | Целевая дата |
 |---|---|---|---|
-| MG-23-A (Build readiness) | `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
+| MG-23-A (Build readiness) | ✅ Выполнено 2026-04-20: `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
 | MG-23-B (E2E environment readiness) | E2E-окружение подготовлено: установлены Playwright browsers (`pnpm exec playwright install`) | QA/Automation Lead | 2026-04-22 |
 | MG-23-C (Quality debt triage) | Известные TS/lint долги классифицированы в `must-fix` и `can-defer` | Tech Lead | 2026-04-23 |
 
