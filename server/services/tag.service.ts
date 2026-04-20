@@ -15,6 +15,7 @@ export const tagService = {
         name: tags.name,
         color: tags.color,
         createdAt: tags.createdAt,
+        updatedAt: tags.createdAt,
         qrCount: count(qrTags.qrCodeId),
       })
       .from(tags)
@@ -22,7 +23,7 @@ export const tagService = {
       .groupBy(tags.id)
       .orderBy(tags.name)
 
-    return rows
+    return rows.map(row => ({ ...row, updatedAt: row.updatedAt ?? row.createdAt }))
   },
 
   async create(data: CreateTagData) {
@@ -49,6 +50,6 @@ export const tagService = {
       })
       .returning()
 
-    return tag!
+    return { ...tag!, updatedAt: tag!.createdAt }
   },
 }

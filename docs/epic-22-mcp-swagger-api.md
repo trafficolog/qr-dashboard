@@ -1116,3 +1116,17 @@ locales/ru.json, locales/en.json   — строки для mcp-setup
 - **MCP Prompts** — пресеты промптов для типовых задач («Создай ежемесячный отчёт по QR»)
 - **Webhooks из MCP** — регистрация webhook'ов через tool (интеграция с системой уведомлений)
 - **Multi-tenant MCP** — если система станет мультитенантной, добавить tenant isolation в MCP context
+
+### Единый контракт `updated_at` для API v1 (folders/tags/destinations)
+
+Принятое правило для ответа API v1:
+
+- `updated_at` **всегда присутствует** в DTO для:
+  - `Folder` (`GET/POST /api/v1/folders`, `PUT /api/v1/folders/:id`),
+  - `Tag` (`GET/POST /api/v1/tags`),
+  - `Destination` (`GET/POST/PUT /api/v1/qr/:id/destinations*`).
+- Так как в текущей модели БД для этих сущностей отдельной колонки `updated_at` нет, сервисный слой нормализует поле по безопасному правилу:
+  - `updated_at = updatedAt ?? createdAt`.
+- Следствие: клиенты API могут считать `updated_at` стабильным и обязательным полем, не добавляя endpoint-specific ветвления.
+
+Это правило зафиксировано в общих v1-мэпперах (`server/api/v1/contracts.ts`) и в OpenAPI-схемах (`server/openapi/schemas/{folders,tags,destinations}.ts`).

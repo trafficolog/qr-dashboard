@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { requireAuth } from '../../../utils/auth'
 import { folderService } from '../../../services/folder.service'
+import { toV1Folder } from '../contracts'
 
 const bodySchema = z.object({
   name: z.string().trim().min(1, 'Название обязательно').max(100),
@@ -13,26 +14,6 @@ const bodySchema = z.object({
     z.string().regex(/^#[0-9a-f]{6}$/i).optional().nullable(),
   ),
 })
-
-function toV1Folder(folder: {
-  id: string
-  name: string
-  parentId: string | null
-  color: string | null
-  createdBy: string
-  createdAt: Date
-  updatedAt?: Date
-}) {
-  return {
-    id: folder.id,
-    name: folder.name,
-    parent_id: folder.parentId,
-    color: folder.color,
-    created_by: folder.createdBy,
-    created_at: folder.createdAt,
-    updated_at: folder.updatedAt ?? folder.createdAt,
-  }
-}
 
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)

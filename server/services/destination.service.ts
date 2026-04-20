@@ -53,10 +53,12 @@ export const destinationService = {
   async list(qrCodeId: string, user: User) {
     await checkQrAccess(qrCodeId, user)
 
-    return db.query.qrDestinations.findMany({
+    const destinations = await db.query.qrDestinations.findMany({
       where: eq(qrDestinations.qrCodeId, qrCodeId),
       orderBy: qrDestinations.createdAt,
     })
+
+    return destinations.map(dest => ({ ...dest, updatedAt: dest.createdAt }))
   },
 
   async create(qrCodeId: string, data: CreateDestinationData, user: User) {
@@ -83,7 +85,7 @@ export const destinationService = {
       .returning()
 
     invalidateQrCache(qr.shortCode)
-    return dest!
+    return { ...dest!, updatedAt: dest!.createdAt }
   },
 
   async update(qrCodeId: string, destId: string, data: UpdateDestinationData, user: User) {
@@ -113,7 +115,7 @@ export const destinationService = {
       .returning()
 
     invalidateQrCache(qr.shortCode)
-    return updated!
+    return { ...updated!, updatedAt: updated!.createdAt }
   },
 
   async delete(qrCodeId: string, destId: string, user: User) {
