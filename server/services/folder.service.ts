@@ -36,6 +36,46 @@ async function validateParentAccess(parentId: string | null | undefined, user: U
   checkAccess(parentFolder, user)
 }
 
+async function validateNoParentCycle(folderId: string, parentId: string | null | undefined) {
+  if (!parentId) return
+
+  if (parentId === folderId) {
+    throw createError({
+      statusCode: 422,
+      message: 'Нельзя сделать папку дочерней самой себе',
+    })
+  }
+
+  const visited = new Set<string>()
+  let currentParentId: string | null = parentId
+
+  while (currentParentId) {
+    if (currentParentId === folderId) {
+      throw createError({
+        statusCode: 422,
+        message: 'Нельзя переместить папку в собственную вложенную папку (обнаружен цикл)',
+      })
+    }
+
+    if (visited.has(currentParentId)) {
+      throw createError({
+        statusCode: 422,
+        message: 'Обнаружен цикл в цепочке родительских папок',
+      })
+    }
+
+    visited.add(currentParentId)
+
+    const parentFolder = await db.query.folders.findFirst({
+      where: eq(folders.id, currentParentId),
+    })
+
+    if (!parentFolder) return
+
+    currentParentId = parentFolder.parentId
+  }
+}
+
 export const folderService = {
   async list(user: User) {
     const baseWhere = user.role === 'admin' ? undefined : eq(folders.createdBy, user.id)
@@ -100,6 +140,7 @@ export const folderService = {
     checkAccess(existing, user)
 
     if (data.parentId !== undefined) {
+      await validateNoParentCycle(id, data.parentId)
       await validateParentAccess(data.parentId, user)
     }
 
