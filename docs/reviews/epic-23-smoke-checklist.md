@@ -11,6 +11,13 @@
 
 ---
 
+
+## 0) Prerequisite (обязательный перед smoke/e2e)
+
+- [ ] `⬜` Выполнена установка Playwright browser binaries + системных зависимостей: `pnpm e2e:install-browsers`.
+- [ ] `⬜` Для auth-gated e2e сценариев задан `PLAYWRIGHT_AUTH_COOKIE` (или выполнен bootstrap, который его создаёт).
+- **Evidence:** `TBD`
+
 ## 1) Auth & Session
 
 - [ ] `⬜` Логин по email/OTP: успешный вход и редирект на `/dashboard`.
