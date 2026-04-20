@@ -31,18 +31,28 @@
 | 15 | Forms UX (guard, draft, валидация, i18n форм) | ✅ Завершён | v0.12.0 | 15.1–15.7 — см. [epic-15-forms-ux.md](./epic-15-forms-ux.md) |
 | 17 | Accessibility baseline (WCAG) | 🚧 In Progress | Unreleased | phase 1: announcer, aria-label, focus-visible, semantic tables, axe smoke |
 
-### 1.1а Запланированные эпики (16–21)
+### 1.1а Статус эпиков 16–22 (актуально на 2026-04-20)
 
 Детальные спецификации: `docs/epic-16-interactive-shell.md` … `docs/epic-21-security-hardening.md`. Сводная таблица статусов и релизов — в [splat-qr-cursor-plan.md](./splat-qr-cursor-plan.md) и [planned-epics-15-18.md](./planned-epics-15-18.md).
 
-| Эпик | Тема | Статус в спеке |
-|------|------|----------------|
-| 16 | Interactive Shell & Settings | Planned |
-| 17 | Accessibility baseline | In Progress (phase 1 выполнен) |
-| 18 | Design System & Motion | Planned |
-| 19 | Видимость QR | Planned |
-| 20 | Analytics / cards / onboarding | Planned |
-| 21 | Security Hardening | Planned → релиз **1.0.0** после полной реализации (фаза 0 — блокер production) |
+| Эпик | Тема | Статус | Дата |
+|------|------|--------|------|
+| 16 | Interactive Shell & Settings | ✅ Done | 2026-04-17 |
+| 17 | Accessibility baseline | 🚧 In Progress (Phase 1/2 закрыт, ~50%) | 2026-04-19 (последнее обновление) |
+| 18 | Design System & Motion | ✅ Done | 2026-04-19 |
+| 19 | Видимость QR | ✅ Done | 2026-04-20 |
+| 20 | Analytics / cards / onboarding | ✅ Done with notes (scope 20.8 вынесен) | 2026-04-20 |
+| 21 | Security Hardening | ✅ Done | 2026-04-20 |
+| 22 | OpenAPI + Scalar + MCP | ✅ Done | 2026-04-20 |
+
+### Что вошло в EPIC 22
+
+- OpenAPI генерация.
+- `/api/openapi.json`.
+- Scalar `/api-docs`.
+- MCP tools/resources.
+- `mcp:access`.
+- `/integrations/mcp-setup`.
 
 ### 1.2 Технологический стек (фактический)
 
