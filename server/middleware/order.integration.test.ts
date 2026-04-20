@@ -193,4 +193,37 @@ describe('server middleware order smoke checks', () => {
     expect(event.responseHeaders['X-Frame-Options']).toBe('DENY')
     expect(event.responseHeaders['X-Content-Type-Options']).toBe('nosniff')
   })
+
+  it('applies /mcp rate-limit by event.context.apiKeyId and returns v1-like 429 payload/headers', async () => {
+    dbExecuteMock.mockResolvedValue({ rows: [{ count: 100, resetAt: new Date(Date.now() + 60_000) }] })
+
+    const firstEvent = createMockEvent({
+      method: 'POST',
+      path: '/mcp',
+      context: { apiKeyId: 'mcp_key_1' },
+    })
+    await expect(runPipeline(firstEvent)).resolves.toBeUndefined()
+    expect(firstEvent.responseHeaders['X-RateLimit-Limit']).toBe('100')
+    expect(firstEvent.responseHeaders['X-RateLimit-Remaining']).toBe('0')
+
+    const secondEvent = createMockEvent({
+      method: 'POST',
+      path: '/mcp',
+      context: { apiKeyId: 'mcp_key_1' },
+    })
+
+    await expect(runPipeline(secondEvent)).rejects.toMatchObject({
+      statusCode: 429,
+      data: {
+        error: {
+          code: 'rate_limit.exceeded',
+          message: 'Rate limit exceeded. Maximum 100 requests per minute.',
+        },
+      },
+    })
+    expect(secondEvent.responseHeaders['Retry-After']).toBeDefined()
+    expect(secondEvent.responseHeaders['X-RateLimit-Limit']).toBe('100')
+    expect(secondEvent.responseHeaders['X-RateLimit-Remaining']).toBe('0')
+    expect(secondEvent.responseHeaders['X-RateLimit-Reset']).toBeDefined()
+  })
 })
