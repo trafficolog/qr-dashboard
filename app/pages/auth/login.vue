@@ -131,6 +131,7 @@ const route = useRoute()
 const router = useRouter()
 const { login, verify } = useAuth()
 const { t } = useI18n()
+const { getSecurityMessage } = useSecurityError()
 
 const step = ref<AuthStep>('email')
 const email = ref('')
@@ -217,23 +218,6 @@ function formatTime(seconds: number): string {
   return `${minutes}:${String(remainder).padStart(2, '0')}`
 }
 
-function getAuthErrorMessage(error: unknown, fallback: string): string {
-  const err = error as {
-    data?: {
-      message?: string
-      error?: { message?: string }
-    }
-    statusMessage?: string
-    message?: string
-  }
-
-  return err?.data?.message
-    || err?.data?.error?.message
-    || err?.statusMessage
-    || err?.message
-    || fallback
-}
-
 function isValidEmail(value: string): boolean {
   const parts = value.split('@')
 
@@ -300,7 +284,7 @@ async function handleSubmit() {
     await syncRouteQuery()
   }
   catch (error: unknown) {
-    errorMessage.value = getAuthErrorMessage(error, t('auth.sendCodeError'))
+    errorMessage.value = getSecurityMessage(error, t('auth.sendCodeError'))
   }
   finally {
     loading.value = false
@@ -322,7 +306,7 @@ async function handleVerify() {
     await navigateTo('/dashboard')
   }
   catch (error: unknown) {
-    errorMessage.value = getAuthErrorMessage(error, t('auth.invalidCode'))
+    errorMessage.value = getSecurityMessage(error, t('auth.invalidCode'))
     codeDigits.value = []
   }
   finally {
@@ -340,7 +324,7 @@ async function handleResend() {
     restartTimers(response.data.expiresIn)
   }
   catch (error: unknown) {
-    errorMessage.value = getAuthErrorMessage(error, t('auth.sendCodeError'))
+    errorMessage.value = getSecurityMessage(error, t('auth.sendCodeError'))
   }
   finally {
     loading.value = false

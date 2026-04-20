@@ -1,6 +1,7 @@
 import { authService } from '../services/auth.service'
 import { apiKeyService } from '../services/api-key.service'
 import { getClientIp } from '../utils/ip'
+import { throwSecurityError } from '../utils/security-error'
 
 type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read'
 
@@ -95,17 +96,31 @@ export default defineEventHandler(async (event) => {
     if (bearerKey) {
       const record = await apiKeyService.verify(bearerKey)
       if (!record) {
-        throw createError({ statusCode: 401, message: 'Недействительный API-ключ' })
+        throwSecurityError(event, {
+          statusCode: 401,
+          code: 'api_key.invalid',
+          message: 'Недействительный API-ключ',
+        })
       }
 
       const requiredPermission = getRequiredPermission(event.method, path)
       if (requiredPermission && !record.permissions.includes(requiredPermission)) {
-        throw createError({ statusCode: 403, message: 'Недостаточно прав API-ключа' })
+        throwSecurityError(event, {
+          statusCode: 403,
+          code: 'api_key.scope_denied',
+          message: 'Недостаточно прав API-ключа',
+          details: { requiredPermission },
+        })
       }
 
       const clientIp = getClientIp(event)
       if (!isIpAllowed(clientIp, record.allowedIps)) {
-        throw createError({ statusCode: 403, message: 'IP-адрес не разрешён для этого API-ключа' })
+        throwSecurityError(event, {
+          statusCode: 403,
+          code: 'api_key.ip_denied',
+          message: 'IP-адрес не разрешён для этого API-ключа',
+          details: { clientIp },
+        })
       }
 
       event.context.user = record.user
@@ -120,12 +135,20 @@ export default defineEventHandler(async (event) => {
   // --- Cookie-based session auth ---
   const token = getCookie(event, 'session_token')
   if (!token) {
-    throw createError({ statusCode: 401, message: 'Не авторизован' })
+    throwSecurityError(event, {
+      statusCode: 401,
+      code: 'auth.unauthorized',
+      message: 'Не авторизован',
+    })
   }
 
   const session = await authService.verifySession(token)
   if (!session) {
-    throw createError({ statusCode: 401, message: 'Сессия истекла' })
+    throwSecurityError(event, {
+      statusCode: 401,
+      code: 'auth.session_expired',
+      message: 'Сессия истекла',
+    })
   }
 
   // Прикрепляем пользователя к контексту

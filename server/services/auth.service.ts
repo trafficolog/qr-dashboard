@@ -4,6 +4,7 @@ import { eq, and, gt, isNull, desc, asc, count, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { otpCodes, allowedDomains, users, sessions, authEmailLocks } from '../db/schema'
 import { hashToken, hashOtpWithPepper } from '../utils/hash'
+import { throwSecurityError } from '../utils/security-error'
 import { emailService } from './email.service'
 
 const runtimeConfig = useRuntimeConfig()
@@ -33,7 +34,11 @@ export const authService = {
     // 1. Проверить домен
     const domain = email.split('@')[1]
     if (!domain) {
-      throw createError({ statusCode: 400, message: 'Некорректный email' })
+      throwSecurityError(undefined, {
+        statusCode: 400,
+        code: 'auth.email_invalid',
+        message: 'Некорректный email',
+      })
     }
 
     // Если список допустимых доменов пуст — разрешаем все домены (открытый режим).
@@ -55,8 +60,9 @@ export const authService = {
       })
 
       if (!allowed) {
-        throw createError({
+        throwSecurityError(undefined, {
           statusCode: 403,
+          code: 'auth.domain_not_allowed',
           message: 'Домен email не разрешён для входа',
         })
       }
@@ -73,9 +79,11 @@ export const authService = {
       ))
 
     if (recentCodes[0]!.count >= 5) {
-      throw createError({
+      throwSecurityError(undefined, {
         statusCode: 429,
+        code: 'auth.otp_rate_limited',
         message: 'Слишком много запросов. Попробуйте через 15 минут',
+        retryAfter: 15 * 60,
       })
     }
 
@@ -127,9 +135,11 @@ export const authService = {
         setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(activeEmailLock.lockedUntil.getTime() / 1000))
       }
 
-      throw createError({
+      throwSecurityError(event, {
         statusCode: 429,
+        code: 'auth.otp_locked',
         message: 'Email временно заблокирован после неудачных попыток. Повторите позже',
+        retryAfter: retryAfterSeconds,
       })
     }
 
@@ -144,8 +154,9 @@ export const authService = {
     })
 
     if (!otp) {
-      throw createError({
+      throwSecurityError(undefined, {
         statusCode: 400,
+        code: 'auth.otp_not_found',
         message: 'Код не найден или истёк. Запросите новый',
       })
     }
@@ -170,9 +181,11 @@ export const authService = {
         setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(lockUntil.getTime() / 1000))
       }
 
-      throw createError({
+      throwSecurityError(event, {
         statusCode: 429,
+        code: 'auth.otp_locked',
         message: 'Попытки исчерпаны. Email временно заблокирован на 30 минут',
+        retryAfter: retryAfterSeconds,
       })
     }
 
@@ -204,17 +217,21 @@ export const authService = {
           setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(lockUntil.getTime() / 1000))
         }
 
-        throw createError({
+        throwSecurityError(event, {
           statusCode: 429,
+          code: 'auth.otp_locked',
           message: 'Неверный код. Попытки исчерпаны, email временно заблокирован на 30 минут',
+          retryAfter: retryAfterSeconds,
         })
       }
 
-      throw createError({
+      throwSecurityError(undefined, {
         statusCode: 400,
+        code: 'auth.otp_invalid',
         message: remaining > 0
           ? `Неверный код. Осталось попыток: ${remaining}`
           : 'Неверный код. Попытки исчерпаны, запросите новый',
+        details: { remainingAttempts: Math.max(0, remaining) },
       })
     }
 
@@ -239,16 +256,19 @@ export const authService = {
       let role: 'admin' | 'editor' | 'viewer' = 'viewer'
       if (userCount[0]!.count === 0) {
         if (!adminEmail) {
-          throw createError({
+          throwSecurityError(undefined, {
             statusCode: 503,
+            code: 'auth.bootstrap_admin_email_missing',
             message: 'ADMIN_EMAIL не задан. Первичный вход недоступен',
           })
         }
 
         if (email.toLowerCase() !== adminEmail) {
-          throw createError({
+          throwSecurityError(undefined, {
             statusCode: 403,
+            code: 'auth.bootstrap_email_mismatch',
             message: 'Первый пользователь должен совпадать с ADMIN_EMAIL',
+            details: { adminEmail },
           })
         }
 

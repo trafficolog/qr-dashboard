@@ -2,6 +2,7 @@ import { LRUCache } from 'lru-cache'
 import type { H3Event } from 'h3'
 import { sql } from 'drizzle-orm'
 import { db } from '../db'
+import { throwSecurityError } from '../utils/security-error'
 
 interface RateLimitEntry {
   count: number
@@ -81,21 +82,15 @@ function throwRateLimitError(
   event: H3Event,
   options: {
     message: string
-    errorCode: 'RATE_LIMIT_EXCEEDED' | 'IP_TEMP_BANNED'
+    errorCode: 'rate_limit.exceeded' | 'rate_limit.ip_temp_banned'
     retryAfterSeconds: number
   },
 ): never {
-  throw createError({
+  throwSecurityError(event, {
     statusCode: 429,
-    statusMessage: options.message,
-    data: {
-      error: {
-        code: options.errorCode,
-        message: options.message,
-        statusCode: 429,
-        retryAfter: options.retryAfterSeconds,
-      },
-    },
+    code: options.errorCode,
+    message: options.message,
+    retryAfter: options.retryAfterSeconds,
   })
 }
 
@@ -170,7 +165,7 @@ export default defineEventHandler(async (event) => {
       })
       throwRateLimitError(event, {
         message: 'Слишком много запросов. Попробуйте через 15 минут.',
-        errorCode: 'RATE_LIMIT_EXCEEDED',
+        errorCode: 'rate_limit.exceeded',
         retryAfterSeconds: Math.max(1, Math.ceil((resetAtMs - Date.now()) / 1000)),
       })
     }
@@ -189,7 +184,7 @@ export default defineEventHandler(async (event) => {
       })
       throwRateLimitError(event, {
         message: 'IP временно заблокирован из-за подозрительной активности на /r/*.',
-        errorCode: 'IP_TEMP_BANNED',
+        errorCode: 'rate_limit.ip_temp_banned',
         retryAfterSeconds: Math.max(1, Math.ceil((ban.bannedUntil - Date.now()) / 1000)),
       })
     }
@@ -212,7 +207,7 @@ export default defineEventHandler(async (event) => {
       })
       throwRateLimitError(event, {
         message: 'Слишком много запросов к /r/*. Попробуйте позже.',
-        errorCode: 'RATE_LIMIT_EXCEEDED',
+        errorCode: 'rate_limit.exceeded',
         retryAfterSeconds: Math.max(1, Math.ceil((resetAtMs - Date.now()) / 1000)),
       })
     }
@@ -235,7 +230,7 @@ export default defineEventHandler(async (event) => {
         })
         throwRateLimitError(event, {
           message: 'Rate limit exceeded. Maximum 100 requests per minute.',
-          errorCode: 'RATE_LIMIT_EXCEEDED',
+          errorCode: 'rate_limit.exceeded',
           retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - Date.now()) / 1000)),
         })
       }
@@ -266,7 +261,7 @@ export default defineEventHandler(async (event) => {
       })
       throwRateLimitError(event, {
         message: 'Rate limit exceeded. Maximum 100 requests per minute.',
-        errorCode: 'RATE_LIMIT_EXCEEDED',
+        errorCode: 'rate_limit.exceeded',
         retryAfterSeconds: Math.max(1, Math.ceil((persistent.resetAtMs - Date.now()) / 1000)),
       })
     }

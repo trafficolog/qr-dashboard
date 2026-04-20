@@ -565,5 +565,28 @@
       "memberDeleted": "Участник удалён",
       "deleteError": "Ошибка удаления"
     }
+  },
+  "security": {
+    "authUnauthorized": "Требуется авторизация",
+    "authSessionExpired": "Сессия истекла. Войдите снова",
+    "authEmailInvalid": "Некорректный email",
+    "authDomainNotAllowed": "Домен email не разрешён для входа",
+    "authOtpRateLimited": "Слишком много запросов на OTP",
+    "authOtpNotFound": "Код не найден или истёк. Запросите новый",
+    "authOtpInvalid": "Неверный код подтверждения",
+    "authOtpLocked": "Email временно заблокирован после неудачных попыток",
+    "authBootstrapAdminMissing": "Первичная настройка входа недоступна",
+    "authBootstrapEmailMismatch": "Первый пользователь должен совпадать с ADMIN_EMAIL",
+    "csrfMissingOriginOrReferer": "CSRF-проверка не пройдена: отсутствует Origin/Referer",
+    "csrfOriginMismatch": "CSRF-проверка не пройдена: неверный Origin",
+    "csrfRefererMismatch": "CSRF-проверка не пройдена: неверный Referer",
+    "csrfMissingToken": "CSRF-токен отсутствует",
+    "csrfInvalidToken": "CSRF-токен недействителен",
+    "apiKeyInvalid": "Недействительный API-ключ",
+    "apiKeyScopeDenied": "Недостаточно прав API-ключа",
+    "apiKeyIpDenied": "IP-адрес не разрешён для этого API-ключа",
+    "rateLimitExceeded": "Слишком много запросов. Попробуйте позже",
+    "rateLimitIpTempBanned": "IP временно заблокирован из-за подозрительной активности",
+    "retryAfterSeconds": "Повторите через {seconds} сек."
   }
 }
