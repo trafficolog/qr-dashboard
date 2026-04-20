@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GeoCityBreakdownItem } from '~~/types/analytics'
+import type { GeoCityBreakdownItem } from '~/shared/types/analytics'
 
 type SortKey = 'country' | 'city' | 'scans' | 'uniqueScans'
 type SortDirection = 'asc' | 'desc'

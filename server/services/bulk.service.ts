@@ -2,7 +2,7 @@ import { ilike, eq } from 'drizzle-orm'
 import { db } from '../db'
 import { folders, tags, qrCodes, qrTags } from '../db/schema'
 import { generateShortCode } from '../utils/nanoid'
-import type { User } from '~~/types/auth'
+import type { User } from '~/shared/types/auth'
 
 const DEFAULT_STYLE = {
   foregroundColor: '#000000',

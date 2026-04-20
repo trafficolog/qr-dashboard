@@ -2,7 +2,7 @@ import { eq, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { userDepartments } from '../db/schema'
 import { resolveVisibilityAccess } from './qr-visibility-access'
-import type { User } from '~~/types/auth'
+import type { User } from '~/shared/types/auth'
 import type {
   AnalyticsOverview,
   DeviceBreakdown,
@@ -11,7 +11,7 @@ import type {
   ScanTimeSeriesPoint,
   TimeDistribution,
   TopQrCode,
-} from '~~/types/analytics'
+} from '~/shared/types/analytics'
 
 interface DateRange {
   from: Date

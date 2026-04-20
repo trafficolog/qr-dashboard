@@ -8,7 +8,7 @@ import type {
   TimeDistribution,
   TopQrCode,
   DateRange,
-} from '~~/types/analytics'
+} from '~/shared/types/analytics'
 
 interface ApiData<T> { data: T }
 type ScanSeriesResponse = ScanTimeSeriesPoint[] | CompareSeries<ScanTimeSeriesPoint[]>

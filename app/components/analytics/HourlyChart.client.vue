@@ -37,7 +37,7 @@ import { BarChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
-import type { HourlyDistributionItem } from '~~/types/analytics'
+import type { HourlyDistributionItem } from '~/shared/types/analytics'
 
 use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
 

@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TopQrCode } from '~~/types/analytics'
+import type { TopQrCode } from '~/shared/types/analytics'
 
 defineProps<{
   data: readonly TopQrCode[]

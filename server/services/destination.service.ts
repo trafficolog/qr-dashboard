@@ -2,7 +2,7 @@ import { eq, and, sum } from 'drizzle-orm'
 import { db } from '../db'
 import { qrDestinations, qrCodes } from '../db/schema'
 import { invalidateQrCache } from '../utils/qr-cache'
-import type { User } from '~~/types/auth'
+import type { User } from '~/shared/types/auth'
 
 interface CreateDestinationData {
   url: string
