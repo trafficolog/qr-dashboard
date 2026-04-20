@@ -96,7 +96,7 @@
 
 ### Must-fix до начала фаз 23.4+
 
-1. **Core auth/session unit flow:** `useRuntimeConfig` на module-level в `server/utils/ip.ts` ломает unit-тесты авторизации (`cookie-policy`) вне Nuxt runtime.
+1. **Core auth/session unit flow:** ✅ Закрыто 2026-04-20: чтение runtime-конфига в `server/utils/ip.ts` выполняется лениво в runtime-контексте (`getClientIp(event)`), а вне Nuxt runtime применяется безопасный fallback без падения unit-тестов (`cookie-policy`, auth/session path).
 2. **Core API contract type safety:** DTO-мэпперы v1 (`folders`, `destinations`, `tags`) ожидают поля `updatedAt`, которые не всегда возвращаются сервисами.
 3. **Core security UX type safety:** `useSecurityError` может передавать `undefined` в `t(...)` из-за индексации по коду ошибки.
 4. **Test quality gates для core backend сервисов:** lint/type ошибки в `cookie-policy`, `folder.service.test`, `team.service.test` блокируют объективный gate-check.
@@ -116,6 +116,6 @@
 | MG-23-A (Build readiness) | ✅ Выполнено 2026-04-20: `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
 | MG-23-B (E2E environment readiness) | ✅ Выполнено 2026-04-20: browser binaries + системные зависимости устанавливаются командой `pnpm e2e:install-browsers` (локально и в CI перед `pnpm test:e2e`) | QA/Automation Lead | 2026-04-22 |
 | MG-23-C (Quality debt triage) | ✅ Выполнено 2026-04-20: известные TS/lint/unit долги классифицированы в `must-fix` и `can-defer` (см. раздел 5.1) | Tech Lead | 2026-04-23 |
-| MG-23-D (Core quality gate) | ✅ Выполнено 2026-04-20: must-fix core flow закрыт (auth/session unit path, DTO type-safety v1, `useSecurityError` type-safety, core service tests); подтверждено целевыми проверками `eslint` + `vitest` по core-файлам. | Tech Lead + QA | 2026-04-24 |
+| MG-23-D (Core quality gate) | ✅ Выполнено 2026-04-20: auth/session must-fix подтверждён фиксом lazy runtime-config в `server/utils/ip.ts`; целевые тесты `server/api/auth/cookie-policy.test.ts` и `server/middleware/order.integration.test.ts` проходят без Nuxt runtime fallback-ошибок. Остальные пункты gate сохраняются закрытыми. | Tech Lead + QA | 2026-04-24 |
 
 **Правило перехода к 23.4/23.5:** старт работ разрешён **только при статусе `MG-23-D = ✅`** (и сохранении `MG-23-A..C = ✅`). До этого задачи фаз 23.4/23.5 не стартуют.
