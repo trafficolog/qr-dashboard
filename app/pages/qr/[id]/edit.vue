@@ -277,6 +277,7 @@ import { z } from 'zod'
 import type { QrCode, QrStyle, QrStatus } from '~/../types/qr'
 import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
+import { SELECT_VALUE_NONE, selectValueToNullableId } from '~/utils/select-none-value'
 
 interface EditableQr extends QrCode {
   tags?: { id: string, name: string, color: string | null }[]
@@ -311,7 +312,7 @@ const form = reactive({
   description: '',
   status: 'active' as QrStatus,
   expiresAt: '',
-  folderId: '',
+  folderId: SELECT_VALUE_NONE,
   tagIds: [] as string[],
   style: {} as Partial<QrStyle>,
   utmParams: {
@@ -330,7 +331,7 @@ const statusOptions = [
 
 const { folders, fetchFolders } = useFolders()
 const folderOptions = computed(() => [
-  { label: t('forms.options.noFolder'), value: '' },
+  { label: t('forms.options.noFolder'), value: SELECT_VALUE_NONE },
   ...folders.value.map(f => ({ label: f.name, value: f.id })),
 ])
 
@@ -397,7 +398,7 @@ async function loadQr() {
     form.destinationUrl = qr.value.destinationUrl
     form.description = qr.value.description || ''
     form.status = qr.value.status
-    form.folderId = qr.value.folder?.id || ''
+    form.folderId = qr.value.folder?.id ?? SELECT_VALUE_NONE
     form.tagIds = qr.value.tags?.map(tag => tag.id) || []
     form.style = { ...(qr.value.style || {}) }
 
@@ -463,7 +464,7 @@ async function handleSave() {
       destinationUrl: isStatic.value ? undefined : form.destinationUrl,
       description: form.description || null,
       status: form.status,
-      folderId: form.folderId || null,
+      folderId: selectValueToNullableId(form.folderId),
       tagIds: form.tagIds,
       style: form.style,
       utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,

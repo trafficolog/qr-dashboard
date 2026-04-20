@@ -606,7 +606,6 @@ async function parseFile(file: File) {
     header: true,
     skipEmptyLines: true,
     transformHeader: (h: string) => h.trim().toLowerCase().replace(/[\s-]+/g, '_'),
-    transformHeader: (h: string) => h.trim().toLowerCase().replace(/[\s-]+/g, '_'),
   })
 
   if (result.errors.length > 0 && result.data.length === 0) {

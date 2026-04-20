@@ -42,6 +42,12 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   compatibilityDate: '2025-01-01',
 
+  // Avoid Vite pre-transform "Failed to resolve import #app-manifest" on dev (esp. fresh .nuxt / first run).
+  // See https://github.com/nuxt/nuxt/issues/33606 — re-enable when fixed in your Nuxt version if you need manifest prefetch.
+  experimental: {
+    appManifest: false,
+  },
+
   i18n: {
     defaultLocale: 'ru',
     locales: [
@@ -55,5 +61,18 @@ export default defineNuxtConfig({
 
   icon: {
     serverBundle: 'remote',
+  },
+
+  // papaparse is browser-oriented CJS; bundling it through Rollup's CJS plugin fails on worker/Blob code.
+  vite: {
+    ssr: {
+      external: ['papaparse'],
+    },
+  },
+
+  nitro: {
+    rollupConfig: {
+      external: ['papaparse'],
+    },
   },
 })

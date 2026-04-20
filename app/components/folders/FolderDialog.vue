@@ -86,6 +86,7 @@
 <script setup lang="ts">
 import type { Folder } from '~/composables/useFolders'
 import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+import { SELECT_VALUE_NONE, selectValueToNullableId } from '~/utils/select-none-value'
 
 const props = defineProps<{
   folder?: Folder | null
@@ -107,7 +108,7 @@ const saving = ref(false)
 const form = reactive({
   name: '',
   color: '',
-  parentId: '',
+  parentId: SELECT_VALUE_NONE,
 })
 
 watch(open, (val) => {
@@ -115,7 +116,7 @@ watch(open, (val) => {
     focusReturn.save()
     form.name = props.folder?.name ?? ''
     form.color = props.folder?.color ?? ''
-    form.parentId = props.folder?.parentId ?? ''
+    form.parentId = props.folder?.parentId?.trim() || SELECT_VALUE_NONE
   }
   else {
     focusReturn.restore()
@@ -123,7 +124,7 @@ watch(open, (val) => {
 })
 
 const parentOptions = computed(() => {
-  const base = [{ label: 'Корневая папка', value: '' }]
+  const base = [{ label: 'Корневая папка', value: SELECT_VALUE_NONE }]
   const others = (props.allFolders ?? [])
     .filter(f => f.id !== props.folder?.id)
     .map(f => ({ label: f.name, value: f.id }))
@@ -134,13 +135,12 @@ async function handleSubmit() {
   if (!form.name.trim()) return
   saving.value = true
   try {
-    const normalizedParentId = form.parentId.trim()
     const normalizedColor = form.color.trim()
 
     const payload = {
       name: form.name.trim(),
       color: normalizedColor || null,
-      parentId: normalizedParentId || null,
+      parentId: selectValueToNullableId(form.parentId),
     }
 
     if (props.folder) {

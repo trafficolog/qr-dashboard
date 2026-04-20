@@ -1,124 +1,102 @@
-import type { ZodTypeAny } from 'zod'
-import { ZodObject } from 'zod'
+/**
+ * useFormValidation — единый валидатор форм на базе Zod.
+ *
+ * - validate(data) — прогоняет safeParse, заполняет errors по path.
+ * - validateField(name, value) — валидация отдельного поля.
+ * - setServerErrors({ email: 'already taken' }) — принимает 422-ответ и
+ *   раскладывает ошибки по полям.
+ * - touched — помечает поля, которые пользователь тронул (по @blur).
+ *
+ * Сообщения локализуются в самом Zod-schema (t('forms.errors.url') и т.п.)
+ * либо в месте вызова validate() через переопределение через ключи.
+ *
+ * errors / touched возвращаются как Ref (через toRef), чтобы в потребителях
+ * корректно работал доступ вида errors.value.* и совпала типизация.
+ */
+import { reactive, toRef } from 'vue'
+import type { ZodIssue, ZodTypeAny } from 'zod'
 
-function toPathParts(path: string): string[] {
-  return path.split('.').filter(Boolean)
-}
+export function useFormValidation<T extends ZodTypeAny>(schema: T) {
+  const state = reactive({
+    errors: {} as Record<string, string>,
+    touched: {} as Record<string, boolean>,
+  })
 
-function setByPath(target: Record<string, unknown>, path: string, value: unknown) {
-  const parts = toPathParts(path)
-  if (parts.length === 0) return
+  function issuePath(issue: ZodIssue): string {
+    return issue.path.map(String).join('.')
+  }
 
-  let cursor: Record<string, unknown> = target
-  for (let i = 0; i < parts.length - 1; i++) {
-    const key = parts[i]!
-    const next = cursor[key]
-    if (typeof next !== 'object' || next === null || Array.isArray(next)) {
-      cursor[key] = {}
+  function clearErrors() {
+    for (const k of Object.keys(state.errors)) {
+      Reflect.deleteProperty(state.errors, k)
     }
-    cursor = cursor[key] as Record<string, unknown>
   }
 
-  const lastKey = parts[parts.length - 1]!
-  cursor[lastKey] = value
-}
-
-function toErrorKey(issuePath: (string | number)[]): string {
-  return issuePath.map(p => String(p)).join('.')
-}
-
-export function useFormValidation(schema: ZodTypeAny) {
-  const errors = ref<Record<string, string>>({})
-  const touched = ref<Record<string, boolean>>({})
-
-  function clearFieldError(name: string) {
-    if (!errors.value[name]) return
-    errors.value = Object.fromEntries(
-      Object.entries(errors.value).filter(([key]) => key !== name),
-    )
-  }
-
-  function validate(data: unknown) {
+  function validate(data: unknown): boolean {
+    clearErrors()
     const result = schema.safeParse(data)
-    const nextErrors: Record<string, string> = {}
+    if (result.success) return true
 
-    if (!result.success) {
-      for (const issue of result.error.issues) {
-        const key = toErrorKey(issue.path)
-        if (!key || nextErrors[key]) continue
-        nextErrors[key] = issue.message
-        touched.value[key] = true
-      }
+    for (const issue of result.error.issues) {
+      const key = issuePath(issue) || '_root'
+      if (!(key in state.errors)) state.errors[key] = issue.message
     }
-
-    errors.value = nextErrors
-    return result.success
-  }
-
-  function validateField(name: string, value: unknown) {
-    touched.value[name] = true
-
-    if (!(schema instanceof ZodObject)) {
-      const result = schema.safeParse(value)
-      if (result.success) clearFieldError(name)
-      else errors.value[name] = result.error.issues[0]?.message || 'Invalid value'
-      return result.success
-    }
-
-    const parts = toPathParts(name)
-    const root = parts[0]
-    if (!root) return true
-
-    const fieldSchema = schema.pick({ [root]: true })
-    const partialData: Record<string, unknown> = {}
-
-    if (parts.length === 1) {
-      partialData[root] = value
-    }
-    else {
-      setByPath(partialData, name, value)
-    }
-
-    const result = fieldSchema.safeParse(partialData)
-    if (result.success) {
-      clearFieldError(name)
-      return true
-    }
-
-    const pathWithoutRoot = parts.slice(1)
-    const issue = result.error.issues.find((item) => {
-      const issueParts = item.path.map(p => String(p))
-      if (issueParts[0] !== root) return false
-      const trimmed = issueParts.slice(1)
-      return trimmed.join('.') === pathWithoutRoot.join('.')
-    })
-
-    errors.value[name] = issue?.message || result.error.issues[0]?.message || 'Invalid value'
     return false
   }
 
-  function setServerErrors(fieldErrors: Record<string, string> | null | undefined) {
-    if (!fieldErrors) return
+  /**
+   * Валидация отдельного поля. Требует, чтобы schema был объектом
+   * (z.object(...)). Использует partial-подход через pick.
+   */
+  function validateField(name: string, value: unknown): boolean {
+    Reflect.deleteProperty(state.errors, name)
+    state.touched[name] = true
 
-    const nextErrors = { ...errors.value }
-    for (const [field, message] of Object.entries(fieldErrors)) {
-      nextErrors[field] = message
-      touched.value[field] = true
+    const zodSchema = schema as unknown as {
+      pick?: (shape: Record<string, true>) => ZodTypeAny
+      shape?: Record<string, ZodTypeAny>
     }
-    errors.value = nextErrors
+
+    if (typeof zodSchema.pick === 'function' && zodSchema.shape && name in zodSchema.shape) {
+      const fieldSchema = zodSchema.pick({ [name]: true })
+      const result = fieldSchema.safeParse({ [name]: value })
+      if (!result.success) {
+        const issue = result.error.issues[0]
+        state.errors[name] = issue?.message ?? 'Invalid value'
+        return false
+      }
+      return true
+    }
+
+    return true
+  }
+
+  function setServerErrors(fieldErrors: Record<string, string>) {
+    clearErrors()
+    for (const [k, v] of Object.entries(fieldErrors)) {
+      state.errors[k] = v
+      state.touched[k] = true
+    }
   }
 
   function reset() {
-    errors.value = {}
-    touched.value = {}
+    clearErrors()
+    for (const k of Object.keys(state.touched)) {
+      Reflect.deleteProperty(state.touched, k)
+    }
+  }
+
+  function markTouched(name: string) {
+    state.touched[name] = true
   }
 
   return {
-    errors,
-    touched,
+    errors: toRef(state, 'errors'),
+    touched: toRef(state, 'touched'),
     validate,
     validateField,
     setServerErrors,
     reset,
+    markTouched,
   }
 }

@@ -278,6 +278,7 @@ import type { QrStyle } from '~/../types/qr'
 import { useFormDraft } from '~/composables/useFormDraft'
 import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
+import { SELECT_VALUE_NONE, selectValueToOptionalId } from '~/utils/select-none-value'
 
 const toast = useA11yToast()
 const { t } = useI18n()
@@ -306,7 +307,7 @@ const form = reactive({
   type: 'dynamic' as 'dynamic' | 'static',
   description: '',
   expiresAt: '',
-  folderId: (route.query.folderId as string) || '',
+  folderId: (route.query.folderId as string)?.trim() || SELECT_VALUE_NONE,
   tagIds: [] as string[],
   style: {
     foregroundColor: '#000000',
@@ -357,7 +358,7 @@ const unsaved = useUnsavedChanges(isDirty)
 // Folders & tags
 const { folders, fetchFolders } = useFolders()
 const folderOptions = computed(() => [
-  { label: t('forms.options.noFolder'), value: '' },
+  { label: t('forms.options.noFolder'), value: SELECT_VALUE_NONE },
   ...folders.value.map(f => ({ label: f.name, value: f.id })),
 ])
 
@@ -416,7 +417,7 @@ async function handleCreate() {
       description: form.description || undefined,
       style: form.style as QrStyle,
       utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
-      folderId: form.folderId || undefined,
+      folderId: selectValueToOptionalId(form.folderId),
       tagIds: form.tagIds.length ? form.tagIds : undefined,
       expiresAt: form.expiresAt || undefined,
     })
