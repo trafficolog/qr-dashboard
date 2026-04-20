@@ -155,4 +155,5 @@ docker compose up postgres -d
 - В `@theme` в `assets/css/main.css` шкала Tailwind **`primary` привязана к `splat`**, чтобы `text-primary`, `bg-primary`, `ring-primary/*` и `color="primary"` у компонентов Nuxt UI не оставались зелёными (дефолт Tailwind).
 - Добавлены `app/error.vue` и `app/pages/analytics/index.vue`, поэтому навигация по `/analytics` и неизвестным URL больше не уходит в неоформленный дефолтный экран.
 - SSR-auth bootstrap в `app/composables/useAuth.ts` теперь пробрасывает cookie в `/api/auth/me`, из-за чего защищённые маршруты корректно открываются после входа.
+- Session cookie policy: `session_token` выставляется с `httpOnly`, `sameSite: strict`, `path=/`, а `secure` включается только в production (`NODE_ENV=production`), чтобы same-origin login/logout/`GET /api/auth/me` работали локально и в проде предсказуемо.
 - Стартовал EPIC 17 (phase 1): добавлены `useA11yAnnouncer`, `useA11yToast`, `aria-live` регион, focus-visible стили и базовый `axe-core` e2e smoke (`e2e/a11y.spec.ts`).
