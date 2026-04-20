@@ -31,6 +31,7 @@ export default defineNuxtConfig({
     maxmindDbPath: process.env.MAXMIND_DB_PATH || './data/GeoLite2-City.mmdb',
     sentryDsn: process.env.SENTRY_DSN || '',
     csrfSecret: process.env.CSRF_SECRET || '',
+    otpPepper: process.env.OTP_PEPPER || '',
 
     // Public (доступны на клиенте)
     public: {
@@ -42,12 +43,25 @@ export default defineNuxtConfig({
   },
 
   future: { compatibilityVersion: 4 },
-  compatibilityDate: '2025-01-01',
 
   // Avoid Vite pre-transform "Failed to resolve import #app-manifest" on dev (esp. fresh .nuxt / first run).
   // See https://github.com/nuxt/nuxt/issues/33606 — re-enable when fixed in your Nuxt version if you need manifest prefetch.
   experimental: {
     appManifest: false,
+  },
+  compatibilityDate: '2025-01-01',
+
+  nitro: {
+    rollupConfig: {
+      external: ['papaparse'],
+    },
+  },
+
+  // papaparse is browser-oriented CJS; bundling it through Rollup's CJS plugin fails on worker/Blob code.
+  vite: {
+    ssr: {
+      external: ['papaparse'],
+    },
   },
 
   i18n: {
@@ -63,18 +77,5 @@ export default defineNuxtConfig({
 
   icon: {
     serverBundle: 'remote',
-  },
-
-  // papaparse is browser-oriented CJS; bundling it through Rollup's CJS plugin fails on worker/Blob code.
-  vite: {
-    ssr: {
-      external: ['papaparse'],
-    },
-  },
-
-  nitro: {
-    rollupConfig: {
-      external: ['papaparse'],
-    },
   },
 })
