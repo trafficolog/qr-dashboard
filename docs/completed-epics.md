@@ -764,84 +764,87 @@ UI: показывает modal с ключом + кнопка копирован
 
 ---
 
-## Эпик 20 — UX/UI Enhancement Pack (Done with notes, Unreleased v0.13.0)
+## Эпик 16 — Interactive Shell & Settings Redesign
 
-Подробно: [epic-20-ux-analytics-cards.md](./epic-20-ux-analytics-cards.md), [CHANGELOG.md](../CHANGELOG.md) `[Unreleased]`.
-
-### Файлы (основной объём)
-| Группа | Файлы |
-|---|---|
-| Analytics API | `server/api/analytics/geo.get.ts`, `devices.get.ts`, `time-distribution.get.ts` |
-| Analytics UI | `app/components/analytics/GeoMap.vue`, `GeoTable.vue`, `DevicePieChart.vue`, `DeviceBreakdown.vue`, `HourlyChart.vue`, `WeekdayChart.vue`, `ScanChart.vue` |
-| QR Cards | `app/components/qr/Card.vue`, `Table.vue`, `QuickActions.vue`, `HoverPreview.vue` |
-| Empty states | `app/components/shared/EmptyState.vue`, `EmptyIllustration.vue`, `public/illustrations/*.svg`, `app/pages/not-found.vue`, `app/pages/expired.vue` |
-| Onboarding | `app/components/shared/OnboardingOverlay.vue`, `app/composables/useOnboarding.ts`, `app/pages/dashboard/index.vue` |
-| Shared data layer | `server/services/analytics.service.ts`, `app/composables/useAnalytics.ts`, `app/pages/analytics/index.vue`, `locales/ru.json`, `locales/en.json` |
-
-### API
-| Метод | URL | Назначение |
-|---|---|---|
-| GET | `/api/analytics/geo` | Гео-разбивка country/city для карты и таблицы |
-| GET | `/api/analytics/devices` | Разбивка по device type / OS / browser |
-| GET | `/api/analytics/time-distribution` | Разбивка по часу и дню недели |
-
-### Компоненты
-- **Analytics:** `GeoMap`, `GeoTable`, `DeviceBreakdown`, `HourlyChart`, `WeekdayChart`, обновлённый `ScanChart` с compare previous period.
-- **QR List:** `QuickActions`, `HoverPreview`, обновлённые `Card` и `Table`.
-- **Shared UX:** `EmptyIllustration`, расширенный `EmptyState`, `OnboardingOverlay`.
-
-### Критерии приёмки (итог)
-- ✅ Закрыт блок **analytics**: geo/devices/time distribution + compare previous period.
-- ✅ Закрыт блок **cards**: enriched cards + inline actions + hover-preview.
-- ✅ Закрыт блок **empty states**: SVG-иллюстрации + интеграция в пустые/error-экраны.
-- ✅ Закрыт блок **onboarding**: first-run overlay, skip/complete, повторный вход без показа, ru/en.
-- ℹ️ **Usage Widget (20.8)** оставлен за рамками релизного объёма EPIC 20 и вынесен в следующий UX-пакет.
+- **Итоговый статус:** ✅ Done
+- **Дата завершения:** 2026-04-17
+- **Ключевые deliverables:**
+  - Рабочий Cmd+K/Global Search с history + keyboard-first навигацией.
+  - Редизайн `/settings` на nested routes (`settings.vue` + `settings/index.vue` redirect + секционные страницы).
+  - Закрытие документационного рассинхрона по структуре настроек и фактическим файлам.
+- **Primary docs:** [epic-16-interactive-shell.md](./epic-16-interactive-shell.md), [reviews/epic-16-review.md](./reviews/epic-16-review.md), [reviews/epic-16-17-docs-review.md](./reviews/epic-16-17-docs-review.md).
 
 ---
 
-## Эпик 21 — Security Hardening (Завершён 2026-04-20)
+## Эпик 17 — Accessibility baseline (WCAG)
 
-Подробно: [epic-21-security-hardening.md](./epic-21-security-hardening.md), итоговая верификация: [EPIC 21 Security Checklist (2026-04-20)](./reports/epic-21-security-checklist-2026-04-20.md).
-
-### Статус по фазам
-- ✅ **Фаза 0 (deploy blocker):** закрыта (SEC-01, SEC-02, SEC-04, SEC-12, SEC-09).
-- ✅ **Фаза 1:** закрыта (SEC-03, SEC-05, SEC-06, SEC-07, SEC-11).
-- ✅ **Фаза 2:** закрыта (SEC-08, SEC-13/SEC-16, SEC-15/SEC-18).
-
-### Ключевые security-блоки EPIC 21
-- CSRF protection + SameSite strict cookies + origin/referer checks.
-- OTP hashing with pepper и безопасный bootstrap первого admin через `ADMIN_EMAIL`.
-- Глобальные security headers + HTML-only CSP.
-- Audit log (DB schema + admin API/UI) для мутирующих действий.
-- Persistent rate limiting, lockout для OTP и session invalidation при смене роли.
-- Destination-domain whitelist + warning-page на redirect для неизвестных доменов.
-- API key scopes, IP allowlist, обязательный expiry и лимиты ключей.
-- Body-size/JSONB hardening, transactional bulk операции, trusted proxies, session caps, CORS для API v1 и shortCode hardening.
-
-### Критерий перехода к 1.0.0
-- EPIC 21 выполнен в полном объёме (все фазы завершены).
-- Security checklist/report оформлен и привязан к документации.
-- Production-ready условия зафиксированы в [epic-21-security-hardening.md](./epic-21-security-hardening.md).
+- **Итоговый статус:** 🚧 In Progress (phase 1 завершён, phase 2 в работе)
+- **Дата завершения:** — (в процессе; последнее обновление статуса: 2026-04-19)
+- **Ключевые deliverables (по факту на текущий момент):**
+  - `aria-live` announcer/toast-инфраструктура и screen-reader region в `app.vue`.
+  - Базовые `:focus-visible` стили, семантические улучшения таблиц и `aria-label` для action-элементов.
+  - A11y smoke-тесты (`@axe-core/playwright`, `e2e/a11y.spec.ts`) как часть baseline-проверок.
+- **Primary docs:** [epic-17-accessibility.md](./epic-17-accessibility.md), [reviews/epic-16-17-docs-review.md](./reviews/epic-16-17-docs-review.md).
 
 ---
 
-## EPIC 17 (phase 1) — Accessibility baseline (в процессе)
+## Эпик 18 — Design System & Motion
 
-### Реализовано в phase 1
-- `app/composables/useA11yAnnouncer.ts`, `app/composables/useA11yToast.ts` — озвучивание toast-сообщений через `aria-live`.
-- `app/app.vue` — добавлен screen-reader регион `role="status"` / `aria-live`.
-- `assets/css/main.css` — добавлены глобальные `:focus-visible` стили.
-- `app/components/qr/Table.vue`, `app/components/analitics/TopQrTable.vue` — улучшена семантика таблиц (`role="table"`, `scope="col"`), aria-label у интерактивных элементов.
-- `app/components/qr/StatusBadge.vue` — статус QR теперь содержит иконку + текст; канонический маппинг иконок: `active → i-lucide-circle-check`, `paused → i-lucide-pause-circle`, `archived → i-lucide-archive`, `expired → i-lucide-clock-3`.
-- `app/components/shared/ConfirmDialog.vue`, `app/components/shared/unsavedChangesDialog.vue` — `Esc` закрытие и восстановление фокуса.
-- `e2e/a11y.spec.ts` + `@axe-core/playwright` — базовый a11y smoke в e2e.
+- **Итоговый статус:** ✅ Done
+- **Дата завершения:** 2026-04-19
+- **Ключевые deliverables:**
+  - Полировка design-system токенов и motion-паттернов на уровне приложения.
+  - Унификация интерактивных переходов/микро-анимаций по UI-слою.
+  - Зафиксирован CI/local verification с release-блокерами и follow-up задачами.
+- **Primary docs:** [epic-18-design-system.md](./epic-18-design-system.md), [reports/epic-18-ci-checklist-2026-04-19.md](./reports/epic-18-ci-checklist-2026-04-19.md).
 
-### Статус
-- EPIC 17 переведён в `In Progress`.
-- Завершён первый технический срез (phase 1); оставшиеся пункты закрываются в последующих итерациях EPIC 17.
+---
 
-### Известные ограничения
-- EPIC 18–21 описаны в отдельных `docs/epic-*.md`; сводный план — [planned-epics-15-18.md](./planned-epics-15-18.md), [splat-qr-cursor-plan.md](./splat-qr-cursor-plan.md). **EPIC 21** (security) — блокер production по спецификации.
+## Эпик 19 — QR Visibility (Public / Private / Department)
+
+- **Итоговый статус:** ✅ Done
+- **Дата завершения:** 2026-04-20
+- **Ключевые deliverables:**
+  - Введена модель видимости QR (private/department/public) и правила доступа по подразделениям.
+  - Обновлены сценарии списков/операций QR и разграничение доступа для ролей.
+  - Подготовлена и синхронизирована спецификация области видимости для дальнейших UX/security связок.
+- **Primary docs:** [epic-19-qr-visibility.md](./epic-19-qr-visibility.md).
+
+---
+
+## Эпик 20 — UX/UI Enhancement Pack
+
+- **Итоговый статус:** ✅ Done with notes (scope 20.8 вынесен)
+- **Дата завершения:** 2026-04-20
+- **Ключевые deliverables:**
+  - Analytics UX-блок: geo/devices/time-distribution + compare previous period.
+  - Enriched QR cards, quick actions, hover-preview, обновлённые empty/error states.
+  - First-run onboarding overlay со skip/complete и ru/en локализацией.
+- **Primary docs:** [epic-20-ux-analytics-cards.md](./epic-20-ux-analytics-cards.md), [CHANGELOG.md](../CHANGELOG.md) (`Unreleased`).
+
+---
+
+## Эпик 21 — Security Hardening
+
+- **Итоговый статус:** ✅ Done (full scope)
+- **Дата завершения:** 2026-04-20
+- **Ключевые deliverables:**
+  - Полное закрытие фаз 0/1/2 (deploy-blockers + should-pass блоки).
+  - CSRF/headers/OTP hardening, audit log, persistent rate limiting, API key scoping, CORS/shortCode hardening.
+  - Формальный sign-off и security checklist для 1.0.0 gate.
+- **Primary docs:** [epic-21-security-hardening.md](./epic-21-security-hardening.md), [reports/epic-21-signoff-checklist.md](./reports/epic-21-signoff-checklist.md), [reports/epic-21-security-checklist-2026-04-20.md](./reports/epic-21-security-checklist-2026-04-20.md), [reviews/epic-21-threat-model-review.md](./reviews/epic-21-threat-model-review.md).
+
+---
+
+## Эпик 22 — OpenAPI + Scalar + MCP
+
+- **Итоговый статус:** ✅ Done
+- **Дата завершения:** 2026-04-20
+- **Ключевые deliverables:**
+  - Выполнен переход от ручной страницы `/api-docs` к интерактивной документации на **Scalar**.
+  - Добавлена генерация OpenAPI в двух режимах: **build-time** (артефакт спецификации) и **runtime** (`GET /api/openapi.json`).
+  - Добавлена MCP SDK-интеграция (`POST /mcp`) и отдельный setup guide для клиентов (`/integrations/mcp-setup`).
+- **Primary docs:** [epic-22-mcp-swagger-api.md](./epic-22-mcp-swagger-api.md), [splat-qr-docs-done.md](./splat-qr-docs-done.md#epic-22--openapi--mcp).
 
 ---
 
