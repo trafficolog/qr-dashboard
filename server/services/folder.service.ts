@@ -169,6 +169,12 @@ export const folderService = {
 
     checkAccess(existing, user)
 
+    // Re-link direct child folders to the parent of the folder being deleted
+    await db
+      .update(folders)
+      .set({ parentId: existing.parentId })
+      .where(eq(folders.parentId, id))
+
     // Move QR-codes to root (set folderId = null)
     await db
       .update(qrCodes)
