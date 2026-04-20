@@ -565,5 +565,28 @@
       "memberDeleted": "Member deleted",
       "deleteError": "Failed to delete member"
     }
+  },
+  "security": {
+    "authUnauthorized": "Authentication is required",
+    "authSessionExpired": "Session expired. Please sign in again",
+    "authEmailInvalid": "Invalid email",
+    "authDomainNotAllowed": "Email domain is not allowed for sign-in",
+    "authOtpRateLimited": "Too many OTP requests",
+    "authOtpNotFound": "Code not found or expired. Request a new one",
+    "authOtpInvalid": "Invalid verification code",
+    "authOtpLocked": "Email is temporarily locked after failed attempts",
+    "authBootstrapAdminMissing": "Initial sign-in setup is unavailable",
+    "authBootstrapEmailMismatch": "The first user must match ADMIN_EMAIL",
+    "csrfMissingOriginOrReferer": "CSRF validation failed: missing Origin/Referer",
+    "csrfOriginMismatch": "CSRF validation failed: invalid Origin",
+    "csrfRefererMismatch": "CSRF validation failed: invalid Referer",
+    "csrfMissingToken": "Missing CSRF token",
+    "csrfInvalidToken": "Invalid CSRF token",
+    "apiKeyInvalid": "Invalid API key",
+    "apiKeyScopeDenied": "Insufficient API key permissions",
+    "apiKeyIpDenied": "IP address is not allowed for this API key",
+    "rateLimitExceeded": "Too many requests. Please try again later",
+    "rateLimitIpTempBanned": "IP is temporarily blocked due to suspicious activity",
+    "retryAfterSeconds": "Try again in {seconds}s."
   }
 }

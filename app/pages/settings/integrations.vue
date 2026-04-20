@@ -192,6 +192,7 @@ interface ApiKey {
 
 const toast = useA11yToast()
 const { t } = useI18n()
+const { getSecurityMessage } = useSecurityError()
 
 const loading = ref(true)
 const keys = ref<ApiKey[]>([])
@@ -229,8 +230,8 @@ async function fetchKeys() {
     const res = await $fetch<{ data: ApiKey[] }>('/api/integrations/api-keys')
     keys.value = res.data
   }
-  catch {
-    toast.add({ title: t('forms.errors.serverGeneric'), color: 'error' })
+  catch (error: unknown) {
+    toast.add({ title: getSecurityMessage(error, t('forms.errors.serverGeneric')), color: 'error' })
   }
   finally {
     loading.value = false
@@ -282,8 +283,8 @@ async function handleCreateKey() {
     createdKey.value = res.data.key
     keys.value.unshift(res.data)
   }
-  catch {
-    createError.value = t('forms.errors.serverGeneric')
+  catch (error: unknown) {
+    createError.value = getSecurityMessage(error, t('forms.errors.serverGeneric'))
   }
   finally {
     creating.value = false
@@ -312,8 +313,8 @@ async function handleDeleteKey(id: string) {
     keys.value = keys.value.filter(k => k.id !== id)
     toast.add({ title: t('settings.integrations.apiKeys.deleted'), color: 'success' })
   }
-  catch {
-    toast.add({ title: t('forms.errors.serverGeneric'), color: 'error' })
+  catch (error: unknown) {
+    toast.add({ title: getSecurityMessage(error, t('forms.errors.serverGeneric')), color: 'error' })
   }
   finally {
     deletingId.value = null

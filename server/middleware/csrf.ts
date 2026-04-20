@@ -4,6 +4,7 @@ import { and, eq, gt } from 'drizzle-orm'
 import { db } from '../db'
 import { sessions } from '../db/schema'
 import { hashToken } from '../utils/hash'
+import { throwSecurityError } from '../utils/security-error'
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 const EXCLUDED_PATHS = [
@@ -22,28 +23,52 @@ function validateOriginOrReferer(event: H3Event, appOrigin: string) {
   const refererHeader = getHeader(event, 'referer')
 
   if (!originHeader && !refererHeader) {
-    throw createError({ statusCode: 403, message: 'CSRF validation failed: missing Origin/Referer header' })
+    throwSecurityError(event, {
+      statusCode: 403,
+      code: 'csrf.missing_origin_or_referer',
+      message: 'CSRF validation failed: missing Origin/Referer header',
+    })
   }
 
   if (originHeader) {
     try {
       if (new URL(originHeader).origin !== appOrigin) {
-        throw createError({ statusCode: 403, message: 'CSRF validation failed: invalid Origin header' })
+        throwSecurityError(event, {
+          statusCode: 403,
+          code: 'csrf.origin_mismatch',
+          message: 'CSRF validation failed: invalid Origin header',
+          details: { appOrigin },
+        })
       }
       return
     }
     catch {
-      throw createError({ statusCode: 403, message: 'CSRF validation failed: invalid Origin header' })
+      throwSecurityError(event, {
+        statusCode: 403,
+        code: 'csrf.origin_mismatch',
+        message: 'CSRF validation failed: invalid Origin header',
+        details: { appOrigin },
+      })
     }
   }
 
   try {
     if (new URL(refererHeader!).origin !== appOrigin) {
-      throw createError({ statusCode: 403, message: 'CSRF validation failed: invalid Referer header' })
+      throwSecurityError(event, {
+        statusCode: 403,
+        code: 'csrf.referer_mismatch',
+        message: 'CSRF validation failed: invalid Referer header',
+        details: { appOrigin },
+      })
     }
   }
   catch {
-    throw createError({ statusCode: 403, message: 'CSRF validation failed: invalid Referer header' })
+    throwSecurityError(event, {
+      statusCode: 403,
+      code: 'csrf.referer_mismatch',
+      message: 'CSRF validation failed: invalid Referer header',
+      details: { appOrigin },
+    })
   }
 }
 
@@ -61,7 +86,11 @@ export default defineEventHandler(async (event) => {
 
   const token = getCookie(event, 'session_token')
   if (!token) {
-    throw createError({ statusCode: 401, message: 'Не авторизован' })
+    throwSecurityError(event, {
+      statusCode: 401,
+      code: 'auth.unauthorized',
+      message: 'Не авторизован',
+    })
   }
 
   const tokenHash = hashToken(token)
@@ -73,19 +102,31 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!session) {
-    throw createError({ statusCode: 401, message: 'Сессия истекла' })
+    throwSecurityError(event, {
+      statusCode: 401,
+      code: 'auth.session_expired',
+      message: 'Сессия истекла',
+    })
   }
 
   const csrfHeaderName = runtimeConfig.public.csrfHeaderName.toLowerCase()
   const csrfHeader = getHeader(event, csrfHeaderName)
   if (!csrfHeader) {
-    throw createError({ statusCode: 403, message: 'CSRF validation failed: missing CSRF token header' })
+    throwSecurityError(event, {
+      statusCode: 403,
+      code: 'csrf.missing_token',
+      message: 'CSRF validation failed: missing CSRF token header',
+    })
   }
 
   const expected = Buffer.from(session.csrfToken)
   const actual = Buffer.from(csrfHeader)
 
   if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
-    throw createError({ statusCode: 403, message: 'CSRF validation failed: invalid CSRF token' })
+    throwSecurityError(event, {
+      statusCode: 403,
+      code: 'csrf.invalid_token',
+      message: 'CSRF validation failed: invalid CSRF token',
+    })
   }
 })
