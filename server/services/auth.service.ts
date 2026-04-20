@@ -2,8 +2,15 @@ import { createHmac, randomInt, randomBytes } from 'node:crypto'
 import { eq, and, gt, isNull, desc, count } from 'drizzle-orm'
 import { db } from '../db'
 import { otpCodes, allowedDomains, users, sessions } from '../db/schema'
-import { hashToken } from '../utils/hash'
+import { hashToken, hashOtpWithPepper } from '../utils/hash'
 import { emailService } from './email.service'
+
+const runtimeConfig = useRuntimeConfig()
+const otpPepper = runtimeConfig.otpPepper?.trim()
+
+if (!otpPepper) {
+  throw new Error('OTP_PEPPER is required to start auth service')
+}
 
 function generateCsrfToken() {
   const secret = process.env.CSRF_SECRET || 'default-csrf-secret'
@@ -76,7 +83,7 @@ export const authService = {
     // 4. Сохранение
     await db.insert(otpCodes).values({
       email,
-      code,
+      code: hashOtpWithPepper(code),
       expiresAt: new Date(Date.now() + 10 * 60 * 1000),
     })
 
@@ -121,7 +128,7 @@ export const authService = {
     }
 
     // 3. Сравнить код
-    if (otp.code !== code) {
+    if (otp.code !== hashOtpWithPepper(code)) {
       await db
         .update(otpCodes)
         .set({ attempts: otp.attempts + 1 })
