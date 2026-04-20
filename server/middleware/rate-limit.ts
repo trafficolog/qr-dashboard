@@ -8,8 +8,30 @@ interface RateLimitEntry {
   resetAt: number
 }
 
+interface IpBanEntry {
+  bannedUntil: number
+}
+
+const SHORT_CODE_PATTERN = /^[2-9A-HJ-NP-Za-hjkmnp-z]{7,8}$/
+
+const REDIRECT_LIMIT = 60
+const REDIRECT_WINDOW_MS = 60 * 1000
+const SUSPICIOUS_LIMIT = 15
+const SUSPICIOUS_WINDOW_MS = 5 * 60 * 1000
+const TEMP_BAN_MS = 15 * 60 * 1000
+
 // Separate limiters for different windows
 const limiters = new Map<string, LRUCache<string, RateLimitEntry>>()
+
+const suspiciousAttempts = new LRUCache<string, RateLimitEntry>({
+  max: 10000,
+  ttl: SUSPICIOUS_WINDOW_MS,
+})
+
+const bannedIps = new LRUCache<string, IpBanEntry>({
+  max: 10000,
+  ttl: TEMP_BAN_MS,
+})
 
 function getLimiter(windowMs: number): LRUCache<string, RateLimitEntry> {
   const key = String(windowMs)
@@ -55,6 +77,50 @@ function setRateLimitHeaders(
   setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(options.resetAtMs / 1000))
 }
 
+function throwRateLimitError(
+  event: H3Event,
+  options: {
+    message: string
+    errorCode: 'RATE_LIMIT_EXCEEDED' | 'IP_TEMP_BANNED'
+    retryAfterSeconds: number
+  },
+): never {
+  throw createError({
+    statusCode: 429,
+    statusMessage: options.message,
+    data: {
+      error: {
+        code: options.errorCode,
+        message: options.message,
+        statusCode: 429,
+        retryAfter: options.retryAfterSeconds,
+      },
+    },
+  })
+}
+
+function markSuspiciousRedirectAttempt(ip: string) {
+  const key = `suspicious:${ip}`
+  const now = Date.now()
+  const existing = suspiciousAttempts.get(key)
+
+  if (!existing || now > existing.resetAt) {
+    suspiciousAttempts.set(key, {
+      count: 1,
+      resetAt: now + SUSPICIOUS_WINDOW_MS,
+    })
+    return
+  }
+
+  existing.count++
+  if (existing.count >= SUSPICIOUS_LIMIT) {
+    bannedIps.set(ip, {
+      bannedUntil: now + TEMP_BAN_MS,
+    })
+    suspiciousAttempts.delete(key)
+  }
+}
+
 async function incrementPersistentRateLimit(
   scope: string,
   key: string,
@@ -96,35 +162,58 @@ export default defineEventHandler(async (event) => {
 
     if (!checkRateLimit(limiter, key, 5, windowMs)) {
       const entry = limiter.get(key)
+      const resetAtMs = entry?.resetAt ?? (Date.now() + windowMs)
       setRateLimitHeaders(event, {
         limit: 5,
         remaining: 0,
-        resetAtMs: entry?.resetAt ?? (Date.now() + windowMs),
+        resetAtMs,
       })
-      throw createError({
-        statusCode: 429,
-        message: 'Слишком много запросов. Попробуйте через 15 минут',
+      throwRateLimitError(event, {
+        message: 'Слишком много запросов. Попробуйте через 15 минут.',
+        errorCode: 'RATE_LIMIT_EXCEEDED',
+        retryAfterSeconds: Math.max(1, Math.ceil((resetAtMs - Date.now()) / 1000)),
       })
     }
   }
 
-  // Rate limit для redirect: 60 req / min per IP
+  // Rate limit для redirect: 60 req / min per IP + temp-ban for suspicious activity
   if (path.startsWith('/r/')) {
     const ip = getClientIp(event)
-    const windowMs = 60 * 1000
-    const limiter = getLimiter(windowMs)
+    const ban = bannedIps.get(ip)
+
+    if (ban && Date.now() < ban.bannedUntil) {
+      setRateLimitHeaders(event, {
+        limit: REDIRECT_LIMIT,
+        remaining: 0,
+        resetAtMs: ban.bannedUntil,
+      })
+      throwRateLimitError(event, {
+        message: 'IP временно заблокирован из-за подозрительной активности на /r/*.',
+        errorCode: 'IP_TEMP_BANNED',
+        retryAfterSeconds: Math.max(1, Math.ceil((ban.bannedUntil - Date.now()) / 1000)),
+      })
+    }
+
+    const code = path.slice('/r/'.length)
+    if (!SHORT_CODE_PATTERN.test(code)) {
+      markSuspiciousRedirectAttempt(ip)
+    }
+
+    const limiter = getLimiter(REDIRECT_WINDOW_MS)
     const key = `redirect:${ip}`
 
-    if (!checkRateLimit(limiter, key, 60, windowMs)) {
+    if (!checkRateLimit(limiter, key, REDIRECT_LIMIT, REDIRECT_WINDOW_MS)) {
       const entry = limiter.get(key)
+      const resetAtMs = entry?.resetAt ?? (Date.now() + REDIRECT_WINDOW_MS)
       setRateLimitHeaders(event, {
-        limit: 60,
+        limit: REDIRECT_LIMIT,
         remaining: 0,
-        resetAtMs: entry?.resetAt ?? (Date.now() + windowMs),
+        resetAtMs,
       })
-      throw createError({
-        statusCode: 429,
-        message: 'Too many requests',
+      throwRateLimitError(event, {
+        message: 'Слишком много запросов к /r/*. Попробуйте позже.',
+        errorCode: 'RATE_LIMIT_EXCEEDED',
+        retryAfterSeconds: Math.max(1, Math.ceil((resetAtMs - Date.now()) / 1000)),
       })
     }
   }
@@ -144,9 +233,10 @@ export default defineEventHandler(async (event) => {
           remaining: 0,
           resetAtMs: entry.resetAt,
         })
-        throw createError({
-          statusCode: 429,
+        throwRateLimitError(event, {
           message: 'Rate limit exceeded. Maximum 100 requests per minute.',
+          errorCode: 'RATE_LIMIT_EXCEEDED',
+          retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - Date.now()) / 1000)),
         })
       }
       const updatedEntry = limiter.get(key)!
@@ -174,9 +264,10 @@ export default defineEventHandler(async (event) => {
         remaining: 0,
         resetAtMs: persistent.resetAtMs,
       })
-      throw createError({
-        statusCode: 429,
+      throwRateLimitError(event, {
         message: 'Rate limit exceeded. Maximum 100 requests per minute.',
+        errorCode: 'RATE_LIMIT_EXCEEDED',
+        retryAfterSeconds: Math.max(1, Math.ceil((persistent.resetAtMs - Date.now()) / 1000)),
       })
     }
 

@@ -6,6 +6,8 @@ import { getClientIp } from '../../utils/ip'
 import { redirectService } from '../../services/redirect.service'
 import { abTestService } from '../../services/ab-test.service'
 
+const SHORT_CODE_PATTERN = /^[2-9A-HJ-NP-Za-hjkmnp-z]{7,8}$/
+
 function getHostname(value: string): string | null {
   try {
     return new URL(value).hostname.toLowerCase()
@@ -63,7 +65,7 @@ function renderRedirectWarningPage(url: string) {
 export default defineEventHandler(async (event) => {
   const code = getRouterParam(event, 'code')
 
-  if (!code) {
+  if (!code || !SHORT_CODE_PATTERN.test(code)) {
     return sendRedirect(event, '/not-found', 302)
   }
 
