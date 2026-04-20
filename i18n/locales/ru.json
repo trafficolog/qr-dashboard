@@ -249,6 +249,57 @@
       }
     }
   },
+  "integrationsPage": {
+    "title": "Интеграции",
+    "subtitle": "Подключайте внешние клиенты и настройте MCP-доступ.",
+    "backToIntegrations": "Ко всем интеграциям",
+    "links": {
+      "apiKeys": {
+        "title": "API-ключи",
+        "description": "Управление ключами API и разрешениями доступа.",
+        "action": "Открыть настройки"
+      },
+      "mcp": {
+        "title": "MCP Setup",
+        "description": "URL сервера, ключ с mcp:access и примеры JSON-конфигов клиентов.",
+        "action": "Открыть гайд"
+      }
+    },
+    "mcpSetup": {
+      "title": "Настройка MCP",
+      "subtitle": "Используйте этот гайд, чтобы подключить MCP-сервер SPLAT QR в LLM-клиенте.",
+      "serverUrl": {
+        "title": "URL сервера",
+        "description": "Используйте этот URL как endpoint MCP-сервера."
+      },
+      "apiKey": {
+        "title": "Генерация API-ключа с mcp:access",
+        "step1": "Откройте Настройки → Интеграции и нажмите «Создать ключ».",
+        "step2": "Включите permission mcp:access (или эквивалентный доступ к MCP API).",
+        "step3": "Скопируйте ключ и сохраните его в переменную окружения или секреты клиента."
+      },
+      "examples": {
+        "title": "Примеры конфигов клиентов",
+        "claudeDesktop": "Claude Desktop",
+        "cursor": "Cursor / совместимые MCP-клиенты"
+      },
+      "troubleshooting": {
+        "title": "Troubleshooting",
+        "status401": {
+          "title": "401 — invalid key",
+          "solution": "Проверьте формат Authorization (Bearer <ключ>), срок действия и корректность ключа."
+        },
+        "status403": {
+          "title": "403 — missing mcp",
+          "solution": "У ключа отсутствует permission mcp:access. Создайте новый ключ с нужным правом."
+        },
+        "status429": {
+          "title": "429 — rate limit",
+          "solution": "Снизьте частоту запросов, добавьте retry с backoff и проверьте лимиты вашего тарифа."
+        }
+      }
+    }
+  },
   "qr": {
     "empty": {
       "title": "Нет QR-кодов",

@@ -249,6 +249,57 @@
       }
     }
   },
+  "integrationsPage": {
+    "title": "Integrations",
+    "subtitle": "Connect external clients and configure MCP access.",
+    "backToIntegrations": "Back to integrations",
+    "links": {
+      "apiKeys": {
+        "title": "API keys",
+        "description": "Manage API keys and access permissions.",
+        "action": "Open settings"
+      },
+      "mcp": {
+        "title": "MCP Setup",
+        "description": "Server URL, mcp:access key generation, and ready-to-use client JSON configs.",
+        "action": "Open guide"
+      }
+    },
+    "mcpSetup": {
+      "title": "MCP setup",
+      "subtitle": "Use this guide to connect the SPLAT QR MCP server in your LLM client.",
+      "serverUrl": {
+        "title": "Server URL",
+        "description": "Use this URL as the MCP server endpoint."
+      },
+      "apiKey": {
+        "title": "Generate an API key with mcp:access",
+        "step1": "Open Settings → Integrations and click “Create key”.",
+        "step2": "Enable the mcp:access permission (or equivalent MCP API access).",
+        "step3": "Copy the key and store it in your environment variables or client secrets."
+      },
+      "examples": {
+        "title": "Client config examples",
+        "claudeDesktop": "Claude Desktop",
+        "cursor": "Cursor / compatible MCP clients"
+      },
+      "troubleshooting": {
+        "title": "Troubleshooting",
+        "status401": {
+          "title": "401 — invalid key",
+          "solution": "Verify the Authorization format (Bearer <key>), expiration date, and key value."
+        },
+        "status403": {
+          "title": "403 — missing mcp",
+          "solution": "Your key does not include mcp:access. Create a new key with that permission."
+        },
+        "status429": {
+          "title": "429 — rate limit",
+          "solution": "Reduce request frequency, add retry with backoff, and check your plan limits."
+        }
+      }
+    }
+  },
   "qr": {
     "empty": {
       "title": "No QR codes",
