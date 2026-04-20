@@ -278,7 +278,7 @@ import type { QrStyle } from '~/../types/qr'
 import { useFormDraft } from '~/composables/useFormDraft'
 import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
-import { SELECT_VALUE_NONE, selectValueToOptionalId } from '~/utils/select-none-value'
+import { SELECT_VALUE_NONE } from '~/utils/select-none-value'
 
 const toast = useA11yToast()
 const { t } = useI18n()
@@ -424,6 +424,9 @@ async function handleCreate() {
     })
 
     toast.add({ title: t('forms.toasts.qrCreated', { title: qr.title }), color: 'success' })
+    if ('domainWarning' in qr && typeof qr.domainWarning === 'string') {
+      toast.add({ title: t(`forms.toasts.${qr.domainWarning}`), color: 'warning' })
+    }
     // Чистим черновик и снимаем unsaved-guard перед навигацией
     draft.clear()
     reset()

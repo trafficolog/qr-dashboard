@@ -463,7 +463,7 @@ async function handleSave() {
       Object.entries(form.utmParams).filter(([, v]) => v),
     )
 
-    await updateQr(id.value, {
+    const qr = await updateQr(id.value, {
       title: form.title,
       destinationUrl: isStatic.value ? undefined : form.destinationUrl,
       description: form.description || null,
@@ -476,6 +476,9 @@ async function handleSave() {
     })
 
     toast.add({ title: t('forms.toasts.changesSaved'), color: 'success' })
+    if ('domainWarning' in qr && typeof qr.domainWarning === 'string') {
+      toast.add({ title: t(`forms.toasts.${qr.domainWarning}`), color: 'warning' })
+    }
     // Снимаем unsaved-guard и синхронизируем snapshot
     initialSnapshot.value = serializeForm()
     unsaved.markClean()

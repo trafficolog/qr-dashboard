@@ -1,6 +1,6 @@
 import { eq, and, or, like, inArray, gte, lte, desc, asc, count, type InferInsertModel } from 'drizzle-orm'
 import { db } from '../db'
-import { qrCodes, qrTags, userDepartments } from '../db/schema'
+import { qrCodes, qrTags, userDepartments, destinationDomains } from '../db/schema'
 import { generateShortCode } from '../utils/nanoid'
 import { invalidateQrCache } from '../utils/qr-cache'
 import { recordAudit } from '../utils/audit'
@@ -229,6 +229,30 @@ async function ensureReadAccess(qr: QrAccessEntity, user: User, cache?: Membersh
   throw createError({ statusCode: 403, message: 'Нет доступа к этому QR-коду' })
 }
 
+function getHostnameFromUrl(value: string): string | null {
+  try {
+    return new URL(value).hostname.toLowerCase()
+  }
+  catch {
+    return null
+  }
+}
+
+async function getDestinationDomainWarning(url: string): Promise<string | null> {
+  const hostname = getHostnameFromUrl(url)
+  if (!hostname) {
+    return null
+  }
+
+  const whitelist = await db.select({ domain: destinationDomains.domain }).from(destinationDomains)
+  if (whitelist.length === 0) {
+    return null
+  }
+
+  const domainSet = new Set(whitelist.map(item => item.domain.toLowerCase()))
+  return domainSet.has(hostname) ? null : 'qr.destinationDomainOutsideWhitelist'
+}
+
 const DEFAULT_STYLE = {
   foregroundColor: '#000000',
   backgroundColor: '#FFFFFF',
@@ -285,6 +309,8 @@ export const qrService = {
       style.errorCorrectionLevel = 'H'
     }
 
+    const destinationDomainWarning = await getDestinationDomainWarning(data.destinationUrl)
+
     const [qr] = await db
       .insert(qrCodes)
       .values({
@@ -330,7 +356,13 @@ export const qrService = {
     )
 
     // Вернуть с relations
-    return this.getQrById(qr!.id, user)
+    const createdQr = await this.getQrById(qr!.id, user)
+
+    if (destinationDomainWarning) {
+      return { ...createdQr, domainWarning: destinationDomainWarning }
+    }
+
+    return createdQr
   },
 
   /**
@@ -554,6 +586,10 @@ export const qrService = {
       updateData.departmentId = resolvedVisibility.departmentId
     }
 
+    const destinationDomainWarning = data.destinationUrl
+      ? await getDestinationDomainWarning(data.destinationUrl)
+      : null
+
     await db.update(qrCodes).set(updateData).where(eq(qrCodes.id, id))
 
     // Инвалидация LRU-кэша
@@ -579,7 +615,13 @@ export const qrService = {
       { details: { changedFields: Object.keys(updateData), tagsUpdated: data.tagIds !== undefined } },
     )
 
-    return this.getQrById(id, user)
+    const updatedQr = await this.getQrById(id, user)
+
+    if (destinationDomainWarning) {
+      return { ...updatedQr, domainWarning: destinationDomainWarning }
+    }
+
+    return updatedQr
   },
 
   async updateVisibility(id: string, data: VisibilityChangeInput, user: User) {
