@@ -1,5 +1,6 @@
 import { authService } from '../services/auth.service'
 import { apiKeyService } from '../services/api-key.service'
+import { recordAudit } from '../utils/audit'
 import { getClientIp } from '../utils/ip'
 import { logSecurityRejection } from '../utils/security-observability'
 import { throwSecurityError } from '../utils/security-error'
@@ -135,6 +136,22 @@ export default defineEventHandler(async (event) => {
             apiKeyId: String(record.id),
           },
         })
+        recordAudit(
+          {
+            userId: record.user.id,
+            action: 'api_key.scope_denied',
+            entityType: 'api_key',
+            entityId: String(record.id),
+          },
+          {
+            details: {
+              path,
+              method: event.method,
+              requiredPermission,
+              permissions: record.permissions,
+            },
+          },
+        )
         throwSecurityError(event, {
           statusCode: 403,
           code: 'api_key.scope_denied',

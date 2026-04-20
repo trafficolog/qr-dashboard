@@ -1,6 +1,8 @@
 import type { H3Event } from 'h3'
 import { apiKeyService } from '../services/api-key.service'
+import { recordAudit } from '../utils/audit'
 import { getClientIp } from '../utils/ip'
+import { logSecurityRejection } from '../utils/security-observability'
 
 function normalizeIp(ip: string): string {
   return ip.startsWith('::ffff:') ? ip.slice(7) : ip
@@ -63,6 +65,7 @@ export type McpContext = {
 }
 
 export async function authenticateMcpRequest(event: H3Event): Promise<McpContext> {
+  const path = getRequestURL(event).pathname
   const bearerKey = extractBearerApiKey(event)
 
   if (!bearerKey) {
@@ -75,6 +78,32 @@ export async function authenticateMcpRequest(event: H3Event): Promise<McpContext
   }
 
   if (!record.permissions.includes('mcp:access')) {
+    logSecurityRejection({
+      event,
+      eventCode: 'SEC_API_KEY_SCOPE_DENIED',
+      statusCode: 403,
+      reason: 'API key scope does not allow MCP access',
+      context: {
+        requiredPermission: 'mcp:access',
+        apiKeyId: String(record.id),
+      },
+    })
+    recordAudit(
+      {
+        userId: record.user.id,
+        action: 'api_key.scope_denied',
+        entityType: 'api_key',
+        entityId: String(record.id),
+      },
+      {
+        details: {
+          path,
+          method: getMethod(event),
+          requiredPermission: 'mcp:access',
+          permissions: record.permissions,
+        },
+      },
+    )
     throw createError({ statusCode: 403, message: 'API key lacks mcp:access permission' })
   }
 
