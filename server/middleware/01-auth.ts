@@ -25,6 +25,22 @@ const API_PERMISSION_RULES: PermissionRule[] = [
   { method: 'POST', pattern: /^\/api\/v1\/qr$/, permission: 'qr:write' },
   { method: 'PUT', pattern: /^\/api\/v1\/qr\/[^/]+$/, permission: 'qr:write' },
   { method: 'DELETE', pattern: /^\/api\/v1\/qr\/[^/]+$/, permission: 'qr:write' },
+
+  { method: 'GET', pattern: /^\/api\/v1\/folders$/, permission: 'qr:read' },
+  { method: 'POST', pattern: /^\/api\/v1\/folders$/, permission: 'qr:write' },
+  { method: 'PUT', pattern: /^\/api\/v1\/folders\/[^/]+$/, permission: 'qr:write' },
+  { method: 'DELETE', pattern: /^\/api\/v1\/folders\/[^/]+$/, permission: 'qr:write' },
+
+  { method: 'GET', pattern: /^\/api\/v1\/tags$/, permission: 'qr:read' },
+  { method: 'POST', pattern: /^\/api\/v1\/tags$/, permission: 'qr:write' },
+
+  { method: 'GET', pattern: /^\/api\/v1\/analytics\/overview$/, permission: 'qr:stats:read' },
+  { method: 'GET', pattern: /^\/api\/v1\/analytics\/scans$/, permission: 'qr:stats:read' },
+
+  { method: 'GET', pattern: /^\/api\/v1\/qr\/[^/]+\/destinations$/, permission: 'qr:read' },
+  { method: 'POST', pattern: /^\/api\/v1\/qr\/[^/]+\/destinations$/, permission: 'qr:write' },
+  { method: 'PUT', pattern: /^\/api\/v1\/qr\/[^/]+\/destinations\/[^/]+$/, permission: 'qr:write' },
+  { method: 'DELETE', pattern: /^\/api\/v1\/qr\/[^/]+\/destinations\/[^/]+$/, permission: 'qr:write' },
 ]
 
 function getRequiredPermission(method: string, path: string): ApiPermission | null {
