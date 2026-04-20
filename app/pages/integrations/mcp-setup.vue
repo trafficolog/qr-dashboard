@@ -118,9 +118,18 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const { copy: copyToClipboard } = useClipboard()
+const runtimeConfig = useRuntimeConfig()
 
 const copiedExampleId = ref<string | null>(null)
-const serverUrl = 'https://api.splatqr.ru/mcp'
+const serverUrl = computed(() => {
+  const configuredUrl = runtimeConfig.public.mcpServerUrl?.trim()
+  if (configuredUrl) {
+    return configuredUrl
+  }
+
+  const appUrl = (runtimeConfig.public.appUrl || '').replace(/\/+$/, '')
+  return `${appUrl}/mcp`
+})
 
 const configExamples = computed(() => [
   {
@@ -129,7 +138,7 @@ const configExamples = computed(() => [
     code: JSON.stringify({
       mcpServers: {
         splatQr: {
-          url: serverUrl,
+          url: serverUrl.value,
           headers: {
             Authorization: 'Bearer YOUR_API_KEY',
           },
@@ -144,7 +153,7 @@ const configExamples = computed(() => [
       mcpServers: {
         splatQr: {
           command: 'npx',
-          args: ['-y', '@modelcontextprotocol/server-fetch', serverUrl],
+          args: ['-y', '@modelcontextprotocol/server-fetch', serverUrl.value],
           env: {
             MCP_AUTH_TOKEN: 'YOUR_API_KEY',
           },
