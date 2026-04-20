@@ -154,6 +154,75 @@ async function incrementPersistentRateLimit(
   }
 }
 
+async function applyApiKeyRateLimit(
+  event: H3Event,
+  options: {
+    keyPrefix: string
+    persistentScope: string
+    limit: number
+    windowMs: number
+  },
+) {
+  if (!event.context.apiKeyId) return
+
+  const limiter = getLimiter(options.windowMs)
+  const key = `${options.keyPrefix}:${event.context.apiKeyId}`
+  const entry = limiter.get(key)
+
+  if (entry && Date.now() <= entry.resetAt) {
+    if (!checkRateLimit(limiter, key, options.limit, options.windowMs)) {
+      setRateLimitHeaders(event, {
+        limit: options.limit,
+        remaining: 0,
+        resetAtMs: entry.resetAt,
+      })
+      throwRateLimitError(event, {
+        message: `Rate limit exceeded. Maximum ${options.limit} requests per minute.`,
+        errorCode: 'rate_limit.exceeded',
+        retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - Date.now()) / 1000)),
+      })
+    }
+
+    const updatedEntry = limiter.get(key)!
+    setRateLimitHeaders(event, {
+      limit: options.limit,
+      remaining: options.limit - updatedEntry.count,
+      resetAtMs: updatedEntry.resetAt,
+    })
+    return
+  }
+
+  const persistent = await incrementPersistentRateLimit(
+    options.persistentScope,
+    String(event.context.apiKeyId),
+    options.windowMs,
+  )
+
+  limiter.set(key, {
+    count: persistent.count,
+    resetAt: persistent.resetAtMs,
+  })
+
+  if (persistent.count > options.limit) {
+    setRateLimitHeaders(event, {
+      limit: options.limit,
+      remaining: 0,
+      resetAtMs: persistent.resetAtMs,
+    })
+    throwRateLimitError(event, {
+      message: `Rate limit exceeded. Maximum ${options.limit} requests per minute.`,
+      errorCode: 'rate_limit.exceeded',
+      retryAfterSeconds: Math.max(1, Math.ceil((persistent.resetAtMs - Date.now()) / 1000)),
+    })
+  }
+
+  setRateLimitHeaders(event, {
+    limit: options.limit,
+    remaining: options.limit - persistent.count,
+    resetAtMs: persistent.resetAtMs,
+  })
+}
+
 export default defineEventHandler(async (event) => {
   const path = getRequestURL(event).pathname
 
@@ -225,60 +294,23 @@ export default defineEventHandler(async (event) => {
   // Rate limit для API v1: 100 req / min per API key (по apiKeyId из контекста)
   // 01-auth.ts выполняется раньше и устанавливает event.context.apiKeyId
   if (path.startsWith('/api/v1/') && event.context.apiKeyId) {
-    const windowMs = 60 * 1000
-    const limiter = getLimiter(windowMs)
-    const key = `v1:${event.context.apiKeyId}`
-    const entry = limiter.get(key)
-
-    if (entry && Date.now() <= entry.resetAt) {
-      if (!checkRateLimit(limiter, key, 100, windowMs)) {
-        setRateLimitHeaders(event, {
-          limit: 100,
-          remaining: 0,
-          resetAtMs: entry.resetAt,
-        })
-        throwRateLimitError(event, {
-          message: 'Rate limit exceeded. Maximum 100 requests per minute.',
-          errorCode: 'rate_limit.exceeded',
-          retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - Date.now()) / 1000)),
-        })
-      }
-      const updatedEntry = limiter.get(key)!
-      setRateLimitHeaders(event, {
-        limit: 100,
-        remaining: 100 - updatedEntry.count,
-        resetAtMs: updatedEntry.resetAt,
-      })
-      return
-    }
-
-    const persistent = await incrementPersistentRateLimit(
-      'v1',
-      String(event.context.apiKeyId),
-      windowMs,
-    )
-    limiter.set(key, {
-      count: persistent.count,
-      resetAt: persistent.resetAtMs,
-    })
-
-    if (persistent.count > 100) {
-      setRateLimitHeaders(event, {
-        limit: 100,
-        remaining: 0,
-        resetAtMs: persistent.resetAtMs,
-      })
-      throwRateLimitError(event, {
-        message: 'Rate limit exceeded. Maximum 100 requests per minute.',
-        errorCode: 'rate_limit.exceeded',
-        retryAfterSeconds: Math.max(1, Math.ceil((persistent.resetAtMs - Date.now()) / 1000)),
-      })
-    }
-
-    setRateLimitHeaders(event, {
+    await applyApiKeyRateLimit(event, {
+      keyPrefix: 'v1',
+      persistentScope: 'v1',
       limit: 100,
-      remaining: 100 - persistent.count,
-      resetAtMs: persistent.resetAtMs,
+      windowMs: 60 * 1000,
+    })
+    return
+  }
+
+  // Rate limit для MCP: 100 req / min per API key (по apiKeyId из контекста)
+  // server/mcp/auth.ts выполняет auth и устанавливает event.context.apiKeyId
+  if (path.startsWith('/mcp') && event.context.apiKeyId) {
+    await applyApiKeyRateLimit(event, {
+      keyPrefix: 'mcp',
+      persistentScope: 'mcp',
+      limit: 100,
+      windowMs: 60 * 1000,
     })
   }
 })
