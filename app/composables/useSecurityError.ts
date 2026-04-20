@@ -14,7 +14,7 @@ interface ParsedSecurityError {
   retryAfter: number | null
 }
 
-const SECURITY_CODE_TO_I18N_KEY = {
+const SECURITY_CODE_TO_I18N_KEY: Record<string, string> = {
   'auth.unauthorized': 'security.authUnauthorized',
   'auth.session_expired': 'security.authSessionExpired',
   'auth.email_invalid': 'security.authEmailInvalid',
@@ -35,12 +35,16 @@ const SECURITY_CODE_TO_I18N_KEY = {
   'api_key.ip_denied': 'security.apiKeyIpDenied',
   'rate_limit.exceeded': 'security.rateLimitExceeded',
   'rate_limit.ip_temp_banned': 'security.rateLimitIpTempBanned',
-} as const
+}
 
-type SecurityCode = keyof typeof SECURITY_CODE_TO_I18N_KEY
+function normalizeSecurityCode(code: string | null): string | null {
+  if (typeof code !== 'string') {
+    return null
+  }
 
-function isSecurityCode(code: string): code is SecurityCode {
-  return code in SECURITY_CODE_TO_I18N_KEY
+  const normalizedCode = code.trim().toLowerCase()
+
+  return normalizedCode.length > 0 ? normalizedCode : null
 }
 
 export function useSecurityError() {
@@ -65,12 +69,13 @@ export function useSecurityError() {
 
   function getSecurityMessage(error: unknown, fallback: string): string {
     const parsed = parseSecurityError(error)
+    const normalizedCode = normalizeSecurityCode(parsed.code)
 
-    const i18nKey = parsed.code && isSecurityCode(parsed.code)
-      ? SECURITY_CODE_TO_I18N_KEY[parsed.code]
-      : undefined
+    const i18nKey = normalizedCode
+      ? SECURITY_CODE_TO_I18N_KEY[normalizedCode] ?? null
+      : null
 
-    if (i18nKey) {
+    if (i18nKey !== null) {
       const retrySuffix = parsed.retryAfter
         ? ` ${t('security.retryAfterSeconds', { seconds: parsed.retryAfter })}`
         : ''
