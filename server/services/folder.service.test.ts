@@ -1,34 +1,29 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { folderService } from './folder.service'
 import type { User } from '~/shared/types/auth'
 
-vi.mock('../db', () => {
-  const findFirst = vi.fn()
-  const returning = vi.fn()
-  const where = vi.fn(() => ({ returning }))
-  const set = vi.fn(() => ({ where }))
-  const update = vi.fn(() => ({ set }))
+const dbMocks = vi.hoisted(() => ({
+  findFirst: vi.fn(),
+  returning: vi.fn(),
+  where: vi.fn(),
+  set: vi.fn(),
+  update: vi.fn(),
+}))
 
-  return {
-    db: {
-      query: {
-        folders: {
-          findFirst,
-        },
+dbMocks.where.mockImplementation(() => ({ returning: dbMocks.returning }))
+dbMocks.set.mockImplementation(() => ({ where: dbMocks.where }))
+dbMocks.update.mockImplementation(() => ({ set: dbMocks.set }))
+
+vi.mock('../db', () => ({
+  db: {
+    query: {
+      folders: {
+        findFirst: dbMocks.findFirst,
       },
-      update,
     },
-    __mocks: {
-      findFirst,
-      update,
-      set,
-      where,
-      returning,
-    },
-  }
-})
-
-import { folderService } from './folder.service'
-import { __mocks } from '../db'
+    update: dbMocks.update,
+  },
+}))
 
 ;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError = ({
   statusCode,
@@ -39,6 +34,11 @@ const user: User = {
   id: 'user-1',
   email: 'user-1@example.com',
   role: 'editor',
+  name: null,
+  avatarUrl: null,
+  lastLoginAt: null,
+  createdAt: new Date('2026-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2026-01-01T00:00:00.000Z'),
 }
 
 describe('folderService.update parent cycle validation', () => {
@@ -47,7 +47,7 @@ describe('folderService.update parent cycle validation', () => {
   })
 
   it('returns 422 when parentId equals folder id', async () => {
-    __mocks.findFirst.mockResolvedValueOnce({
+    dbMocks.findFirst.mockResolvedValueOnce({
       id: 'folder-1',
       createdBy: user.id,
       parentId: null,
@@ -62,7 +62,7 @@ describe('folderService.update parent cycle validation', () => {
   })
 
   it('returns 422 when new parent chain contains current folder id', async () => {
-    __mocks.findFirst
+    dbMocks.findFirst
       .mockResolvedValueOnce({
         id: 'folder-1',
         createdBy: user.id,

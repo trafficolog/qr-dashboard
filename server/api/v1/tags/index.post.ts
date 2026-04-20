@@ -7,13 +7,13 @@ const bodySchema = z.object({
   color: z.string().regex(/^#[0-9a-f]{6}$/i).optional(),
 })
 
-function toV1Tag(tag: { id: string, name: string, color: string | null, createdAt: Date, updatedAt: Date }) {
+function toV1Tag(tag: { id: string, name: string, color: string | null, createdAt: Date, updatedAt?: Date }) {
   return {
     id: tag.id,
     name: tag.name,
     color: tag.color,
     created_at: tag.createdAt,
-    updated_at: tag.updatedAt,
+    updated_at: tag.updatedAt ?? tag.createdAt,
   }
 }
 

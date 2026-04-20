@@ -35,16 +35,16 @@ describe('auth cookie policy & same-origin API flow', () => {
     vi.resetModules()
     vi.clearAllMocks()
 
-    ;(globalThis as { defineEventHandler?: <T>(handler: T) => T }).defineEventHandler = (handler) => handler
-    ;(globalThis as { readValidatedBody?: () => Promise<{ email: string, code: string }> }).readValidatedBody =
-      vi.fn().mockResolvedValue({ email: 'user@example.com', code: '123456' })
+    ;(globalThis as { defineEventHandler?: <T>(handler: T) => T }).defineEventHandler = handler => handler
+    ;(globalThis as { readValidatedBody?: () => Promise<{ email: string, code: string }> }).readValidatedBody
+      = vi.fn().mockResolvedValue({ email: 'user@example.com', code: '123456' })
     ;(globalThis as { setCookie?: typeof setCookieMock }).setCookie = setCookieMock
     ;(globalThis as { deleteCookie?: typeof deleteCookieMock }).deleteCookie = deleteCookieMock
     ;(globalThis as { getCookie?: typeof getCookieMock }).getCookie = getCookieMock
-    ;(globalThis as { apiSuccess?: <T>(payload: T) => { ok: true, data: T } }).apiSuccess =
-      (payload) => ({ ok: true, data: payload })
-    ;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError =
-      ({ statusCode, message }) => Object.assign(new Error(message), { statusCode })
+    ;(globalThis as { apiSuccess?: <T>(payload: T) => { ok: true, data: T } }).apiSuccess
+      = payload => ({ ok: true, data: payload })
+    ;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError
+      = ({ statusCode, message }) => Object.assign(new Error(message), { statusCode })
   })
 
   afterEach(() => {
@@ -138,7 +138,13 @@ describe('auth cookie policy & same-origin API flow', () => {
     })
 
     const logoutHandler = (await import('./logout.post')).default
-    const logoutResponse = await logoutHandler({} as never)
+    const logoutResponse = await logoutHandler({
+      context: {
+        user: {
+          id: 'u1',
+        },
+      },
+    } as never)
 
     expect(logoutMock).toHaveBeenCalledWith('same-origin-token')
     expect(deleteCookieMock).toHaveBeenCalledWith(

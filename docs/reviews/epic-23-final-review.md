@@ -38,6 +38,19 @@
 
 ---
 
+## 1.1 Gate-статусы перед запуском 23.4+
+
+| Gate | Статус | Комментарий |
+|---|---|---|
+| MG-23-A (Build readiness) | ✅ Green | `pnpm build` проходит (см. baseline). |
+| MG-23-B (E2E environment readiness) | ✅ Green | Playwright browsers/system deps устанавливаются. |
+| MG-23-C (Quality debt triage) | ✅ Green | Must-fix/can-defer классификация зафиксирована в baseline (раздел 5.1). |
+| MG-23-D (Core quality gate) | ✅ Green (по must-fix) | Закрыты критичные must-fix из core flow: auth/session unit runtime, DTO type safety v1 API, lint/type корректность core unit-тестов. |
+
+**Gate policy:** фазы 23.4+ допускаются к реализации только при статусе `Green` по MG-23-A..MG-23-D.
+
+---
+
 ## 2. Метрики (baseline → post-migration)
 
 | Метрика | Baseline | Post-migration | Δ | Оценка |
