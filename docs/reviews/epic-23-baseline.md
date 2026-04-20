@@ -119,3 +119,28 @@
 | MG-23-D (Core quality gate) | `pnpm lint`, `pnpm typecheck`, `pnpm test:unit` должны быть **зелёными для must-fix областей core flow** (auth/session + v1 API DTO + core service tests) | Tech Lead + QA | 2026-04-24 |
 
 **Правило перехода к 23.4/23.5:** старт работ разрешён только после закрытия всех gate (MG-23-A..MG-23-D). До этого задачи фаз 23.4+ не стартуют.
+
+---
+
+## 7) Повторная baseline-сверка после синхронизации с `main` (2026-04-20)
+
+**Контекст:** локальная рабочая ветка `work` синхронизирована с `origin/main` (дивергенция `0/0`).
+
+### 7.1) Результаты повторного прогона
+
+| Проверка | Статус | Результат |
+|---|---:|---|
+| `pnpm typecheck` | ❌ fail | 12 TS-ошибок (`useClipboard` / `useMagicKeys` / `@vueuse/core`, несоответствие `EditableQr.folderId`). Время: `real 1m34.617s`. |
+| `pnpm lint` | ✅ pass (warnings) | **60 warnings**, **0 errors**. Время: `real 0m32.939s`. |
+| `pnpm test:unit` | ❌ fail | 22 test files: **16 failed**, **6 passed**; 16 tests: **16 passed**. Основная причина падений — запуск Playwright e2e-спек внутри Vitest (`test.describe() called here`) + пустые suites в отдельных integration-файлах. Время: `real 0m50.432s`. |
+| `pnpm test:e2e` | ❌ fail | 84 теста: **84 failed** (chromium + mobile-chrome). Время: `real 3m23.223s`. |
+| `pnpm build` | ❌ fail | Build падает на `Can't resolve 'tailwindcss'` + ошибки инициализации `@nuxt/fonts` providers (`fetch failed`). Время: `real 0m18.172s`. |
+| `timeout 40s pnpm dev` | ⚠️ partial | Dev-сервер поднимается (`http://localhost:3000/`), но есть pre-transform ошибка `Can't resolve 'tailwindcss'`; процесс остановлен по timeout. Время: `real 0m40.337s`. |
+
+### 7.2) Сравнение с исходным baseline (раздел 3)
+
+- `typecheck`: улучшение по количеству ошибок (**22 → 12**), но gate остаётся красным.
+- `lint`: улучшение до **0 errors** (остались только warnings), формально зеленее baseline.
+- `test:unit`: структура падений изменилась; теперь доминирует конфликт test harness (Vitest vs Playwright e2e specs), а не только domain/unit-regressions.
+- `test:e2e`: по-прежнему красный, но теперь это не env-prerequisite, а функциональные/конфигурационные падения тестов.
+- `build`/`dev`: регресс относительно baseline — снова воспроизводится `Can't resolve 'tailwindcss'`, что блокирует MG-23-A в текущем состоянии ветки `work`.
