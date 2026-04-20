@@ -26,9 +26,15 @@ export const tagService = {
   },
 
   async create(data: CreateTagData) {
+    const normalized = data.name.trim()
+
+    if (!normalized) {
+      throw createError({ statusCode: 422, message: 'Название тега не может быть пустым' })
+    }
+
     // Check duplicate name (case-insensitive)
     const existing = await db.query.tags.findFirst({
-      where: ilike(tags.name, data.name),
+      where: ilike(tags.name, normalized),
     })
 
     if (existing) {
@@ -38,7 +44,7 @@ export const tagService = {
     const [tag] = await db
       .insert(tags)
       .values({
-        name: data.name.trim(),
+        name: normalized,
         color: data.color,
       })
       .returning()
