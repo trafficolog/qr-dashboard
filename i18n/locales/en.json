@@ -287,7 +287,7 @@
         "title": "Troubleshooting",
         "status401": {
           "title": "401 — invalid key",
-          "solution": "Verify the Authorization format (Bearer <key>), expiration date, and key value."
+          "solution": "Verify the Authorization format (Bearer {key}), expiration date, and key value."
         },
         "status403": {
           "title": "403 — missing mcp",
