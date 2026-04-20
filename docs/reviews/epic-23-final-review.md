@@ -7,6 +7,7 @@
 **Связанные документы:**
 - [epic-23-nuxt4-migration.md](../epic-23-nuxt4-migration.md) — план эпика
 - [epic-23-baseline.md](./epic-23-baseline.md) — baseline-метрики до миграции
+- [Migration Gates (в baseline)](./epic-23-baseline.md#migration-gates-минимальные-условия-перехода-к-234235) — минимальные условия перехода к 23.4/23.5
 - [epic-23-deps-matrix.md](./epic-23-deps-matrix.md) — матрица совместимости зависимостей
 - [epic-23-smoke-checklist.md](./epic-23-smoke-checklist.md) — ручной smoke-тест
 
