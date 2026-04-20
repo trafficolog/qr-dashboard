@@ -33,6 +33,7 @@ export default defineNuxtConfig({
     csrfSecret: process.env.CSRF_SECRET || '',
     otpPepper: process.env.OTP_PEPPER || '',
     adminEmail: process.env.ADMIN_EMAIL || '',
+    trustedProxies: process.env.TRUSTED_PROXIES || '',
 
     // Public (доступны на клиенте)
     public: {
