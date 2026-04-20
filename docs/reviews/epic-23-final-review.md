@@ -1,6 +1,7 @@
 # Review — EPIC 23 — Миграция на Nuxt 4 и обновление ключевых модулей
 
-**Дата:** 2026-04-XX *(заполняется после завершения эпика)*
+**Дата:** 2026-04-20
+**Ревью выполнил:** Codex (`codex@openai.com`)
 **Ветка:** `feat/epic-23-nuxt4-migration`
 **Версия проекта:** `0.12.1` → `0.15.0`
 **Связанные документы:**
@@ -15,24 +16,24 @@
 
 | # | Задача | Статус | Commit(ы) | Комментарий |
 |---|--------|--------|-----------|-------------|
-| 23.1 | Аудит и baseline | ⬜ / ✅ / ❌ | `abc1234` | |
-| 23.2 | Nuxt 3.x latest + compatibilityVersion: 4 | ⬜ / ✅ / ❌ | | |
-| 23.3 | @nuxtjs/i18n v9 → v10 | ⬜ / ✅ / ❌ | | |
-| 23.4 | Реорганизация структуры для Nuxt 4 | ⬜ / ✅ / ❌ | | |
-| 23.5 | Upgrade Nuxt 3.x → 4.0 | ⬜ / ✅ / ❌ | | |
-| 23.6 | Nuxt UI v3 → v4 | ⬜ / ✅ / ❌ | | |
-| 23.7 | Pinia v2 → v3 | ⬜ / ✅ / ❌ | | |
-| 23.8 | Drizzle ORM/Kit stable update | ⬜ / ✅ / ❌ | | |
-| 23.9 | Zod 3.24 → 3.25+ | ⬜ / ✅ / ❌ | | |
-| 23.10 | Sentry v8 → v9 | ⬜ / ✅ / ❌ | | |
-| 23.11 | TypeScript 5.8, Vitest 3, Playwright, ESLint | ⬜ / ✅ / ❌ | | |
-| 23.12 | Typecheck sweep | ⬜ / ✅ / ❌ | | |
-| 23.13 | Lint sweep | ⬜ / ✅ / ❌ | | |
-| 23.14 | Unit + E2E тесты фиксы | ⬜ / ✅ / ❌ | | |
-| 23.15 | Smoke E2E ручной прогон | ⬜ / ✅ / ❌ | | |
-| 23.16 | TypeScript project references | ⬜ / ✅ / ❌ / 🚫 skipped | | Опциональная задача |
-| 23.17 | Docker, CI | ⬜ / ✅ / ❌ | | |
-| 23.18 | Финальный релиз и документация | ⬜ / ✅ / ❌ | | |
+| 23.1 | Аудит и baseline | ✅ | `66e3792`, `ca88757`, `947ecb6` | Baseline/матрица и фиксация Node+pnpm выполнены |
+| 23.2 | Nuxt 3.x latest + compatibilityVersion: 4 | ⬜ | — | Не начато |
+| 23.3 | @nuxtjs/i18n v9 → v10 | ⬜ | — | Не начато |
+| 23.4 | Реорганизация структуры для Nuxt 4 | ✅ | `cb9fc22` | Перенесены `app.config.ts`, `assets`, `types` |
+| 23.5 | Upgrade Nuxt 3.x → 4.0 | ⬜ | — | Не начато |
+| 23.6 | Nuxt UI v3 → v4 | ⬜ | — | Не начато |
+| 23.7 | Pinia v2 → v3 | ⬜ | — | Не начато |
+| 23.8 | Drizzle ORM/Kit stable update | ⬜ | — | Не начато |
+| 23.9 | Zod 3.24 → 3.25+ | ⬜ | — | Не начато |
+| 23.10 | Sentry v8 → v9 | ⬜ | — | Не начато |
+| 23.11 | TypeScript 5.8, Vitest 3, Playwright, ESLint | ⬜ | — | Не начато |
+| 23.12 | Typecheck sweep | ⬜ | — | Не начато |
+| 23.13 | Lint sweep | ⬜ | — | Не начато |
+| 23.14 | Unit + E2E тесты фиксы | ⬜ | — | Не начато |
+| 23.15 | Smoke E2E ручной прогон | ⬜ | — | Не начато |
+| 23.16 | TypeScript project references | 🚫 skipped | — | Опциональная задача, пока не запускалась |
+| 23.17 | Docker, CI | ⬜ | — | Не начато |
+| 23.18 | Финальный релиз и документация | ⬜ | — | Не начато |
 
 ---
 
@@ -40,15 +41,15 @@
 
 | Метрика | Baseline | Post-migration | Δ | Оценка |
 |---------|----------|----------------|---|--------|
-| Nuxt версия | 3.16.x | 4.x.x | +1 major | ✅ |
-| `pnpm typecheck` | N errors | 0 errors | — | ✅ / ⚠️ |
-| `pnpm lint` | N errors | 0 errors | — | ✅ / ⚠️ |
-| `pnpm test:unit` pass rate | X% | 100% | — | ✅ / ⚠️ |
-| `pnpm test:e2e` pass rate | X% | 100% | — | ✅ / ⚠️ |
-| Bundle size (`.output/public`) | XXX kB | XXX kB | ±Y% | ✅ / ⚠️ |
-| Dev cold start (`pnpm dev`) | XX s | XX s | −Y% | ✅ / ⚠️ |
-| Production build time | XX s | XX s | ±Y% | ✅ / ⚠️ |
-| `pnpm audit` (high/critical) | N | 0 | — | ✅ / ⚠️ |
+| Nuxt версия | 3.21.2 | — | — | ⚠️ baseline only |
+| `pnpm typecheck` | ❌ fail (22 TS-ошибки, `real 0m44.412s`) | — | — | ❌ |
+| `pnpm lint` | ❌ fail (21 errors, 60 warnings, `real 0m11.338s`) | — | — | ❌ |
+| `pnpm test:unit` pass rate | ❌ fail (3/14 tests passed, `real 0m17.579s`) | — | — | ❌ |
+| `pnpm test:e2e` pass rate | ⚠️ env fail (84 failed; browsers не установлены, `real 1m20.955s`) | — | — | ⚠️ blocked |
+| Bundle size (`.output/public`) | ⚠️ не зафиксирован (build fail) | — | — | ⚠️ blocked |
+| Dev cold start (`pnpm dev`) | ⚠️ partial (`timeout 40s`, сервер стартует, но `tailwindcss` resolve error) | — | — | ⚠️ blocked |
+| Production build time | ❌ fail (`real 0m10.327s`, `Can't resolve 'tailwindcss'`) | — | — | ❌ blocked |
+| `pnpm audit` (high/critical) | — | — | — | ⬜ not started |
 
 ---
 
@@ -150,6 +151,8 @@
 | NEXT-23-03 | Drizzle ORM 1.0 stable | после релиза stable | Backend Lead | TBD |
 | NEXT-23-04 | TypeScript project references (если 23.16 skipped) | Follow-up эпик | — | — |
 | NEXT-23-05 | Visual regression testing (Chromatic / Percy) | Новая инициатива | QA Lead | — |
+| NEXT-23-06 | Baseline blocker: `pnpm build` падает на `tailwindcss` resolve в `app/assets/css/main.css` | До старта post-migration метрик | Frontend Lead | 2026-04-22 |
+| NEXT-23-07 | Baseline blocker: для `pnpm test:e2e` отсутствуют Playwright browsers (`pnpm exec playwright install`) | До запуска e2e regression | QA/Automation | 2026-04-22 |
 
 ---
 
