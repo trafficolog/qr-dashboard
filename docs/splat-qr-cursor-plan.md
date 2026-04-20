@@ -21,12 +21,13 @@
 | 13 | Daily Aggregation | 3–4 | ✅ Завершён (v0.10.0) | 1–2 дня | Эпики 5, 6 |
 | 14 | i18n, Dark Mode, Polish | 4 | ✅ Завершён (v0.11.0) | 2–3 дня | Все |
 | 15 | Forms UX | UX ит. 1 | ✅ Завершён (**v0.12.0**) | — | Эпики 4, 14 |
-| 16 | Interactive Shell & Settings | UX ит. 1 | 📋 Запланирован | след. после 15 | Эпик 15 |
-| 17 | Accessibility (WCAG baseline) | UX ит. 2 | 🚧 In Progress (phase 1) | **v0.13.0** | 14, часть 15 |
-| 18 | Design System & Motion | UX ит. 2 | 📋 Запланирован | **v0.13.0** | 15, 17 |
-| 19 | Видимость QR (Private / Dept / Public) | Продукт | 📋 Запланирован | **v0.14.0**, 8–12 дн. | 1, 4, 7, 11 |
-| 20 | Analytics UX, карточки QR, onboarding | Продукт / UX | 📋 Запланирован | **v0.14.0**, 8–11 дн. | 6, 4, 14; часть 18 |
-| 21 | Security Hardening | Security | 📋 Запланирован | **→ 1.0.0** после полной реализации | 1–2, 12; приоритет выше фич |
+| 16 | Interactive Shell & Settings | UX ит. 1 | ✅ Done (закрыт 2026-04-17) | v0.12.1 | Эпик 15 |
+| 17 | Accessibility (WCAG baseline) | UX ит. 2 | 🚧 In Progress (Phase 1/2 закрыт, ~50% на 2026-04-19) | Unreleased | 14, часть 15 |
+| 18 | Design System & Motion | UX ит. 2 | ✅ Done (закрыт 2026-04-19) | v0.13.0 | 15, 17 |
+| 19 | Видимость QR (Private / Dept / Public) | Продукт | ✅ Done (закрыт 2026-04-20) | v0.14.0 | 1, 4, 7, 11 |
+| 20 | Analytics UX, карточки QR, onboarding | Продукт / UX | ✅ Done with notes (закрыт 2026-04-20) | v0.13.0 (Unreleased) | 6, 4, 14; часть 18 |
+| 21 | Security Hardening | Security | ✅ Done (закрыт 2026-04-20) | 1.0.0 gate выполнен 2026-04-20 | 1–2, 12; приоритет выше фич |
+| 22 | OpenAPI/Swagger + MCP Server | Интеграции / DX | ✅ Done (закрыт 2026-04-20) | Unreleased | 12, 21 |
 
 ### Дорожная карта эпиков 15–21 (кратко)
 
@@ -40,7 +41,20 @@
 | **20** | Карта сканов, обогащение карточек QR, onboarding — без дублирования 16–18. | [epic-20-ux-analytics-cards.md](./epic-20-ux-analytics-cards.md) |
 | **21** | CSRF, headers, rate limits и др. по security review; **фаза 0 — блокер production**; полный EPIC 21 → релиз **1.0.0**. | [epic-21-security-hardening.md](./epic-21-security-hardening.md) |
 
-Сводка итераций **15–18** и критерии релизов: [planned-epics-15-18.md](./planned-epics-15-18.md). Эпики **19–21** описаны в тех же файлах; порядок относительно production: учитывать **EPIC 21** (фаза 0) до выката; **1.0.0** — после полной реализации EPIC 21.
+### Что вошло в EPIC 22
+
+- OpenAPI-генерация из Zod-схем.
+- Публичный endpoint спецификации: `/api/openapi.json`.
+- Scalar UI-документация: `/api-docs`.
+- MCP server: tools + resources.
+- Отдельный permission scope: `mcp:access`.
+- Интеграционный setup-guide: `/integrations/mcp-setup`.
+
+### Будущий roadmap (только открытые эпики)
+
+| EPIC | Название | Статус | Примечание |
+|------|----------|--------|------------|
+| 23 | Nuxt 4 Migration | 📋 Planned | Следующая крупная техническая веха после закрытия EPIC 22 |
 
 ---
 
