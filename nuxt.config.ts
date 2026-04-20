@@ -39,6 +39,7 @@ export default defineNuxtConfig({
     // Public (доступны на клиенте)
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3001',
+      mcpServerUrl: process.env.NUXT_PUBLIC_MCP_SERVER_URL || '',
       appName: process.env.NUXT_PUBLIC_APP_NAME || 'SPLAT QR Service',
       csrfHeaderName: process.env.NUXT_PUBLIC_CSRF_HEADER_NAME || 'X-CSRF-Token',
       docsUiEnabled: process.env.NODE_ENV !== 'production' || process.env.NUXT_DOCS_UI !== '0',

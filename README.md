@@ -109,6 +109,12 @@ docker compose up postgres -d
 
 - `PROXY_SCHEME_ENABLED=1` только если приложение запускается за доверенным reverse-proxy.
 - Список `TRUSTED_PROXIES` только из адресов ваших ingress/load balancer узлов.
+
+### Public runtime-переменные (клиент)
+
+- `NUXT_PUBLIC_APP_URL` — базовый URL приложения (используется для ссылок и как база fallback-адресов).
+- `NUXT_PUBLIC_MCP_SERVER_URL` — полный URL MCP-сервера для страницы `/integrations/mcp-setup`.
+  Если не задан, используется fallback: `${NUXT_PUBLIC_APP_URL}/mcp`.
  
 ## Управление доменами (авторизация)
  
