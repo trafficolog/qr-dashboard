@@ -1,58 +1,26 @@
 import type { H3Event } from 'h3'
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import type { createMcpServer } from './server'
 
-type RpcServer = ReturnType<typeof createMcpServer>
+type McpServer = ReturnType<typeof createMcpServer>
 
-type JsonRpcRequest = {
-  jsonrpc?: string
-  id?: string | number | null
-  method?: string
-  params?: Record<string, unknown>
+type TransportOptions = {
+  parsedBody?: unknown
 }
 
-function isRpcRequest(input: unknown): input is JsonRpcRequest {
-  return typeof input === 'object' && input !== null && !Array.isArray(input)
-}
+export async function handleStreamableHttpRequest(event: H3Event, server: McpServer, options: TransportOptions = {}) {
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: undefined,
+    enableJsonResponse: true,
+  })
 
-export async function handleStreamableHttpRequest(event: H3Event, server: RpcServer) {
-  const body = await readBody<unknown>(event)
+  await server.connect(transport)
 
-  if (Array.isArray(body)) {
-    const responses = await Promise.all(
-      body.map((item) => {
-        if (!isRpcRequest(item)) {
-          return {
-            jsonrpc: '2.0' as const,
-            id: null,
-            error: {
-              code: -32600,
-              message: 'Invalid Request',
-            },
-          }
-        }
-
-        return server.handleRpcRequest(item)
-      }),
-    )
-
-    setHeader(event, 'content-type', 'application/json; charset=utf-8')
-    return responses
+  try {
+    await transport.handleRequest(event.node.req, event.node.res, options.parsedBody)
   }
-
-  if (!isRpcRequest(body)) {
-    setResponseStatus(event, 400)
-    setHeader(event, 'content-type', 'application/json; charset=utf-8')
-    return {
-      jsonrpc: '2.0',
-      id: null,
-      error: {
-        code: -32600,
-        message: 'Invalid Request',
-      },
-    }
+  finally {
+    await transport.close()
+    await server.close()
   }
-
-  const response = await server.handleRpcRequest(body)
-  setHeader(event, 'content-type', 'application/json; charset=utf-8')
-  return response
 }

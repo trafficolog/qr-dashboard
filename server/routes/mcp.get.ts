@@ -1,29 +1,38 @@
 import { authenticateMcpRequest } from '../mcp/auth'
+import { allMcpTools, dispatchResourceList } from '../mcp/dispatcher'
 import { createMcpServer } from '../mcp/server'
+import { handleStreamableHttpRequest } from '../mcp/transport'
 
 export default defineEventHandler(async (event) => {
   const context = await authenticateMcpRequest(event)
-  const server = createMcpServer(context)
-
   const queryMethod = getQuery(event).method
 
-  if (queryMethod === 'tools/list' || queryMethod === 'resources/list') {
-    const response = await server.handleRpcRequest({
-      jsonrpc: '2.0',
-      id: `legacy-${queryMethod}`,
-      method: queryMethod,
-    })
-
+  // Legacy compatibility: keep GET ?method=tools/list and GET ?method=resources/list support.
+  if (queryMethod === 'tools/list') {
     setHeader(event, 'content-type', 'application/json; charset=utf-8')
-    return response
+    return {
+      jsonrpc: '2.0',
+      id: 'legacy-tools/list',
+      result: {
+        tools: allMcpTools.map(tool => ({
+          name: tool.name,
+          description: tool.description,
+          inputSchema: tool.inputSchema,
+        })),
+      },
+    }
   }
 
-  setHeader(event, 'content-type', 'application/json; charset=utf-8')
-  return {
-    jsonrpc: '2.0',
-    id: 'legacy-info',
-    result: {
-      message: 'MCP endpoint is available. Use POST /mcp for JSON-RPC calls.',
-    },
+  if (queryMethod === 'resources/list') {
+    const resources = await dispatchResourceList(context)
+    setHeader(event, 'content-type', 'application/json; charset=utf-8')
+    return {
+      jsonrpc: '2.0',
+      id: 'legacy-resources/list',
+      result: { resources },
+    }
   }
+
+  const server = createMcpServer(context)
+  await handleStreamableHttpRequest(event, server)
 })
