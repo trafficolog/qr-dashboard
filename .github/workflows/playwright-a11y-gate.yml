@@ -41,19 +41,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.12.0
-          cache: npm
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright (Chromium)
         run: npx playwright install --with-deps chromium
 
       - name: Run DB migrations
-        run: npm run db:migrate
+        run: pnpm db:migrate
 
       - name: Seed DB
-        run: npm run db:seed
+        run: pnpm db:seed
 
       - name: Create e2e auth session token
         run: |
@@ -98,7 +103,7 @@ jobs:
           echo "PLAYWRIGHT_AUTH_COOKIE=$TOKEN" >> "$GITHUB_ENV"
 
       - name: Start Nuxt app
-        run: npm run dev -- --host 0.0.0.0 --port 3001 > /tmp/nuxt-dev.log 2>&1 &
+        run: pnpm dev -- --host 0.0.0.0 --port 3001 > /tmp/nuxt-dev.log 2>&1 &
 
       - name: Wait for app
         run: |
@@ -113,7 +118,7 @@ jobs:
           exit 1
 
       - name: Run accessibility e2e gate
-        run: npm run test:e2e -- a11y.spec.ts
+        run: pnpm test:e2e -- a11y.spec.ts
 
       - name: Upload Playwright HTML report (on failure)
         if: failure()
