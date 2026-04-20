@@ -7,6 +7,15 @@
  
 ## [Unreleased]
 
+### Added — EPIC 22 OpenAPI + MCP
+
+- **OpenAPI pipeline:** добавлены/актуализированы сценарии генерации и проверки OpenAPI-спеки.
+- **`/api/openapi.json`:** опубликован endpoint с актуальной OpenAPI-спецификацией сервиса.
+- **Scalar UI:** подключён интерактивный API Reference на базе Scalar для просмотра и тестирования контрактов.
+- **MCP routes/tools/resources:** реализованы MCP-маршруты, инструменты и ресурсы для клиентских интеграций.
+- **`mcp:access`:** добавлено permission-ограничение доступа к MCP-интеграции.
+- **Setup examples:** добавлены примеры настройки и подключения MCP-клиентов.
+
 ### Added — EPIC 21 Security Hardening (completed 2026-04-20)
 
 - **SEC-01 / 21.1 — CSRF Protection:** session CSRF token, origin/referer checks, enforcement for mutating cookie-auth requests.
@@ -34,6 +43,10 @@
 ### Changed
 
 - **`README.md`**, **`docs/completed-epics.md`**, **`docs/epic-20-ux-analytics-cards.md`** — синхронизированы версия и статусы EPIC 20 между документами.
+
+### Changed — Documentation sync (EPIC 16–21 backfill)
+
+- **`README.md`**, **`CHANGELOG.md`**, **`package.json`** — выровнены версия/статус релиза и ссылки на документацию EPIC 16–21+.
 
 ---
 
