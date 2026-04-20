@@ -2,7 +2,7 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
-**Версия:** 0.13.0 (Unreleased) — см. [CHANGELOG](./CHANGELOG.md).
+**Версия:** 0.13.0 (Unreleased, 2026-04-20) — см. [CHANGELOG](./CHANGELOG.md).
 
 ## Стек
 
@@ -150,7 +150,21 @@ docker compose up postgres -d
 - [EPIC 16 — Interactive Shell & Settings Redesign](./docs/epic-16-interactive-shell.md) — закрытый эпик и синхронизированный документ
 - [EPIC 17 — Accessibility (a11y) Baseline](./docs/epic-17-accessibility.md) — активный эпик (выполнен phase 1: aria/focus/announcer/axe-baseline)
 - [EPIC 20 — UX/UI Enhancement Pack](./docs/epic-20-ux-analytics-cards.md) — статус `Done with notes` (analytics/cards/empty states/onboarding завершены)
+- [EPIC 22 — OpenAPI + MCP + Scalar](./docs/epic-22-mcp-swagger-api.md) — спецификация API, MCP-интеграция и UI-документация
 - [Review — EPIC 16/17 docs sync](./docs/review/epic-16-17-docs-review.md) — ревью выполненной работы
+
+### OpenAPI / Scalar / MCP (доступно)
+
+- **OpenAPI pipeline**: генерация и валидация спецификации через `npm run openapi:generate` и `npm run openapi:validate`.
+- **OpenAPI endpoint**: опубликована машина-читаемая спецификация по адресу **`/api/openapi.json`**.
+- **Scalar UI**: интерактивная документация API доступна через встроенный Scalar API Reference.
+- **MCP server**: доступны MCP routes/tools/resources для интеграций; доступ контролируется permission `mcp:access`.
+- **Setup examples**: в проекте присутствуют примеры подключения и настройки MCP-клиентов.
+
+### Documentation sync (EPIC 16–21 backfill)
+
+- Документация по EPIC 16–21 синхронизирована с фактической реализацией и статусами релизов.
+- Для аудита изменений ориентируйтесь на блоки `Unreleased` в [CHANGELOG](./CHANGELOG.md) и профильные документы в `docs/`.
 
 ### Ключевые возможности EPIC 20
 
