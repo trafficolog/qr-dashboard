@@ -50,6 +50,13 @@
       "when": 1776674156246,
       "tag": "0006_users_role_default_viewer",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1776675720850,
+      "tag": "0007_add_audit_log",
+      "breakpoints": true
     }
   ]
 }

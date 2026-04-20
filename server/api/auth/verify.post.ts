@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { authService } from '../../services/auth.service'
+import { recordAudit } from '../../utils/audit'
 
 const verifySchema = z.object({
   email: z.string().email('Некорректный email'),
@@ -18,6 +19,16 @@ export default defineEventHandler(async (event) => {
     maxAge: 30 * 24 * 60 * 60, // 30 дней в секундах
     path: '/',
   })
+
+  recordAudit(
+    {
+      userId: user.id,
+      action: 'auth.verify',
+      entityType: 'session',
+      entityId: user.id,
+    },
+    { details: { email: body.email } },
+  )
 
   return apiSuccess({ user, csrfToken })
 })

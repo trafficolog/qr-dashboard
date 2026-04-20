@@ -11,6 +11,7 @@ import { apiKeys } from './api-keys'
 import { scanDailyStats } from './scan-daily-stats'
 import { departments } from './departments'
 import { userDepartments } from './user-departments'
+import { auditLog } from './audit-log'
 
 // --- Re-exports ---
 export * from './users'
@@ -27,6 +28,7 @@ export * from './api-keys'
 export * from './scan-daily-stats'
 export * from './departments'
 export * from './user-departments'
+export * from './audit-log'
 
 // --- Relations ---
 export const usersRelations = relations(users, ({ many }) => ({
@@ -34,6 +36,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   qrCodes: many(qrCodes),
   apiKeys: many(apiKeys),
   departments: many(userDepartments),
+  auditLogs: many(auditLog),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -134,6 +137,13 @@ export const userDepartmentsRelations = relations(userDepartments, ({ one }) => 
   department: one(departments, {
     fields: [userDepartments.departmentId],
     references: [departments.id],
+  }),
+}))
+
+export const auditLogRelations = relations(auditLog, ({ one }) => ({
+  user: one(users, {
+    fields: [auditLog.userId],
+    references: [users.id],
   }),
 }))
 export const scanDailyStatsRelations = relations(scanDailyStats, ({ one }) => ({

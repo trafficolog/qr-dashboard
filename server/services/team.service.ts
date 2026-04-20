@@ -1,6 +1,7 @@
 import { eq, count, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { users, qrCodes, sessions } from '../db/schema'
+import { recordAudit } from '../utils/audit'
 import type { User } from '~~/types/auth'
 
 export const teamService = {
@@ -32,7 +33,7 @@ export const teamService = {
    * Создать нового пользователя (invite).
    * Если уже существует — 409.
    */
-  async invite(email: string, role: 'admin' | 'editor' | 'viewer') {
+  async invite(email: string, role: 'admin' | 'editor' | 'viewer', currentUser?: User) {
     const existing = await db.query.users.findFirst({
       where: eq(users.email, email.toLowerCase()),
       columns: { id: true },
@@ -49,6 +50,16 @@ export const teamService = {
       .insert(users)
       .values({ email: email.toLowerCase(), role })
       .returning()
+
+    recordAudit(
+      {
+        userId: currentUser?.id ?? null,
+        action: 'team.invite',
+        entityType: 'user',
+        entityId: created!.id,
+      },
+      { details: { invitedBy: currentUser?.id ?? null, role } },
+    )
 
     return created!
   },
@@ -99,6 +110,16 @@ export const teamService = {
       .where(eq(users.id, id))
       .returning()
 
+    recordAudit(
+      {
+        userId: currentUser.id,
+        action: 'team.update_role',
+        entityType: 'user',
+        entityId: id,
+      },
+      { details: { previousRole: target.role, newRole } },
+    )
+
     return updated!
   },
 
@@ -147,6 +168,16 @@ export const teamService = {
     await db.delete(sessions).where(eq(sessions.userId, id))
 
     await db.delete(users).where(eq(users.id, id))
+
+    recordAudit(
+      {
+        userId: currentUser.id,
+        action: 'team.delete_user',
+        entityType: 'user',
+        entityId: id,
+      },
+      { details: { deletedEmail: target.email, deletedRole: target.role } },
+    )
   },
 
   /**

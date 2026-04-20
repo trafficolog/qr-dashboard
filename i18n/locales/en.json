@@ -180,7 +180,8 @@
       "team": "Team",
       "domains": "Domains",
       "integrations": "Integrations",
-      "departments": "Departments"
+      "departments": "Departments",
+      "audit": "Audit log"
     },
     "general": {
       "subtitle": "Theme, language and timezone",
@@ -348,7 +349,9 @@
       "invite": "Invite",
       "add": "Add",
       "addDomain": "Add domain",
-      "delete": "Delete"
+      "delete": "Delete",
+      "apply": "Apply",
+      "reset": "Reset"
     },
     "labels": {
       "destinationUrl": "Destination URL",
@@ -461,6 +464,28 @@
         "updateError": "Failed to update domain",
         "deleted": "Domain “{domain}” deleted",
         "deleteError": "Failed to delete domain"
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "subtitle": "Track security and content changes across the system",
+      "empty": "No audit events found",
+      "detailsTitle": "Audit event details",
+      "filters": {
+        "userId": "User ID",
+        "action": "Action",
+        "anyAction": "Any action",
+        "entityType": "Entity type",
+        "dateFrom": "Date from",
+        "dateTo": "Date to"
+      },
+      "table": {
+        "date": "Date",
+        "user": "User",
+        "action": "Action",
+        "entity": "Entity",
+        "details": "Details",
+        "view": "View"
       }
     }
   },

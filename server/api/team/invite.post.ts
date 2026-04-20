@@ -10,9 +10,9 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  requireAdmin(event)
+  const currentUser = requireAdmin(event)
   const body = await validateBody(event, bodySchema)
-  const user = await teamService.invite(body.email, body.role)
+  const user = await teamService.invite(body.email, body.role, currentUser)
   await emailService.sendInviteEmail(body.email)
   return apiSuccess(user)
 })

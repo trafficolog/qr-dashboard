@@ -1,6 +1,7 @@
 import { eq, and, count } from 'drizzle-orm'
 import { db } from '../db'
 import { folders, qrCodes } from '../db/schema'
+import { recordAudit } from '../utils/audit'
 import type { User } from '~~/types/auth'
 
 interface CreateFolderData {
@@ -66,8 +67,9 @@ async function validateNoParentCycle(folderId: string, parentId: string | null |
 
     visited.add(currentParentId)
 
-    const parentFolder = await db.query.folders.findFirst({
+    const parentFolder: { parentId: string | null } | undefined = await db.query.folders.findFirst({
       where: eq(folders.id, currentParentId),
+      columns: { parentId: true },
     })
 
     if (!parentFolder) return
@@ -125,6 +127,16 @@ export const folderService = {
       })
       .returning()
 
+    recordAudit(
+      {
+        userId: user.id,
+        action: 'folder.create',
+        entityType: 'folder',
+        entityId: folder!.id,
+      },
+      { details: { name: folder!.name, parentId: folder!.parentId } },
+    )
+
     return folder!
   },
 
@@ -155,6 +167,16 @@ export const folderService = {
       .where(eq(folders.id, id))
       .returning()
 
+    recordAudit(
+      {
+        userId: user.id,
+        action: 'folder.update',
+        entityType: 'folder',
+        entityId: id,
+      },
+      { details: { changedFields: Object.keys(updateData) } },
+    )
+
     return updated!
   },
 
@@ -182,6 +204,17 @@ export const folderService = {
       .where(and(eq(qrCodes.folderId, id)))
 
     await db.delete(folders).where(eq(folders.id, id))
+
+    recordAudit(
+      {
+        userId: user.id,
+        action: 'folder.delete',
+        entityType: 'folder',
+        entityId: id,
+      },
+      { details: { name: existing.name, parentId: existing.parentId } },
+    )
+
     return { success: true }
   },
 }
