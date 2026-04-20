@@ -18,7 +18,7 @@
 | # | Задача | Статус | Commit(ы) | Комментарий |
 |---|--------|--------|-----------|-------------|
 | 23.1 | Аудит и baseline | ✅ | `66e3792`, `ca88757`, `947ecb6` | Baseline/матрица и фиксация Node+pnpm выполнены |
-| 23.2 | Nuxt 3.x latest + compatibilityVersion: 4 | ⬜ | — | Не начато |
+| 23.2 | Nuxt 3.x latest + compatibilityVersion: 4 | ✅ | `de71513`, `cb9fc22` | Pre-migration transition mode подтверждён (`future.compatibilityVersion: 4`) |
 | 23.3 | @nuxtjs/i18n v9 → v10 | ⬜ | — | Не начато |
 | 23.4 | Реорганизация структуры для Nuxt 4 | ⏳ ready-to-start | — | Старт разрешён только после `MG-23-D = ✅`; gate закрыт 2026-04-20, задача разблокирована |
 | 23.5 | Upgrade Nuxt 3.x → 4.0 | ⏳ ready-to-start | — | Старт разрешён только после `MG-23-D = ✅`; gate закрыт 2026-04-20, задача разблокирована |
@@ -48,6 +48,16 @@
 | MG-23-D (Core quality gate) | ✅ Green (закрыт 2026-04-20) | Закрыты критичные must-fix из core flow: `auth/session`, DTO type safety v1 API, `useSecurityError` type safety, core service tests; подтверждено целевыми `eslint` + `vitest`, тесты изолированы от нестабильного внешнего runtime. |
 
 **Gate policy:** запуск 23.4/23.5 разрешается только при `MG-23-D = ✅` (и сохранении `MG-23-A..C = ✅`).
+
+### 1.2 Pre-migration checkpoint (перед стартом phase 2 / задач 23.4+)
+
+| Scope | Статус | Commit refs | Примечание |
+|---|---|---|---|
+| 23.1 — Аудит и baseline | ✅ done | `66e3792`, `ca88757`, `947ecb6` | Baseline, gates и dependency matrix зафиксированы. |
+| 23.2 — Nuxt 3.x latest + `compatibilityVersion: 4` | ✅ done (transition mode) | `de71513`, `cb9fc22` | Переходный режим подтверждён: `future.compatibilityVersion: 4` присутствует в `nuxt.config.ts`. |
+| 23.3 — `@nuxtjs/i18n` v9 → v10 | ⬜ not started | — | До начала phase 2 отдельные migration commits отсутствуют. |
+
+**Правило контроля регрессий (согласовано):** любые **новые** ошибки, появившиеся после начала phase 2 (с 23.4+), классифицируются как **регрессии миграции** и должны фиксироваться/трекинговаться отдельно от baseline debt.
 
 ---
 
