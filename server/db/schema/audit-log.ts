@@ -17,6 +17,7 @@ export const auditActionEnum = pgEnum('audit_action', [
   'folder.delete',
   'api_key.create',
   'api_key.delete',
+  'api_key.scope_denied',
 ])
 
 export const auditLog = pgTable(
