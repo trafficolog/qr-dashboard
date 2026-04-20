@@ -56,6 +56,12 @@ export default defineNuxtConfig({
   nitro: {
     routeRules: {
       '/api/**': { maxBodySize: '1MB' } as unknown as Record<string, unknown>,
+      '/api/v1/**': {
+        cors: true,
+        headers: {
+          'Access-Control-Allow-Credentials': 'false',
+        },
+      } as unknown as Record<string, unknown>,
       '/api/qr/bulk': { maxBodySize: '5MB' } as unknown as Record<string, unknown>,
     },
     rollupConfig: {
