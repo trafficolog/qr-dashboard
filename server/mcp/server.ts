@@ -10,7 +10,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import type { McpContext } from './auth'
-import { allMcpTools, dispatchResourceList, dispatchResourceRead, dispatchToolCall } from './dispatcher'
+import { dispatchResourceList, dispatchResourceRead, dispatchToolCall, filterToolsByPermissions } from './dispatcher'
 
 export type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read' | 'mcp:access'
 
@@ -104,8 +104,9 @@ export function createMcpServer(context: McpContext) {
   })
 
   server.setRequestHandler(ListToolsRequestSchema, async () => {
+    const availableTools = filterToolsByPermissions(context.apiKey.permissions)
     return {
-      tools: allMcpTools.map(tool => ({
+      tools: availableTools.map(tool => ({
         name: tool.name,
         description: tool.description,
         inputSchema: tool.inputSchema,
