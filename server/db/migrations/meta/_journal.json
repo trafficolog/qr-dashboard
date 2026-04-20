@@ -64,6 +64,20 @@
       "when": 1777000000000,
       "tag": "0008_add_auth_email_locks_and_rate_limit_counters",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1776678521439,
+      "tag": "0009_add_team_role_change_audit_action",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1776678521439,
+      "tag": "0010_api_keys_permissions_ip_expiry",
+      "breakpoints": true
     }
   ]
 }

@@ -225,7 +225,24 @@
         "namePlaceholder": "E.g. Production API",
         "copyHint": "Save the key — it is shown only once",
         "empty": "No API keys. Create one to use the API.",
-        "deleted": "Key deleted"
+        "deleted": "Key deleted",
+        "permissionsLabel": "Permissions",
+        "allowedIpsLabel": "Allowed IPs / CIDR",
+        "allowedIpsPlaceholder": "One IP/CIDR per line or comma (e.g. 203.0.113.1, 10.0.0.0/24)",
+        "allowedIpsAny": "Any IP",
+        "allowedIpsList": "IPs: {count}",
+        "expiresAtLabel": "Expires at",
+        "expiringSoon": "Expires soon",
+        "permissions": {
+          "qrRead": "Read QR codes",
+          "qrWrite": "Manage QR codes",
+          "qrStatsRead": "Read QR stats"
+        },
+        "errors": {
+          "permissionsRequired": "Select at least one permission",
+          "expiresAtRequired": "Expiration date is required",
+          "expiresAtFuture": "Expiration date must be in the future"
+        }
       },
       "webhooks": {
         "comingSoon": "Webhooks are coming in the next release."
