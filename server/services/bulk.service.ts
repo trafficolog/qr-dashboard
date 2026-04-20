@@ -36,6 +36,12 @@ export interface BulkValidationResult {
   errors: BulkRowError[]
 }
 
+export interface BulkCreateResult {
+  created: number
+  failed: number
+  errors: BulkRowError[]
+}
+
 export interface ParsedCsvRow {
   [key: string]: string
 }
@@ -104,103 +110,124 @@ export const bulkService = {
   /**
    * Create QR codes in bulk. Returns counts and per-row errors.
    */
-  async bulkCreate(validRows: (BulkRow & { rowIndex: number })[], user: User) {
-    // Pre-resolve folder names → ids
-    const folderNameSet = new Set(validRows.map(r => r.folderName).filter(Boolean) as string[])
-    const folderMap = new Map<string, string>()
+  async bulkCreate(validRows: (BulkRow & { rowIndex: number })[], user: User): Promise<BulkCreateResult> {
+    return db.transaction(async (tx) => {
+      // Pre-resolve folder names → ids
+      const folderNameSet = new Set(validRows.map(r => r.folderName).filter(Boolean) as string[])
+      const folderMap = new Map<string, string>()
 
-    for (const name of folderNameSet) {
-      const found = await db.query.folders.findFirst({
-        where: ilike(folders.name, name),
-        columns: { id: true, createdBy: true },
-      })
-      // Only use folders owned by this user or admin
-      if (found && (user.role === 'admin' || found.createdBy === user.id)) {
-        folderMap.set(name.toLowerCase(), found.id)
-      }
-    }
-
-    // Pre-resolve tag names → ids (create if missing)
-    const tagNameSet = new Set(validRows.flatMap(r => r.tagNames ?? []))
-    const tagMap = new Map<string, string>()
-
-    for (const name of tagNameSet) {
-      const existing = await db.query.tags.findFirst({
-        where: ilike(tags.name, name),
-        columns: { id: true },
-      })
-      if (existing) {
-        tagMap.set(name.toLowerCase(), existing.id)
-      }
-      else {
-        const [created] = await db.insert(tags).values({ name }).returning()
-        if (created) tagMap.set(name.toLowerCase(), created.id)
-      }
-    }
-
-    let created = 0
-    const errors: BulkRowError[] = []
-
-    for (const row of validRows) {
-      try {
-        // Generate unique shortCode
-        let shortCode = ''
-        for (let attempt = 0; attempt < 3; attempt++) {
-          const candidate = generateShortCode()
-          const exists = await db.query.qrCodes.findFirst({
-            where: eq(qrCodes.shortCode, candidate),
-            columns: { id: true },
-          })
-          if (!exists) {
-            shortCode = candidate
-            break
-          }
+      for (const name of folderNameSet) {
+        const found = await tx.query.folders.findFirst({
+          where: ilike(folders.name, name),
+          columns: { id: true, createdBy: true },
+        })
+        // Only use folders owned by this user or admin
+        if (found && (user.role === 'admin' || found.createdBy === user.id)) {
+          folderMap.set(name.toLowerCase(), found.id)
         }
+      }
 
-        if (!shortCode) {
-          errors.push({ row: row.rowIndex, field: 'general', message: 'Не удалось сгенерировать уникальный код' })
+      // Pre-resolve tag names → ids (create if missing)
+      const tagNameSet = new Set(validRows.flatMap(r => r.tagNames ?? []))
+      const tagMap = new Map<string, string>()
+
+      for (const name of tagNameSet) {
+        const existing = await tx.query.tags.findFirst({
+          where: ilike(tags.name, name),
+          columns: { id: true },
+        })
+        if (existing) {
+          tagMap.set(name.toLowerCase(), existing.id)
           continue
         }
 
-        const utmParams: Record<string, string> = {}
-        if (row.utmSource) utmParams.utm_source = row.utmSource
-        if (row.utmMedium) utmParams.utm_medium = row.utmMedium
-        if (row.utmCampaign) utmParams.utm_campaign = row.utmCampaign
-        if (row.utmContent) utmParams.utm_content = row.utmContent
-
-        const [qr] = await db
-          .insert(qrCodes)
-          .values({
-            shortCode,
-            title: row.title,
-            description: row.description,
-            type: 'dynamic',
-            destinationUrl: row.destinationUrl,
-            style: DEFAULT_STYLE,
-            utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
-            folderId: row.folderName ? folderMap.get(row.folderName.toLowerCase()) : undefined,
-            createdBy: user.id,
-            expiresAt: row.expiresAt ? new Date(row.expiresAt) : null,
-          })
-          .returning()
-
-        // Attach tags
-        const tagIds = (row.tagNames ?? [])
-          .map(t => tagMap.get(t.toLowerCase()))
-          .filter(Boolean) as string[]
-
-        if (tagIds.length && qr) {
-          await db.insert(qrTags).values(tagIds.map(tagId => ({ qrCodeId: qr.id, tagId })))
+        const [createdTag] = await tx.insert(tags).values({ name }).returning()
+        if (createdTag) {
+          tagMap.set(name.toLowerCase(), createdTag.id)
         }
-
-        created++
       }
-      catch {
-        errors.push({ row: row.rowIndex, field: 'general', message: 'Ошибка при создании' })
-      }
-    }
 
-    return { created, failed: errors.length, errors }
+      let created = 0
+      const errors: BulkRowError[] = []
+
+      for (const row of validRows) {
+        try {
+          await tx.transaction(async (rowTx) => {
+            // Generate unique shortCode
+            let shortCode = ''
+            for (let attempt = 0; attempt < 3; attempt++) {
+              const candidate = generateShortCode()
+              const exists = await rowTx.query.qrCodes.findFirst({
+                where: eq(qrCodes.shortCode, candidate),
+                columns: { id: true },
+              })
+              if (!exists) {
+                shortCode = candidate
+                break
+              }
+            }
+
+            if (!shortCode) {
+              throw createError({ statusCode: 422, message: 'Не удалось сгенерировать уникальный код' })
+            }
+
+            const utmParams: Record<string, string> = {}
+            if (row.utmSource) utmParams.utm_source = row.utmSource
+            if (row.utmMedium) utmParams.utm_medium = row.utmMedium
+            if (row.utmCampaign) utmParams.utm_campaign = row.utmCampaign
+            if (row.utmContent) utmParams.utm_content = row.utmContent
+
+            const [qr] = await rowTx
+              .insert(qrCodes)
+              .values({
+                shortCode,
+                title: row.title,
+                description: row.description,
+                type: 'dynamic',
+                destinationUrl: row.destinationUrl,
+                style: DEFAULT_STYLE,
+                utmParams: Object.keys(utmParams).length > 0 ? utmParams : undefined,
+                folderId: row.folderName ? folderMap.get(row.folderName.toLowerCase()) : undefined,
+                createdBy: user.id,
+                expiresAt: row.expiresAt ? new Date(row.expiresAt) : null,
+              })
+              .returning()
+
+            // Attach tags
+            const tagIds = (row.tagNames ?? [])
+              .map(t => tagMap.get(t.toLowerCase()))
+              .filter(Boolean) as string[]
+
+            if (tagIds.length && qr) {
+              await rowTx.insert(qrTags).values(tagIds.map(tagId => ({ qrCodeId: qr.id, tagId })))
+            }
+          })
+
+          created++
+        }
+        catch (error) {
+          const message = (
+            typeof error === 'object'
+            && error !== null
+            && 'message' in error
+            && typeof (error as { message?: unknown }).message === 'string'
+          )
+            ? (error as { message: string }).message
+            : 'Ошибка при создании'
+          errors.push({ row: row.rowIndex, field: 'general', message })
+        }
+      }
+
+      if (created === 0) {
+        throw createError({
+          statusCode: 422,
+          message: 'Не удалось создать ни одного QR-кода',
+          data: { errors },
+        })
+      }
+
+      return { created, failed: errors.length, errors }
+    })
   },
 
   /**

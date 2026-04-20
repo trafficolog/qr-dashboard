@@ -261,6 +261,9 @@ const DEFAULT_STYLE = {
   errorCorrectionLevel: 'M',
 }
 
+type TransactionClient = Parameters<Parameters<typeof db.transaction>[0]>[0]
+type DbExecutor = typeof db | TransactionClient
+
 // --- Service ---
 
 export const qrService = {
@@ -722,11 +725,11 @@ export const qrService = {
   /**
    * Массовое удаление
    */
-  async bulkDeleteQr(ids: string[], user: User) {
+  async bulkDeleteQr(ids: string[], user: User, executor: DbExecutor = db) {
     // Проверить доступ ко всем
-    const existing = await db.query.qrCodes.findMany({
+    const existing = await executor.query.qrCodes.findMany({
       where: inArray(qrCodes.id, ids),
-      columns: { id: true, createdBy: true, visibility: true, departmentId: true },
+      columns: { id: true, shortCode: true, createdBy: true, visibility: true, departmentId: true },
     })
 
     if (existing.length !== ids.length) {
@@ -740,7 +743,20 @@ export const qrService = {
       await ensureDeleteAccess(qr, user)
     }
 
-    await db.delete(qrCodes).where(inArray(qrCodes.id, ids))
+    for (const qr of existing) {
+      await executor.delete(qrCodes).where(eq(qrCodes.id, qr.id))
+      invalidateQrCache(qr.shortCode)
+      recordAudit(
+        {
+          userId: user.id,
+          action: 'qr.delete',
+          entityType: 'qr',
+          entityId: qr.id,
+        },
+        { details: { shortCode: qr.shortCode } },
+      )
+    }
+
     return { success: true, deleted: ids.length }
   },
 

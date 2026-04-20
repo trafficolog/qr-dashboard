@@ -86,12 +86,36 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const result = await bulkService.bulkCreate(valid, user)
+  try {
+    const result = await bulkService.bulkCreate(valid, user)
 
-  return apiSuccess({
-    created: result.created,
-    failed: result.failed + validationErrors.length,
-    total: body.rows.length,
-    errors: [...validationErrors, ...result.errors],
-  })
+    return apiSuccess({
+      created: result.created,
+      failed: result.failed + validationErrors.length,
+      errors: [...validationErrors, ...result.errors],
+    })
+  }
+  catch (error) {
+    if (validationErrors.length === 0) {
+      throw error
+    }
+
+    const statusCode = typeof error === 'object' && error !== null && 'statusCode' in error
+      ? Number((error as { statusCode?: unknown }).statusCode)
+      : 422
+
+    const createErrors = typeof error === 'object' && error !== null && 'data' in error
+      ? ((error as { data?: { errors?: unknown } }).data?.errors ?? [])
+      : []
+
+    throw createError({
+      statusCode,
+      message: 'Не удалось создать ни одного QR-кода',
+      data: {
+        created: 0,
+        failed: valid.length + validationErrors.length,
+        errors: [...validationErrors, ...(Array.isArray(createErrors) ? createErrors : [])],
+      },
+    })
+  }
 })
