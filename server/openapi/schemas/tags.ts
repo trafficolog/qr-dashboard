@@ -9,7 +9,7 @@ const tagSchema = openApiRegistry.register(
     name: z.string(),
     color: z.string().regex(/^#[0-9a-f]{6}$/i).nullable(),
     created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }).optional(),
+    updated_at: z.string().datetime({ offset: true }),
     qr_count: z.number().int().nonnegative().optional(),
   }),
 )
@@ -56,6 +56,7 @@ openApiRegistry.registerPath({
                 name: 'Summer',
                 color: '#f97316',
                 created_at: '2026-04-20T09:00:00.000Z',
+                updated_at: '2026-04-20T09:00:00.000Z',
                 qr_count: 7,
               },
             ],

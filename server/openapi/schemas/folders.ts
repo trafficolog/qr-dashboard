@@ -11,7 +11,7 @@ const folderSchema = openApiRegistry.register(
     color: z.string().regex(/^#[0-9a-f]{6}$/i).nullable(),
     created_by: z.string().uuid(),
     created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }).optional(),
+    updated_at: z.string().datetime({ offset: true }),
     qr_count: z.number().int().nonnegative().optional(),
   }),
 )
@@ -79,6 +79,7 @@ openApiRegistry.registerPath({
                 color: '#4f46e5',
                 created_by: '29fdf297-3f12-4fab-a7da-20367a8e8cc5',
                 created_at: '2026-04-19T09:00:00.000Z',
+                updated_at: '2026-04-19T09:00:00.000Z',
                 qr_count: 12,
               },
             ],

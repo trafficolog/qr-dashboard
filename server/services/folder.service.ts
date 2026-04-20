@@ -90,6 +90,7 @@ export const folderService = {
         color: folders.color,
         createdBy: folders.createdBy,
         createdAt: folders.createdAt,
+        updatedAt: folders.createdAt,
         qrCount: count(qrCodes.id),
       })
       .from(folders)
@@ -98,7 +99,7 @@ export const folderService = {
       .groupBy(folders.id)
       .orderBy(folders.name)
 
-    return rows
+    return rows.map(row => ({ ...row, updatedAt: row.updatedAt ?? row.createdAt }))
   },
 
   async getById(id: string, user: User) {
@@ -111,7 +112,7 @@ export const folderService = {
     }
 
     checkAccess(folder, user)
-    return folder
+    return { ...folder, updatedAt: folder.createdAt }
   },
 
   async create(data: CreateFolderData, user: User) {
@@ -137,7 +138,7 @@ export const folderService = {
       { details: { name: folder!.name, parentId: folder!.parentId } },
     )
 
-    return folder!
+    return { ...folder!, updatedAt: folder!.createdAt }
   },
 
   async update(id: string, data: UpdateFolderData, user: User) {
@@ -177,7 +178,7 @@ export const folderService = {
       { details: { changedFields: Object.keys(updateData) } },
     )
 
-    return updated!
+    return { ...updated!, updatedAt: updated!.createdAt }
   },
 
   async delete(id: string, user: User) {
