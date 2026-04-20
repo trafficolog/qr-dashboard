@@ -1,6 +1,6 @@
 # EPIC 22 — OpenAPI/Swagger + MCP Server
 
-**Статус:** ✅ Done (закрыт 2026-04-20)
+**Статус:** см. [EPIC Status Matrix](./epic-status-matrix.md).
 **Целевая версия:** v0.15.0 (Unreleased)
 **Оценка:** 9–13 дней
 **Зависимости:** Эпик 12 (API v1 + ключи), Эпик 21 (Security — для API key scoping)

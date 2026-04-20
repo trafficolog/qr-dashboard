@@ -1,6 +1,6 @@
 # EPIC 18 — Design System Polishing & Motion
  
-**Статус:** 📋 Planned
+**Статус:** см. [EPIC Status Matrix](./epic-status-matrix.md).
 **Ветка:** `claude/ux-ui-improvements-Kt0wI` (итерация 2)
 **Целевая версия:** v0.13.0 (в составе итерации 2)
  

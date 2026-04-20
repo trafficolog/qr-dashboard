@@ -3,7 +3,7 @@
 > **Дата:** 2026-04-07 (обновлено 2026-04-20)
 > **Фаза:** 4 — завершена; UX-итерация продолжается (EPIC 17 в статусе In Progress, phase 1 реализован)
 > **Файлов в проекте:** ~190
-> **Статус:** Текущий охват отчёта: EPIC 1–22 (EPIC 17 — в процессе; EPIC 22 — завершён)
+> **Статус:** Актуальные статусы EPIC 16–22 ведутся в [EPIC Status Matrix](./epic-status-matrix.md).
 
 ---
 
@@ -31,19 +31,9 @@
 | 15 | Forms UX (guard, draft, валидация, i18n форм) | ✅ Завершён | v0.12.0 | 15.1–15.7 — см. [epic-15-forms-ux.md](./epic-15-forms-ux.md) |
 | 17 | Accessibility baseline (WCAG) | 🚧 In Progress | Unreleased | phase 1: announcer, aria-label, focus-visible, semantic tables, axe smoke |
 
-### 1.1а Статус эпиков 16–22 (актуально на 2026-04-20)
+### 1.1а Статус эпиков 16–22
 
-Детальные спецификации: `docs/epic-16-interactive-shell.md` … `docs/epic-21-security-hardening.md`. Сводная таблица статусов и релизов — в [splat-qr-cursor-plan.md](./splat-qr-cursor-plan.md) и [planned-epics-15-18.md](./planned-epics-15-18.md).
-
-| Эпик | Тема | Статус | Релиз/веха | Дата |
-|------|------|--------|------------|------|
-| 16 | Interactive Shell & Settings | ✅ Done | v0.12.1 | 2026-04-17 |
-| 17 | Accessibility baseline | 🚧 In Progress (Phase 1/2 закрыт, ~50%) | Unreleased | 2026-04-19 (последнее обновление) |
-| 18 | Design System & Motion | ✅ Done | v0.13.0 | 2026-04-19 |
-| 19 | Видимость QR | ✅ Done | v0.14.0 | 2026-04-20 |
-| 20 | Analytics / cards / onboarding | ✅ Done with notes (scope 20.8 вынесен) | v0.13.0 (Unreleased) | 2026-04-20 |
-| 21 | Security Hardening | ✅ Done | 1.0.0 gate выполнен | 2026-04-20 |
-| 22 | OpenAPI + Scalar + MCP | ✅ Done | Unreleased | 2026-04-20 |
+Сводный статус, даты закрытия, релизы и ссылки на отчёты ведутся только в [EPIC Status Matrix](./epic-status-matrix.md).
 
 ### EPIC 22 — OpenAPI + MCP
 

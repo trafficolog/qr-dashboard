@@ -1,6 +1,6 @@
 # EPIC 17 — Accessibility (a11y) Baseline
  
-**Статус:** 🚧 In Progress (старт работ: 2026-04-17)
+**Статус:** см. [EPIC Status Matrix](./epic-status-matrix.md).
 **Ветка:** `feat/epic-16-17-docs-update` (планирование и старт EPIC 17)
 **Целевая версия:** v0.13.0 (в составе итерации 2)
  
