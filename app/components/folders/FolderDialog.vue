@@ -5,9 +5,18 @@
   >
     <template #content>
       <div class="bg-[color:var(--surface-0)] p-6">
-        <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
-          {{ folder ? 'Редактировать папку' : 'Новая папка' }}
-        </h3>
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+            {{ folder ? 'Редактировать папку' : 'Новая папка' }}
+          </h3>
+          <span
+            v-if="saving"
+            class="text-sm text-[color:var(--text-muted)]"
+            aria-live="polite"
+          >
+            {{ folder ? 'Сохранение...' : 'Создание...' }}
+          </span>
+        </div>
 
         <div class="mt-4 space-y-4">
           <UFormField
@@ -19,6 +28,7 @@
               v-model="form.name"
               placeholder="Например: Промо-акции 2025"
               autofocus
+              :disabled="saving"
             />
           </UFormField>
 
@@ -27,7 +37,8 @@
               <input
                 v-model="form.color"
                 type="color"
-                class="h-8 w-10 cursor-pointer rounded border border-[color:var(--border)] dark:border-[color:var(--border)] p-0.5"
+                class="h-8 w-10 cursor-pointer rounded border border-[color:var(--border)] dark:border-[color:var(--border)] p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="saving"
               >
               <span class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] font-mono">{{ form.color || '#6b7280' }}</span>
               <UButton
@@ -38,6 +49,7 @@
                 icon="i-lucide-x"
                 aria-label="Сбросить выбранный цвет"
                 title="Сбросить выбранный цвет"
+                :disabled="saving"
                 @click="form.color = ''"
               />
             </div>
@@ -48,6 +60,7 @@
                 :style="{ backgroundColor: preset }"
                 class="size-6 rounded-full border-2 transition-transform hover:scale-110"
                 :class="form.color === preset ? 'border-[color:var(--text-primary)] dark:border-[color:var(--text-primary)]' : 'border-transparent'"
+                :disabled="saving"
                 @click="form.color = preset"
               />
             </div>
@@ -61,6 +74,7 @@
               v-model="form.parentId"
               :items="parentOptions"
               placeholder="Корневая папка"
+              :disabled="saving"
             />
           </UFormField>
         </div>
@@ -73,7 +87,7 @@
             @click="open = false"
           />
           <UButton
-            :label="folder ? 'Сохранить' : 'Создать'"
+            :label="submitButtonLabel"
             :loading="saving"
             :disabled="!form.name.trim() || saving"
             @click="handleSubmit"
@@ -130,6 +144,11 @@ watch(() => form.name, () => {
   if (nameError.value) nameError.value = ''
 })
 
+const submitButtonLabel = computed(() => {
+  if (saving.value) return props.folder ? 'Сохранение...' : 'Создание...'
+  return props.folder ? 'Сохранить' : 'Создать'
+})
+
 const parentOptions = computed(() => {
   const base = [{ label: 'Корневая папка', value: '' }]
   const others = (props.allFolders ?? [])
@@ -139,7 +158,7 @@ const parentOptions = computed(() => {
 })
 
 async function handleSubmit() {
-  if (!form.name.trim()) return
+  if (saving.value || !form.name.trim()) return
   saving.value = true
   nameError.value = ''
   try {
