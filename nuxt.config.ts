@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  css: ['~~/assets/css/main.css'],
+  css: ['~~/assets/css/main.css', '@scalar/api-reference/style.css'],
 
   colorMode: {
     preference: 'system',
@@ -43,6 +43,10 @@ export default defineNuxtConfig({
       csrfHeaderName: process.env.NUXT_PUBLIC_CSRF_HEADER_NAME || 'X-CSRF-Token',
       docsUiEnabled: process.env.NODE_ENV !== 'production' || process.env.NUXT_DOCS_UI !== '0',
     },
+  },
+
+  alias: {
+    '@scalar/api-reference/vue': '@scalar/api-reference',
   },
 
   future: { compatibilityVersion: 4 },
