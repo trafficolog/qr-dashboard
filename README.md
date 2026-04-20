@@ -91,6 +91,24 @@ docker compose up postgres -d
 | `SMTP_USER` | — | Логин SMTP |
 | `SMTP_PASSWORD` | — | Пароль SMTP |
 | `SMTP_FROM` | `noreply@splatglobal.com` | Адрес отправителя |
+
+### Required in production
+
+Начиная с текущей версии, сервер валидирует критичные runtime-переменные при старте.
+В `NODE_ENV=production` приложение работает в fail-fast режиме: при отсутствии обязательных
+значений старт прерывается с понятным логом причины.
+
+Обязательные переменные:
+
+- `OTP_PEPPER`
+- `ADMIN_EMAIL`
+- `CSRF_SECRET`
+- `TRUSTED_PROXIES` (обязательна, если `PROXY_SCHEME_ENABLED=1`)
+
+Рекомендуется явно задать в production также:
+
+- `PROXY_SCHEME_ENABLED=1` только если приложение запускается за доверенным reverse-proxy.
+- Список `TRUSTED_PROXIES` только из адресов ваших ingress/load balancer узлов.
  
 ## Управление доменами (авторизация)
  
