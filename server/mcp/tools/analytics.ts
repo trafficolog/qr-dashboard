@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { analyticsService } from '../../services/analytics.service'
 import type { McpToolDefinition } from '../server'
+import { zodToJsonSchema } from '../zod-json-schema'
 import type { McpContext } from '../auth'
 
 const dateRangeSchema = z.object({
@@ -70,16 +71,7 @@ export const analyticsTools: McpToolDefinition[] = [
     name: 'get_analytics_overview',
     description: 'Получить сводные метрики (QR, scans, unique, today) за период.',
     requiredScopes: ['qr:stats:read'],
-    inputSchema: {
-      type: 'object',
-      properties: {
-        date_from: { type: 'string', format: 'date-time' },
-        date_to: { type: 'string', format: 'date-time' },
-        scope: { type: 'string', enum: ['mine', 'department', 'public', 'company'] },
-        department_id: { type: 'string', format: 'uuid' },
-      },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(dateRangeSchema),
     parser: dateRangeSchema,
     execute: handleOverview,
   },
@@ -87,17 +79,7 @@ export const analyticsTools: McpToolDefinition[] = [
     name: 'get_top_qr_codes',
     description: 'Получить список самых сканируемых QR-кодов за период.',
     requiredScopes: ['qr:stats:read'],
-    inputSchema: {
-      type: 'object',
-      properties: {
-        date_from: { type: 'string', format: 'date-time' },
-        date_to: { type: 'string', format: 'date-time' },
-        scope: { type: 'string', enum: ['mine', 'department', 'public', 'company'] },
-        department_id: { type: 'string', format: 'uuid' },
-        limit: { type: 'number', minimum: 1, maximum: 20 },
-      },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(topQrSchema),
     parser: topQrSchema,
     execute: handleTopQr,
   },

@@ -1,6 +1,6 @@
 import type { ZodType } from 'zod'
 import type { McpContext } from './auth'
-import { allMcpTools, dispatchToolCall } from './dispatcher'
+import { allMcpTools, dispatchResourceList, dispatchResourceRead, dispatchToolCall } from './dispatcher'
 
 export type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read' | 'mcp:access'
 
@@ -8,9 +8,25 @@ export type McpToolDefinition = {
   name: string
   description: string
   requiredScopes: ApiPermission[]
-  inputSchema: Record<string, unknown>
+  inputSchema: {
+    required?: unknown
+    [key: string]: unknown
+  }
   parser: ZodType
   execute: (args: unknown, ctx: McpContext) => Promise<string>
+}
+
+export type McpResourceListItem = {
+  uri: string
+  name: string
+  description: string
+  mimeType: string
+}
+
+export type McpResourceDefinition = McpResourceListItem & {
+  requiredScopes: ApiPermission[]
+  read: (uri: string, ctx: McpContext) => Promise<string>
+  list?: (ctx: McpContext) => Promise<McpResourceListItem[]>
 }
 
 type JsonRpcRequest = {
@@ -30,10 +46,6 @@ function makeError(id: JsonRpcRequest['id'], code: number, message: string, data
       ...(data !== undefined ? { data } : {}),
     },
   }
-}
-
-function getResourcesList() {
-  return []
 }
 
 export function createMcpServer(context: McpContext) {
@@ -99,22 +111,26 @@ export function createMcpServer(context: McpContext) {
       }
 
       if (request.method === 'resources/list') {
+        const resources = await dispatchResourceList(context)
         return {
           jsonrpc: '2.0',
           id,
-          result: {
-            resources: getResourcesList(),
-          },
+          result: { resources },
         }
       }
 
       if (request.method === 'resources/read') {
         const uri = request.params?.uri
-        if (typeof uri !== 'string') {
+        if (typeof uri !== 'string' || uri.length === 0) {
           return makeError(id, -32602, 'Invalid params: "uri" is required')
         }
 
-        return makeError(id, -32004, `Resource not found: ${uri}`)
+        const result = await dispatchResourceRead(uri, context)
+        return {
+          jsonrpc: '2.0',
+          id,
+          result,
+        }
       }
 
       return makeError(id, -32601, `Method not found: ${request.method}`)
