@@ -3,6 +3,7 @@ import { eq, and } from 'drizzle-orm'
 import { db } from '../db'
 import { apiKeys } from '../db/schema'
 import { hashToken } from '../utils/hash'
+import { recordAudit } from '../utils/audit'
 
 const KEY_PREFIX = 'sqr_live_'
 
@@ -47,6 +48,16 @@ export const apiKeyService = {
         expiresAt: apiKeys.expiresAt,
         createdAt: apiKeys.createdAt,
       })
+
+    recordAudit(
+      {
+        userId,
+        action: 'api_key.create',
+        entityType: 'api_key',
+        entityId: record!.id,
+      },
+      { details: { name: record!.name, keyPrefix: record!.keyPrefix } },
+    )
 
     return {
       ...record!,
@@ -107,5 +118,15 @@ export const apiKeyService = {
     }
 
     await db.delete(apiKeys).where(eq(apiKeys.id, id))
+
+    recordAudit(
+      {
+        userId,
+        action: 'api_key.delete',
+        entityType: 'api_key',
+        entityId: id,
+      },
+      { details: { id } },
+    )
   },
 }

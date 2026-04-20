@@ -3,6 +3,7 @@ import { db } from '../db'
 import { qrCodes, qrTags, userDepartments } from '../db/schema'
 import { generateShortCode } from '../utils/nanoid'
 import { invalidateQrCache } from '../utils/qr-cache'
+import { recordAudit } from '../utils/audit'
 import { resolveVisibilityAccess } from './qr-visibility-access'
 import type { User } from '~~/types/auth'
 
@@ -312,6 +313,22 @@ export const qrService = {
       )
     }
 
+    recordAudit(
+      {
+        userId: user.id,
+        action: 'qr.create',
+        entityType: 'qr',
+        entityId: qr!.id,
+      },
+      {
+        details: {
+          shortCode: qr!.shortCode,
+          visibility: qr!.visibility,
+          departmentId: qr!.departmentId,
+        },
+      },
+    )
+
     // Вернуть с relations
     return this.getQrById(qr!.id, user)
   },
@@ -552,6 +569,16 @@ export const qrService = {
       }
     }
 
+    recordAudit(
+      {
+        userId: user.id,
+        action: 'qr.update',
+        entityType: 'qr',
+        entityId: id,
+      },
+      { details: { changedFields: Object.keys(updateData), tagsUpdated: data.tagIds !== undefined } },
+    )
+
     return this.getQrById(id, user)
   },
 
@@ -578,6 +605,22 @@ export const qrService = {
       .where(eq(qrCodes.id, id))
 
     invalidateQrCache(existing.shortCode)
+    recordAudit(
+      {
+        userId: user.id,
+        action: 'qr.update_visibility',
+        entityType: 'qr',
+        entityId: id,
+      },
+      {
+        details: {
+          prevVisibility: existing.visibility,
+          prevDepartmentId: existing.departmentId,
+          nextVisibility: next.visibility,
+          nextDepartmentId: next.departmentId,
+        },
+      },
+    )
     return this.getQrById(id, user)
   },
 
@@ -598,6 +641,15 @@ export const qrService = {
 
     await db.delete(qrCodes).where(eq(qrCodes.id, id))
     invalidateQrCache(existing.shortCode)
+    recordAudit(
+      {
+        userId: user.id,
+        action: 'qr.delete',
+        entityType: 'qr',
+        entityId: id,
+      },
+      { details: { shortCode: existing.shortCode } },
+    )
     return { success: true }
   },
 
