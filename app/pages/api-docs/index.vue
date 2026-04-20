@@ -12,7 +12,7 @@ const scalarConfig = {
     url: '/api/openapi.json',
   },
   authentication: {
-    preferredSecurityScheme: 'bearerAuth',
+    preferredSecurityScheme: 'ApiKeyAuth',
   },
   theme: 'default',
   darkMode: false,
