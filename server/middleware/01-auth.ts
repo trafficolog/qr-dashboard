@@ -1,6 +1,7 @@
 import { authService } from '../services/auth.service'
 import { apiKeyService } from '../services/api-key.service'
 import { getClientIp } from '../utils/ip'
+import { logSecurityRejection } from '../utils/security-observability'
 import { throwSecurityError } from '../utils/security-error'
 
 type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read'
@@ -105,6 +106,16 @@ export default defineEventHandler(async (event) => {
 
       const requiredPermission = getRequiredPermission(event.method, path)
       if (requiredPermission && !record.permissions.includes(requiredPermission)) {
+        logSecurityRejection({
+          event,
+          eventCode: 'SEC_API_KEY_SCOPE_DENIED',
+          statusCode: 403,
+          reason: 'API key scope does not allow this operation',
+          context: {
+            requiredPermission,
+            apiKeyId: String(record.id),
+          },
+        })
         throwSecurityError(event, {
           statusCode: 403,
           code: 'api_key.scope_denied',
@@ -115,6 +126,15 @@ export default defineEventHandler(async (event) => {
 
       const clientIp = getClientIp(event)
       if (!isIpAllowed(clientIp, record.allowedIps)) {
+        logSecurityRejection({
+          event,
+          eventCode: 'SEC_API_KEY_IP_DENIED',
+          statusCode: 403,
+          reason: 'Client IP is not allowed for API key',
+          context: {
+            apiKeyId: String(record.id),
+          },
+        })
         throwSecurityError(event, {
           statusCode: 403,
           code: 'api_key.ip_denied',

@@ -2,6 +2,7 @@ import { LRUCache } from 'lru-cache'
 import type { H3Event } from 'h3'
 import { sql } from 'drizzle-orm'
 import { db } from '../db'
+import { logSecurityRejection } from '../utils/security-observability'
 import { throwSecurityError } from '../utils/security-error'
 
 interface RateLimitEntry {
@@ -86,6 +87,14 @@ function throwRateLimitError(
     retryAfterSeconds: number
   },
 ): never {
+  logSecurityRejection({
+    event,
+    eventCode: options.errorCode === 'rate_limit.ip_temp_banned'
+      ? 'SEC_RATE_LIMIT_IP_TEMP_BANNED'
+      : 'SEC_RATE_LIMIT_EXCEEDED',
+    statusCode: 429,
+    reason: options.message,
+  })
   throwSecurityError(event, {
     statusCode: 429,
     code: options.errorCode,
