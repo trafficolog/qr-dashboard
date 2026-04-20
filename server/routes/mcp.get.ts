@@ -3,16 +3,17 @@ import { createMcpServer } from '../mcp/server'
 
 export default defineEventHandler(async (event) => {
   const context = await authenticateMcpRequest(event)
-  const method = getQuery(event).method
-
   const server = createMcpServer(context)
 
-  if (method === 'tools/list') {
+  const queryMethod = getQuery(event).method
+
+  if (queryMethod === 'tools/list' || queryMethod === 'resources/list') {
     const response = await server.handleRpcRequest({
       jsonrpc: '2.0',
-      id: 'legacy-tools-list',
-      method: 'tools/list',
+      id: `legacy-${queryMethod}`,
+      method: queryMethod,
     })
+
     setHeader(event, 'content-type', 'application/json; charset=utf-8')
     return response
   }

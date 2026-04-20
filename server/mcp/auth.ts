@@ -45,16 +45,25 @@ function isIpAllowed(clientIp: string, allowedIps: string[]): boolean {
   })
 }
 
+function extractBearerApiKey(event: H3Event): string | null {
+  const authHeader = getHeader(event, 'Authorization') ?? ''
+  const [scheme, token] = authHeader.split(/\s+/, 2)
+
+  if (!scheme || scheme.toLowerCase() !== 'bearer' || !token) {
+    return null
+  }
+
+  const trimmed = token.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+
 export type McpContext = {
   user: NonNullable<Awaited<ReturnType<typeof apiKeyService.verify>>>['user']
   apiKey: Pick<NonNullable<Awaited<ReturnType<typeof apiKeyService.verify>>>, 'id' | 'name' | 'permissions'>
 }
 
 export async function authenticateMcpRequest(event: H3Event): Promise<McpContext> {
-  const authHeader = getHeader(event, 'Authorization') ?? ''
-  const bearerKey = authHeader.startsWith('Bearer ')
-    ? authHeader.slice(7).trim()
-    : null
+  const bearerKey = extractBearerApiKey(event)
 
   if (!bearerKey) {
     throw createError({ statusCode: 401, message: 'Missing Authorization: Bearer API key' })
