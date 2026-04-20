@@ -46,11 +46,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Не авторизован' })
   }
 
-  const user = await authService.verifySession(token)
-  if (!user) {
+  const session = await authService.verifySession(token)
+  if (!session) {
     throw createError({ statusCode: 401, message: 'Сессия истекла' })
   }
 
   // Прикрепляем пользователя к контексту
-  event.context.user = user
+  event.context.user = session.user
 })
