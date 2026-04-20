@@ -4,7 +4,7 @@
 **Основание:** [UX/UI ревизия](./splat-qr-ux-ui-review.md)
 
 **Актуальный план:** EPIC 17 (незавершённая часть) + будущие эпики, начиная с EPIC 23.
-EPIC 16, 18, 19, 20, 21 и 22 закрыты и вынесены из раздела planned (история — в `docs/splat-qr-docs-done.md` и `docs/completed-epics.md`).
+EPIC 16, 18, 19, 20, 21 и 22 вынесены из planned; их актуальные статусы ведутся в [EPIC Status Matrix](./epic-status-matrix.md) (история — в `docs/splat-qr-docs-done.md` и `docs/completed-epics.md`).
 
 ---
 
@@ -76,4 +76,4 @@ EPIC 16, 18, 19, 20, 21 и 22 закрыты и вынесены из разде
 | **v0.13.0+** | EPIC 17 (остаток) | Закрытие оставшихся задач accessibility baseline |
 | **TBD (после 1.0.0)** | EPIC 23 | Техническая миграция на Nuxt 4 |
 
-**Факт:** EPIC 16, 18, 19, 20, 21 и 22 закрыты и больше не считаются planned. В актуальном плане остаётся незавершённый EPIC 17 и будущий EPIC 23.
+**Факт:** Актуальные статусы EPIC 16–22 ведутся в [EPIC Status Matrix](./epic-status-matrix.md). В актуальном плане остаётся незавершённый EPIC 17 и будущий EPIC 23.

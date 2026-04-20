@@ -1,6 +1,6 @@
 # EPIC 20 — UX/UI Enhancement Pack: Analytics, Cards & Onboarding
 
-**Статус:** ✅ Done with notes
+**Статус:** см. [EPIC Status Matrix](./epic-status-matrix.md).
 **Целевая версия:** v0.13.0 (Unreleased)
 **Оценка:** 8–11 дней
 **Зависимости:** Эпики 6 (аналитика), 4 (CRUD QR), 14 (i18n). Часть задач зависит от EPIC 18 (дизайн-токены).
