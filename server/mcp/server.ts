@@ -32,6 +32,10 @@ function makeError(id: JsonRpcRequest['id'], code: number, message: string, data
   }
 }
 
+function getResourcesList() {
+  return []
+}
+
 export function createMcpServer(context: McpContext) {
   async function handleRpcRequest(request: JsonRpcRequest) {
     const id = request?.id ?? null
@@ -53,6 +57,10 @@ export function createMcpServer(context: McpContext) {
             },
             capabilities: {
               tools: {
+                listChanged: false,
+              },
+              resources: {
+                subscribe: false,
                 listChanged: false,
               },
             },
@@ -90,6 +98,25 @@ export function createMcpServer(context: McpContext) {
         }
       }
 
+      if (request.method === 'resources/list') {
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            resources: getResourcesList(),
+          },
+        }
+      }
+
+      if (request.method === 'resources/read') {
+        const uri = request.params?.uri
+        if (typeof uri !== 'string') {
+          return makeError(id, -32602, 'Invalid params: "uri" is required')
+        }
+
+        return makeError(id, -32004, `Resource not found: ${uri}`)
+      }
+
       return makeError(id, -32601, `Method not found: ${request.method}`)
     }
     catch (error) {
@@ -98,5 +125,7 @@ export function createMcpServer(context: McpContext) {
     }
   }
 
-  return { handleRpcRequest }
+  return {
+    handleRpcRequest,
+  }
 }
