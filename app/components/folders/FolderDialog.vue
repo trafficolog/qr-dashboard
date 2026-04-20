@@ -13,6 +13,7 @@
       <UFormField
         label="Название"
         required
+        :error="nameError"
       >
         <UInput
           v-model="form.name"
@@ -99,10 +100,12 @@ const emit = defineEmits<{
 
 const open = defineModel<boolean>('open', { default: false })
 const focusReturn = createDialogFocusReturn()
+const toast = useA11yToast()
 
 const colorPresets = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899']
 
 const saving = ref(false)
+const nameError = ref('')
 
 const form = reactive({
   name: '',
@@ -116,10 +119,15 @@ watch(open, (val) => {
     form.name = props.folder?.name ?? ''
     form.color = props.folder?.color ?? ''
     form.parentId = props.folder?.parentId ?? ''
+    nameError.value = ''
   }
   else {
     focusReturn.restore()
   }
+})
+
+watch(() => form.name, () => {
+  if (nameError.value) nameError.value = ''
 })
 
 const parentOptions = computed(() => {
@@ -133,6 +141,7 @@ const parentOptions = computed(() => {
 async function handleSubmit() {
   if (!form.name.trim()) return
   saving.value = true
+  nameError.value = ''
   try {
     const normalizedParentId = form.parentId.trim()
     const normalizedColor = form.color.trim()
@@ -159,6 +168,35 @@ async function handleSubmit() {
     }
 
     open.value = false
+  }
+  catch (error: unknown) {
+    const err = error as {
+      statusCode?: number
+      statusMessage?: string
+      message?: string
+      data?: {
+        message?: string
+        fieldErrors?: Record<string, string>
+        data?: { issues?: Array<{ path?: Array<string | number>, message?: string }> }
+      }
+    }
+
+    const statusCode = err.statusCode ?? 0
+    const fieldErrors = err.data?.fieldErrors
+    const zodIssueNameError = err.data?.data?.issues?.find((issue) => {
+      const fieldPath = issue.path?.map(String).join('.') ?? ''
+      return fieldPath === 'name'
+    })?.message
+
+    if ((statusCode === 400 || statusCode === 422) && (fieldErrors?.name || zodIssueNameError)) {
+      nameError.value = fieldErrors?.name || zodIssueNameError || 'Некорректное значение поля'
+    }
+
+    const fallbackMessage = 'Не удалось сохранить папку. Проверьте соединение и попробуйте снова.'
+    toast.add({
+      title: err.data?.message || err.statusMessage || err.message || fallbackMessage,
+      color: 'error',
+    })
   }
   finally {
     saving.value = false
