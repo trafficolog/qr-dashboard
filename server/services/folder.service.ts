@@ -22,6 +22,20 @@ function checkAccess(folder: { createdBy: string }, user: User) {
   }
 }
 
+async function validateParentAccess(parentId: string | null | undefined, user: User) {
+  if (!parentId) return
+
+  const parentFolder = await db.query.folders.findFirst({
+    where: eq(folders.id, parentId),
+  })
+
+  if (!parentFolder) {
+    throw createError({ statusCode: 422, message: 'Родительская папка не найдена' })
+  }
+
+  checkAccess(parentFolder, user)
+}
+
 export const folderService = {
   async list(user: User) {
     const baseWhere = user.role === 'admin' ? undefined : eq(folders.createdBy, user.id)
@@ -59,6 +73,8 @@ export const folderService = {
   },
 
   async create(data: CreateFolderData, user: User) {
+    await validateParentAccess(data.parentId, user)
+
     const [folder] = await db
       .insert(folders)
       .values({
@@ -82,6 +98,10 @@ export const folderService = {
     }
 
     checkAccess(existing, user)
+
+    if (data.parentId !== undefined) {
+      await validateParentAccess(data.parentId, user)
+    }
 
     const updateData: Record<string, unknown> = {}
     if (data.name !== undefined) updateData.name = data.name
