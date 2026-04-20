@@ -73,7 +73,7 @@
 | `pnpm typecheck` | ❌ fail | 22 TS-ошибки (преимущественно `useClipboard`/`@vueuse/core` not found, несоответствия типов DTO, тестовые runtime зависимости). Время: `real 0m44.412s`. |
 | `pnpm lint` | ❌ fail | 81 проблем: **21 errors**, **60 warnings**. Время: `real 0m11.338s`. |
 | `pnpm test:unit` | ❌ fail | 22 test files: **18 failed**, **4 passed**; 14 tests: **3 failed**, **11 passed**. Время: `real 0m17.579s`. |
-| `pnpm test:e2e` | ⚠️ env fail | **84 failed**. Основная причина: не установлены Playwright browsers (`pnpm exec playwright install`). Время: `real 1m20.955s`. |
+| `pnpm test:e2e` | ❌ fail | **18 failed**, **66 skipped**. После установки browser binaries и system deps (`pnpm e2e:install-browsers`) падения перешли из env-level в тестовый контур: часть тестов требует `PLAYWRIGHT_AUTH_COOKIE`, часть UI-тестов падает на assertions/navigation. Время: `real 0m52.413s`. |
 | `pnpm build` | ✅ pass | Сборка проходит после фиксов Tailwind/i18n; `tailwindcss` resolve-ошибка устранена. Остались non-blocking предупреждения от `@nuxt/fonts/unifont` (провайдеры шрифтов недоступны по сети) и предупреждение о крупных chunk'ах. |
 | `timeout 40s pnpm dev` | ⚠️ partial | Dev-сервер поднимается (`Local: http://localhost:3000/`), но есть pre-transform ошибка `Can't resolve 'tailwindcss'`. Измерение ограничено `timeout 40s`. |
 
@@ -97,7 +97,7 @@
 | Gate | Минимальное условие | Owner | Целевая дата |
 |---|---|---|---|
 | MG-23-A (Build readiness) | ✅ Выполнено 2026-04-20: `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
-| MG-23-B (E2E environment readiness) | E2E-окружение подготовлено: установлены Playwright browsers (`pnpm exec playwright install`) | QA/Automation Lead | 2026-04-22 |
+| MG-23-B (E2E environment readiness) | ✅ Выполнено 2026-04-20: browser binaries + системные зависимости устанавливаются командой `pnpm e2e:install-browsers` (локально и в CI перед `pnpm test:e2e`) | QA/Automation Lead | 2026-04-22 |
 | MG-23-C (Quality debt triage) | Известные TS/lint долги классифицированы в `must-fix` и `can-defer` | Tech Lead | 2026-04-23 |
 
 **Правило перехода к 23.4/23.5:** старт работ разрешён только после закрытия всех трёх gate (MG-23-A..MG-23-C).
