@@ -1,86 +1,95 @@
-# Security Signals Runbook (On-call)
+# Руководство по сигналам безопасности (дежурство)
 
-## Scope
+## Область применения
 
-This runbook explains how to interpret new security telemetry and what actions on-call should take when alerts fire.
+В этом руководстве описано, как интерпретировать новую телеметрию безопасности и какие действия должен предпринять дежурный при срабатывании оповещений.
 
-## Structured security rejection logs
+## Структурированные логи отказов безопасности
 
-Application now emits structured logs with `[security.reject]` and `eventCode` for key deny paths:
+Приложение пишет структурированные логи с префиксом `[security.reject]` и полем `eventCode` для основных путей отказа:
 
-- `SEC_CSRF_*` — CSRF rejects (`403`) for missing/invalid Origin/Referer/token.
-- `SEC_RATE_LIMIT_*` — rate-limit and temporary IP-ban rejects (`429`).
-- `SEC_API_KEY_SCOPE_DENIED` — API key scope mismatch (`403`).
-- `SEC_API_KEY_IP_DENIED` — API key IP allowlist deny (`403`).
-- `SEC_AUTH_LOCKOUT_*` — OTP lockout active/triggered (`429`).
-- `SEC_AUDIT_WRITE_FAILED` — audit write failed.
+- `SEC_CSRF_*` — отказы по CSRF (`403`) из‑за отсутствия/некорректности Origin/Referer/токена.
+- `SEC_RATE_LIMIT_*` — отказы по лимиту запросов и временной блокировке IP (`429`).
+- `SEC_API_KEY_SCOPE_DENIED` — несоответствие области действия API-ключа (`403`).
+- `SEC_API_KEY_IP_DENIED` — отказ по белому списку IP для API-ключа (`403`).
+- `SEC_AUTH_LOCKOUT_*` — активна/сработала блокировка после OTP (`429`).
+- `SEC_AUDIT_WRITE_FAILED` — не удалось записать аудит.
 
-## Baseline alerts
+## Базовые оповещения
 
-Alerts are emitted as `[security.alert]` logs with dedicated `eventCode`:
+Оповещения пишутся как логи `[security.alert]` с отдельным `eventCode`:
 
-- `SEC_ALERT_403_RATE` — too many `403` in 5 minutes.
-- `SEC_ALERT_429_RATE` — too many `429` in 5 minutes.
-- `SEC_ALERT_LOCKOUT_SPIKE` — lockout spike in 10 minutes.
-- `SEC_ALERT_AUDIT_FAILURE_GROWTH` — audit failures growth in 10 minutes.
+- `SEC_ALERT_403_RATE` — слишком много ответов `403` за 5 минут.
+- `SEC_ALERT_429_RATE` — слишком много ответов `429` за 5 минут.
+- `SEC_ALERT_LOCKOUT_SPIKE` — всплеск блокировок за 10 минут.
+- `SEC_ALERT_AUDIT_FAILURE_GROWTH` — рост числа сбоев аудита за 10 минут.
 
-Each alert log contains: `severity`, `signal`, `count`, `threshold`, `windowMs`, `emittedAt`.
+В каждом логе оповещения есть: `severity`, `signal`, `count`, `threshold`, `windowMs`, `emittedAt`.
 
-## On-call interpretation and actions
+## Интерпретация и действия дежурного
 
-### 1) High `403` rate (`SEC_ALERT_403_RATE`)
+### 1) Высокий уровень `403` (`SEC_ALERT_403_RATE`)
 
-Typical causes:
-- frontend deploy sent broken CSRF headers;
-- automated abuse scanning protected endpoints;
-- client integration using wrong API-key scope/IP.
+Типичные причины:
 
-Actions:
-1. Group by `eventCode` in `[security.reject]` logs.
-2. If mostly `SEC_CSRF_*`: check latest deploy and CSRF header name/config in runtime env.
-3. If mostly API-key denies: identify affected integration and confirm scope/IP allowlist.
-4. Escalate to security if sudden unknown-source spike continues >15 minutes.
+- после выкладки фронтенда сломались заголовки CSRF;
+- автоматизированное сканирование защищённых эндпоинтов;
+- интеграция клиента с неверной областью API-ключа или IP.
 
-### 2) High `429` rate (`SEC_ALERT_429_RATE`)
+Действия:
 
-Typical causes:
-- legitimate traffic burst;
-- bot traffic;
-- OTP brute-force attempts.
+1. Сгруппировать по `eventCode` в логах `[security.reject]`.
+2. Если преобладают `SEC_CSRF_*`: проверить последний деплой и имя/конфигурацию заголовка CSRF в runtime-окружении.
+3. Если преобладают отказы по API-ключу: выявить затронутую интеграцию и проверить scope и белый список IP.
+4. Эскалировать в security, если неизвестный резкий всплеск держится дольше 15 минут.
 
-Actions:
-1. Split by path (`/api/auth/login`, `/api/v1/*`, `/r/*`).
-2. Verify whether this aligns with known campaign/release traffic.
-3. If concentrated on auth/OTP: treat as suspicious, notify security immediately.
-4. If concentrated on single client integration: contact integrator and recommend retry/backoff compliance.
+### 2) Высокий уровень `429` (`SEC_ALERT_429_RATE`)
 
-### 3) Lockout spike (`SEC_ALERT_LOCKOUT_SPIKE`)
+Типичные причины:
 
-Risk:
-- active credential-stuffing or OTP guessing.
+- закономерный всплеск трафика;
+- бот-трафик;
+- попытки перебора OTP.
 
-Actions:
-1. Prioritize as security incident (critical).
-2. Check recent source patterns via `ipHash` and request path.
-3. Temporarily tighten access controls at edge/WAF if available.
-4. Notify security owner and incident channel; track time-to-containment.
+Действия:
 
-### 4) Audit failures growth (`SEC_ALERT_AUDIT_FAILURE_GROWTH`)
+1. Разбить по путям (`/api/auth/login`, `/api/v1/*`, `/r/*`).
+2. Проверить, совпадает ли это с известной кампанией/релизным трафиком.
+3. Если сосредоточено на auth/OTP: считать подозрительным, немедленно уведомить security.
+4. Если сосредоточено на одной клиентской интеграции: связаться с интегратором и рекомендовать соблюдать retry/backoff.
 
-Risk:
-- degraded forensic visibility / compliance gap.
+### 3) Всплеск блокировок (`SEC_ALERT_LOCKOUT_SPIKE`)
 
-Actions:
-1. Check DB health and migration status.
-2. Inspect `SEC_AUDIT_WRITE_FAILED` frequency and `errorMessage`.
-3. If persistent >10 minutes, declare degraded-security-observability incident.
-4. Restore audit writes before closing incident; document any data-loss window.
+Риск:
 
-## Logging safety constraints
+- активный credential stuffing или перебор OTP.
 
-To avoid leaking secrets, logs must NOT include:
-- bearer/session token values;
-- OTP values;
-- full `Authorization` header or full auth headers.
+Действия:
 
-Current security logs intentionally include only minimal context: method, path, hashed client IP (`ipHash`), and safe diagnostic fields (e.g., `requiredPermission`, `apiKeyId`).
+1. Рассматривать как инцидент безопасности (критический приоритет).
+2. Проверить недавние паттерны источников по `ipHash` и пути запроса.
+3. При наличии edge/WAF — временно ужесточить контроль доступа.
+4. Уведомить владельца security и канал инцидентов; отслеживать время до локализации.
+
+### 4) Рост сбоев аудита (`SEC_ALERT_AUDIT_FAILURE_GROWTH`)
+
+Риск:
+
+- снижение следственной видимости / разрыв в соответствии требованиям.
+
+Действия:
+
+1. Проверить состояние БД и миграций.
+2. Изучить частоту `SEC_AUDIT_WRITE_FAILED` и поле `errorMessage`.
+3. Если проблема сохраняется дольше 10 минут — зафиксировать инцидент «деградация наблюдаемости безопасности».
+4. Восстановить запись аудита до закрытия инцидента; задокументировать окно возможной потери данных.
+
+## Ограничения по безопасности логирования
+
+Чтобы не утекали секреты, в логах НЕ должно быть:
+
+- значений bearer/session-токенов;
+- значений OTP;
+- полного заголовка `Authorization` или полных секретных auth-заголовков.
+
+Текущие логи безопасности намеренно содержат только минимальный контекст: метод, путь, хэш IP клиента (`ipHash`) и безопасные диагностические поля (например, `requiredPermission`, `apiKeyId`).
