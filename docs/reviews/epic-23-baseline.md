@@ -89,3 +89,15 @@
 ## 5) Вывод
 
 Текущий baseline показывает, что до старта миграции есть накопленный технический долг в тестовом и build-контурах. Для корректного сравнения `baseline -> post-migration` потребуется стабилизировать pipeline (build + e2e runtime prerequisites) либо учитывать эти ограничения как «known baseline issues» в финальном review.
+
+---
+
+## 6) Migration Gates (минимальные условия перехода к 23.4/23.5)
+
+| Gate | Минимальное условие | Owner | Целевая дата |
+|---|---|---|---|
+| MG-23-A (Build readiness) | `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
+| MG-23-B (E2E environment readiness) | E2E-окружение подготовлено: установлены Playwright browsers (`pnpm exec playwright install`) | QA/Automation Lead | 2026-04-22 |
+| MG-23-C (Quality debt triage) | Известные TS/lint долги классифицированы в `must-fix` и `can-defer` | Tech Lead | 2026-04-23 |
+
+**Правило перехода к 23.4/23.5:** старт работ разрешён только после закрытия всех трёх gate (MG-23-A..MG-23-C).
