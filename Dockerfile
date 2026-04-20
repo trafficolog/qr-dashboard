@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Production Nuxt 3 (Nitro node-server) — multi-stage build
 
-FROM node:22-alpine AS deps
+FROM node:22.12-alpine AS deps
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -21,7 +21,7 @@ COPY drizzle.config.ts tsconfig.json ./
 COPY server/db ./server/db
 CMD ["npx", "tsx", "server/db/migrations/migrate.ts"]
 
-FROM node:22-alpine AS runner
+FROM node:22.12-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NUXT_TELEMETRY_DISABLED=1
