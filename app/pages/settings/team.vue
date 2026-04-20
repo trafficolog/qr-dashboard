@@ -290,7 +290,7 @@ const deletingId = ref<string | null>(null)
 const inviteOpen = ref(false)
 const focusReturn = createDialogFocusReturn()
 const inviting = ref(false)
-const inviteForm = ref({ email: '', role: 'editor' as RoleValue })
+const inviteForm = ref({ email: '', role: 'viewer' as RoleValue })
 const inviteSchema = z.object({
   email: z.string().trim().min(1, 'forms.errors.required').email('forms.errors.email'),
   role: z.enum(['admin', 'editor', 'viewer'], { message: 'forms.errors.required' }),
@@ -420,7 +420,7 @@ function translateError(message?: string) {
 
 function cleanInviteForm() {
   inviteUnsaved.markClean()
-  inviteForm.value = { email: '', role: 'editor' }
+  inviteForm.value = { email: '', role: 'viewer' }
   resetInviteValidation()
 }
 

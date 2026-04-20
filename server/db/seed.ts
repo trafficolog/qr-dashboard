@@ -20,6 +20,11 @@ const {
 // --- Config ---
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://splat_qr:secret@localhost:5432/splat_qr'
 
+if (process.env.NODE_ENV === 'production') {
+  console.error('❌ Seed is blocked in production environment (NODE_ENV=production).')
+  process.exit(1)
+}
+
 const pool = new pg.Pool({ connectionString: DATABASE_URL })
 const db = drizzle(pool, { schema })
 

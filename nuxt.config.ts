@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     sentryDsn: process.env.SENTRY_DSN || '',
     csrfSecret: process.env.CSRF_SECRET || '',
     otpPepper: process.env.OTP_PEPPER || '',
+    adminEmail: process.env.ADMIN_EMAIL || '',
 
     // Public (доступны на клиенте)
     public: {

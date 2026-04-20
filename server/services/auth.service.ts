@@ -7,6 +7,7 @@ import { emailService } from './email.service'
 
 const runtimeConfig = useRuntimeConfig()
 const otpPepper = runtimeConfig.otpPepper?.trim()
+const adminEmail = runtimeConfig.adminEmail?.trim().toLowerCase()
 
 if (!otpPepper) {
   throw new Error('OTP_PEPPER is required to start auth service')
@@ -155,9 +156,26 @@ export const authService = {
     })
 
     if (!user) {
-      // Первый пользователь → admin, остальные → editor
       const userCount = await db.select({ count: count() }).from(users)
-      const role = userCount[0]!.count === 0 ? 'admin' : 'editor'
+
+      let role: 'admin' | 'editor' | 'viewer' = 'viewer'
+      if (userCount[0]!.count === 0) {
+        if (!adminEmail) {
+          throw createError({
+            statusCode: 503,
+            message: 'ADMIN_EMAIL не задан. Первичный вход недоступен',
+          })
+        }
+
+        if (email.toLowerCase() !== adminEmail) {
+          throw createError({
+            statusCode: 403,
+            message: 'Первый пользователь должен совпадать с ADMIN_EMAIL',
+          })
+        }
+
+        role = 'admin'
+      }
 
       const [newUser] = await db
         .insert(users)
