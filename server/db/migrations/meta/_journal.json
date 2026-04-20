@@ -57,6 +57,13 @@
       "when": 1776675720850,
       "tag": "0007_add_audit_log",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1777000000000,
+      "tag": "0008_add_auth_email_locks_and_rate_limit_counters",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ import { scanDailyStats } from './scan-daily-stats'
 import { departments } from './departments'
 import { userDepartments } from './user-departments'
 import { auditLog } from './audit-log'
+import { authEmailLocks } from './auth-email-locks'
 
 // --- Re-exports ---
 export * from './users'
@@ -29,6 +30,8 @@ export * from './scan-daily-stats'
 export * from './departments'
 export * from './user-departments'
 export * from './audit-log'
+export * from './auth-email-locks'
+export * from './rate-limit-counters'
 
 // --- Relations ---
 export const usersRelations = relations(users, ({ many }) => ({
@@ -152,3 +155,5 @@ export const scanDailyStatsRelations = relations(scanDailyStats, ({ one }) => ({
     references: [qrCodes.id],
   }),
 }))
+
+export const authEmailLocksRelations = relations(authEmailLocks, () => ({}))

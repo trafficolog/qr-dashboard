@@ -1,7 +1,8 @@
 import { createHmac, randomInt, randomBytes } from 'node:crypto'
-import { eq, and, gt, isNull, desc, count } from 'drizzle-orm'
+import type { H3Event } from 'h3'
+import { eq, and, gt, isNull, desc, count, sql } from 'drizzle-orm'
 import { db } from '../db'
-import { otpCodes, allowedDomains, users, sessions } from '../db/schema'
+import { otpCodes, allowedDomains, users, sessions, authEmailLocks } from '../db/schema'
 import { hashToken, hashOtpWithPepper } from '../utils/hash'
 import { emailService } from './email.service'
 
@@ -102,12 +103,41 @@ export const authService = {
    * 4. Создаёт/находит пользователя
    * 5. Создаёт сессию (token → hash в БД)
    */
-  async verifyOtp(email: string, code: string) {
+  async verifyOtp(email: string, code: string, event?: H3Event) {
+    const now = new Date()
+    const emailLower = email.toLowerCase()
+
+    const activeEmailLock = await db.query.authEmailLocks.findFirst({
+      where: and(
+        eq(authEmailLocks.email, emailLower),
+        gt(authEmailLocks.lockedUntil, now),
+      ),
+    })
+
+    if (activeEmailLock) {
+      const retryAfterSeconds = Math.max(
+        1,
+        Math.ceil((activeEmailLock.lockedUntil.getTime() - now.getTime()) / 1000),
+      )
+
+      if (event) {
+        setResponseHeader(event, 'Retry-After', retryAfterSeconds)
+        setResponseHeader(event, 'X-RateLimit-Limit', 5)
+        setResponseHeader(event, 'X-RateLimit-Remaining', 0)
+        setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(activeEmailLock.lockedUntil.getTime() / 1000))
+      }
+
+      throw createError({
+        statusCode: 429,
+        message: 'Email временно заблокирован после неудачных попыток. Повторите позже',
+      })
+    }
+
     // 1. Найти последний активный OTP
     const otp = await db.query.otpCodes.findFirst({
       where: and(
         eq(otpCodes.email, email),
-        gt(otpCodes.expiresAt, new Date()),
+        gt(otpCodes.expiresAt, now),
         isNull(otpCodes.usedAt),
       ),
       orderBy: desc(otpCodes.createdAt),
@@ -122,20 +152,64 @@ export const authService = {
 
     // 2. Проверить attempts
     if (otp.attempts >= 5) {
+      const lockUntil = new Date(Date.now() + 30 * 60 * 1000)
+      const retryAfterSeconds = 30 * 60
+
+      await db.execute(sql`
+        INSERT INTO auth_email_locks (email, locked_until, updated_at)
+        VALUES (${emailLower}, ${lockUntil}, now())
+        ON CONFLICT (email) DO UPDATE
+        SET locked_until = EXCLUDED.locked_until,
+            updated_at = now()
+      `)
+
+      if (event) {
+        setResponseHeader(event, 'Retry-After', retryAfterSeconds)
+        setResponseHeader(event, 'X-RateLimit-Limit', 5)
+        setResponseHeader(event, 'X-RateLimit-Remaining', 0)
+        setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(lockUntil.getTime() / 1000))
+      }
+
       throw createError({
         statusCode: 429,
-        message: 'Превышено количество попыток. Запросите новый код',
+        message: 'Попытки исчерпаны. Email временно заблокирован на 30 минут',
       })
     }
 
     // 3. Сравнить код
     if (otp.code !== hashOtpWithPepper(code)) {
+      const nextAttempts = otp.attempts + 1
       await db
         .update(otpCodes)
-        .set({ attempts: otp.attempts + 1 })
+        .set({ attempts: nextAttempts })
         .where(eq(otpCodes.id, otp.id))
 
       const remaining = 4 - otp.attempts
+      if (nextAttempts >= 5) {
+        const lockUntil = new Date(Date.now() + 30 * 60 * 1000)
+        const retryAfterSeconds = 30 * 60
+
+        await db.execute(sql`
+          INSERT INTO auth_email_locks (email, locked_until, updated_at)
+          VALUES (${emailLower}, ${lockUntil}, now())
+          ON CONFLICT (email) DO UPDATE
+          SET locked_until = EXCLUDED.locked_until,
+              updated_at = now()
+        `)
+
+        if (event) {
+          setResponseHeader(event, 'Retry-After', retryAfterSeconds)
+          setResponseHeader(event, 'X-RateLimit-Limit', 5)
+          setResponseHeader(event, 'X-RateLimit-Remaining', 0)
+          setResponseHeader(event, 'X-RateLimit-Reset', Math.ceil(lockUntil.getTime() / 1000))
+        }
+
+        throw createError({
+          statusCode: 429,
+          message: 'Неверный код. Попытки исчерпаны, email временно заблокирован на 30 минут',
+        })
+      }
+
       throw createError({
         statusCode: 400,
         message: remaining > 0
@@ -149,6 +223,10 @@ export const authService = {
       .update(otpCodes)
       .set({ usedAt: new Date() })
       .where(eq(otpCodes.id, otp.id))
+
+    await db
+      .delete(authEmailLocks)
+      .where(eq(authEmailLocks.email, emailLower))
 
     // 5. Найти или создать пользователя
     let user = await db.query.users.findFirst({
