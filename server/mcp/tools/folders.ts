@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { folderService } from '../../services/folder.service'
 import type { McpToolDefinition } from '../server'
+import { zodToJsonSchema } from '../zod-json-schema'
 import type { McpContext } from '../auth'
 
 const createFolderSchema = z.object({
@@ -44,28 +45,15 @@ export const folderTools: McpToolDefinition[] = [
     name: 'list_folders',
     description: 'Получить список папок с количеством QR-кодов.',
     requiredScopes: ['qr:read'],
-    inputSchema: {
-      type: 'object',
-      properties: {},
-      additionalProperties: false,
-    },
-    parser: z.object({}).passthrough(),
+    inputSchema: zodToJsonSchema(z.object({})),
+    parser: z.object({}),
     execute: handleListFolders,
   },
   {
     name: 'create_folder',
     description: 'Создать новую папку.',
     requiredScopes: ['qr:write'],
-    inputSchema: {
-      type: 'object',
-      required: ['name'],
-      properties: {
-        name: { type: 'string' },
-        parent_id: { type: ['string', 'null'], format: 'uuid' },
-        color: { type: ['string', 'null'] },
-      },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(createFolderSchema),
     parser: createFolderSchema,
     execute: handleCreateFolder,
   },

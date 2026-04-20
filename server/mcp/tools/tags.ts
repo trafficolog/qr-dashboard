@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { tagService } from '../../services/tag.service'
 import type { McpToolDefinition } from '../server'
+import { zodToJsonSchema } from '../zod-json-schema'
 import type { McpContext } from '../auth'
 
 const createTagSchema = z.object({
@@ -33,27 +34,15 @@ export const tagTools: McpToolDefinition[] = [
     name: 'list_tags',
     description: 'Получить список тегов с количеством QR-кодов в каждом.',
     requiredScopes: ['qr:read'],
-    inputSchema: {
-      type: 'object',
-      properties: {},
-      additionalProperties: false,
-    },
-    parser: z.object({}).passthrough(),
+    inputSchema: zodToJsonSchema(z.object({})),
+    parser: z.object({}),
     execute: handleListTags,
   },
   {
     name: 'create_tag',
     description: 'Создать тег.',
     requiredScopes: ['qr:write'],
-    inputSchema: {
-      type: 'object',
-      required: ['name'],
-      properties: {
-        name: { type: 'string' },
-        color: { type: 'string' },
-      },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(createTagSchema),
     parser: createTagSchema,
     execute: handleCreateTag,
   },

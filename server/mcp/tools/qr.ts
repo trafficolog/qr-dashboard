@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { qrService } from '../../services/qr.service'
 import type { McpToolDefinition } from '../server'
+import { zodToJsonSchema } from '../zod-json-schema'
 import type { McpContext } from '../auth'
 
 const listQrSchema = z.object({
@@ -151,15 +152,7 @@ export const qrTools: McpToolDefinition[] = [
     name: 'list_qr_codes',
     description: 'Получить список QR-кодов с фильтрами (LLM-friendly summary).',
     requiredScopes: ['qr:read'],
-    inputSchema: {
-      type: 'object',
-      properties: {
-        search: { type: 'string' },
-        status: { type: 'string', enum: ['active', 'paused', 'expired', 'archived'] },
-        limit: { type: 'number', minimum: 1, maximum: 100 },
-      },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(listQrSchema),
     parser: listQrSchema,
     execute: handleListQr,
   },
@@ -167,12 +160,7 @@ export const qrTools: McpToolDefinition[] = [
     name: 'get_qr_code',
     description: 'Получить детальную карточку QR-кода по id.',
     requiredScopes: ['qr:read'],
-    inputSchema: {
-      type: 'object',
-      required: ['id'],
-      properties: { id: { type: 'string', format: 'uuid' } },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(getQrSchema),
     parser: getQrSchema,
     execute: handleGetQr,
   },
@@ -180,19 +168,7 @@ export const qrTools: McpToolDefinition[] = [
     name: 'create_qr_code',
     description: 'Создать QR-код. Используйте только с явными параметрами title и destination_url.',
     requiredScopes: ['qr:write'],
-    inputSchema: {
-      type: 'object',
-      required: ['title', 'destination_url'],
-      properties: {
-        title: { type: 'string' },
-        destination_url: { type: 'string', format: 'uri' },
-        description: { type: 'string' },
-        type: { type: 'string', enum: ['dynamic', 'static'] },
-        folder_id: { type: 'string', format: 'uuid' },
-        tag_ids: { type: 'array', items: { type: 'string', format: 'uuid' } },
-      },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(createQrSchema),
     parser: createQrSchema,
     execute: handleCreateQr,
   },
@@ -200,19 +176,7 @@ export const qrTools: McpToolDefinition[] = [
     name: 'update_qr_code',
     description: 'Обновить QR-код по id (title/url/status/folder).',
     requiredScopes: ['qr:write'],
-    inputSchema: {
-      type: 'object',
-      required: ['id'],
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        title: { type: 'string' },
-        destination_url: { type: 'string', format: 'uri' },
-        description: { type: ['string', 'null'] },
-        folder_id: { type: ['string', 'null'], format: 'uuid' },
-        status: { type: 'string', enum: ['active', 'paused', 'expired', 'archived'] },
-      },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(updateQrSchema),
     parser: updateQrSchema,
     execute: handleUpdateQr,
   },
@@ -220,12 +184,7 @@ export const qrTools: McpToolDefinition[] = [
     name: 'archive_qr_code',
     description: 'Перевести QR-код в archived статус.',
     requiredScopes: ['qr:write'],
-    inputSchema: {
-      type: 'object',
-      required: ['id'],
-      properties: { id: { type: 'string', format: 'uuid' } },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(getQrSchema),
     parser: getQrSchema,
     execute: handleArchiveQr,
   },
@@ -233,12 +192,7 @@ export const qrTools: McpToolDefinition[] = [
     name: 'duplicate_qr_code',
     description: 'Создать копию существующего QR-кода.',
     requiredScopes: ['qr:write'],
-    inputSchema: {
-      type: 'object',
-      required: ['id'],
-      properties: { id: { type: 'string', format: 'uuid' } },
-      additionalProperties: false,
-    },
+    inputSchema: zodToJsonSchema(getQrSchema),
     parser: duplicateQrSchema,
     execute: handleDuplicateQr,
   },
