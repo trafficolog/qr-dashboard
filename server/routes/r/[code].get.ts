@@ -1,10 +1,64 @@
 import { eq, sql } from 'drizzle-orm'
 import { db } from '../../db'
-import { qrCodes, qrDestinations } from '../../db/schema'
+import { qrCodes, qrDestinations, destinationDomains } from '../../db/schema'
 import { qrCache } from '../../utils/qr-cache'
 import { getClientIp } from '../../utils/ip'
 import { redirectService } from '../../services/redirect.service'
 import { abTestService } from '../../services/ab-test.service'
+
+function getHostname(value: string): string | null {
+  try {
+    return new URL(value).hostname.toLowerCase()
+  }
+  catch {
+    return null
+  }
+}
+
+async function shouldShowWarning(url: string): Promise<boolean> {
+  const hostname = getHostname(url)
+  if (!hostname) return false
+
+  const whitelist = await db.select({ domain: destinationDomains.domain }).from(destinationDomains)
+  if (whitelist.length === 0) return false
+
+  return !whitelist.some(item => item.domain.toLowerCase() === hostname)
+}
+
+function renderRedirectWarningPage(url: string) {
+  const escapedUrl = url.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>External redirect warning</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 24px; }
+    .card { max-width: 640px; margin: 40px auto; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 8px 24px rgba(15,23,42,.08); }
+    h1 { margin-top: 0; font-size: 1.25rem; }
+    p { line-height: 1.5; }
+    code { display: block; margin: 12px 0; padding: 12px; background: #f1f5f9; border-radius: 8px; overflow-wrap: anywhere; }
+    .actions { display: flex; gap: 12px; margin-top: 20px; }
+    .btn { text-decoration: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-secondary { background: #e2e8f0; color: #0f172a; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Attention: external domain</h1>
+    <p>This QR code redirects to a domain outside the trusted whitelist. Continue only if you trust this destination.</p>
+    <code>${escapedUrl}</code>
+    <div class="actions">
+      <a class="btn btn-primary" href="${escapedUrl}" rel="noopener noreferrer">Continue</a>
+      <a class="btn btn-secondary" href="/">Cancel</a>
+    </div>
+  </main>
+</body>
+</html>`
+}
 
 export default defineEventHandler(async (event) => {
   const code = getRouterParam(event, 'code')
@@ -101,6 +155,12 @@ export default defineEventHandler(async (event) => {
     .where(eq(qrCodes.id, qrId))
     .catch(err => console.error('[redirect] totalScans update failed:', err))
 
-  // 8. 302 redirect
+  // 8. Interstitial warning for destinations outside whitelist
+  if (await shouldShowWarning(finalUrl)) {
+    setHeader(event, 'content-type', 'text/html; charset=utf-8')
+    return renderRedirectWarningPage(finalUrl)
+  }
+
+  // 9. 302 redirect
   return sendRedirect(event, finalUrl, 302)
 })

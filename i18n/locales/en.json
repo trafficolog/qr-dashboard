@@ -179,6 +179,7 @@
       "profile": "Profile",
       "team": "Team",
       "domains": "Domains",
+      "destinationDomains": "Destination domains",
       "integrations": "Integrations",
       "departments": "Departments",
       "audit": "Audit log"
@@ -388,7 +389,8 @@
     },
     "toasts": {
       "qrCreated": "QR “{title}” created",
-      "changesSaved": "Changes saved"
+      "changesSaved": "Changes saved",
+      "destinationDomainOutsideWhitelist": "Warning: destination domain is outside whitelist"
     }
   },
   "onboarding": {
@@ -464,6 +466,35 @@
         "updateError": "Failed to update domain",
         "deleted": "Domain “{domain}” deleted",
         "deleteError": "Failed to delete domain"
+      }
+    },
+    "destinationDomains": {
+      "title": "Destination domain whitelist",
+      "subtitle": "Manage trusted domains for QR redirects",
+      "accessMode": {
+        "title": "Redirect safety mode",
+        "openDescription": "Whitelist is empty — redirects to any domain are allowed.",
+        "whitelistDescription": "Whitelist mode is active. Redirect warning is shown for domains outside this list. Total domains: {total}."
+      },
+      "addTitle": "Add destination domain",
+      "listTitle": "Whitelist domains",
+      "empty": {
+        "title": "No destination domains added",
+        "description": "Warnings are disabled while whitelist is empty"
+      },
+      "actions": {
+        "deleteDomain": "Delete domain {domain}"
+      },
+      "delete": {
+        "title": "Delete destination domain?",
+        "description": "Domain “{domain}” will be removed from redirect whitelist."
+      },
+      "toasts": {
+        "loadError": "Failed to load destination domains",
+        "added": "Domain “{domain}” added",
+        "addError": "Failed to add destination domain",
+        "deleted": "Domain “{domain}” deleted",
+        "deleteError": "Failed to delete destination domain"
       }
     },
     "audit": {

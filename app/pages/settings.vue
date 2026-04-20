@@ -101,6 +101,7 @@ const navItems = computed<NavItem[]>(() => [
     ? [
         { key: 'team', label: t('settings.tabs.team'), icon: 'i-lucide-users', to: '/settings/team', adminOnly: true },
         { key: 'domains', label: t('settings.tabs.domains'), icon: 'i-lucide-globe', to: '/settings/domains', adminOnly: true },
+        { key: 'destinationDomains', label: t('settings.tabs.destinationDomains'), icon: 'i-lucide-shield-alert', to: '/settings/destination-domains', adminOnly: true },
         { key: 'departments', label: t('settings.tabs.departments'), icon: 'i-lucide-building-2', to: '/settings/departments', adminOnly: true },
         { key: 'audit', label: t('settings.tabs.audit'), icon: 'i-lucide-scroll-text', to: '/settings/audit', adminOnly: true },
         { key: 'integrations', label: t('settings.tabs.integrations'), icon: 'i-lucide-plug', to: '/settings/integrations', adminOnly: true },
