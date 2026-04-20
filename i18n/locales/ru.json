@@ -225,7 +225,24 @@
         "namePlaceholder": "Например: Production API",
         "copyHint": "Сохраните ключ — он показывается один раз",
         "empty": "Нет API-ключей. Создайте первый для работы с API.",
-        "deleted": "Ключ удалён"
+        "deleted": "Ключ удалён",
+        "permissionsLabel": "Права доступа",
+        "allowedIpsLabel": "Разрешённые IP / CIDR",
+        "allowedIpsPlaceholder": "По одному IP/CIDR в строке или через запятую (например 203.0.113.1, 10.0.0.0/24)",
+        "allowedIpsAny": "Любой IP",
+        "allowedIpsList": "IP: {count}",
+        "expiresAtLabel": "Срок действия",
+        "expiringSoon": "Скоро истекает",
+        "permissions": {
+          "qrRead": "Чтение QR-кодов",
+          "qrWrite": "Управление QR-кодами",
+          "qrStatsRead": "Чтение статистики QR"
+        },
+        "errors": {
+          "permissionsRequired": "Выберите хотя бы одно право",
+          "expiresAtRequired": "Укажите дату истечения",
+          "expiresAtFuture": "Дата истечения должна быть в будущем"
+        }
       },
       "webhooks": {
         "comingSoon": "Webhooks появятся в следующем релизе."
