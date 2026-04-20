@@ -17,9 +17,12 @@
     "db:seed": "npx tsx server/db/seed.ts",
     "typecheck": "nuxt typecheck",
     "test:e2e": "playwright test",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "openapi:generate": "tsx server/openapi/generate.ts",
+    "openapi:validate": "node -e \"JSON.parse(require('fs').readFileSync('public/openapi.json','utf8')); console.log('openapi.json is valid JSON')\""
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^7.3.4",
     "@pinia/nuxt": "^0.9.0",
     "@sentry/node": "^8.0.0",
     "@vueuse/nuxt": "^12.0.0",
