@@ -5,7 +5,7 @@
  
 **Итерации 1–2 (EPIC 15–18):** формы и shell, затем accessibility и дизайн-система.  
 **EPIC 19–20:** отдельные продуктовые спецификации (видимость QR, аналитика/cards).  
-**EPIC 21:** security hardening (основание и чеклист — в [epic-21-security-hardening.md](./epic-21-security-hardening.md)) — приоритет выше feature-эпиков до production.
+**EPIC 21:** security hardening — ✅ фактически завершён 2026-04-20 (отчёт: [EPIC 21 Security Checklist](./reports/epic-21-security-checklist-2026-04-20.md)).
  
 ---
  
@@ -88,9 +88,9 @@
 |------|----------|---------------------------|----------|
 | **19** | Области видимости QR (Public / Private / Department) | v0.14.0 | [epic-19-qr-visibility.md](./epic-19-qr-visibility.md) |
 | **20** | Analytics, карточки QR, onboarding | v0.14.0 (параллельно или после 16–18) | [epic-20-ux-analytics-cards.md](./epic-20-ux-analytics-cards.md) |
-| **21** | Security Hardening | **1.0.0** (после полной реализации EPIC 21) | [epic-21-security-hardening.md](./epic-21-security-hardening.md) |
+| **21** | Security Hardening | **1.0.0** gate зафиксирован, фактическое завершение: **2026-04-20** | [epic-21-security-hardening.md](./epic-21-security-hardening.md), [checklist](./reports/epic-21-security-checklist-2026-04-20.md) |
 
-**Зависимости:** EPIC 19 требует завершённых эпиков 1, 4, 7, 11 (все сделаны). EPIC 20 опирается на 6, 4, 14 и частично на 18. EPIC 21 — до production deploy (фаза 0 блокирует выкат).
+**Зависимости:** EPIC 19 требует завершённых эпиков 1, 4, 7, 11 (все сделаны). EPIC 20 опирается на 6, 4, 14 и частично на 18. EPIC 21 закрыт полностью 2026-04-20; production-ready security gate выполнен.
 
 ---
  
@@ -115,6 +115,6 @@
 | **v0.12.1 / v0.13.0** | EPIC 16 | Следующий после 15; точная версия — по объёму |
 | **v0.13.0** | EPIC 17 + EPIC 18 | A11y & design system (как в спеках) |
 | **v0.14.0** | EPIC 19 и/или EPIC 20 | Отдельные продуктовые вехи (до или после 1.0.0 — по приоритету команды) |
-| **1.0.0** | EPIC 21 (полный объём) | Первый stable/production semver после security hardening — см. [epic-21-security-hardening.md](./epic-21-security-hardening.md) |
+| **1.0.0** | EPIC 21 (полный объём) | ✅ Критерий зафиксирован: все фазы EPIC 21 завершены 2026-04-20; детали в [epic-21-security-hardening.md](./epic-21-security-hardening.md) и [checklist](./reports/epic-21-security-checklist-2026-04-20.md) |
  
-**Факт:** **v0.12.0** содержит только **EPIC 15**. **EPIC 16** в плане итерации 1, отдельный релиз. **EPIC 21 фаза 0** — блокер первого production deploy; **тег 1.0.0** — после полной реализации EPIC 21 (см. спеку).
+**Факт:** **v0.12.0** содержит только **EPIC 15**. **EPIC 16** в плане итерации 1, отдельный релиз. **EPIC 21 выполнен полностью 2026-04-20** (фазы 0/1/2 закрыты), поэтому условия security перехода к `1.0.0` считаются выполненными.
