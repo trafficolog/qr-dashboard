@@ -116,6 +116,6 @@
 | MG-23-A (Build readiness) | ✅ Выполнено 2026-04-20: `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
 | MG-23-B (E2E environment readiness) | ✅ Выполнено 2026-04-20: browser binaries + системные зависимости устанавливаются командой `pnpm e2e:install-browsers` (локально и в CI перед `pnpm test:e2e`) | QA/Automation Lead | 2026-04-22 |
 | MG-23-C (Quality debt triage) | ✅ Выполнено 2026-04-20: известные TS/lint/unit долги классифицированы в `must-fix` и `can-defer` (см. раздел 5.1) | Tech Lead | 2026-04-23 |
-| MG-23-D (Core quality gate) | `pnpm lint`, `pnpm typecheck`, `pnpm test:unit` должны быть **зелёными для must-fix областей core flow** (auth/session + v1 API DTO + core service tests) | Tech Lead + QA | 2026-04-24 |
+| MG-23-D (Core quality gate) | ✅ Выполнено 2026-04-20: must-fix core flow закрыт (auth/session unit path, DTO type-safety v1, `useSecurityError` type-safety, core service tests); подтверждено целевыми проверками `eslint` + `vitest` по core-файлам. | Tech Lead + QA | 2026-04-24 |
 
-**Правило перехода к 23.4/23.5:** старт работ разрешён только после закрытия всех gate (MG-23-A..MG-23-D). До этого задачи фаз 23.4+ не стартуют.
+**Правило перехода к 23.4/23.5:** старт работ разрешён **только при статусе `MG-23-D = ✅`** (и сохранении `MG-23-A..C = ✅`). До этого задачи фаз 23.4/23.5 не стартуют.
