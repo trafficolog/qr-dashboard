@@ -28,11 +28,8 @@
       "ErrorResponse": {
         "type": "object",
         "properties": {
-          "success": {
-            "type": "boolean",
-            "enum": [
-              false
-            ]
+          "data": {
+            "type": "null"
           },
           "error": {
             "type": "object",
@@ -44,8 +41,15 @@
                 "type": "string"
               },
               "details": {
-                "type": "object",
+                "type": [
+                  "object",
+                  "null"
+                ],
                 "additionalProperties": {}
+              },
+              "retryAfter": {
+                "type": "integer",
+                "exclusiveMinimum": 0
               }
             },
             "required": [
@@ -55,7 +59,6 @@
           }
         },
         "required": [
-          "success",
           "error"
         ]
       },
@@ -85,6 +88,41 @@
           "limit",
           "totalPages"
         ]
+      },
+      "UuidPathParam": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Resource UUID",
+            "example": "9cf6259f-3034-4f96-af0f-c8bcfd847f52"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "V1ScopeQuery": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "mine",
+              "department",
+              "public",
+              "company"
+            ],
+            "description": "Analytics scope",
+            "example": "company"
+          },
+          "department_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "499fee8b-cfc7-4eb9-b919-19f8351949f0"
+          }
+        }
       },
       "QrStatus": {
         "type": "string",
@@ -210,6 +248,558 @@
         },
         "required": [
           "success",
+          "data"
+        ]
+      },
+      "V1Folder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "color": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "created_by": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "qr_count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "parent_id",
+          "color",
+          "created_by",
+          "created_at"
+        ]
+      },
+      "V1FolderListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/V1Folder"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1FolderMutationResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/V1Folder"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1FolderDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              }
+            },
+            "required": [
+              "success"
+            ]
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1CreateFolderRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "color": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^#[0-9a-f]{6}$"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "V1UpdateFolderRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "color": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^#[0-9a-f]{6}$"
+          }
+        }
+      },
+      "V1Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "qr_count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color",
+          "created_at"
+        ]
+      },
+      "V1TagListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/V1Tag"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1TagMutationResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/V1Tag"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1CreateTagRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "V1QrDestinationDetailParams": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UuidPathParam"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "destid": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "destid"
+            ]
+          }
+        ]
+      },
+      "V1QrDestination": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "qr_code_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "qr_code_id",
+          "url",
+          "label",
+          "weight",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "V1DestinationListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/V1QrDestination"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1DestinationMutationResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/V1QrDestination"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1DestinationDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              }
+            },
+            "required": [
+              "success"
+            ]
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1CreateDestinationRequest": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "url",
+          "weight"
+        ]
+      },
+      "V1UpdateDestinationRequest": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "label": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "V1AnalyticsOverviewQuery": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/V1ScopeQuery"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "date_from": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "date_to": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "V1AnalyticsScansQuery": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/V1ScopeQuery"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "qr_code_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "date_from": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "date_to": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "compare_previous": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "V1AnalyticsOverviewData": {
+        "type": "object",
+        "properties": {
+          "total_qr_codes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_scans": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unique_scans": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "scans_today": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_qr_codes_change": {
+            "type": "number"
+          },
+          "total_scans_change": {
+            "type": "number"
+          },
+          "unique_scans_change": {
+            "type": "number"
+          },
+          "scans_today_change": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "total_qr_codes",
+          "total_scans",
+          "unique_scans",
+          "scans_today",
+          "total_qr_codes_change",
+          "total_scans_change",
+          "unique_scans_change",
+          "scans_today_change"
+        ]
+      },
+      "V1AnalyticsOverviewResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/V1AnalyticsOverviewData"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "V1AnalyticsScanPoint": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "total_scans": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unique_scans": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "date",
+          "total_scans",
+          "unique_scans"
+        ]
+      },
+      "V1AnalyticsScansResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/V1AnalyticsScanPoint"
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "current": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/V1AnalyticsScanPoint"
+                    }
+                  },
+                  "previous": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/V1AnalyticsScanPoint"
+                    }
+                  }
+                },
+                "required": [
+                  "current",
+                  "previous"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
           "data"
         ]
       }
@@ -382,6 +972,2117 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/folders": {
+      "get": {
+        "summary": "List folders",
+        "description": "Returns folders available for the authenticated user.",
+        "tags": [
+          "V1",
+          "Folders"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Folder list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1FolderListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "9cf6259f-3034-4f96-af0f-c8bcfd847f52",
+                      "name": "Product campaigns",
+                      "parent_id": null,
+                      "color": "#4f46e5",
+                      "created_by": "29fdf297-3f12-4fab-a7da-20367a8e8cc5",
+                      "created_at": "2026-04-19T09:00:00.000Z",
+                      "qr_count": 12
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create folder",
+        "description": "Creates a new folder.",
+        "tags": [
+          "V1",
+          "Folders"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:write"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/V1CreateFolderRequest"
+              },
+              "example": {
+                "name": "Spring launch",
+                "parent_id": null,
+                "color": "#0ea5e9"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Folder created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1FolderMutationResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "9cf6259f-3034-4f96-af0f-c8bcfd847f52",
+                    "name": "Spring launch",
+                    "parent_id": null,
+                    "color": "#0ea5e9",
+                    "created_by": "29fdf297-3f12-4fab-a7da-20367a8e8cc5",
+                    "created_at": "2026-04-20T09:00:00.000Z",
+                    "updated_at": "2026-04-20T09:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/folders/{id}": {
+      "put": {
+        "summary": "Update folder",
+        "description": "Updates folder fields by id.",
+        "tags": [
+          "V1",
+          "Folders"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Resource UUID",
+              "example": "9cf6259f-3034-4f96-af0f-c8bcfd847f52"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/V1UpdateFolderRequest"
+              },
+              "example": {
+                "name": "Updated folder",
+                "color": "#16a34a"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Folder updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1FolderMutationResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "9cf6259f-3034-4f96-af0f-c8bcfd847f52",
+                    "name": "Updated folder",
+                    "parent_id": null,
+                    "color": "#16a34a",
+                    "created_by": "29fdf297-3f12-4fab-a7da-20367a8e8cc5",
+                    "created_at": "2026-04-20T09:00:00.000Z",
+                    "updated_at": "2026-04-20T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete folder",
+        "description": "Deletes folder by id.",
+        "tags": [
+          "V1",
+          "Folders"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Resource UUID",
+              "example": "9cf6259f-3034-4f96-af0f-c8bcfd847f52"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Folder deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1FolderDeleteResponse"
+                },
+                "example": {
+                  "data": {
+                    "success": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tags": {
+      "get": {
+        "summary": "List tags",
+        "description": "Returns all available tags.",
+        "tags": [
+          "V1",
+          "Tags"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1TagListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "f9272a45-26c0-4cf2-9c62-2c356808d0d0",
+                      "name": "Summer",
+                      "color": "#f97316",
+                      "created_at": "2026-04-20T09:00:00.000Z",
+                      "qr_count": 7
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create tag",
+        "description": "Creates a new tag.",
+        "tags": [
+          "V1",
+          "Tags"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:write"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/V1CreateTagRequest"
+              },
+              "example": {
+                "name": "Partner campaign",
+                "color": "#f59e0b"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1TagMutationResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "f9272a45-26c0-4cf2-9c62-2c356808d0d0",
+                    "name": "Partner campaign",
+                    "color": "#f59e0b",
+                    "created_at": "2026-04-20T09:00:00.000Z",
+                    "updated_at": "2026-04-20T09:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/qr/{id}/destinations": {
+      "get": {
+        "summary": "List destinations",
+        "description": "Returns destinations for a QR code.",
+        "tags": [
+          "V1",
+          "Destinations"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Resource UUID",
+              "example": "9cf6259f-3034-4f96-af0f-c8bcfd847f52"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Destination list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1DestinationListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "7d35f2fc-8ce5-4f8f-8a39-958f9e7fc65f",
+                      "qr_code_id": "9cf6259f-3034-4f96-af0f-c8bcfd847f52",
+                      "url": "https://example.com/landing",
+                      "label": "Primary",
+                      "weight": 100,
+                      "is_active": true,
+                      "created_at": "2026-04-20T09:00:00.000Z",
+                      "updated_at": "2026-04-20T09:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create destination",
+        "description": "Adds a destination for a QR code.",
+        "tags": [
+          "V1",
+          "Destinations"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Resource UUID",
+              "example": "9cf6259f-3034-4f96-af0f-c8bcfd847f52"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/V1CreateDestinationRequest"
+              },
+              "example": {
+                "url": "https://example.com/fr",
+                "label": "French locale",
+                "weight": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Destination created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1DestinationMutationResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "7d35f2fc-8ce5-4f8f-8a39-958f9e7fc65f",
+                    "qr_code_id": "9cf6259f-3034-4f96-af0f-c8bcfd847f52",
+                    "url": "https://example.com/fr",
+                    "label": "French locale",
+                    "weight": 20,
+                    "is_active": true,
+                    "created_at": "2026-04-20T09:00:00.000Z",
+                    "updated_at": "2026-04-20T09:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/qr/{id}/destinations/{destid}": {
+      "put": {
+        "summary": "Update destination",
+        "description": "Updates an existing destination.",
+        "tags": [
+          "V1",
+          "Destinations"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Resource UUID",
+              "example": "9cf6259f-3034-4f96-af0f-c8bcfd847f52"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "destid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/V1UpdateDestinationRequest"
+              },
+              "example": {
+                "label": "French locale (A/B)",
+                "is_active": true,
+                "weight": 25
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Destination updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1DestinationMutationResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "7d35f2fc-8ce5-4f8f-8a39-958f9e7fc65f",
+                    "qr_code_id": "9cf6259f-3034-4f96-af0f-c8bcfd847f52",
+                    "url": "https://example.com/fr",
+                    "label": "French locale (A/B)",
+                    "weight": 25,
+                    "is_active": true,
+                    "created_at": "2026-04-20T09:00:00.000Z",
+                    "updated_at": "2026-04-20T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete destination",
+        "description": "Deletes a destination from a QR code.",
+        "tags": [
+          "V1",
+          "Destinations"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Resource UUID",
+              "example": "9cf6259f-3034-4f96-af0f-c8bcfd847f52"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "destid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Destination deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1DestinationDeleteResponse"
+                },
+                "example": {
+                  "data": {
+                    "success": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/overview": {
+      "get": {
+        "summary": "Get analytics overview",
+        "description": "Returns aggregate KPI values for the selected period.",
+        "tags": [
+          "V1",
+          "Stats"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:stats:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mine",
+                "department",
+                "public",
+                "company"
+              ],
+              "description": "Analytics scope",
+              "example": "company"
+            },
+            "required": false,
+            "name": "scope",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "499fee8b-cfc7-4eb9-b919-19f8351949f0"
+            },
+            "required": false,
+            "name": "department_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false,
+            "name": "date_from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false,
+            "name": "date_to",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1AnalyticsOverviewResponse"
+                },
+                "example": {
+                  "data": {
+                    "total_qr_codes": 102,
+                    "total_scans": 5821,
+                    "unique_scans": 4112,
+                    "scans_today": 97,
+                    "total_qr_codes_change": 7.9,
+                    "total_scans_change": 13.4,
+                    "unique_scans_change": 11.1,
+                    "scans_today_change": -2.2
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/scans": {
+      "get": {
+        "summary": "Get scans timeseries",
+        "description": "Returns scans timeline, optionally with previous-period comparison.",
+        "tags": [
+          "V1",
+          "Stats"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "qr:stats:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mine",
+                "department",
+                "public",
+                "company"
+              ],
+              "description": "Analytics scope",
+              "example": "company"
+            },
+            "required": false,
+            "name": "scope",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "499fee8b-cfc7-4eb9-b919-19f8351949f0"
+            },
+            "required": false,
+            "name": "department_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "qr_code_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false,
+            "name": "date_from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false,
+            "name": "date_to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "required": false,
+            "name": "compare_previous",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scans timeseries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1AnalyticsScansResponse"
+                },
+                "examples": {
+                  "simple": {
+                    "value": {
+                      "data": [
+                        {
+                          "date": "2026-04-19",
+                          "total_scans": 103,
+                          "unique_scans": 74
+                        }
+                      ]
+                    }
+                  },
+                  "compared": {
+                    "value": {
+                      "data": {
+                        "current": [
+                          {
+                            "date": "2026-04-19",
+                            "total_scans": 103,
+                            "unique_scans": 74
+                          }
+                        ],
+                        "previous": [
+                          {
+                            "date": "2026-03-20",
+                            "total_scans": 92,
+                            "unique_scans": 61
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid request payload",
+                    "details": {
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Authentication required",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "FORBIDDEN",
+                    "message": "Insufficient permissions",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "NOT_FOUND",
+                    "message": "Resource not found",
+                    "details": null
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Validation failed",
+                    "details": {
+                      "issues": [
+                        {
+                          "path": "name",
+                          "message": "Required"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "RATE_LIMITED",
+                    "message": "Too many requests",
+                    "retryAfter": 60,
+                    "details": null
+                  }
                 }
               }
             }
