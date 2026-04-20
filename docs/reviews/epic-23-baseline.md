@@ -97,9 +97,15 @@
 ### Must-fix до начала фаз 23.4+
 
 1. **Core auth/session unit flow:** ✅ Закрыто 2026-04-20: чтение runtime-конфига в `server/utils/ip.ts` выполняется лениво в runtime-контексте (`getClientIp(event)`), а вне Nuxt runtime применяется безопасный fallback без падения unit-тестов (`cookie-policy`, auth/session path).
-2. **Core API contract type safety:** DTO-мэпперы v1 (`folders`, `destinations`, `tags`) ожидают поля `updatedAt`, которые не всегда возвращаются сервисами.
+2. **Core API contract type safety:** ✅ Закрыто 2026-04-20: DTO-мэпперы v1 (`folders`, `destinations`, `tags`) приведены к контрактам сервисов и подтверждены целевыми unit-контрактами (`server/api/v1/contracts.test.ts`).
 3. **Core security UX type safety:** `useSecurityError` может передавать `undefined` в `t(...)` из-за индексации по коду ошибки.
-4. **Test quality gates для core backend сервисов:** lint/type ошибки в `cookie-policy`, `folder.service.test`, `team.service.test` блокируют объективный gate-check.
+4. **Test quality gates для core backend сервисов:** ✅ Закрыто 2026-04-20: `cookie-policy`, `folder.service.test`, `team.service.test` стабилизированы (изоляция runtime-глобалов и моков), целевые `eslint`/`vitest` проходят.
+
+### Подтверждение must-fix quality checks (2026-04-20)
+
+- `lint` (must-fix scope): `pnpm eslint server/api/auth server/api/v1 server/services/folder.service.test.ts server/services/team.service.test.ts server/services/folder.service.ts server/services/team.service.ts` ✅
+- `test:unit` (must-fix scope): `pnpm vitest run server/api/v1/contracts.test.ts server/api/auth/cookie-policy.test.ts server/services/folder.service.test.ts server/services/team.service.test.ts` ✅
+- `typecheck` (must-fix scope): целевые backend must-fix файлы не дают TS-ошибок; общий `pnpm typecheck` остаётся красным из-за отдельного UI auto-import debt (`@vueuse/core`, `useClipboard`, `useMagicKeys`, `whenever`) вне must-fix контура. ⚠️
 
 ### Допустимый технический долг (can-defer после открытия 23.4+)
 
@@ -116,6 +122,6 @@
 | MG-23-A (Build readiness) | ✅ Выполнено 2026-04-20: `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
 | MG-23-B (E2E environment readiness) | ✅ Выполнено 2026-04-20: browser binaries + системные зависимости устанавливаются командой `pnpm e2e:install-browsers` (локально и в CI перед `pnpm test:e2e`) | QA/Automation Lead | 2026-04-22 |
 | MG-23-C (Quality debt triage) | ✅ Выполнено 2026-04-20: известные TS/lint/unit долги классифицированы в `must-fix` и `can-defer` (см. раздел 5.1) | Tech Lead | 2026-04-23 |
-| MG-23-D (Core quality gate) | ✅ Выполнено 2026-04-20: auth/session must-fix подтверждён фиксом lazy runtime-config в `server/utils/ip.ts`; целевые тесты `server/api/auth/cookie-policy.test.ts` и `server/middleware/order.integration.test.ts` проходят без Nuxt runtime fallback-ошибок. Остальные пункты gate сохраняются закрытыми. | Tech Lead + QA | 2026-04-24 |
+| MG-23-D (Core quality gate) | ✅ Выполнено 2026-04-20: закрыты must-fix зоны `auth/session`, v1 DTO и core service tests; целевые `eslint` + `vitest` зелёные, тесты изолированы от нестабильных runtime-зависимостей. | Tech Lead + QA | 2026-04-24 |
 
 **Правило перехода к 23.4/23.5:** старт работ разрешён **только при статусе `MG-23-D = ✅`** (и сохранении `MG-23-A..C = ✅`). До этого задачи фаз 23.4/23.5 не стартуют.
