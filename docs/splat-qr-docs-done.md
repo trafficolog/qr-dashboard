@@ -206,7 +206,7 @@
 | Эндпоинт | Файл | Zod-валидация | Cookie |
 |----------|------|---------------|--------|
 | `POST /api/auth/login` | `login.post.ts` | `{ email: z.string().email() }` | — |
-| `POST /api/auth/verify` | `verify.post.ts` | `{ email, code: z.string().length(6) }` | SET session_token (httpOnly, secure, sameSite:lax, 30d) |
+| `POST /api/auth/verify` | `verify.post.ts` | `{ email, code: z.string().length(6) }` | SET session_token (httpOnly, secure:prod-only, sameSite:strict, 30d) |
 | `POST /api/auth/logout` | `logout.post.ts` | — | DELETE session_token |
 | `GET /api/auth/me` | `me.get.ts` | — | READ session_token → user |
 
