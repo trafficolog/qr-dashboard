@@ -5,6 +5,7 @@ import { handleStreamableHttpRequest } from '../mcp/transport'
 export default defineEventHandler(async (event) => {
   const context = await authenticateMcpRequest(event)
   const server = createMcpServer(context)
+  const body = await readBody<unknown>(event)
 
-  return handleStreamableHttpRequest(event, server)
+  await handleStreamableHttpRequest(event, server, { parsedBody: body })
 })

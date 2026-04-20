@@ -1,4 +1,14 @@
 import type { ZodType } from 'zod'
+import {
+  CallToolRequestSchema,
+  ErrorCode,
+  InitializeRequestSchema,
+  ListResourcesRequestSchema,
+  ListToolsRequestSchema,
+  McpError,
+  ReadResourceRequestSchema,
+} from '@modelcontextprotocol/sdk/types.js'
+import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import type { McpContext } from './auth'
 import { allMcpTools, dispatchResourceList, dispatchResourceRead, dispatchToolCall } from './dispatcher'
 
@@ -29,119 +39,107 @@ export type McpResourceDefinition = McpResourceListItem & {
   list?: (ctx: McpContext) => Promise<McpResourceListItem[]>
 }
 
-type JsonRpcRequest = {
-  jsonrpc?: string
-  id?: string | number | null
-  method?: string
-  params?: Record<string, unknown>
-}
-
-function makeError(id: JsonRpcRequest['id'], code: number, message: string, data?: unknown) {
-  return {
-    jsonrpc: '2.0',
-    id: id ?? null,
-    error: {
-      code,
-      message,
-      ...(data !== undefined ? { data } : {}),
-    },
+function toMcpError(error: unknown): McpError {
+  if (error instanceof McpError) {
+    return error
   }
+
+  const statusCode = typeof error === 'object' && error !== null && 'statusCode' in error
+    ? (error as { statusCode?: unknown }).statusCode
+    : undefined
+
+  const message = error instanceof Error ? error.message : 'Internal server error'
+
+  if (statusCode === 400) {
+    return new McpError(ErrorCode.InvalidParams, message)
+  }
+
+  if (statusCode === 404) {
+    return new McpError(ErrorCode.MethodNotFound, message)
+  }
+
+  if (statusCode === 403) {
+    return new McpError(ErrorCode.InvalidRequest, message)
+  }
+
+  return new McpError(ErrorCode.InternalError, message)
 }
 
 export function createMcpServer(context: McpContext) {
-  async function handleRpcRequest(request: JsonRpcRequest) {
-    const id = request?.id ?? null
+  const server = new Server(
+    {
+      name: 'splat-qr',
+      version: '1.0.0',
+    },
+    {
+      capabilities: {
+        tools: {
+          listChanged: false,
+        },
+        resources: {
+          subscribe: false,
+          listChanged: false,
+        },
+      },
+    },
+  )
 
-    if (!request || request.jsonrpc !== '2.0' || typeof request.method !== 'string') {
-      return makeError(id, -32600, 'Invalid Request')
+  server.setRequestHandler(InitializeRequestSchema, async () => {
+    return {
+      protocolVersion: '2025-03-26',
+      serverInfo: {
+        name: 'splat-qr',
+        version: '1.0.0',
+      },
+      capabilities: {
+        tools: {
+          listChanged: false,
+        },
+        resources: {
+          subscribe: false,
+          listChanged: false,
+        },
+      },
     }
+  })
 
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    return {
+      tools: allMcpTools.map(tool => ({
+        name: tool.name,
+        description: tool.description,
+        inputSchema: tool.inputSchema,
+      })),
+    }
+  })
+
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
     try {
-      if (request.method === 'initialize') {
-        return {
-          jsonrpc: '2.0',
-          id,
-          result: {
-            protocolVersion: '2025-03-26',
-            serverInfo: {
-              name: 'splat-qr',
-              version: '1.0.0',
-            },
-            capabilities: {
-              tools: {
-                listChanged: false,
-              },
-              resources: {
-                subscribe: false,
-                listChanged: false,
-              },
-            },
-          },
-        }
-      }
-
-      if (request.method === 'tools/list') {
-        return {
-          jsonrpc: '2.0',
-          id,
-          result: {
-            tools: allMcpTools.map(tool => ({
-              name: tool.name,
-              description: tool.description,
-              inputSchema: tool.inputSchema,
-            })),
-          },
-        }
-      }
-
-      if (request.method === 'tools/call') {
-        const name = request.params?.name
-        const args = request.params?.arguments
-
-        if (typeof name !== 'string') {
-          return makeError(id, -32602, 'Invalid params: "name" is required')
-        }
-
-        const result = await dispatchToolCall(name, args, context)
-        return {
-          jsonrpc: '2.0',
-          id,
-          result,
-        }
-      }
-
-      if (request.method === 'resources/list') {
-        const resources = await dispatchResourceList(context)
-        return {
-          jsonrpc: '2.0',
-          id,
-          result: { resources },
-        }
-      }
-
-      if (request.method === 'resources/read') {
-        const uri = request.params?.uri
-        if (typeof uri !== 'string' || uri.length === 0) {
-          return makeError(id, -32602, 'Invalid params: "uri" is required')
-        }
-
-        const result = await dispatchResourceRead(uri, context)
-        return {
-          jsonrpc: '2.0',
-          id,
-          result,
-        }
-      }
-
-      return makeError(id, -32601, `Method not found: ${request.method}`)
+      return await dispatchToolCall(request.params.name, request.params.arguments, context)
     }
     catch (error) {
-      const message = error instanceof Error ? error.message : 'Internal server error'
-      return makeError(id, -32000, message)
+      throw toMcpError(error)
     }
-  }
+  })
 
-  return {
-    handleRpcRequest,
-  }
+  server.setRequestHandler(ListResourcesRequestSchema, async () => {
+    try {
+      const resources = await dispatchResourceList(context)
+      return { resources }
+    }
+    catch (error) {
+      throw toMcpError(error)
+    }
+  })
+
+  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    try {
+      return await dispatchResourceRead(request.params.uri, context)
+    }
+    catch (error) {
+      throw toMcpError(error)
+    }
+  })
+
+  return server
 }
