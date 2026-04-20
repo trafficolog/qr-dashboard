@@ -1079,3 +1079,21 @@ locales/en.json
 - **Фаза 2:** API keys scoped. Все headers на месте. Score ≥ 8.5/10.
 - **Типизация:** `npm run typecheck` — 0 ошибок после каждой фазы.
 - **Регрессия:** Все E2E-тесты проходят. Auth flow не сломан.
+---
+
+## 7. Итог review
+
+**Дата финального review:** 2026-04-20
+**Документ review:** [`docs/reviews/epic-21-threat-model-review.md`](./reviews/epic-21-threat-model-review.md)
+
+### Результат
+
+- ✅ Проведён финальный threat-model review по SEC-01..SEC-18.
+- ✅ Закрытые угрозы подтверждены ссылками на кодовые реализации и security-документацию.
+- ✅ Зафиксированы residual risks и compensating controls (без блокировки релиза 1.0.0).
+- ✅ Вынесены follow-up риски в следующий эпик/итерации с owner и дедлайнами.
+
+### Финальный статус готовности
+
+**EPIC 21: READY / GO для релиза 1.0.0** при условии процессного закрытия sign-off approvals (Tech Lead + Security Owner + Product).
+С технической точки зрения security scope EPIC 21 считается завершённым и проверенным.
