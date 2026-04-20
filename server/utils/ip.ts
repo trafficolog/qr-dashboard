@@ -2,6 +2,8 @@ import type { H3Event } from 'h3'
 
 const runtimeConfig = useRuntimeConfig()
 
+const proxySchemeEnabled = runtimeConfig.proxySchemeEnabled === true
+
 const trustedProxies = new Set(
   (runtimeConfig.trustedProxies || '')
     .split(',')
@@ -24,7 +26,7 @@ function isTrustedProxy(remoteAddress: string): boolean {
 export function getClientIp(event: H3Event): string {
   const remoteAddress = event.node.req.socket.remoteAddress || '0.0.0.0'
 
-  if (!isTrustedProxy(remoteAddress)) {
+  if (!proxySchemeEnabled || !isTrustedProxy(remoteAddress)) {
     return remoteAddress
   }
 
