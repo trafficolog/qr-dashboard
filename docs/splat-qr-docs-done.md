@@ -1,9 +1,9 @@
-# SPLAT QR Service — Отчёт о реализации (Эпики 1–17)
+# SPLAT QR Service — Отчёт о реализации (Эпики 1–22)
 
-> **Дата:** 2026-04-07 (обновлено 2026-04-17)
+> **Дата:** 2026-04-07 (обновлено 2026-04-20)
 > **Фаза:** 4 — завершена; UX-итерация продолжается (EPIC 17 в статусе In Progress, phase 1 реализован)
 > **Файлов в проекте:** ~190
-> **Статус:** Реализованы Эпики 1–7, 9, 10, 11, 12, 13, 14, 15; EPIC 17 — частично (phase 1)
+> **Статус:** Текущий охват отчёта: EPIC 1–22 (EPIC 17 — в процессе; EPIC 22 — завершён)
 
 ---
 
@@ -35,24 +35,43 @@
 
 Детальные спецификации: `docs/epic-16-interactive-shell.md` … `docs/epic-21-security-hardening.md`. Сводная таблица статусов и релизов — в [splat-qr-cursor-plan.md](./splat-qr-cursor-plan.md) и [planned-epics-15-18.md](./planned-epics-15-18.md).
 
-| Эпик | Тема | Статус | Дата |
-|------|------|--------|------|
-| 16 | Interactive Shell & Settings | ✅ Done | 2026-04-17 |
-| 17 | Accessibility baseline | 🚧 In Progress (Phase 1/2 закрыт, ~50%) | 2026-04-19 (последнее обновление) |
-| 18 | Design System & Motion | ✅ Done | 2026-04-19 |
-| 19 | Видимость QR | ✅ Done | 2026-04-20 |
-| 20 | Analytics / cards / onboarding | ✅ Done with notes (scope 20.8 вынесен) | 2026-04-20 |
-| 21 | Security Hardening | ✅ Done | 2026-04-20 |
-| 22 | OpenAPI + Scalar + MCP | ✅ Done | 2026-04-20 |
+| Эпик | Тема | Статус | Релиз/веха | Дата |
+|------|------|--------|------------|------|
+| 16 | Interactive Shell & Settings | ✅ Done | v0.12.1 | 2026-04-17 |
+| 17 | Accessibility baseline | 🚧 In Progress (Phase 1/2 закрыт, ~50%) | Unreleased | 2026-04-19 (последнее обновление) |
+| 18 | Design System & Motion | ✅ Done | v0.13.0 | 2026-04-19 |
+| 19 | Видимость QR | ✅ Done | v0.14.0 | 2026-04-20 |
+| 20 | Analytics / cards / onboarding | ✅ Done with notes (scope 20.8 вынесен) | v0.13.0 (Unreleased) | 2026-04-20 |
+| 21 | Security Hardening | ✅ Done | 1.0.0 gate выполнен | 2026-04-20 |
+| 22 | OpenAPI + Scalar + MCP | ✅ Done | Unreleased | 2026-04-20 |
 
-### Что вошло в EPIC 22
+### EPIC 22 — OpenAPI + MCP
 
-- OpenAPI генерация.
-- `/api/openapi.json`.
-- Scalar `/api-docs`.
-- MCP tools/resources.
-- `mcp:access`.
-- `/integrations/mcp-setup`.
+#### Новые / изменённые файлы
+
+| Файл | Назначение |
+|------|-----------|
+| `server/api/openapi.json.get.ts` | Публичная выдача OpenAPI JSON |
+| `server/routes/mcp.post.ts` | MCP JSON-RPC endpoint (`/mcp`) |
+| `server/mcp/auth.ts` | Аутентификация MCP по API key + scope-проверки |
+| `server/mcp/server.ts` | Регистрация MCP tools/resources и обработчик сервера |
+| `server/openapi/registry.ts` | Централизованный реестр OpenAPI схем/эндпоинтов |
+| `server/openapi/generate.ts` | Генерация OpenAPI-спеки из Zod |
+| `app/pages/api-docs/index.vue` | Страница документации Scalar (`/api-docs`) |
+| `app/pages/integrations/mcp-setup.vue` | Setup guide для подключения MCP-клиентов |
+
+#### Endpoint’ы и страницы
+
+- `GET /api/openapi.json` — OpenAPI 3.1 спецификация.
+- `POST /mcp` — MCP endpoint для tools/resources (JSON-RPC).
+- `GET /api-docs` — интерактивная API-документация (Scalar UI).
+- `GET /integrations/mcp-setup` — setup page для Claude Desktop / Cursor и совместимых MCP-клиентов.
+
+#### Security и scope-модель
+
+- Введён отдельный scope `mcp:access` для MCP-интеграций.
+- Проверка `mcp:access` выполняется в auth-слое MCP до выполнения tool/resource запроса.
+- На уровне инструментов дополнительно действуют предметные scope-checks (например `qr:read`, `qr:write`, `analytics:read`) для fine-grained контроля доступа.
 
 ### 1.2 Технологический стек (фактический)
 
