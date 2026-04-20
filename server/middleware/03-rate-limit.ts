@@ -214,7 +214,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Rate limit для API v1: 100 req / min per API key (по apiKeyId из контекста)
-  // auth.ts (a < r) выполняется раньше и устанавливает event.context.apiKeyId
+  // 01-auth.ts выполняется раньше и устанавливает event.context.apiKeyId
   if (path.startsWith('/api/v1/') && event.context.apiKeyId) {
     const windowMs = 60 * 1000
     const limiter = getLimiter(windowMs)
