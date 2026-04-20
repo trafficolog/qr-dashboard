@@ -15,7 +15,7 @@ function toV1Folder(folder: {
   color: string | null
   createdBy: string
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
 }) {
   return {
     id: folder.id,
@@ -24,7 +24,7 @@ function toV1Folder(folder: {
     color: folder.color,
     created_by: folder.createdBy,
     created_at: folder.createdAt,
-    updated_at: folder.updatedAt,
+    updated_at: folder.updatedAt ?? folder.createdAt,
   }
 }
 

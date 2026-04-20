@@ -60,12 +60,14 @@ export function useSecurityError() {
   function getSecurityMessage(error: unknown, fallback: string): string {
     const parsed = parseSecurityError(error)
 
-    if (parsed.code && SECURITY_CODE_TO_I18N_KEY[parsed.code]) {
+    const i18nKey = parsed.code ? SECURITY_CODE_TO_I18N_KEY[parsed.code] : undefined
+
+    if (i18nKey) {
       const retrySuffix = parsed.retryAfter
         ? ` ${t('security.retryAfterSeconds', { seconds: parsed.retryAfter })}`
         : ''
 
-      return `${t(SECURITY_CODE_TO_I18N_KEY[parsed.code])}${retrySuffix}`
+      return `${t(i18nKey)}${retrySuffix}`
     }
 
     return parsed.message || fallback

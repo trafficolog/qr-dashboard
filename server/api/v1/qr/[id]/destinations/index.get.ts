@@ -9,7 +9,7 @@ function toV1Destination(dest: {
   weight: number
   isActive: boolean
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
 }) {
   return {
     id: dest.id,
@@ -19,7 +19,7 @@ function toV1Destination(dest: {
     weight: dest.weight,
     is_active: dest.isActive,
     created_at: dest.createdAt,
-    updated_at: dest.updatedAt,
+    updated_at: dest.updatedAt ?? dest.createdAt,
   }
 }
 

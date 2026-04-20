@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { sessions } from '../db/schema'
+import { teamService } from './team.service'
 import type { User } from '~/shared/types/auth'
 
 const drizzleMocks = vi.hoisted(() => ({
@@ -51,9 +53,6 @@ const auditMocks = vi.hoisted(() => ({
 }))
 vi.mock('../utils/audit', () => ({ recordAudit: auditMocks.recordAudit }))
 
-import { teamService } from './team.service'
-import { sessions } from '../db/schema'
-
 ;(globalThis as { createError?: (input: { statusCode: number, message: string }) => Error & { statusCode: number } }).createError = ({
   statusCode,
   message,
@@ -63,6 +62,11 @@ const adminUser: User = {
   id: 'admin-1',
   email: 'admin@example.com',
   role: 'admin',
+  name: null,
+  avatarUrl: null,
+  lastLoginAt: null,
+  createdAt: new Date('2026-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2026-01-01T00:00:00.000Z'),
 }
 
 describe('teamService.updateRole', () => {

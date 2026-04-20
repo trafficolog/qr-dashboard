@@ -92,12 +92,30 @@
 
 ---
 
+## 5.1) Quality debt triage (must-fix vs can-defer)
+
+### Must-fix до начала фаз 23.4+
+
+1. **Core auth/session unit flow:** `useRuntimeConfig` на module-level в `server/utils/ip.ts` ломает unit-тесты авторизации (`cookie-policy`) вне Nuxt runtime.
+2. **Core API contract type safety:** DTO-мэпперы v1 (`folders`, `destinations`, `tags`) ожидают поля `updatedAt`, которые не всегда возвращаются сервисами.
+3. **Core security UX type safety:** `useSecurityError` может передавать `undefined` в `t(...)` из-за индексации по коду ошибки.
+4. **Test quality gates для core backend сервисов:** lint/type ошибки в `cookie-policy`, `folder.service.test`, `team.service.test` блокируют объективный gate-check.
+
+### Допустимый технический долг (can-defer после открытия 23.4+)
+
+1. Vue/UX lint warnings (`vue/max-attributes-per-line`, `vue/no-v-html`) без регрессии core flow.
+2. Массовые типовые ошибки автоимпортов VueUse в UI-слое (`useClipboard`, `useMagicKeys`, `whenever`, и т.д.) — требуют отдельного фронтенд sweep.
+3. Vitest-конфликт с Playwright e2e-спеками и пустые suites в некритичных интеграционных файлах — отдельный test harness track.
+
+---
+
 ## 6) Migration Gates (минимальные условия перехода к 23.4/23.5)
 
 | Gate | Минимальное условие | Owner | Целевая дата |
 |---|---|---|---|
 | MG-23-A (Build readiness) | ✅ Выполнено 2026-04-20: `pnpm build` проходит без ошибки `Can't resolve 'tailwindcss'` | Frontend Lead | 2026-04-22 |
 | MG-23-B (E2E environment readiness) | ✅ Выполнено 2026-04-20: browser binaries + системные зависимости устанавливаются командой `pnpm e2e:install-browsers` (локально и в CI перед `pnpm test:e2e`) | QA/Automation Lead | 2026-04-22 |
-| MG-23-C (Quality debt triage) | Известные TS/lint долги классифицированы в `must-fix` и `can-defer` | Tech Lead | 2026-04-23 |
+| MG-23-C (Quality debt triage) | ✅ Выполнено 2026-04-20: известные TS/lint/unit долги классифицированы в `must-fix` и `can-defer` (см. раздел 5.1) | Tech Lead | 2026-04-23 |
+| MG-23-D (Core quality gate) | `pnpm lint`, `pnpm typecheck`, `pnpm test:unit` должны быть **зелёными для must-fix областей core flow** (auth/session + v1 API DTO + core service tests) | Tech Lead + QA | 2026-04-24 |
 
-**Правило перехода к 23.4/23.5:** старт работ разрешён только после закрытия всех трёх gate (MG-23-A..MG-23-C).
+**Правило перехода к 23.4/23.5:** старт работ разрешён только после закрытия всех gate (MG-23-A..MG-23-D). До этого задачи фаз 23.4+ не стартуют.

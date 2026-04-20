@@ -59,11 +59,11 @@ describe('server middleware order smoke checks', () => {
     vi.resetModules()
     vi.clearAllMocks()
 
-    ;(globalThis as { defineEventHandler?: <T>(handler: T) => T }).defineEventHandler = (handler) => handler
-    ;(globalThis as { getRequestURL?: (event: MockEvent) => { pathname: string } }).getRequestURL = (event) => ({ pathname: event.path })
-    ;(globalThis as { getMethod?: (event: MockEvent) => string }).getMethod = (event) => event.method
+    ;(globalThis as { defineEventHandler?: <T>(handler: T) => T }).defineEventHandler = handler => handler
+    ;(globalThis as { getRequestURL?: (event: MockEvent) => { pathname: string } }).getRequestURL = event => ({ pathname: event.path })
+    ;(globalThis as { getMethod?: (event: MockEvent) => string }).getMethod = event => event.method
     ;(globalThis as { getHeader?: (event: MockEvent, name: string) => string | undefined }).getHeader = (event, name) => {
-      const key = Object.keys(event.headers).find((headerName) => headerName.toLowerCase() === name.toLowerCase())
+      const key = Object.keys(event.headers).find(headerName => headerName.toLowerCase() === name.toLowerCase())
       return key ? event.headers[key] : undefined
     }
     ;(globalThis as { getCookie?: (event: MockEvent, name: string) => string | undefined }).getCookie = (event, name) => event.cookies[name]
@@ -84,8 +84,8 @@ describe('server middleware order smoke checks', () => {
         csrfHeaderName: 'x-csrf-token',
       },
     })
-    ;(globalThis as { createError?: (input: { statusCode: number, statusMessage?: string, message?: string, data?: unknown }) => Error & { statusCode: number, data?: unknown } }).createError =
-      ({ statusCode, statusMessage, message, data }) => Object.assign(new Error(message ?? statusMessage ?? 'error'), { statusCode, data })
+    ;(globalThis as { createError?: (input: { statusCode: number, statusMessage?: string, message?: string, data?: unknown }) => Error & { statusCode: number, data?: unknown } }).createError
+      = ({ statusCode, statusMessage, message, data }) => Object.assign(new Error(message ?? statusMessage ?? 'error'), { statusCode, data })
   })
 
   async function importMiddleware() {
@@ -174,7 +174,7 @@ describe('server middleware order smoke checks', () => {
       path: '/api/qr',
       cookies: { session_token: 'session_1' },
       headers: {
-        origin: 'https://dashboard.example.com',
+        'origin': 'https://dashboard.example.com',
         'x-csrf-token': 'csrf-1',
       },
     })
