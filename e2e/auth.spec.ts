@@ -19,4 +19,20 @@ test.describe('Authentication', () => {
     // Expect an inline error or the form not to advance
     await expect(page).toHaveURL(/\/auth\/login/)
   })
+
+  test('redirects to /auth/login when session cookie is invalidated', async ({ page, context }) => {
+    const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001'
+
+    await context.addCookies([
+      {
+        name: 'session_token',
+        value: 'invalid-or-revoked-token',
+        url: baseUrl,
+        path: '/',
+      },
+    ])
+
+    await page.goto('/dashboard')
+    await expect(page).toHaveURL(/\/auth\/login/)
+  })
 })
