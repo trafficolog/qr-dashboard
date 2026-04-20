@@ -53,6 +53,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
 
   nitro: {
+    routeRules: {
+      '/api/**': { maxBodySize: '1MB' } as unknown as Record<string, unknown>,
+      '/api/qr/bulk': { maxBodySize: '5MB' } as unknown as Record<string, unknown>,
+    },
     rollupConfig: {
       external: ['papaparse'],
     },
