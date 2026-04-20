@@ -20,8 +20,8 @@
 | 23.1 | Аудит и baseline | ✅ | `66e3792`, `ca88757`, `947ecb6` | Baseline/матрица и фиксация Node+pnpm выполнены |
 | 23.2 | Nuxt 3.x latest + compatibilityVersion: 4 | ⬜ | — | Не начато |
 | 23.3 | @nuxtjs/i18n v9 → v10 | ⬜ | — | Не начато |
-| 23.4 | Реорганизация структуры для Nuxt 4 | ✅ | `cb9fc22` | Перенесены `app.config.ts`, `assets`, `types` |
-| 23.5 | Upgrade Nuxt 3.x → 4.0 | ⬜ | — | Не начато |
+| 23.4 | Реорганизация структуры для Nuxt 4 | ⏳ ready-to-start | — | Старт разрешён только после `MG-23-D = ✅`; gate закрыт 2026-04-20, задача разблокирована |
+| 23.5 | Upgrade Nuxt 3.x → 4.0 | ⏳ ready-to-start | — | Старт разрешён только после `MG-23-D = ✅`; gate закрыт 2026-04-20, задача разблокирована |
 | 23.6 | Nuxt UI v3 → v4 | ⬜ | — | Не начато |
 | 23.7 | Pinia v2 → v3 | ⬜ | — | Не начато |
 | 23.8 | Drizzle ORM/Kit stable update | ⬜ | — | Не начато |
@@ -45,9 +45,9 @@
 | MG-23-A (Build readiness) | ✅ Green | `pnpm build` проходит (см. baseline). |
 | MG-23-B (E2E environment readiness) | ✅ Green | Playwright browsers/system deps устанавливаются. |
 | MG-23-C (Quality debt triage) | ✅ Green | Must-fix/can-defer классификация зафиксирована в baseline (раздел 5.1). |
-| MG-23-D (Core quality gate) | ✅ Green (по must-fix) | Закрыты критичные must-fix из core flow: auth/session unit runtime, DTO type safety v1 API, lint/type корректность core unit-тестов. |
+| MG-23-D (Core quality gate) | ✅ Green (закрыт 2026-04-20) | Закрыты критичные must-fix из core flow: auth/session unit path, DTO type safety v1 API, `useSecurityError` type safety, core service tests (подтверждено целевыми `eslint`/`vitest`). |
 
-**Gate policy:** фазы 23.4+ допускаются к реализации только при статусе `Green` по MG-23-A..MG-23-D.
+**Gate policy:** запуск 23.4/23.5 разрешается только при `MG-23-D = ✅` (и сохранении `MG-23-A..C = ✅`).
 
 ---
 
@@ -165,8 +165,8 @@
 | NEXT-23-03 | Drizzle ORM 1.0 stable | после релиза stable | Backend Lead | TBD |
 | NEXT-23-04 | TypeScript project references (если 23.16 skipped) | Follow-up эпик | — | — |
 | NEXT-23-05 | Visual regression testing (Chromatic / Percy) | Новая инициатива | QA Lead | — |
-| NEXT-23-06 | Baseline blocker: `pnpm build` падает на `tailwindcss` resolve в `app/assets/css/main.css` | До старта post-migration метрик | Frontend Lead | 2026-04-22 |
-| NEXT-23-07 | Baseline blocker: для `pnpm test:e2e` отсутствуют Playwright browsers (`pnpm exec playwright install`) | До запуска e2e regression | QA/Automation | 2026-04-22 |
+| NEXT-23-06 | Полный фронтенд typecheck-sweep по VueUse auto-import (`useClipboard`, `useMagicKeys`, `whenever` и др.) | Отдельный UI track после старта 23.4 | Frontend Lead | 2026-04-24 |
+| NEXT-23-07 | Полный e2e regression (включая `PLAYWRIGHT_AUTH_COOKIE`-сценарии) | После выполнения 23.4/23.5 | QA/Automation | 2026-04-25 |
 
 ---
 
