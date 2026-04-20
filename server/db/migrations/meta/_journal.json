@@ -43,6 +43,13 @@
       "when": 1776673465411,
       "tag": "0005_cleanup_active_otp_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776674156246,
+      "tag": "0006_users_role_default_viewer",
+      "breakpoints": true
     }
   ]
 }

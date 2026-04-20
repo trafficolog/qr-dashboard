@@ -6,7 +6,7 @@ import { validateBody } from '../../utils/zod-errors'
 
 const bodySchema = z.object({
   email: z.string().email('forms.errors.email').toLowerCase(),
-  role: z.enum(['admin', 'editor', 'viewer']).default('editor'),
+  role: z.enum(['admin', 'editor', 'viewer']).default('viewer'),
 })
 
 export default defineEventHandler(async (event) => {
