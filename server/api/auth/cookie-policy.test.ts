@@ -15,6 +15,7 @@ type VerifyOtpResponse = {
 const verifyOtpMock = vi.fn<() => Promise<VerifyOtpResponse>>()
 const verifySessionMock = vi.fn()
 const logoutMock = vi.fn()
+const recordAuditMock = vi.fn()
 
 vi.mock('../../services/auth.service', () => ({
   authService: {
@@ -22,6 +23,10 @@ vi.mock('../../services/auth.service', () => ({
     verifySession: verifySessionMock,
     logout: logoutMock,
   },
+}))
+
+vi.mock('../../utils/audit', () => ({
+  recordAudit: recordAuditMock,
 }))
 
 describe('auth cookie policy & same-origin API flow', () => {

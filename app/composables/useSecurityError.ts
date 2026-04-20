@@ -14,7 +14,7 @@ interface ParsedSecurityError {
   retryAfter: number | null
 }
 
-const SECURITY_CODE_TO_I18N_KEY: Record<string, string> = {
+const SECURITY_CODE_TO_I18N_KEY = {
   'auth.unauthorized': 'security.authUnauthorized',
   'auth.session_expired': 'security.authSessionExpired',
   'auth.email_invalid': 'security.authEmailInvalid',
@@ -35,6 +35,12 @@ const SECURITY_CODE_TO_I18N_KEY: Record<string, string> = {
   'api_key.ip_denied': 'security.apiKeyIpDenied',
   'rate_limit.exceeded': 'security.rateLimitExceeded',
   'rate_limit.ip_temp_banned': 'security.rateLimitIpTempBanned',
+} as const
+
+type SecurityCode = keyof typeof SECURITY_CODE_TO_I18N_KEY
+
+function isSecurityCode(code: string): code is SecurityCode {
+  return code in SECURITY_CODE_TO_I18N_KEY
 }
 
 export function useSecurityError() {
@@ -60,7 +66,9 @@ export function useSecurityError() {
   function getSecurityMessage(error: unknown, fallback: string): string {
     const parsed = parseSecurityError(error)
 
-    const i18nKey = parsed.code ? SECURITY_CODE_TO_I18N_KEY[parsed.code] : undefined
+    const i18nKey = parsed.code && isSecurityCode(parsed.code)
+      ? SECURITY_CODE_TO_I18N_KEY[parsed.code]
+      : undefined
 
     if (i18nKey) {
       const retrySuffix = parsed.retryAfter
