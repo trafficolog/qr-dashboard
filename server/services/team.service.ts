@@ -110,14 +110,17 @@ export const teamService = {
       .where(eq(users.id, id))
       .returning()
 
+    // Invalidate target user sessions so permissions are refreshed on next request.
+    await db.delete(sessions).where(eq(sessions.userId, id))
+
     recordAudit(
       {
         userId: currentUser.id,
-        action: 'team.update_role',
+        action: 'team.role_change',
         entityType: 'user',
         entityId: id,
       },
-      { details: { previousRole: target.role, newRole } },
+      { details: { oldRole: target.role, newRole } },
     )
 
     return updated!
