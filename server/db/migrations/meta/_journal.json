@@ -29,6 +29,13 @@
       "when": 1776180000000,
       "tag": "0003_tags_name_lower_unique",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776266400000,
+      "tag": "0004_add_csrf_token_to_sessions",
+      "breakpoints": true
     }
   ]
 }

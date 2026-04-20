@@ -8,7 +8,7 @@ const verifySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, verifySchema.parse)
-  const { sessionToken, user } = await authService.verifyOtp(body.email, body.code)
+  const { sessionToken, user, csrfToken } = await authService.verifyOtp(body.email, body.code)
 
   // Установить httpOnly cookie
   setCookie(event, 'session_token', sessionToken, {
@@ -19,5 +19,5 @@ export default defineEventHandler(async (event) => {
     path: '/',
   })
 
-  return apiSuccess({ user })
+  return apiSuccess({ user, csrfToken })
 })

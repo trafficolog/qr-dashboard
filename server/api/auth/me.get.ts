@@ -6,17 +6,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Не авторизован' })
   }
 
-  const user = await authService.verifySession(token)
-  if (!user) {
+  const session = await authService.verifySession(token)
+  if (!session) {
     deleteCookie(event, 'session_token', { path: '/' })
     throw createError({ statusCode: 401, message: 'Сессия истекла' })
   }
 
   return apiSuccess({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-    avatarUrl: user.avatarUrl,
+    id: session.user.id,
+    email: session.user.email,
+    name: session.user.name,
+    role: session.user.role,
+    avatarUrl: session.user.avatarUrl,
+    csrfToken: session.csrfToken,
   })
 })

@@ -30,11 +30,13 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || '',
     maxmindDbPath: process.env.MAXMIND_DB_PATH || './data/GeoLite2-City.mmdb',
     sentryDsn: process.env.SENTRY_DSN || '',
+    csrfSecret: process.env.CSRF_SECRET || '',
 
     // Public (доступны на клиенте)
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3001',
       appName: process.env.NUXT_PUBLIC_APP_NAME || 'SPLAT QR Service',
+      csrfHeaderName: process.env.NUXT_PUBLIC_CSRF_HEADER_NAME || 'X-CSRF-Token',
       docsUiEnabled: process.env.NODE_ENV !== 'production' || process.env.NUXT_DOCS_UI !== '0',
     },
   },

@@ -1,9 +1,15 @@
-import { randomInt, randomBytes } from 'node:crypto'
+import { createHmac, randomInt, randomBytes } from 'node:crypto'
 import { eq, and, gt, isNull, desc, count } from 'drizzle-orm'
 import { db } from '../db'
 import { otpCodes, allowedDomains, users, sessions } from '../db/schema'
 import { hashToken } from '../utils/hash'
 import { emailService } from './email.service'
+
+function generateCsrfToken() {
+  const secret = process.env.CSRF_SECRET || 'default-csrf-secret'
+  const nonce = randomBytes(32).toString('hex')
+  return createHmac('sha256', secret).update(nonce).digest('hex')
+}
 
 export const authService = {
   /**
@@ -162,15 +168,18 @@ export const authService = {
     // 6. Создать сессию
     const plainToken = randomBytes(32).toString('hex')
     const tokenHash = hashToken(plainToken)
+    const csrfToken = generateCsrfToken()
 
     await db.insert(sessions).values({
       userId: user.id,
       token: tokenHash,
+      csrfToken,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 дней
     })
 
     return {
       sessionToken: plainToken,
+      csrfToken,
       user: {
         id: user.id,
         email: user.email,
@@ -209,7 +218,10 @@ export const authService = {
         .where(eq(sessions.id, session.id))
     }
 
-    return session.user
+    return {
+      user: session.user,
+      csrfToken: session.csrfToken,
+    }
   },
 
   /**
