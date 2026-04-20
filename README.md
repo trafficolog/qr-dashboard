@@ -18,11 +18,11 @@
 
 ## Быстрый старт
 
-Требуется Node.js LTS `>=22.12.0` (см. [`.nvmrc`](./.nvmrc)).
+Требуется Node.js LTS `>=22.12.0` (см. [`.nvmrc`](./.nvmrc)) и `pnpm` major `10` (через `corepack`).
 
 ```bash
 # Установка зависимостей
-npm install
+corepack pnpm install
 
 # Копирование переменных окружения
 cp .env.example .env
@@ -31,13 +31,13 @@ cp .env.example .env
 docker compose up postgres -d
 
 # Генерация миграций (при первом запуске или после изменений схемы)
-npm run db:generate
+corepack pnpm db:generate
  
 # Применение миграций
-npm run db:migrate
+corepack pnpm db:migrate
 
 # Seed-данные (опционально)
-npm run db:seed
+corepack pnpm db:seed
 
 # Запуск dev-сервера
 corepack pnpm dev
@@ -128,16 +128,16 @@ docker compose up postgres -d
 
 ## Скрипты
 
-| `npm run dev` | Dev-сервер |
-| `npm run build` | Production build |
-| `npm run preview` | Превью production-сборки |
-| `npm run lint` | Проверка ESLint |
-| `npm run lint:fix` | Автоисправление ESLint |
-| `npm run db:generate` | Генерация SQL-миграций из схемы |
-| `npm run db:migrate` | Применение миграций |
-| `npm run db:seed` | Заполнение тестовыми данными |
-| `npm run db:studio` | Drizzle Studio (GUI для БД) |
-| `npm run typecheck` | Проверка типов TypeScript |
+| `corepack pnpm dev` | Dev-сервер |
+| `corepack pnpm build` | Production build |
+| `corepack pnpm preview` | Превью production-сборки |
+| `corepack pnpm lint` | Проверка ESLint |
+| `corepack pnpm lint:fix` | Автоисправление ESLint |
+| `corepack pnpm db:generate` | Генерация SQL-миграций из схемы |
+| `corepack pnpm db:migrate` | Применение миграций |
+| `corepack pnpm db:seed` | Заполнение тестовыми данными |
+| `corepack pnpm db:studio` | Drizzle Studio (GUI для БД) |
+| `corepack pnpm typecheck` | Проверка типов TypeScript |
  
 ## Документация
  
@@ -157,7 +157,7 @@ docker compose up postgres -d
 
 ### OpenAPI / Scalar / MCP (доступно)
 
-- **OpenAPI pipeline**: генерация и валидация спецификации через `npm run openapi:generate` и `npm run openapi:validate`.
+- **OpenAPI pipeline**: генерация и валидация спецификации через `corepack pnpm openapi:generate` и `corepack pnpm openapi:validate`.
 - **OpenAPI endpoint**: опубликована машина-читаемая спецификация по адресу **`/api/openapi.json`**.
 - **Scalar UI**: интерактивная документация API доступна через встроенный Scalar API Reference.
 - **MCP server**: доступны MCP routes/tools/resources для интеграций; доступ контролируется permission `mcp:access`.
