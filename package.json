@@ -19,7 +19,8 @@
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
     "openapi:generate": "tsx server/openapi/generate.ts",
-    "openapi:validate": "node -e \"JSON.parse(require('fs').readFileSync('public/openapi.json','utf8')); console.log('openapi.json is valid JSON')\""
+    "openapi:validate": "node -e \"JSON.parse(require('fs').readFileSync('public/openapi.json','utf8')); console.log('openapi.json is valid JSON')\"",
+    "sdks:generate": "bash scripts/generate-sdks.sh"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
