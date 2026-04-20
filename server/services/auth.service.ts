@@ -1,6 +1,6 @@
 import { createHmac, randomInt, randomBytes } from 'node:crypto'
 import type { H3Event } from 'h3'
-import { eq, and, gt, isNull, desc, count, sql } from 'drizzle-orm'
+import { eq, and, gt, isNull, desc, asc, count, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { otpCodes, allowedDomains, users, sessions, authEmailLocks } from '../db/schema'
 import { hashToken, hashOtpWithPepper } from '../utils/hash'
@@ -279,6 +279,34 @@ export const authService = {
       csrfToken,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 дней
     })
+
+    const nowForActiveSessions = new Date()
+    const activeSessions = await db
+      .select({ count: count() })
+      .from(sessions)
+      .where(and(
+        eq(sessions.userId, user.id),
+        gt(sessions.expiresAt, nowForActiveSessions),
+      ))
+
+    if (activeSessions[0]!.count > 10) {
+      const oldestActiveSession = await db.query.sessions.findFirst({
+        where: and(
+          eq(sessions.userId, user.id),
+          gt(sessions.expiresAt, nowForActiveSessions),
+        ),
+        orderBy: [
+          asc(sessions.createdAt),
+          asc(sessions.id),
+        ],
+      })
+
+      if (oldestActiveSession) {
+        await db
+          .delete(sessions)
+          .where(eq(sessions.id, oldestActiveSession.id))
+      }
+    }
 
     return {
       sessionToken: plainToken,
