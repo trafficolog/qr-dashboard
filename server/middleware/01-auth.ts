@@ -4,7 +4,7 @@ import { getClientIp } from '../utils/ip'
 import { logSecurityRejection } from '../utils/security-observability'
 import { throwSecurityError } from '../utils/security-error'
 
-type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read'
+type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read' | 'mcp:access'
 
 type PermissionRule = {
   method: string
@@ -99,6 +99,9 @@ export default defineEventHandler(async (event) => {
 
   // Пропускаем redirect-эндпоинт
   if (path.startsWith('/r/')) return
+
+  // MCP endpoint использует отдельную API key auth в route-handler
+  if (path.startsWith('/mcp')) return
 
   // Пропускаем не-API маршруты (SSR-страницы проверяются клиентским middleware)
   if (!path.startsWith('/api/')) return

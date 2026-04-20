@@ -78,6 +78,13 @@
       "when": 1776678521439,
       "tag": "0010_api_keys_permissions_ip_expiry",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1776685526455,
+      "tag": "0011_api_keys_mcp_access_permission",
+      "breakpoints": true
     }
   ]
 }

@@ -8,7 +8,7 @@ export const apiKeys = pgTable('api_keys', {
   name: varchar('name', { length: 100 }).notNull(),
   keyHash: varchar('key_hash', { length: 64 }).notNull(),
   keyPrefix: varchar('key_prefix', { length: 8 }).notNull(),
-  permissions: text('permissions').array().notNull().default(sql`ARRAY['qr:read','qr:write','qr:stats:read']::text[]`),
+  permissions: text('permissions').array().notNull().default(sql`ARRAY['qr:read','qr:write','qr:stats:read','mcp:access']::text[]`),
   allowedIps: text('allowed_ips').array().notNull().default(sql`ARRAY[]::text[]`),
   lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull().default(sql`now() + interval '90 days'`),

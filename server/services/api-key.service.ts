@@ -9,7 +9,7 @@ import { recordAudit } from '../utils/audit'
 const KEY_PREFIX = 'sqr_live_'
 const MAX_KEYS_PER_USER = 5
 
-export const API_KEY_PERMISSIONS = ['qr:read', 'qr:write', 'qr:stats:read'] as const
+export const API_KEY_PERMISSIONS = ['qr:read', 'qr:write', 'qr:stats:read', 'mcp:access'] as const
 
 const createPayloadSchema = z.object({
   name: z.string().trim().min(1).max(100),
