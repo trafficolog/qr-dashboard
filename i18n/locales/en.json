@@ -236,7 +236,8 @@
         "permissions": {
           "qrRead": "Read QR codes",
           "qrWrite": "Manage QR codes",
-          "qrStatsRead": "Read QR stats"
+          "qrStatsRead": "Read QR stats",
+          "mcpAccess": "MCP access"
         },
         "errors": {
           "permissionsRequired": "Select at least one permission",

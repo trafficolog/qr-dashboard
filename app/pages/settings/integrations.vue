@@ -178,7 +178,7 @@ definePageMeta({
   },
 })
 
-type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read'
+type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read' | 'mcp:access'
 
 interface ApiKey {
   id: string
@@ -211,6 +211,7 @@ const permissionOptions = computed(() => [
   { value: 'qr:read' as const, label: t('settings.integrations.apiKeys.permissions.qrRead') },
   { value: 'qr:write' as const, label: t('settings.integrations.apiKeys.permissions.qrWrite') },
   { value: 'qr:stats:read' as const, label: t('settings.integrations.apiKeys.permissions.qrStatsRead') },
+  { value: 'mcp:access' as const, label: t('settings.integrations.apiKeys.permissions.mcpAccess') },
 ])
 
 watch(createKeyOpen, (open) => {
@@ -303,6 +304,7 @@ function togglePermission(permission: ApiPermission, enabled: boolean) {
 function permissionLabel(permission: ApiPermission) {
   if (permission === 'qr:write') return t('settings.integrations.apiKeys.permissions.qrWrite')
   if (permission === 'qr:stats:read') return t('settings.integrations.apiKeys.permissions.qrStatsRead')
+  if (permission === 'mcp:access') return t('settings.integrations.apiKeys.permissions.mcpAccess')
   return t('settings.integrations.apiKeys.permissions.qrRead')
 }
 
@@ -330,6 +332,8 @@ async function copyKey() {
 function closeCreateModal() {
   createKeyOpen.value = false
   newKeyName.value = ''
+  // Keep the default scope minimal after reset: only `qr:read` is preselected.
+  // `mcp:access` must be enabled manually unless product requirements change.
   newKeyPermissions.value = ['qr:read']
   allowedIpsInput.value = ''
   expiresAtInput.value = ''

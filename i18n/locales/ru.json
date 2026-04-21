@@ -236,7 +236,8 @@
         "permissions": {
           "qrRead": "Чтение QR-кодов",
           "qrWrite": "Управление QR-кодами",
-          "qrStatsRead": "Чтение статистики QR"
+          "qrStatsRead": "Чтение статистики QR",
+          "mcpAccess": "Доступ к MCP"
         },
         "errors": {
           "permissionsRequired": "Выберите хотя бы одно право",
