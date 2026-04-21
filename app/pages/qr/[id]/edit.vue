@@ -274,7 +274,7 @@
 
 <script setup lang="ts">
 import { z } from 'zod'
-import type { QrCode, QrStyle, QrStatus } from '~/shared/types/qr'
+import type { QrCode, QrStyle, QrStatus } from '#shared/types/qr'
 import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'
 import { SELECT_VALUE_NONE, selectValueToNullableId } from '~/utils/select-none-value'

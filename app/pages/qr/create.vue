@@ -274,7 +274,7 @@
 
 <script setup lang="ts">
 import { z } from 'zod'
-import type { QrStyle } from '~/shared/types/qr'
+import type { QrStyle } from '#shared/types/qr'
 import { useFormDraft } from '~/composables/useFormDraft'
 import { useFormValidation } from '~/composables/useFormValidation'
 import { useUnsavedChanges } from '~/composables/useUnsavedChanges'

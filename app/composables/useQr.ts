@@ -1,5 +1,5 @@
-import type { QrCode, QrStyle, UtmParams } from '~/shared/types/qr'
-import type { ApiMeta } from '~/shared/types/api'
+import type { QrCode, QrStyle, UtmParams } from '#shared/types/qr'
+import type { ApiMeta } from '#shared/types/api'
 
 interface QrFilters {
   search: string

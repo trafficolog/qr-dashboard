@@ -1,6 +1,6 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { folderService } from './folder.service'
-import type { User } from '~/shared/types/auth'
+import type { User } from '#shared/types/auth'
 
 const dbMocks = vi.hoisted(() => ({
   findFirst: vi.fn(),

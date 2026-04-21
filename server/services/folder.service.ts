@@ -2,7 +2,7 @@ import { eq, and, count } from 'drizzle-orm'
 import { db } from '../db'
 import { folders, qrCodes } from '../db/schema'
 import { recordAudit } from '../utils/audit'
-import type { User } from '~/shared/types/auth'
+import type { User } from '#shared/types/auth'
 
 interface CreateFolderData {
   name: string

@@ -5,7 +5,7 @@ import { generateShortCode } from '../utils/nanoid'
 import { invalidateQrCache } from '../utils/qr-cache'
 import { recordAudit } from '../utils/audit'
 import { resolveVisibilityAccess } from './qr-visibility-access'
-import type { User } from '~/shared/types/auth'
+import type { User } from '#shared/types/auth'
 
 // --- Types ---
 

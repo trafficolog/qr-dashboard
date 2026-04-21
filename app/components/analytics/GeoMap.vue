@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GeoCityBreakdownItem, GeoCountryBreakdownItem } from '~/shared/types/analytics'
+import type { GeoCityBreakdownItem, GeoCountryBreakdownItem } from '#shared/types/analytics'
 
 type MapMode = 'russia' | 'world'
 type RussiaRegionId = 'northwest' | 'central' | 'south' | 'volga' | 'ural' | 'siberia' | 'farEast'
