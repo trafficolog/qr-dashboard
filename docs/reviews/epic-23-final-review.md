@@ -36,6 +36,23 @@
 | 23.17 | Docker, CI | ✅ Done/Accepted | Docker обновлён; CI-задачи ограничены отсутствием workflow в репозитории. |
 | 23.18 | Финальный релиз и документация | ✅ Done | Документация синхронизирована, релизные атрибуты подтверждены. |
 
+## 1.0. Правила фазового контроля (обязательные)
+
+- После завершения **каждой фазы** в этом документе обязательно фиксируются:
+  - что сделано;
+  - какие регрессии найдены;
+  - что блокирует следующий этап.
+- Для **каждого риска** обязательно фиксируются поля: `severity`, `owner`, `ETA`, `status` (`open` / `mitigated` / `closed`).
+- Переход к следующей фазе запрещён без явного `phase sign-off` в этом документе.
+
+## 1.05. Фазовый журнал и sign-off
+
+| Фаза | Scope | Что сделано | Найденные регрессии | Блокеры следующего этапа | Phase sign-off |
+|---|---|---|---|---|---|
+| Phase 1 | 23.1–23.3 (baseline + transition) | Baseline/gates зафиксированы; переходный режим `compatibilityVersion: 4` применён; i18n v10 подготовлен | Критичных миграционных регрессий не зафиксировано (см. baseline debt triage) | Отсутствуют (MG-23-A..D = green на момент закрытия phase) | ✅ Signed-off (2026-04-20) |
+| Phase 2 | 23.4–23.11 (major upgrades) | Структура Nuxt 4, Nuxt 4 core, Nuxt UI v4, Pinia v3, Drizzle, Zod range, Sentry, toolchain обновлены | Зафиксированы toolchain/CLI регрессии и частичные env-ограничения e2e (см. раздел 4) | Требуется стабилизация e2e окружения и повторный regression run | ✅ Signed-off (2026-04-21) |
+| Phase 3 | 23.12–23.18 (sweeps + release) | Typecheck/lint/unit sweep, smoke, release docs и финализация | E2E остаётся partial в текущем окружении, вынесено в follow-up | Полный e2e regression post-release и закрытие follow-up рисков | ⚠️ Conditional sign-off (2026-04-21) |
+
 ## 1.1 Gate-статусы перед запуском 23.4+
 
 | Gate | Статус | Комментарий |
@@ -168,25 +185,24 @@
 
 ### 5.1. Закрытые риски из эпика
 
-| ID | Риск | Статус | Как закрыт |
-|----|------|--------|------------|
-| R-01 | Codemod пропускает кейсы | ✅ Closed | 23.12 покрыл все обнаруженные кейсы |
-| R-02 | Drizzle ломает миграции | ✅ Closed | Backup БД + миграций, апгрейд на stable 0.45.x прошёл |
-| R-03 | Nuxt UI v4 визуальные регрессии | ✅ Closed | 23.15 ручной smoke закрыл |
-| R-04 | @nuxtjs/i18n redirectOn | ✅ Closed | `strategy: 'no_prefix'` в конфиге, изменение не затронуло |
-| ... | ... | ... | ... |
+| ID | Риск | Severity | Owner | ETA | Status | Как закрыт |
+|----|------|----------|-------|-----|--------|------------|
+| R-01 | Codemod пропускает кейсы | Medium | Frontend Platform Lead | 2026-04-20 | closed | 23.12 покрыл все обнаруженные кейсы |
+| R-02 | Drizzle ломает миграции | High | Backend Lead | 2026-04-20 | closed | Backup БД + миграций, апгрейд на stable 0.45.x прошёл |
+| R-03 | Nuxt UI v4 визуальные регрессии | Medium | QA Lead | 2026-04-20 | closed | 23.15 ручной smoke закрыл |
+| R-04 | @nuxtjs/i18n redirectOn | Low | Frontend Lead | 2026-04-20 | closed | `strategy: 'no_prefix'` в конфиге, изменение не затронуло |
 
 ### 5.2. Остаточные риски / follow-up
 
-| ID | Задача | Перенос | Owner | Deadline |
-|----|--------|---------|-------|----------|
-| NEXT-23-01 | Полная миграция Zod 3 → Zod 4 | EPIC 24 | Backend Lead | 2026-06-15 |
-| NEXT-23-02 | Эксперимент `compatibilityVersion: 5` | Iteration 2026-Q3 | Frontend Platform Lead | 2026-07-31 |
-| NEXT-23-03 | Drizzle ORM 1.0 stable readiness check | После релиза stable | Backend Lead | 2026-08-15 |
-| NEXT-23-04 | TypeScript project references (23.16 follow-up) | Follow-up tech-debt epic | Frontend Platform Lead | 2026-05-29 |
-| NEXT-23-05 | Visual regression testing (Chromatic/Percy) | QA initiative | QA Lead | 2026-06-30 |
-| NEXT-23-06 | Frontend typecheck-sweep по VueUse auto-import | Отдельный UI track | Frontend Lead | 2026-04-24 |
-| NEXT-23-07 | Полный e2e regression (`PLAYWRIGHT_AUTH_COOKIE`-scenarios) | Post-release stabilization | QA/Automation Lead | 2026-04-25 |
+| ID | Задача | Перенос | Severity | Owner | ETA | Status |
+|----|--------|---------|----------|-------|-----|--------|
+| NEXT-23-01 | Полная миграция Zod 3 → Zod 4 | EPIC 24 | Medium | Backend Lead | 2026-06-15 | open |
+| NEXT-23-02 | Эксперимент `compatibilityVersion: 5` | Iteration 2026-Q3 | Low | Frontend Platform Lead | 2026-07-31 | open |
+| NEXT-23-03 | Drizzle ORM 1.0 stable readiness check | После релиза stable | Medium | Backend Lead | 2026-08-15 | open |
+| NEXT-23-04 | TypeScript project references (23.16 follow-up) | Follow-up tech-debt epic | Medium | Frontend Platform Lead | 2026-05-29 | open |
+| NEXT-23-05 | Visual regression testing (Chromatic/Percy) | QA initiative | Medium | QA Lead | 2026-06-30 | open |
+| NEXT-23-06 | Frontend typecheck-sweep по VueUse auto-import | Отдельный UI track | High | Frontend Lead | 2026-04-24 | mitigated |
+| NEXT-23-07 | Полный e2e regression (`PLAYWRIGHT_AUTH_COOKIE`-scenarios) | Post-release stabilization | High | QA/Automation Lead | 2026-04-25 | open |
 
 ---
 
