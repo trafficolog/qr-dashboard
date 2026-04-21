@@ -1,5 +1,5 @@
 <template>
-  <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)] transition-interactive hover-lift">
+  <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4 transition-interactive hover-lift">
     <NuxtLink
       :to="`/qr/${qr.id}`"
       class="mb-3 block"
@@ -21,21 +21,16 @@
           {{ qr.title }}
         </NuxtLink>
         <div class="flex flex-col items-end gap-1">
-          <UBadge
-            :color="statusColor"
-            variant="soft"
-            size="xs"
-          >
+          <Tag class="px-2 py-0.5 text-xs">
             {{ statusLabel }}
-          </UBadge>
-          <UBadge
-            :icon="visibilityBadge.icon"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
+          </Tag>
+          <Tag class="px-2 py-0.5 text-xs">
+            <Icon
+              :name="visibilityBadge.icon"
+              class="mr-1 size-3"
+            />
             {{ visibilityBadge.label }}
-          </UBadge>
+          </Tag>
         </div>
       </div>
 
@@ -45,12 +40,12 @@
         :title="qr.destinationUrl"
         @click="copyDestination"
       >
-        <UIcon
+        <Icon
           name="i-lucide-link"
           class="size-3 shrink-0"
         />
         <span class="truncate">{{ qr.destinationUrl }}</span>
-        <UIcon
+        <Icon
           name="i-lucide-copy"
           class="size-3 shrink-0"
         />
@@ -58,7 +53,7 @@
 
       <div class="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
         <span class="inline-flex items-center gap-1">
-          <UIcon
+          <Icon
             name="i-lucide-calendar"
             class="size-3"
           />
@@ -66,7 +61,7 @@
         </span>
         <span>·</span>
         <span class="inline-flex items-center gap-1">
-          <UIcon
+          <Icon
             name="i-lucide-bar-chart-3"
             class="size-3"
           />
@@ -78,15 +73,14 @@
         v-if="qr.tags?.length"
         class="flex flex-wrap gap-1"
       >
-        <UBadge
+        <Tag
           v-for="tag in qr.tags.slice(0, 3)"
           :key="tag.id"
-          variant="subtle"
-          size="xs"
           :style="tag.color ? { backgroundColor: tag.color + '30', color: tag.color } : {}"
+          class="px-2 py-0.5 text-xs"
         >
           {{ tag.name }}
-        </UBadge>
+        </Tag>
       </div>
 
       <QuickActions
@@ -105,7 +99,7 @@
         @change-visibility="emit('changeVisibility', $event)"
       />
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -142,13 +136,6 @@ const emit = defineEmits<{
 const toast = useA11yToast()
 const { copy } = useClipboard()
 const { t } = useI18n()
-
-type StatusBadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
-
-const statusColor = computed<StatusBadgeColor>(() => {
-  const map: Record<string, StatusBadgeColor> = { active: 'primary', paused: 'warning', expired: 'error', archived: 'neutral' }
-  return map[props.qr.status] || 'neutral'
-})
 
 const statusLabel = computed(() => {
   const map: Record<string, string> = { active: 'Активен', paused: 'Пауза', expired: 'Истёк', archived: 'Архив' }
