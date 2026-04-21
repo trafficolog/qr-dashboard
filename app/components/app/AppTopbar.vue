@@ -51,6 +51,8 @@
         />
         <span>{{ t('common.create') }}</span>
       </NuxtLink>
+
+      <AppUserMenu />
     </div>
   </header>
 </template>
