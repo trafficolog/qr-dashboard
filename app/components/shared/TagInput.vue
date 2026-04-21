@@ -4,11 +4,10 @@
       v-if="selectedTags.length > 0"
       class="mb-2 flex flex-wrap gap-1.5"
     >
-      <UBadge
+      <Tag
         v-for="tag in selectedTags"
         :key="tag.id"
         :style="tag.color ? { backgroundColor: tag.color, color: getContrastColor(tag.color) } : {}"
-        variant="subtle"
         class="gap-1"
       >
         {{ tag.name }}
@@ -16,25 +15,31 @@
           class="ml-0.5 hover:opacity-75"
           @click="removeTag(tag.id)"
         >
-          <UIcon
+          <Icon
             name="i-lucide-x"
             class="size-3"
           />
         </button>
-      </UBadge>
+      </Tag>
     </div>
 
-    <UInput
-      v-model="searchQuery"
-      placeholder="Добавить тег..."
-      icon="i-lucide-tag"
-      size="sm"
-      @keydown.enter.prevent="handleEnter"
-      @focus="showSuggestions = true"
-      @blur="handleBlur"
-    />
+    <IconField>
+      <InputIcon>
+        <Icon
+          name="i-lucide-tag"
+          class="size-4"
+        />
+      </InputIcon>
+      <InputText
+        v-model="searchQuery"
+        placeholder="Добавить тег..."
+        class="w-full"
+        @keydown.enter.prevent="handleEnter"
+        @focus="showSuggestions = true"
+        @blur="handleBlur"
+      />
+    </IconField>
 
-    <!-- Suggestions dropdown -->
     <div
       v-if="showSuggestions && filteredSuggestions.length > 0"
       class="relative z-10 mt-1 max-h-40 overflow-y-auto rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)] shadow-lg shadow-black/5"
@@ -47,7 +52,7 @@
       >
         <span
           v-if="tag.color"
-          class="size-3 rounded-full shrink-0"
+          class="size-3 shrink-0 rounded-full"
           :style="{ backgroundColor: tag.color }"
         />
         {{ tag.name }}
@@ -57,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-interface Tag {
+interface TagItem {
   id: string
   name: string
   color: string | null
@@ -65,7 +70,7 @@ interface Tag {
 
 const props = defineProps<{
   modelValue: string[]
-  availableTags: Tag[]
+  availableTags: TagItem[]
 }>()
 
 const emit = defineEmits<{
@@ -89,7 +94,7 @@ const filteredSuggestions = computed(() => {
   )
 })
 
-function addTag(tag: Tag) {
+function addTag(tag: TagItem) {
   if (!props.modelValue.includes(tag.id)) {
     emit('update:modelValue', [...props.modelValue, tag.id])
   }
@@ -104,22 +109,17 @@ function handleEnter() {
   const q = searchQuery.value.trim()
   if (!q) return
 
-  // If exact match exists in suggestions, add it
-  const match = filteredSuggestions.value.find(
-    tag => tag.name.toLowerCase() === q.toLowerCase(),
-  )
+  const match = filteredSuggestions.value.find(tag => tag.name.toLowerCase() === q.toLowerCase())
   if (match) {
     addTag(match)
   }
   else {
-    // Create new tag
     emit('create-tag', q)
     searchQuery.value = ''
   }
 }
 
 function handleBlur() {
-  // Delay to allow click on suggestion
   setTimeout(() => {
     showSuggestions.value = false
   }, 200)

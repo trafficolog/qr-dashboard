@@ -21,7 +21,7 @@
 | 24.3 | Установка PrimeVue | ✅ | PR1 | `1c50d2e` | PrimeVue + Nuxt module + themes/forms добавлены. |
 | 24.4 | App shell, layouts, error page | ✅ | PR1 | `1c50d2e`, `d928dfb` | Sakai-like shell внедрён; error page переведена на PrimeVue actions. |
 | 24.5 | Global styles и шрифты | ✅ | PR1 | `1c50d2e` | Подключён `app/assets/layout/layout.scss` + light/dark variables. |
-| 24.6 | UI-примитивы | ⚠️ | PR2 | `606b433`, `b9f14b1`, `5be3b13` | Мигрированы `ConfirmDialog`, `EmptyState`, `SharedPagination`; оставшиеся UI-примитивы ещё в работе. |
+| 24.6 | UI-примитивы | ⚠️ | PR2 | `606b433`, `b9f14b1`, `5be3b13`, `7db07ec` | Мигрированы `ConfirmDialog`, `EmptyState`, `SharedPagination`, `TagInput`; оставшиеся UI-примитивы ещё в работе. |
 | 24.7 | Глобальные сервисы (Toast/Confirm/Dialog) | ✅ | PR2 | `fd13824`, `d928dfb` | Добавлены PrimeVue services + composables + ConfirmDialog migration. |
 | 24.8 | Component mapping sweep (Nuxt UI → PrimeVue) | ⚠️ | PR2 | `12b0bfa`, `b9d55a1`, `931f63a` | Идёт поэтапная миграция страниц/компонентов; полное удаление Nuxt UI ещё не достигнуто. |
 | 24.9 | Sidebar | ✅ | PR3 | `1c50d2e` | Внедрён новый app menu/sidebar shell на PrimeVue/Sakai-паттерне. |
