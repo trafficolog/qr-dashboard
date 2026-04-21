@@ -30,7 +30,7 @@
 | 24.12 | QR List page | ✅ | PR4 | `5be3b13`, `follow-up commits (qr/index + Table/Card/QuickActions/ExportDialog)` | Страница `/qr` и связанные компоненты (`SharedPagination`, `Table`, `Card`, `QuickActions`, `ExportDialog`) переведены на PrimeVue pattern. |
 | 24.13 | QR Create Drawer + `/qr/create` | ✅ | PR4 | `follow-up commits (qr/create full controls migration)` | `/qr/create` переведена на PrimeVue patterns/controls; в текущем репо отдельный `CreateDrawer` не реализован (scope закрыт по фактическому UI-объёму). |
 | 24.14 | QR Detail Drawer + `/qr/[id]` | ⚠️ | PR4 | `follow-up commit (qr/[id] shell + cards + actions)` | Начата migration `/qr/[id]`: header actions/menu, stats/detail cards, A/B block и loading skeleton переведены на PrimeVue pattern; drawer/edit связанные шаги ещё в работе. |
-| 24.15 | QR Edit `/qr/[id]/edit` | ⬜ / ✅ / ❌ | PR4 | | |
+| 24.15 | QR Edit `/qr/[id]/edit` | ✅ | PR4 | `follow-up commit (qr/[id]/edit full controls migration)` | `/qr/[id]/edit` переведена на PrimeVue controls/patterns (cards, inputs/selects, actions, loading skeleton). |
 | 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.17 | Folders | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.18 | Analytics | ⬜ / ✅ / ❌ | PR4 | | |
@@ -61,7 +61,7 @@
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.15+
+- **Не начато:** 24.16+
 
 ---
 

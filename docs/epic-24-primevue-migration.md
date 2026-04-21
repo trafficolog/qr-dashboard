@@ -22,6 +22,7 @@
 - ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
 - ✅ QR Create migration: `/qr/create` page переведена на PrimeVue controls/patterns (в текущем репо отдельный `CreateDrawer` отсутствует)
 - ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; связанные drawer/edit flows ещё в работе
+- ✅ QR Edit migration: `/qr/[id]/edit` page переведена на PrimeVue controls/patterns
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
@@ -30,7 +31,7 @@
 ### Checkpoint 24.1–24.12 (2026-04-21)
 - ✅ Done: 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - ⚠️ In progress: 24.1, 24.6, 24.8, 24.11, 24.14
-- ⬜ Not started: 24.15+
+- ⬜ Not started: 24.16+
 
 ## 1. Проблема и обоснование
 
