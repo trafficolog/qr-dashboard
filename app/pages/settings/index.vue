@@ -1,7 +1,5 @@
-<template>
-  <div />
-</template>
-
 <script setup lang="ts">
-await navigateTo('/settings/general', { replace: true })
+definePageMeta({
+  redirect: '/settings/general',
+})
 </script>
