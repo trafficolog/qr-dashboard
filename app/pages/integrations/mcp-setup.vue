@@ -79,7 +79,7 @@
             />
           </div>
 
-          <CodeBlock :code="example.code" language="json" />
+          <SharedCodeBlock :code="example.code" language="json" />
         </section>
       </div>
     </UCard>
