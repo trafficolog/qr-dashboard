@@ -1,9 +1,9 @@
 <template>
   <div class="flex min-h-screen items-center justify-center bg-[color:var(--surface-1)] px-4">
-    <UCard class="w-full max-w-lg border border-[color:var(--border)] bg-[color:var(--surface-0)] shadow-lg shadow-black/5">
+    <div class="w-full max-w-lg rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-6 shadow-lg shadow-black/5">
       <div class="space-y-5 text-center">
         <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--accent-light)]">
-          <UIcon
+          <Icon
             :name="isNotFound ? 'i-lucide-search-x' : 'i-lucide-triangle-alert'"
             class="h-7 w-7 text-[color:var(--accent)]"
           />
@@ -37,23 +37,31 @@
         </p>
 
         <div class="flex flex-col justify-center gap-2 pt-1 sm:flex-row">
-          <UButton
-            icon="i-lucide-house"
-            @click="handleGoHome"
-          >
+          <Button @click="handleGoHome">
+            <template #icon>
+              <Icon
+                name="i-lucide-house"
+                class="mr-2 h-4 w-4"
+              />
+            </template>
             {{ t('errors.goHome') }}
-          </UButton>
-          <UButton
-            color="neutral"
-            variant="outline"
-            icon="i-lucide-log-in"
+          </Button>
+          <Button
+            severity="secondary"
+            outlined
             @click="handleGoLogin"
           >
+            <template #icon>
+              <Icon
+                name="i-lucide-log-in"
+                class="mr-2 h-4 w-4"
+              />
+            </template>
             {{ t('errors.goLogin') }}
-          </UButton>
+          </Button>
         </div>
       </div>
-    </UCard>
+    </div>
   </div>
 </template>
 
