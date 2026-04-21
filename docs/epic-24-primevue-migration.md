@@ -20,6 +20,7 @@
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
 - ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue (ожидается визуальный sign-off)
 - ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
+- ⚠️ QR Create migration in progress: section cards/icons/actions на `/qr/create` переведены на PrimeVue pattern; form controls migration продолжается
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
@@ -27,8 +28,8 @@
 
 ### Checkpoint 24.1–24.12 (2026-04-21)
 - ✅ Done: 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
-- ⚠️ In progress: 24.1, 24.6, 24.8, 24.11
-- ⬜ Not started: 24.13+
+- ⚠️ In progress: 24.1, 24.6, 24.8, 24.11, 24.13
+- ⬜ Not started: 24.14+
 
 ## 1. Проблема и обоснование
 

@@ -28,7 +28,7 @@
 | 24.10 | Topbar + Command Palette | ✅ | PR3 | `6e0ebbd`, `b9d55a1` | Topbar, UserMenu и GlobalSearch (Cmd+K) переведены на PrimeVue Dialog/Icon pattern. |
 | 24.11 | Dashboard | ⚠️ | PR4 | `931f63a`, `follow-up commits (StatCard + DateRangePicker/TopQrTable/ScanChart)` | Основные dashboard blocks (включая `AnalyticsStatCard`, `DateRangePicker`, `TopQrTable`, `ScanChart`) переведены на PrimeVue; визуальный sign-off по макетам pending. |
 | 24.12 | QR List page | ✅ | PR4 | `5be3b13`, `follow-up commits (qr/index + Table/Card/QuickActions/ExportDialog)` | Страница `/qr` и связанные компоненты (`SharedPagination`, `Table`, `Card`, `QuickActions`, `ExportDialog`) переведены на PrimeVue pattern. |
-| 24.13 | QR Create Drawer + `/qr/create` | ⬜ / ✅ / ❌ | PR4 | | |
+| 24.13 | QR Create Drawer + `/qr/create` | ⚠️ | PR4 | `follow-up commit (qr/create section cards + actions)` | Начата migration `/qr/create`: section card wrappers, header icons и bottom actions переведены на PrimeVue; оставшиеся `UForm*` controls ещё в работе. |
 | 24.14 | QR Detail Drawer + `/qr/[id]` | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.15 | QR Edit `/qr/[id]/edit` | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ⬜ / ✅ / ❌ | PR4 | | |
