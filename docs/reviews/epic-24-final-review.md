@@ -5,6 +5,7 @@
 **Версия проекта:** `0.15.0` → `0.16.0`
 **Связанные документы:**
 - [epic-24-primevue-migration.md](../epic-24-primevue-migration.md) — план эпика
+- [epic-24-amendment-a1-sakai-baseline.md](../epic-24-amendment-a1-sakai-baseline.md) — обязательный baseline app shell и theme
 - [epic-24-baseline.md](./epic-24-baseline.md) — baseline-метрики до миграции
 - [epic-24-deps-matrix.md](./epic-24-deps-matrix.md) — зависимости и версии
 - [epic-24-smoke-checklist.md](./epic-24-smoke-checklist.md) — ручной smoke-тест
@@ -223,6 +224,7 @@
 ### 7.1. Код
 
 - [ ] Все 39 задач эпика закрыты (либо явно задокументированы как skipped)
+- [ ] A1 (Sakai baseline) выполнен и проверен
 - [ ] `@nuxt/ui` удалён из `package.json`
 - [ ] `grep -rn "from '@nuxt/ui'" app/` → 0 совпадений
 - [ ] `grep -rn "<U[A-Z]" app/` → 0 совпадений (все Nuxt UI теги удалены)
