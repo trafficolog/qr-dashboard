@@ -1,9 +1,9 @@
 import type { Ref } from 'vue'
 
-export type SearchResult =
-  | { kind: 'qr', id: string, title: string, shortCode: string }
-  | { kind: 'folder', id: string, name: string }
-  | { kind: 'page', path: string, label: string, icon: string }
+export type SearchResult
+  = | { kind: 'qr', id: string, title: string, shortCode: string }
+    | { kind: 'folder', id: string, name: string }
+    | { kind: 'page', path: string, label: string, icon: string }
 
 export interface SearchEntry {
   id: string

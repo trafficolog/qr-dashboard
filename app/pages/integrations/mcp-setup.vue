@@ -116,6 +116,8 @@
 </template>
 
 <script setup lang="ts">
+import { useClipboard } from '@vueuse/core'
+
 const { t } = useI18n()
 const { copy: copyToClipboard } = useClipboard()
 const runtimeConfig = useRuntimeConfig()

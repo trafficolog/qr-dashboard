@@ -2,11 +2,11 @@ import { createHash } from 'node:crypto'
 import type { H3Event } from 'h3'
 import { getClientIp } from './ip'
 
-type SecuritySignalName =
-  | 'http.403'
-  | 'http.429'
-  | 'auth.lockout'
-  | 'audit.failure'
+type SecuritySignalName
+  = | 'http.403'
+    | 'http.429'
+    | 'auth.lockout'
+    | 'audit.failure'
 
 interface SecurityLogContext {
   reason?: string

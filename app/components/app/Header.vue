@@ -65,6 +65,7 @@
 </template>
 
 <script setup lang="ts">
+import { useMagicKeys, whenever } from '@vueuse/core'
 import { useGlobalSearch } from '~/composables/useGlobalSearch'
 
 defineEmits<{

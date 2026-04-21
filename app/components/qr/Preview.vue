@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { useClipboard } from '@vueuse/core'
 import { generateQrSvg } from '~/utils/qr-svg'
 import type { QrStyle } from '#shared/types/qr'
 

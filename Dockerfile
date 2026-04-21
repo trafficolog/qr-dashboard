@@ -2,19 +2,15 @@
 # Production Nuxt 3 (Nitro node-server) — multi-stage build
 
 FROM node:22.12-alpine AS deps
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 FROM deps AS builder
 COPY . .
 ENV NUXT_TELEMETRY_DISABLED=1
-# Install before NODE_ENV=production: npm ci skips devDependencies when NODE_ENV=production,
-# but @nuxt/ui and other build-time modules live in devDependencies.
-RUN npm ci
-ENV NODE_ENV=production
-RUN npm run build
+RUN pnpm build
 
 FROM deps AS migrator
 COPY drizzle.config.ts tsconfig.json ./

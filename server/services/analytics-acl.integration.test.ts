@@ -1,42 +1,43 @@
-import test from 'node:test'
-import assert from 'node:assert/strict'
+import { describe, expect, it } from 'vitest'
 import { resolveVisibilityAccess } from './qr-visibility-access'
 
-test('analytics metrics are available for department member in department scope', () => {
-  const access = resolveVisibilityAccess({
-    scope: 'department',
-    userRole: 'editor',
-    userDepartmentIds: ['dep-member'],
+describe('analytics ACL', () => {
+  it('analytics metrics are available for department member in department scope', () => {
+    const access = resolveVisibilityAccess({
+      scope: 'department',
+      userRole: 'editor',
+      userDepartmentIds: ['dep-member'],
+    })
+
+    expect(access.denyAll).toBe(false)
+    expect(access.allowedDepartmentIds).toEqual(['dep-member'])
+    expect(access.includeMine).toBe(false)
+    expect(access.includePublic).toBe(false)
   })
 
-  assert.equal(access.denyAll, false)
-  assert.deepEqual(access.allowedDepartmentIds, ['dep-member'])
-  assert.equal(access.includeMine, false)
-  assert.equal(access.includePublic, false)
-})
+  it('analytics metrics are available for department head in department scope', () => {
+    const access = resolveVisibilityAccess({
+      scope: 'department',
+      userRole: 'editor',
+      userDepartmentIds: ['dep-head'],
+    })
 
-test('analytics metrics are available for department head in department scope', () => {
-  const access = resolveVisibilityAccess({
-    scope: 'department',
-    userRole: 'editor',
-    userDepartmentIds: ['dep-head'],
+    expect(access.denyAll).toBe(false)
+    expect(access.allowedDepartmentIds).toEqual(['dep-head'])
+    expect(access.includeMine).toBe(false)
+    expect(access.includePublic).toBe(false)
   })
 
-  assert.equal(access.denyAll, false)
-  assert.deepEqual(access.allowedDepartmentIds, ['dep-head'])
-  assert.equal(access.includeMine, false)
-  assert.equal(access.includePublic, false)
-})
+  it('analytics metrics are available for admin in company scope', () => {
+    const access = resolveVisibilityAccess({
+      scope: 'company',
+      userRole: 'admin',
+      userDepartmentIds: [],
+    })
 
-test('analytics metrics are available for admin in company scope', () => {
-  const access = resolveVisibilityAccess({
-    scope: 'company',
-    userRole: 'admin',
-    userDepartmentIds: [],
+    expect(access.denyAll).toBe(false)
+    expect(access.includeMine).toBe(true)
+    expect(access.includePublic).toBe(true)
+    expect(access.allowedDepartmentIds).toBeNull()
   })
-
-  assert.equal(access.denyAll, false)
-  assert.equal(access.includeMine, true)
-  assert.equal(access.includePublic, true)
-  assert.equal(access.allowedDepartmentIds, null)
 })
