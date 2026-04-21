@@ -90,7 +90,7 @@ const navItems = computed(() => [
   { label: t('nav.sharedQr'), icon: 'i-lucide-globe', route: '/qr/shared' },
   { label: t('nav.folders'), icon: 'i-lucide-folder', route: '/folders' },
   { label: t('nav.analytics'), icon: 'i-lucide-bar-chart-3', route: '/analytics' },
-  { label: t('nav.settings'), icon: 'i-lucide-settings', route: '/settings' },
+  { label: t('nav.settings'), icon: 'i-lucide-settings', route: '/settings/general' },
 ])
 
 const initials = computed(() => {

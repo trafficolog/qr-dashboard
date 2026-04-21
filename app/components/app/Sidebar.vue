@@ -104,7 +104,7 @@ const navItems = computed(() => [
   { label: t('nav.folders'), icon: 'i-lucide-folder', route: '/folders' },
   { label: t('nav.analytics'), icon: 'i-lucide-bar-chart-3', route: '/analytics' },
   { label: t('nav.integrations'), icon: 'i-lucide-plug', route: '/integrations' },
-  { label: t('nav.settings'), icon: 'i-lucide-settings', route: '/settings' },
+  { label: t('nav.settings'), icon: 'i-lucide-settings', route: '/settings/general' },
 ])
 
 function isActive(path: string): boolean {
