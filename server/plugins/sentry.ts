@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node'
+import { createSentryNodeOptions } from '../utils/sentry-config'
 
 /**
  * Initialises Sentry for server-side error tracking.
@@ -9,11 +10,13 @@ export default defineNitroPlugin(() => {
 
   if (!config.sentryDsn) return
 
-  Sentry.init({
-    dsn: config.sentryDsn,
-    environment: process.env.NODE_ENV || 'production',
-    tracesSampleRate: 0.1,
-  })
+  Sentry.init(
+    createSentryNodeOptions({
+      dsn: config.sentryDsn,
+      environment: process.env.NODE_ENV,
+      release: process.env.NUXT_APP_VERSION,
+    }),
+  )
 
   console.log('[sentry] Server-side Sentry initialised')
 })

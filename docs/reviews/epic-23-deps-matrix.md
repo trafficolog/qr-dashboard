@@ -54,3 +54,50 @@
 1. По ряду пакетов «текущая» в lockfile уже выше, чем в исходном плане эпика (из-за широких semver ranges в `package.json`).
 2. Для `@nuxt/ui`, `@nuxtjs/i18n`, `pinia`, `vitest`, `@sentry/node` требуется отдельный трек миграционных фиксов и регрессионного тестирования.
 3. Для `playwright` baseline указывает на runtime prerequisite: обязательно выполнить `pnpm exec playwright install` в CI/локальной среде перед smoke/E2E.
+
+
+## Upgrade log (wave-by-wave) — 2026-04-21
+
+### Wave 1 — UI/i18n track (`@nuxt/ui`, `@nuxtjs/i18n`)
+
+- `@nuxt/ui`: `3.3.7 -> 4.6.1`
+- `@nuxtjs/i18n`: `9.5.6 -> 10.2.4`
+- Проверка целевых страниц: `auth`, `qr`, `analytics`, `settings` запущена через Playwright-спеки:
+  - `e2e/auth.spec.ts`
+  - `e2e/qr-list.spec.ts`
+  - `e2e/analytics.spec.ts`
+  - `e2e/settings-tabs.spec.ts`
+- Результат прогона: блокер окружения (в контейнере отсутствуют browser binaries Playwright), требуется `pnpm exec playwright install` перед повторным smoke.
+
+**Breaking notes:**
+- Для Nuxt UI v4 в проекте подтверждена совместимость базовых компонентов (`UButton`, `UInput`, `UModal`, `UCard`) без немедленных API-правок в коде; финальная визуальная регрессия остаётся в post-install smoke.
+- Для `@nuxtjs/i18n` v10 сохранён текущий контракт `strategy: 'no_prefix'`, `lazy: true`, `langDir: 'locales/'`.
+
+### Wave 2 — State track (`@pinia/nuxt`, `pinia`)
+
+- `@pinia/nuxt`: `0.9.0 -> 0.11.3`
+- `pinia`: `2.3.1 -> 3.0.4`
+- Зафиксирован контракт setup-store для `auth` в unit-тесте `app/stores/auth.store.contract.spec.ts`.
+
+**Breaking notes:**
+- Контракт store-actions/state для `useAuthStore` подтверждён на Pinia v3 (инициализация через `createPinia()/setActivePinia()`, работа `setUser/clear`, вычисление `isAuthenticated`).
+
+### Wave 3 — Data layer (`drizzle-orm`, `drizzle-kit`, `zod`)
+
+- `drizzle-orm`: `0.38.4 -> 0.45.2`
+- `drizzle-kit`: `0.30.6 -> 0.31.10`
+- `zod`: `3.25.76` сохранён и зафиксирован в `package.json` как `^3.25.76`
+
+**Breaking notes:**
+- Контракт DTO/map-адаптеров и серверных схем подтверждён существующими unit-тестами (`server/api/v1/contracts.test.ts`, `server/services/folder.service.test.ts`).
+- Переход на `drizzle-orm` 0.45.x не потребовал немедленной правки schema DSL в текущем коде.
+
+### Wave 4 — Observability (`@sentry/node`)
+
+- `@sentry/node`: `8.55.1 -> 9.47.1`
+- Введён явный builder контракта конфигурации: `createSentryNodeOptions() (server/utils/sentry-config.ts)`.
+- Добавлен unit-тест контракта: `server/utils/sentry-config.test.ts`.
+
+**Breaking notes:**
+- Для Sentry v9 зафиксирован серверный init-контракт: `dsn`, `environment`, `release`, `tracesSampleRate`, `sendDefaultPii`.
+- `release` теперь читается из `process.env.NUXT_APP_VERSION` для единообразной трассировки релизов.

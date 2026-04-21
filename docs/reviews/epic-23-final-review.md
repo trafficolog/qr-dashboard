@@ -154,6 +154,18 @@
 
 ---
 
+
+## 4.5. Breaking changes log по мажорным апгрейдам (2026-04-21)
+
+| Трек | Пакет | Версия | Изменение контракта | Где зафиксировано |
+|---|---|---|---|---|
+| UI/i18n | `@nuxt/ui` | `3.3.7 -> 4.6.1` | Подтверждена совместимость базовых UI-компонентов, нужен повторный визуальный smoke после установки Playwright browsers | `docs/reviews/epic-23-deps-matrix.md` |
+| UI/i18n | `@nuxtjs/i18n` | `9.5.6 -> 10.2.4` | Сохранён контракт i18n-конфига (`no_prefix`, lazy locales) | `nuxt.config.ts`, `docs/reviews/epic-23-deps-matrix.md` |
+| State | `pinia` + `@pinia/nuxt` | `2.3.1/0.9.0 -> 3.0.4/0.11.3` | Зафиксирован runtime-контракт setup-store `useAuthStore` через unit-test | `app/stores/auth.store.contract.spec.ts` |
+| Data layer | `drizzle-orm` + `drizzle-kit` | `0.38.4/0.30.6 -> 0.45.2/0.31.10` | Проверен контракт DTO/mapper-слоя и сервисов на unit-тестах | `server/api/v1/contracts.test.ts`, `server/services/folder.service.test.ts` |
+| Data layer | `zod` | `3.25.76 (pin in-range)` | Контракт валидации API остаётся на Zod v3 до отдельного трека v4 | `server/api/v1/contracts.test.ts`, `docs/reviews/epic-23-deps-matrix.md` |
+| Observability | `@sentry/node` | `8.55.1 -> 9.47.1` | Вынесен явный builder-конракт init-опций (`dsn`, `environment`, `release`, `sendDefaultPii`) + unit-test | `server/plugins/sentry.ts`, `server/utils/sentry-config.test.ts` |
+
 ## 5. Выявленные риски и follow-up
 
 ### 5.1. Закрытые риски из эпика
