@@ -20,7 +20,7 @@
         <p class="text-sm text-[color:var(--text-secondary)] mb-3">
           Передавайте API-ключ в заголовке <code class="font-mono">Authorization</code> каждого запроса:
         </p>
-        <CodeBlock
+        <SharedCodeBlock
           language="bash"
           :code="`Authorization: Bearer sqr_live_<your_key>`"
         />
@@ -117,7 +117,7 @@
             <p class="text-xs font-medium text-[color:var(--text-muted)] uppercase tracking-wide mb-2">
               Пример
             </p>
-            <CodeBlock
+            <SharedCodeBlock
               language="bash"
               :code="ep.example"
             />
