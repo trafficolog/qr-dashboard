@@ -1,5 +1,6 @@
 import type { QrCode, QrStyle, UtmParams } from '#shared/types/qr'
 import type { ApiMeta } from '#shared/types/api'
+import { refDebounced } from '@vueuse/core'
 
 interface QrFilters {
   search: string

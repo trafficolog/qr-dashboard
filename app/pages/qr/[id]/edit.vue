@@ -283,7 +283,7 @@ interface EditableQr extends QrCode {
   tags?: { id: string, name: string, color: string | null }[]
   tagIds?: string[]
   folder?: { id: string, name: string } | null
-  folderId?: string | null
+  folderId: string | null
 }
 
 const route = useRoute()

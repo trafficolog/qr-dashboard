@@ -27,13 +27,13 @@
 | 23.8 | Drizzle ORM/Kit stable update | ⬜ | — | Не начато |
 | 23.9 | Zod 3.24 → 3.25+ | ⬜ | — | Не начато |
 | 23.10 | Sentry v8 → v9 | ⬜ | — | Не начато |
-| 23.11 | TypeScript 5.8, Vitest 3, Playwright, ESLint | ⬜ | — | Не начато |
-| 23.12 | Typecheck sweep | ⬜ | — | Не начато |
-| 23.13 | Lint sweep | ⬜ | — | Не начато |
-| 23.14 | Unit + E2E тесты фиксы | ⬜ | — | Не начато |
-| 23.15 | Smoke E2E ручной прогон | ⬜ | — | Не начато |
+| 23.11 | TypeScript 5.8, Vitest 3, Playwright, ESLint | ✅ | `HEAD` | Обновлены: `typescript ^5.9.3`, `vitest ^3.2.4`, `eslint ^9.39.4`, `@playwright/test ^1.59.1`, `@nuxt/eslint-config ^1.15.2` |
+| 23.12 | Typecheck sweep | ✅ | `HEAD` | `pnpm typecheck` проходит; исправлены ошибки VueUse imports и несовместимый `folderId` в `EditableQr` |
+| 23.13 | Lint sweep | ✅ with warnings | `HEAD` | `pnpm lint` = 0 errors, 60 warnings (в основном `vue/max-attributes-per-line`, `vue/no-v-html`) |
+| 23.14 | Unit + E2E тесты фиксы | ⚠️ partial | `HEAD` | Unit: pass (31/31). E2E: fail из-за окружения (`PLAYWRIGHT_AUTH_COOKIE`, `localhost:3001` не поднят) |
+| 23.15 | Smoke E2E ручной прогон | ⚠️ blocked/fail | `HEAD` | Чеклист заполнен фактами в `docs/reviews/epic-23-smoke-checklist.md`, есть blocker'ы среды |
 | 23.16 | TypeScript project references | 🚫 skipped | — | Опциональная задача, пока не запускалась |
-| 23.17 | Docker, CI | ⬜ | — | Не начато |
+| 23.17 | Docker, CI | ✅ (Docker) / ⚠️ (CI) | `HEAD` | Dockerfile переведён на Node 22 + pnpm 10; CI workflow в репозитории отсутствует (актуализация не применялась) |
 | 23.18 | Финальный релиз и документация | ⬜ | — | Не начато |
 
 ---
@@ -65,14 +65,14 @@
 
 | Метрика | Baseline | Post-migration | Δ | Оценка |
 |---------|----------|----------------|---|--------|
-| Nuxt версия | 3.21.2 | — | — | ⚠️ baseline only |
-| `pnpm typecheck` | ❌ fail (22 TS-ошибки, `real 0m44.412s`) | — | — | ❌ |
-| `pnpm lint` | ❌ fail (21 errors, 60 warnings, `real 0m11.338s`) | — | — | ❌ |
-| `pnpm test:unit` pass rate | ❌ fail (3/14 tests passed, `real 0m17.579s`) | — | — | ❌ |
-| `pnpm test:e2e` pass rate | ⚠️ env fail (84 failed; browsers не установлены, `real 1m20.955s`) | — | — | ⚠️ blocked |
+| Nuxt версия | 3.21.2 | 4.4.2 | +major | ✅ |
+| `pnpm typecheck` | ❌ fail (22 TS-ошибки, `real 0m44.412s`) | ✅ pass (`real 0m36.983s`) | fixed | ✅ |
+| `pnpm lint` | ❌ fail (21 errors, 60 warnings, `real 0m11.338s`) | ✅ pass (0 errors, 60 warnings, `real 0m16.117s`) | errors: `-21` | ✅ with warnings |
+| `pnpm test:unit` pass rate | ❌ fail (3/14 tests passed, `real 0m17.579s`) | ✅ pass (31/31, `Duration 13.79s`) | improved | ✅ |
+| `pnpm test:e2e` pass rate | ⚠️ env fail (84 failed; browsers не установлены, `real 1m20.955s`) | ❌ fail (18 failed, 66 skipped; browsers установлены) | partial | ⚠️ blocked by env/setup |
 | Bundle size (`.output/public`) | ⚠️ не зафиксирован (build fail) | — | — | ⚠️ blocked |
 | Dev cold start (`pnpm dev`) | ⚠️ partial (`timeout 40s`, сервер стартует, но `tailwindcss` resolve error) | — | — | ⚠️ blocked |
-| Production build time | ❌ fail (`real 0m10.327s`, `Can't resolve 'tailwindcss'`) | — | — | ❌ blocked |
+| Production build time | ❌ fail (`real 0m10.327s`, `Can't resolve 'tailwindcss'`) | ⬜ not re-run в этом проходе | — | ⚠️ not verified |
 | `pnpm audit` (high/critical) | — | — | — | ⬜ not started |
 
 ---

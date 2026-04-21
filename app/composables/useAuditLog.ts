@@ -1,18 +1,18 @@
-export type AuditAction =
-  | 'auth.verify'
-  | 'auth.logout'
-  | 'qr.create'
-  | 'qr.update'
-  | 'qr.update_visibility'
-  | 'qr.delete'
-  | 'team.invite'
-  | 'team.update_role'
-  | 'team.delete_user'
-  | 'folder.create'
-  | 'folder.update'
-  | 'folder.delete'
-  | 'api_key.create'
-  | 'api_key.delete'
+export type AuditAction
+  = | 'auth.verify'
+    | 'auth.logout'
+    | 'qr.create'
+    | 'qr.update'
+    | 'qr.update_visibility'
+    | 'qr.delete'
+    | 'team.invite'
+    | 'team.update_role'
+    | 'team.delete_user'
+    | 'folder.create'
+    | 'folder.update'
+    | 'folder.delete'
+    | 'api_key.create'
+    | 'api_key.delete'
 
 export interface AuditLogItem {
   id: string

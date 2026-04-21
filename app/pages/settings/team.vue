@@ -262,7 +262,7 @@ definePageMeta({
   },
 })
 
-  type RoleValue = 'admin' | 'editor' | 'viewer'
+type RoleValue = 'admin' | 'editor' | 'viewer'
 
 interface TeamMember {
   id: string

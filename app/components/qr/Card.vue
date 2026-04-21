@@ -109,6 +109,8 @@
 </template>
 
 <script setup lang="ts">
+import { useClipboard } from '@vueuse/core'
+
 interface QrItem {
   id: string
   shortCode?: string
