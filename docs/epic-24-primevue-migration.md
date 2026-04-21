@@ -18,7 +18,7 @@
 - ✅ Миграция auth login на PrimeVue controls: коммит `12b0bfa`
 - ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
-- ⚠️ Dashboard migration in progress: page primitives (`Button/Message/Skeleton/Card sections`) переведены на PrimeVue
+- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue (ожидается визуальный sign-off)
 - ⚠️ QR List migration in progress: SharedPagination переведён на PrimeVue controls
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
