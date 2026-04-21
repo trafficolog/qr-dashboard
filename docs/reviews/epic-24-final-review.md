@@ -27,7 +27,7 @@
 | 24.9 | Sidebar | ✅ | PR3 | `1c50d2e` | Внедрён новый app menu/sidebar shell на PrimeVue/Sakai-паттерне. |
 | 24.10 | Topbar + Command Palette | ✅ | PR3 | `6e0ebbd`, `b9d55a1` | Topbar, UserMenu и GlobalSearch (Cmd+K) переведены на PrimeVue Dialog/Icon pattern. |
 | 24.11 | Dashboard | ⚠️ | PR4 | `931f63a`, `follow-up commits (StatCard + DateRangePicker/TopQrTable/ScanChart)` | Основные dashboard blocks (включая `AnalyticsStatCard`, `DateRangePicker`, `TopQrTable`, `ScanChart`) переведены на PrimeVue; визуальный sign-off по макетам pending. |
-| 24.12 | QR List page | ⚠️ | PR4 | `5be3b13` | Продолжается migration sweep: SharedPagination переведён на PrimeVue Button/Icon. |
+| 24.12 | QR List page | ⚠️ | PR4 | `5be3b13`, `follow-up commit (qr/index filters + dialogs + actions)` | Продолжается migration sweep: `SharedPagination` и shell-элементы `/qr` (filters/actions/dialogs/skeleton) переведены на PrimeVue; внутренняя миграция QR table/card actions ещё в работе. |
 | 24.13 | QR Create Drawer + `/qr/create` | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.14 | QR Detail Drawer + `/qr/[id]` | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.15 | QR Edit `/qr/[id]/edit` | ⬜ / ✅ / ❌ | PR4 | | |

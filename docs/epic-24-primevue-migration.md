@@ -19,7 +19,7 @@
 - ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
 - ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue (ожидается визуальный sign-off)
-- ⚠️ QR List migration in progress: SharedPagination переведён на PrimeVue controls
+- ⚠️ QR List migration in progress: `SharedPagination` + page shell controls (`filters/actions/dialogs`) на `/qr` переведены на PrimeVue; остаётся migration карточек/табличных внутренних экшенов
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
