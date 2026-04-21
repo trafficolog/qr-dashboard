@@ -218,9 +218,11 @@
     },
     "integrations": {
       "subtitle": "API keys and external service integrations",
+      "openMcpSetup": "Create MCP key",
       "apiKeys": {
         "label": "API Keys",
         "create": "Create key",
+        "mcpPreset": "MCP key preset (mcp:access + qr:read)",
         "nameLabel": "Key name",
         "namePlaceholder": "E.g. Production API",
         "copyHint": "Save the key — it is shown only once",
@@ -276,8 +278,8 @@
       "apiKey": {
         "title": "Generate an API key with mcp:access",
         "step1": "Open Settings → Integrations and click “Create key”.",
-        "step2": "Enable the mcp:access permission (or equivalent MCP API access).",
-        "step3": "Copy the key and store it in your environment variables or client secrets."
+        "step2": "In the modal, enable the “mcp:access” permission (or use “MCP key preset” for a standard MCP key).",
+        "step3": "Click “Create key”, copy the token, and store it in your environment variables or client secrets."
       },
       "examples": {
         "title": "Client config examples",
