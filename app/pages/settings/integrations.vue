@@ -1,12 +1,24 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
-        {{ $t('settings.tabs.integrations') }}
-      </h1>
-      <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
-        {{ $t('settings.integrations.subtitle') }}
-      </p>
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
+            {{ $t('settings.tabs.integrations') }}
+          </h1>
+          <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
+            {{ $t('settings.integrations.subtitle') }}
+          </p>
+        </div>
+
+        <UButton
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-bot"
+          :to="'/integrations/mcp-setup'"
+          :label="$t('settings.integrations.openMcpSetup')"
+        />
+      </div>
     </div>
 
     <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
@@ -108,14 +120,25 @@
           </UFormField>
 
           <UFormField :label="$t('settings.integrations.apiKeys.permissionsLabel')">
-            <div class="grid gap-2">
-              <UCheckbox
-                v-for="option in permissionOptions"
-                :key="option.value"
-                :model-value="newKeyPermissions.includes(option.value)"
-                :label="option.label"
-                @update:model-value="(checked) => togglePermission(option.value, checked === true)"
+            <div class="space-y-3">
+              <UButton
+                size="xs"
+                color="neutral"
+                variant="outline"
+                icon="i-lucide-sparkles"
+                :label="$t('settings.integrations.apiKeys.mcpPreset')"
+                @click="applyMcpPreset"
               />
+
+              <div class="grid gap-2">
+                <UCheckbox
+                  v-for="option in permissionOptions"
+                  :key="option.value"
+                  :model-value="newKeyPermissions.includes(option.value)"
+                  :label="option.label"
+                  @update:model-value="(checked) => togglePermission(option.value, checked === true)"
+                />
+              </div>
             </div>
           </UFormField>
 
@@ -298,6 +321,10 @@ function togglePermission(permission: KnownApiPermission, enabled: boolean) {
   if (!enabled) {
     newKeyPermissions.value = newKeyPermissions.value.filter(item => item !== permission)
   }
+}
+
+function applyMcpPreset() {
+  newKeyPermissions.value = ['mcp:access', 'qr:read']
 }
 
 function permissionLabel(permission: string) {
