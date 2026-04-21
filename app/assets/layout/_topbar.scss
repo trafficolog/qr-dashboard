@@ -1,0 +1,57 @@
+.layout-topbar {
+  height: 4rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem 0 1rem;
+  background: color-mix(in oklab, var(--layout-card) 94%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--layout-border);
+  gap: 1rem;
+}
+
+.layout-topbar-menu-button,
+.layout-topbar-action {
+  border: 1px solid var(--layout-border);
+  background: var(--layout-card);
+  color: var(--layout-text);
+  border-radius: 0.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layout-topbar-title h1 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.layout-topbar-title p {
+  font-size: 0.75rem;
+  color: var(--layout-text-muted);
+}
+
+.layout-topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.layout-topbar-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background: var(--p-primary-500);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
