@@ -22,6 +22,17 @@
 | `@nuxt/icon` | `1.15.0` | `^1.13+` *(уже ок)* | `freeze-until-release` *(зафиксировать диапазон: `>=1.15.0 <2`)* | Nuxt module compatibility | No | Нет |
 | `@nuxt/eslint-config` | `0.7.6` | `^1.x` | `range` | ESLint 9 flat config | Minor/major | Нет |
 
+## Release policy decision (EPIC 23)
+
+**Принятое решение (2026-04-21):** EPIC 23 закрывается релизом **`0.15.0`**.  
+Переход на **`1.0.0`** в рамках EPIC 23 **не объявляется** и выносится в отдельный релизный трек после стабилизации post-release follow-up (`NEXT-23-04..NEXT-23-07`) и полного e2e regression pass.
+
+Основания решения:
+
+1. Скоуп EPIC 23 — технологическая миграция (Nuxt 4 + ecosystem upgrades), а не финальная semver-стабилизация продуктового контракта.
+2. В финальном review зафиксирован `conditional sign-off` и открытые post-release задачи высокого приоритета (в т.ч. e2e stabilization).
+3. Для снижения release-risk применяется freeze-политика до выпуска `0.15.0`; дополнительные major-решения принимаются отдельным governance-решением.
+
 ## Release lock policy 0.15.0
 
 До выхода `0.15.0` обновления зависимостей выполняются по правилам:

@@ -224,7 +224,7 @@
 - [x] `CHANGELOG.md` — релизная запись и release-атрибуты `0.15.0` синхронизированы
 - [x] `README.md` — версия `0.15.0` и rollout readiness обновлены
 - [x] `docs/completed-epics.md` — добавлен итоговый раздел «Эпик 23»
-- [ ] `docs/epic-23-nuxt4-migration.md` — статус Done
+- [x] `docs/epic-23-nuxt4-migration.md` — статус Done
 - [x] Этот файл финализирован по задачам 23.1–23.18
 - [x] Smoke-чеклист `docs/reviews/epic-23-smoke-checklist.md` заполнен и учтён
 
@@ -242,6 +242,7 @@
 - [ ] Tag `v0.15.0` создан после merge
 - [x] Staging rollout readiness подтверждён (по gates/checklist)
 - [x] Production rollout readiness подтверждён с контролем follow-up рисков
+- [x] Release policy decision зафиксирован: EPIC 23 закрывается `0.15.0`; объявление `1.0.0` вынесено за рамки EPIC 23
 
 ---
 
