@@ -62,7 +62,7 @@ const menuItems = computed(() => [
     {
       label: 'Настройки',
       icon: 'i-lucide-settings',
-      to: '/settings',
+      to: '/settings/general',
     },
   ],
   [

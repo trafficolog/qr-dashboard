@@ -23,7 +23,7 @@ const staticPages: Extract<SearchResult, { kind: 'page' }>[] = [
   { kind: 'page', path: '/folders', label: 'Папки', icon: 'i-lucide-folder' },
   { kind: 'page', path: '/analytics', label: 'Аналитика', icon: 'i-lucide-bar-chart-3' },
   { kind: 'page', path: '/integrations', label: 'Интеграции', icon: 'i-lucide-plug' },
-  { kind: 'page', path: '/settings', label: 'Настройки', icon: 'i-lucide-settings' },
+  { kind: 'page', path: '/settings/general', label: 'Настройки', icon: 'i-lucide-settings' },
   { kind: 'page', path: '/settings/general', label: 'Настройки — Общие', icon: 'i-lucide-sliders' },
   { kind: 'page', path: '/settings/profile', label: 'Настройки — Профиль', icon: 'i-lucide-user' },
   { kind: 'page', path: '/settings/team', label: 'Настройки — Команда', icon: 'i-lucide-users' },
