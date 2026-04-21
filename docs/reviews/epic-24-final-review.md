@@ -26,7 +26,7 @@
 | 24.8 | Component mapping sweep (Nuxt UI → PrimeVue) | ⬜ / ✅ / ❌ | PR2 | | |
 | 24.9 | Sidebar | ⬜ / ✅ / ❌ | PR3 | | |
 | 24.10 | Topbar + Command Palette | ✅ | PR3 | `6e0ebbd`, `b9d55a1` | Topbar, UserMenu и GlobalSearch (Cmd+K) переведены на PrimeVue Dialog/Icon pattern. |
-| 24.11 | Dashboard | ⬜ / ✅ / ❌ | PR4 | | |
+| 24.11 | Dashboard | ⚠️ | PR4 | `931f63a` | Основные dashboard blocks переведены на PrimeVue; визуальный sign-off по макетам pending. |
 | 24.12 | QR List page | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.13 | QR Create Drawer + `/qr/create` | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.14 | QR Detail Drawer + `/qr/[id]` | ⬜ / ✅ / ❌ | PR4 | | |

@@ -18,6 +18,7 @@
 - ✅ Миграция auth login на PrimeVue controls: коммит `12b0bfa`
 - ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
+- ⚠️ Dashboard migration in progress: page primitives (`Button/Message/Skeleton/Card sections`) переведены на PrimeVue
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
