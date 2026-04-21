@@ -7,6 +7,7 @@
 **Зависимости:**
 - **Обязательно:** EPIC 23 (Миграция на Nuxt 4) завершён и смержен в `main`
 - EPIC 1–22 завершены (функциональность сохраняется в полном объёме)
+**Норматив (обязательно):** [docs/epic-24-amendment-a1-sakai-baseline.md](./epic-24-amendment-a1-sakai-baseline.md) — baseline для app shell и theme
 **Приоритет:** 🟡 High — стратегическая смена UI-стека
 
 ---
@@ -153,11 +154,11 @@
 ```
 Фаза 0 — Подготовка и дизайн-токены (1 день)
   24.1 Аудит, ветка, baseline
-  24.2 Custom preset + CSS token layer (мост SPLAT ↔ PrimeVue)
+  24.2 Custom preset + CSS token layer (мост SPLAT ↔ PrimeVue) [A1 priority]
 
 Фаза 1 — Установка PrimeVue и global shell (2 дня)
-  24.3 pnpm add primevue @primeuix/themes @primevue/nuxt-module + конфиг
-  24.4 App shell: app.vue, error.vue, layouts/default.vue, layouts/auth.vue
+  24.3 pnpm add primevue @primeuix/themes @primevue/nuxt-module + конфиг [A1 priority]
+  24.4 App shell: app.vue, error.vue, layouts/default.vue, layouts/auth.vue [A1 priority]
   24.5 Global styles: fonts, main.css с токенами, ripple
 
 Фаза 2 — UI-примитивы и библиотечный wrapper-слой (2 дня)
@@ -166,8 +167,8 @@
   24.8 Component mapping sweep: замена Nuxt UI → PrimeVue по всему проекту
 
 Фаза 3 — Навигация (Sidebar + Topbar) (1.5 дня)
-  24.9 Sidebar (collapsible, brand, folders quick-list, user card, Cmd+K)
-  24.10 Topbar (title+sub, contextual search, theme toggle, bell + unread, create buttons)
+  24.9 Sidebar (collapsible, brand, folders quick-list, user card, Cmd+K) [A1 priority]
+  24.10 Topbar (title+sub, contextual search, theme toggle, bell + unread, create buttons) [A1 priority]
 
 Фаза 4 — Страницы по макетам + адаптация существующих (7 дней)
   24.11 Dashboard: KPI row + Scan chart + Status breakdown + Top-5 + Activity
@@ -195,7 +196,7 @@
   24.31 API Docs page (Scalar, EPIC 22) — тема под SPLAT palette
 
 Фаза 6 — Dark/Light theme + persistence (0.5 дня)
-  24.32 Theme switcher (prefers-color-scheme + user override), SSR-safe
+  24.32 Theme switcher (prefers-color-scheme + user override), SSR-safe [A1 priority]
 
 Фаза 7 — QA и фиксы (2 дня)
   24.33 Typecheck sweep
@@ -214,6 +215,8 @@
 ---
 
 ## 6. Задачи
+
+> Примечание: задачи 24.2, 24.3, 24.4, 24.9, 24.10 и 24.32 выполняются с приоритетом требований amendment A1.
 
 ---
 
