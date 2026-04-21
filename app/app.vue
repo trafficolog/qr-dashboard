@@ -11,6 +11,13 @@
   >
     {{ message }}
   </div>
+
+  <Toast
+    position="bottom-right"
+    group="app"
+  />
+  <ConfirmDialog group="app" />
+
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
