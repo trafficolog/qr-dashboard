@@ -41,7 +41,7 @@
 | 24.23 | Auth `/auth/login` | ✅ | PR5 | `12b0bfa` | Страница login переведена на PrimeVue InputText/InputOtp/Button/Message. |
 | 24.24 | Scan experience (error/not-found/expired) | ✅ | PR5 | `d928dfb`, `123102e` | `error.vue`, `/not-found`, `/expired` переведены на PrimeVue actions и унифицированный layout card. |
 | 24.25 | Onboarding overlay | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.26 | Empty states | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.26 | Empty states | ✅ | PR5 | `b9f14b1` | Shared EmptyState переведён на `@nuxt/icon`/PrimeVue stack (без Nuxt UI icon). |
 | 24.27 | Toast notifications replacement | ✅ | PR5 | `700e1fd` | `useA11yToast` переведён на PrimeVue ToastService + A11y announce. |
 | 24.28 | ConfirmDialog для destructive actions | ✅ | PR5 | `606b433` | Shared ConfirmDialog мигрирован на PrimeVue Dialog/Button. |
 | 24.29 | Departments management | ⬜ / ✅ / ❌ | PR5 | | |
