@@ -24,6 +24,11 @@
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
 
+### Checkpoint 24.1–24.12 (2026-04-21)
+- ✅ Done: 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
+- ⚠️ In progress: 24.1, 24.6, 24.8, 24.11, 24.12
+- ⬜ Not started: 24.13+
+
 ## 1. Проблема и обоснование
 
 После завершения EPIC 23 проект работает на Nuxt 4 + Nuxt UI v4. Команда приняла решение перейти на **PrimeVue 4.x** как основную UI-библиотеку по следующим причинам:
