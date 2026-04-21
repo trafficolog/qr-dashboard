@@ -32,33 +32,38 @@
           </div>
 
           <div class="space-y-4">
-            <UFormField
-              :label="$t('forms.labels.destinationUrl')"
-              :error="urlError"
-              :hint="$t('forms.hints.destinationUrl')"
-              required
-            >
-              <UInput
-                v-model="form.destinationUrl"
-                placeholder="https://splat.ru/product"
-                icon="i-lucide-globe"
-                size="lg"
-                :aria-invalid="!!urlError"
-                :aria-describedby="urlError ? qrCreateUrlErrorId : undefined"
-                :aria-required="true"
-                @blur="validateUrl"
-              />
-              <template #error="{ error }">
-                <p
-                  v-if="error"
-                  :id="qrCreateUrlErrorId"
-                  role="alert"
-                  aria-live="polite"
-                >
-                  {{ error }}
-                </p>
-              </template>
-            </UFormField>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">
+                {{ $t('forms.labels.destinationUrl') }} *
+              </label>
+              <IconField>
+                <InputIcon>
+                  <Icon name="i-lucide-globe" />
+                </InputIcon>
+                <InputText
+                  v-model="form.destinationUrl"
+                  placeholder="https://splat.ru/product"
+                  class="w-full"
+                  :invalid="!!urlError"
+                  :aria-invalid="!!urlError"
+                  :aria-describedby="urlError ? qrCreateUrlErrorId : undefined"
+                  :aria-required="true"
+                  @blur="validateUrl"
+                />
+              </IconField>
+              <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                {{ $t('forms.hints.destinationUrl') }}
+              </p>
+              <p
+                v-if="urlError"
+                :id="qrCreateUrlErrorId"
+                role="alert"
+                aria-live="polite"
+                class="mt-1 text-xs text-[color:var(--color-error)]"
+              >
+                {{ urlError }}
+              </p>
+            </div>
 
             <div class="flex items-center gap-4">
               <label class="text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.qrType') }}</label>
@@ -89,52 +94,51 @@
               }}
             </p>
 
-            <!-- UTM params (collapsible) -->
-            <UCollapsible>
-              <Button
-                variant="text"
-                severity="secondary"
-                size="small"
-                class="-ml-2"
-              >
-                <template #icon>
+            <details class="rounded-lg border border-[color:var(--border)] p-3">
+              <summary class="cursor-pointer list-none text-sm font-medium text-[color:var(--text-primary)]">
+                <span class="inline-flex items-center gap-2">
                   <Icon name="i-lucide-tag" />
-                </template>
-                {{ $t('forms.labels.utmParams') }}
-              </Button>
-              <template #content>
-                <div class="grid grid-cols-2 gap-3 pt-3">
-                  <UFormField :label="$t('forms.labels.utmSource')">
-                    <UInput
-                      v-model="form.utmParams.utm_source"
-                      placeholder="qr-code"
-                      size="sm"
-                    />
-                  </UFormField>
-                  <UFormField :label="$t('forms.labels.utmMedium')">
-                    <UInput
-                      v-model="form.utmParams.utm_medium"
-                      placeholder="packaging"
-                      size="sm"
-                    />
-                  </UFormField>
-                  <UFormField :label="$t('forms.labels.utmCampaign')">
-                    <UInput
-                      v-model="form.utmParams.utm_campaign"
-                      placeholder="summer2025"
-                      size="sm"
-                    />
-                  </UFormField>
-                  <UFormField :label="$t('forms.labels.utmContent')">
-                    <UInput
-                      v-model="form.utmParams.utm_content"
-                      placeholder=""
-                      size="sm"
-                    />
-                  </UFormField>
+                  {{ $t('forms.labels.utmParams') }}
+                </span>
+              </summary>
+              <div class="grid grid-cols-2 gap-3 pt-3">
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmSource') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_source"
+                    placeholder="qr-code"
+                    size="small"
+                    class="w-full"
+                  />
                 </div>
-              </template>
-            </UCollapsible>
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmMedium') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_medium"
+                    placeholder="packaging"
+                    size="small"
+                    class="w-full"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmCampaign') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_campaign"
+                    placeholder="summer2025"
+                    size="small"
+                    class="w-full"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmContent') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_content"
+                    size="small"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+            </details>
           </div>
         </div>
 
@@ -148,63 +152,76 @@
           </div>
 
           <div class="space-y-4">
-            <UFormField
-              :label="$t('forms.labels.title')"
-              :hint="$t('forms.hints.qrTitle')"
-              :error="titleError"
-              required
-            >
-              <UInput
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">
+                {{ $t('forms.labels.title') }} *
+              </label>
+              <InputText
                 v-model="form.title"
                 :placeholder="$t('forms.placeholders.qrTitle')"
+                class="w-full"
+                :invalid="!!titleError"
                 :aria-invalid="!!titleError"
                 :aria-describedby="titleError ? qrCreateTitleErrorId : undefined"
                 :aria-required="true"
                 @blur="validateTitle"
               />
-              <template #error="{ error }">
-                <p
-                  v-if="error"
-                  :id="qrCreateTitleErrorId"
-                  role="alert"
-                  aria-live="polite"
-                >
-                  {{ error }}
-                </p>
-              </template>
-            </UFormField>
+              <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                {{ $t('forms.hints.qrTitle') }}
+              </p>
+              <p
+                v-if="titleError"
+                :id="qrCreateTitleErrorId"
+                role="alert"
+                aria-live="polite"
+                class="mt-1 text-xs text-[color:var(--color-error)]"
+              >
+                {{ titleError }}
+              </p>
+            </div>
 
-            <UFormField :label="$t('forms.labels.folder')">
-              <USelect
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.folder') }}</label>
+              <Select
                 v-model="form.folderId"
-                :items="folderOptions"
+                :options="folderOptions"
+                option-label="label"
+                option-value="value"
                 :placeholder="$t('forms.options.noFolder')"
+                class="w-full"
               />
-            </UFormField>
+            </div>
 
-            <UFormField :label="$t('forms.labels.tags')">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.tags') }}</label>
               <SharedTagInput
                 v-model="form.tagIds"
                 :available-tags="availableTags"
                 @create-tag="handleCreateTag"
               />
-            </UFormField>
+            </div>
 
-            <UFormField :label="$t('forms.labels.description')">
-              <UTextarea
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.description') }}</label>
+              <Textarea
                 v-model="form.description"
                 :placeholder="$t('forms.placeholders.description')"
                 :rows="2"
+                class="w-full"
               />
-            </UFormField>
+            </div>
 
-            <UFormField :label="$t('forms.labels.expiresAt')">
-              <UInput
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.expiresAt') }}</label>
+              <InputText
                 v-model="form.expiresAt"
-                :hint="$t('forms.hints.expiresAt')"
                 type="datetime-local"
+                class="w-full"
               />
-            </UFormField>
+              <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                {{ $t('forms.hints.expiresAt') }}
+              </p>
+            </div>
           </div>
         </div>
 
