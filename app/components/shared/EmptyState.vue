@@ -9,7 +9,7 @@
       v-else
       class="mb-4 rounded-full bg-[color:var(--surface-2)] p-4"
     >
-      <UIcon
+      <Icon
         :name="icon || 'i-lucide-package-open'"
         class="size-8 text-[color:var(--text-muted)]"
       />

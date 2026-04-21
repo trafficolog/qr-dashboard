@@ -1,0 +1,76 @@
+.layout-sidebar-logo {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--layout-border);
+}
+
+.layout-sidebar-logo img {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.layout-sidebar-logo span {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.layout-menu-container {
+  padding: 1rem;
+}
+
+.layout-menu-group {
+  margin-bottom: 1rem;
+}
+
+.layout-menu-group-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--layout-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.layout-menu-list {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.layout-menuitem-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  color: var(--layout-text);
+  font-size: 0.875rem;
+}
+
+.layout-menuitem-link:hover {
+  background: color-mix(in oklab, var(--layout-border) 35%, transparent);
+}
+
+.layout-menuitem-link-active {
+  background: color-mix(in oklab, var(--p-primary-500) 12%, transparent);
+  color: var(--p-primary-600);
+}
+
+.layout-menuitem-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.layout-menuitem-badge {
+  margin-left: auto;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--p-primary-500) 14%, transparent);
+  color: var(--p-primary-700);
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

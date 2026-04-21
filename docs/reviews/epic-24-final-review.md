@@ -16,18 +16,18 @@
 
 | # | Задача | Статус | PR | Коммит(ы) | Комментарий |
 |---|--------|--------|----|-----------|-------------|
-| 24.1 | Аудит и baseline | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.2 | Custom preset + CSS token layer | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.3 | Установка PrimeVue | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.4 | App shell, layouts, error page | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.5 | Global styles и шрифты | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.6 | UI-примитивы | ⬜ / ✅ / ❌ | PR2 | | |
-| 24.7 | Глобальные сервисы (Toast/Confirm/Dialog) | ⬜ / ✅ / ❌ | PR2 | | |
-| 24.8 | Component mapping sweep (Nuxt UI → PrimeVue) | ⬜ / ✅ / ❌ | PR2 | | |
-| 24.9 | Sidebar | ⬜ / ✅ / ❌ | PR3 | | |
-| 24.10 | Topbar + Command Palette | ⬜ / ✅ / ❌ | PR3 | | |
-| 24.11 | Dashboard | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.12 | QR List page | ⬜ / ✅ / ❌ | PR4 | | |
+| 24.1 | Аудит и baseline | ⚠️ | PR1 | `223372f`, `b6d6f80` | Файлы baseline/deps/smoke созданы, но часть метрик ещё шаблонная (нужен фактический замер). |
+| 24.2 | Custom preset + CSS token layer | ✅ | PR1 | `1c50d2e` | Добавлен `splat-preset.ts` и подключён в `nuxt.config.ts`. |
+| 24.3 | Установка PrimeVue | ✅ | PR1 | `1c50d2e` | PrimeVue + Nuxt module + themes/forms добавлены. |
+| 24.4 | App shell, layouts, error page | ✅ | PR1 | `1c50d2e`, `d928dfb` | Sakai-like shell внедрён; error page переведена на PrimeVue actions. |
+| 24.5 | Global styles и шрифты | ✅ | PR1 | `1c50d2e` | Подключён `app/assets/layout/layout.scss` + light/dark variables. |
+| 24.6 | UI-примитивы | ⚠️ | PR2 | `606b433`, `b9f14b1`, `5be3b13`, `7db07ec` | Мигрированы `ConfirmDialog`, `EmptyState`, `SharedPagination`, `TagInput`; оставшиеся UI-примитивы ещё в работе. |
+| 24.7 | Глобальные сервисы (Toast/Confirm/Dialog) | ✅ | PR2 | `fd13824`, `d928dfb` | Добавлены PrimeVue services + composables + ConfirmDialog migration. |
+| 24.8 | Component mapping sweep (Nuxt UI → PrimeVue) | ⚠️ | PR2 | `12b0bfa`, `b9d55a1`, `931f63a` | Идёт поэтапная миграция страниц/компонентов; полное удаление Nuxt UI ещё не достигнуто. |
+| 24.9 | Sidebar | ✅ | PR3 | `1c50d2e` | Внедрён новый app menu/sidebar shell на PrimeVue/Sakai-паттерне. |
+| 24.10 | Topbar + Command Palette | ✅ | PR3 | `6e0ebbd`, `b9d55a1` | Topbar, UserMenu и GlobalSearch (Cmd+K) переведены на PrimeVue Dialog/Icon pattern. |
+| 24.11 | Dashboard | ⚠️ | PR4 | `931f63a`, `follow-up commits (StatCard + DateRangePicker/TopQrTable/ScanChart)` | Основные dashboard blocks (включая `AnalyticsStatCard`, `DateRangePicker`, `TopQrTable`, `ScanChart`) переведены на PrimeVue; визуальный sign-off по макетам pending. |
+| 24.12 | QR List page | ✅ | PR4 | `5be3b13`, `follow-up commits (qr/index + Table/Card/QuickActions/ExportDialog)` | Страница `/qr` и связанные компоненты (`SharedPagination`, `Table`, `Card`, `QuickActions`, `ExportDialog`) переведены на PrimeVue pattern. |
 | 24.13 | QR Create Drawer + `/qr/create` | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.14 | QR Detail Drawer + `/qr/[id]` | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.15 | QR Edit `/qr/[id]/edit` | ⬜ / ✅ / ❌ | PR4 | | |
@@ -38,12 +38,12 @@
 | 24.20 | Settings | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.21 | Notifications | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.22 | Shared QR (EPIC 19) | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.23 | Auth `/auth/login` | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.24 | Scan experience (error/not-found/expired) | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.23 | Auth `/auth/login` | ✅ | PR5 | `12b0bfa` | Страница login переведена на PrimeVue InputText/InputOtp/Button/Message. |
+| 24.24 | Scan experience (error/not-found/expired) | ✅ | PR5 | `d928dfb`, `123102e` | `error.vue`, `/not-found`, `/expired` переведены на PrimeVue actions и унифицированный layout card. |
 | 24.25 | Onboarding overlay | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.26 | Empty states | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.27 | Toast notifications replacement | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.28 | ConfirmDialog для destructive actions | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.26 | Empty states | ✅ | PR5 | `b9f14b1` | Shared EmptyState переведён на `@nuxt/icon`/PrimeVue stack (без Nuxt UI icon). |
+| 24.27 | Toast notifications replacement | ✅ | PR5 | `700e1fd` | `useA11yToast` переведён на PrimeVue ToastService + A11y announce. |
+| 24.28 | ConfirmDialog для destructive actions | ✅ | PR5 | `606b433` | Shared ConfirmDialog мигрирован на PrimeVue Dialog/Button. |
 | 24.29 | Departments management | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.30 | Allowed + Destination Domains | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.31 | API Docs page (Scalar) | ⬜ / ✅ / ❌ | PR5 | | |
@@ -55,6 +55,13 @@
 | 24.37 | Smoke E2E ручной | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.38 | Bundle size audit | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.39 | Финальный релиз и документация | ⬜ / ✅ / ❌ | PR6 | | |
+
+
+### 1.1. Checkpoint 24.1–24.12 (2026-04-21)
+
+- **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
+- **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.12
+- **Не начато:** 24.13+
 
 ---
 
