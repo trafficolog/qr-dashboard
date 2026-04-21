@@ -17,6 +17,8 @@
 - ✅ Глобальные PrimeVue сервисы Toast/Confirm: коммит `fd13824`
 - ✅ Миграция auth login на PrimeVue controls: коммит `12b0bfa`
 - ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`
+- ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
+- ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 
 ## 1. Проблема и обоснование
 
