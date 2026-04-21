@@ -258,10 +258,11 @@
 
 ### 6.5. Post-merge release execution log
 
-- **Merge target:** `main`
-- **Release tag:** `v0.15.0`
-- **Tag creation date:** `2026-04-21`
-- **Final rollout status:** `Staging: Ready`, `Production: Approved (controlled rollout)`
+- **Merge target:** `main` (branch `main` создан из `work`, release-изменения присутствуют на commit `fa1cfe81a743c8015c89f7109cef6ec80ac96738`)
+- **Release tag:** `v0.15.0` (создан локально на commit `fa1cfe81a743c8015c89f7109cef6ec80ac96738`, дата: `2026-04-21`)
+- **Tag publish status:** `blocked` — в локальном git отсутствует настроенный `origin`, публикация tag в удалённый репозиторий требует настройки remote и push-прав
+- **Release deploy status:** `blocked` — в текущем окружении отсутствует доступный release pipeline (staging -> production), фактический деплой не запускался из этого workspace
+- **Release fact record (date / tag / SHA):** `2026-04-21` / `v0.15.0` / `fa1cfe81a743c8015c89f7109cef6ec80ac96738`
 
 ---
 
