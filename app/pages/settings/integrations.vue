@@ -168,6 +168,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
+import { permissionLabel as mapPermissionLabel, type KnownApiPermission } from '~/utils/integrations/permission-label'
 
 definePageMeta({
   middleware: () => {
@@ -178,13 +179,11 @@ definePageMeta({
   },
 })
 
-type ApiPermission = 'qr:read' | 'qr:write' | 'qr:stats:read' | 'mcp:access'
-
 interface ApiKey {
   id: string
   name: string
   prefix: string
-  permissions: ApiPermission[]
+  permissions: string[]
   allowedIps: string[]
   createdAt: string
   expiresAt: string
@@ -203,7 +202,7 @@ const creating = ref(false)
 const newKeyName = ref('')
 const createError = ref('')
 const createdKey = ref<string | null>(null)
-const newKeyPermissions = ref<ApiPermission[]>(['qr:read'])
+const newKeyPermissions = ref<KnownApiPermission[]>(['qr:read'])
 const allowedIpsInput = ref('')
 const expiresAtInput = ref('')
 
@@ -292,7 +291,7 @@ async function handleCreateKey() {
   }
 }
 
-function togglePermission(permission: ApiPermission, enabled: boolean) {
+function togglePermission(permission: KnownApiPermission, enabled: boolean) {
   if (enabled && !newKeyPermissions.value.includes(permission)) {
     newKeyPermissions.value = [...newKeyPermissions.value, permission]
   }
@@ -301,11 +300,8 @@ function togglePermission(permission: ApiPermission, enabled: boolean) {
   }
 }
 
-function permissionLabel(permission: ApiPermission) {
-  if (permission === 'qr:write') return t('settings.integrations.apiKeys.permissions.qrWrite')
-  if (permission === 'qr:stats:read') return t('settings.integrations.apiKeys.permissions.qrStatsRead')
-  if (permission === 'mcp:access') return t('settings.integrations.apiKeys.permissions.mcpAccess')
-  return t('settings.integrations.apiKeys.permissions.qrRead')
+function permissionLabel(permission: string) {
+  return mapPermissionLabel(permission, t)
 }
 
 async function handleDeleteKey(id: string) {
