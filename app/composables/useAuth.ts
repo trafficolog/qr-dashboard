@@ -1,4 +1,4 @@
-import type { User } from '~/shared/types/auth'
+import type { User } from '#shared/types/auth'
 
 interface AuthLoginResponse {
   data: {

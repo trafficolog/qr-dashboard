@@ -103,9 +103,10 @@
 | Было | Стало |
 |------|-------|
 | `types/` | `shared/types/` |
+| `assets/` (root) | `app/assets/` |
 | `assets/css/main.css` | `app/assets/css/main.css` |
 | `app.config.ts` (root) | `app/app.config.ts` |
-| `locales/` | `i18n/locales/` *(если перенесли)* |
+| Импорты `~/shared/types/*` | `#shared/types/*` |
 
 ### 3.3. Runtime / Infra
 

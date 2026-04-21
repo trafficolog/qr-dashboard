@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { generateQrSvg } from '~/utils/qr-svg'
-import type { QrStyle } from '~/shared/types/qr'
+import type { QrStyle } from '#shared/types/qr'
 
 const props = withDefaults(
   defineProps<{

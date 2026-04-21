@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { sessions } from '../db/schema'
 import { teamService } from './team.service'
-import type { User } from '~/shared/types/auth'
+import type { User } from '#shared/types/auth'
 
 const drizzleMocks = vi.hoisted(() => ({
   eqMock: vi.fn((left, right) => ({ left, right })),

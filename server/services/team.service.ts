@@ -2,7 +2,7 @@ import { eq, count, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { users, qrCodes, sessions } from '../db/schema'
 import { recordAudit } from '../utils/audit'
-import type { User } from '~/shared/types/auth'
+import type { User } from '#shared/types/auth'
 
 export const teamService = {
   /**

@@ -291,8 +291,8 @@
 </template>
 
 <script setup lang="ts">
-import type { QrCode, QrStatus } from '~/shared/types/qr'
-import type { ScanTimeSeriesPoint } from '~/shared/types/analytics'
+import type { QrCode, QrStatus } from '#shared/types/qr'
+import type { ScanTimeSeriesPoint } from '#shared/types/analytics'
 
 interface Destination {
   id: string

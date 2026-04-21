@@ -39,7 +39,7 @@ import { TooltipComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 import { resolveDeviceColor } from './deviceColors'
-import type { DeviceBreakdownItem } from '~/shared/types/analytics'
+import type { DeviceBreakdownItem } from '#shared/types/analytics'
 
 use([PieChart, TooltipComponent, CanvasRenderer])
 
