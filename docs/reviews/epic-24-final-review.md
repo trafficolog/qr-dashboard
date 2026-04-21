@@ -31,7 +31,7 @@
 | 24.13 | QR Create Drawer + `/qr/create` | ✅ | PR4 | `follow-up commits (qr/create full controls migration)` | `/qr/create` переведена на PrimeVue patterns/controls; в текущем репо отдельный `CreateDrawer` не реализован (scope закрыт по фактическому UI-объёму). |
 | 24.14 | QR Detail Drawer + `/qr/[id]` | ⚠️ | PR4 | `follow-up commit (qr/[id] shell + cards + actions)` | Начата migration `/qr/[id]`: header actions/menu, stats/detail cards, A/B block и loading skeleton переведены на PrimeVue pattern; drawer/edit связанные шаги ещё в работе. |
 | 24.15 | QR Edit `/qr/[id]/edit` | ✅ | PR4 | `follow-up commit (qr/[id]/edit full controls migration)` | `/qr/[id]/edit` переведена на PrimeVue controls/patterns (cards, inputs/selects, actions, loading skeleton). |
-| 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ⬜ / ✅ / ❌ | PR4 | | |
+| 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ⚠️ | PR4 | `follow-up commit (qr/bulk step1-2 primevue)` | Начата migration `/qr/bulk`: header, stepper и первые шаги (Upload/Preview) переведены на PrimeVue pattern; шаги 3+ ещё в работе. |
 | 24.17 | Folders | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.18 | Analytics | ⬜ / ✅ / ❌ | PR4 | | |
 | 24.19 | Integrations | ⬜ / ✅ / ❌ | PR5 | | |
@@ -60,8 +60,8 @@
 ### 1.1. Checkpoint 24.1–24.12 (2026-04-21)
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
-- **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.16+
+- **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14, 24.16
+- **Не начато:** 24.17+
 
 ---
 
