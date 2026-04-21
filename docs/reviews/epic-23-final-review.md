@@ -126,18 +126,18 @@
 
 | Категория | Файлов затронуто | Пример фикса |
 |-----------|------------------|--------------|
-| `noUncheckedIndexedAccess` — unchecked array access | N | `arr[0].name` → `arr[0]?.name ?? ''` |
-| Shallow reactivity `data.value` мутации | N | мутация → полная замена объекта |
-| `null` → `undefined` для `data`/`error` | N | `data.value === null` → `data.value === undefined` |
-| Pinia v3 type aliases | N | `PiniaPluginContext` → `PiniaPlugin` |
-| Drizzle 0.45 query builder типы | N | — |
+| Singleton Data Fetching keys (`useAsyncData`/`useFetch`) | 0 | Поиск по `app/` не выявил использования `useAsyncData`/`useFetch`; конфликтующих ключей нет (используется `$fetch`/ручные `ref`) |
+| Shallow reactivity `data.value` мутации | 0 | Неприменимо для текущего кода: в проекте нет `useAsyncData`/`useFetch` |
+| `null` → `undefined` для `data`/`error` | 0 | Неприменимо для async-data API; runtime-проверки `null` в проекте относятся к localStorage/DTO и не затрагивают Nuxt 4 data-layer |
+| Route meta/name + dedupe behavior | 0 | Поиск не выявил `route.meta.name` и `dedupe: true/false`; миграционных правок не потребовалось |
+| Nuxt 4 dependency bump | 2 | `nuxt` обновлён `3.21.2 -> 4.4.2` в `package.json` + lockfile |
 
 ### 4.2. Поведенческие регрессии
 
 | Место | Симптом | Фикс |
 |-------|---------|------|
-| Пример: `/auth/login` | После ввода OTP — не редиректит | Исправлен shallow ref в `useAuth().fetchUser` |
-| ... | ... | ... |
+| Build/typecheck после Nuxt 4 bump | Ошибка codemod CLI `nuxt/4/migration-recipe` (redirect/libsecret/keytar path) | Миграционный проход выполнен через `npx nuxi@latest upgrade --force`, далее вручную проверены project-specific breaking points |
+| `pnpm typecheck` | `ERR_PACKAGE_PATH_NOT_EXPORTED` для `vue-router/volar/sfc-route-blocks` (текущее состояние toolchain) | Зафиксировано как follow-up для phase 3/4 (обновление `pinia`/связанных пакетов и TypeScript toolchain) |
 
 ### 4.3. UI / визуальные регрессии (Nuxt UI v4)
 
@@ -150,8 +150,7 @@
 
 | Тест | Причина падения | Фикс |
 |------|-----------------|------|
-| Пример: `qr-crud.spec.ts` — select QR type | Изменился DOM USelect | Обновлён селектор |
-| ... | ... | ... |
+| `pnpm build` | Нет падения после миграции на `nuxt@4.4.2` (есть warnings по fonts providers/size) | Build проходит; warnings зафиксированы как non-blocking |
 
 ---
 
