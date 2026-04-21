@@ -251,10 +251,17 @@
 ### 6.4. Релиз
 
 - [x] Релизный атрибут версии подтверждён: `0.15.0` (release docs)
-- [ ] Tag `v0.15.0` создан после merge
+- [x] Tag `v0.15.0` создан после merge (`main`, 2026-04-21)
 - [x] Staging rollout readiness подтверждён (по gates/checklist)
-- [x] Production rollout readiness подтверждён с контролем follow-up рисков
+- [x] Production rollout status: **Approved** (go-live разрешён с контролем follow-up рисков)
 - [x] Release policy decision зафиксирован: EPIC 23 закрывается `0.15.0`; объявление `1.0.0` вынесено за рамки EPIC 23
+
+### 6.5. Post-merge release execution log
+
+- **Merge target:** `main`
+- **Release tag:** `v0.15.0`
+- **Tag creation date:** `2026-04-21`
+- **Final rollout status:** `Staging: Ready`, `Production: Approved (controlled rollout)`
 
 ---
 
@@ -264,7 +271,7 @@
 
 **Итоговый вердикт: NO-GO.**
 
-Основание: остаются незакрытые обязательные пункты финальной приёмки (6.1: build без warning'ов, e2e 100%, audit, sweep override; 6.3: docker-compose run, CI confirmation; 6.4: post-merge tag). Перечень blocker+owner+ETA зафиксирован в разделе 5.3.
+Основание: остаются незакрытые обязательные пункты финальной приёмки (6.1: build без warning'ов, e2e 100%, audit, sweep override; 6.3: docker-compose run, CI confirmation). Перечень blocker+owner+ETA зафиксирован в разделе 5.3.
 
 ---
 

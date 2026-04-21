@@ -1,6 +1,6 @@
 {
   "name": "splat-qr",
-  "version": "0.13.0",
+  "version": "0.15.0",
   "private": true,
   "description": "SPLAT Global — QR Dashboard",
   "scripts": {

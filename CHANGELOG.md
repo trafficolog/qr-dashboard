@@ -7,9 +7,21 @@
  
 ## [Unreleased]
 
-### Release prep — EPIC 23 finalization (2026-04-21)
+---
 
-- Подтверждены релизные атрибуты EPIC 23: целевая версия `0.15.0`, readiness для staging/prod rollout зафиксирован в финальном review.
+## [0.15.0] — 2026-04-21
+
+### Breaking changes
+
+- **Nuxt major upgrade:** `nuxt` обновлён до `^4.4.2` (миграция EPIC 23 завершена).
+- **Nuxt UI migration:** `@nuxt/ui` переведён на `^4.6.0`.
+- **i18n major upgrade:** `@nuxtjs/i18n` обновлён до `^10.2.0`.
+- **State-layer major upgrade:** `pinia` обновлён до `^3.0.0` и `@pinia/nuxt` до `^0.11.3`.
+- **Observability major upgrade:** `@sentry/node` обновлён до `^9.0.0`.
+
+### Non-breaking changes
+
+- Подтверждены релизные атрибуты EPIC 23: версия `0.15.0`, readiness для staging/prod rollout зафиксирован в финальном review.
 - Финализированы статусы задач 23.1–23.18 и чеклист приёмки в `docs/reviews/epic-23-final-review.md`.
 - Зафиксированы остаточные follow-up задачи `NEXT-23-*` с owner и deadline.
 
