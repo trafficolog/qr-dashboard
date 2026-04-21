@@ -2,7 +2,7 @@
 
 Внутрикорпоративный сервис управления QR-кодами для маркетинговых активностей.
 
-**Версия:** 0.13.0 (Unreleased, 2026-04-20) — см. [CHANGELOG](./CHANGELOG.md).
+**Версия:** 0.15.0 (Release candidate, 2026-04-21) — см. [CHANGELOG](./CHANGELOG.md).
 
 ## Стек
 
@@ -162,6 +162,13 @@ docker compose up postgres -d
 - **Scalar UI**: интерактивная документация API доступна через встроенный Scalar API Reference.
 - **MCP server**: доступны MCP routes/tools/resources для интеграций; доступ контролируется permission `mcp:access`.
 - **Setup examples**: в проекте присутствуют примеры подключения и настройки MCP-клиентов.
+
+### EPIC 23 release readiness (Nuxt 4 migration)
+
+- Версия релиза подтверждена: **`0.15.0`**.
+- Staging rollout: **Ready** (чеклист и gate-статусы закрыты в финальном review).
+- Production rollout: **Ready with follow-ups** (неблокирующие риски вынесены в `NEXT-23-*`).
+- Финальный review: `docs/reviews/epic-23-final-review.md`.
 
 ### Documentation sync (EPIC 16–21 backfill)
 

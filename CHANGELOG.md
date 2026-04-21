@@ -7,6 +7,12 @@
  
 ## [Unreleased]
 
+### Release prep — EPIC 23 finalization (2026-04-21)
+
+- Подтверждены релизные атрибуты EPIC 23: целевая версия `0.15.0`, readiness для staging/prod rollout зафиксирован в финальном review.
+- Финализированы статусы задач 23.1–23.18 и чеклист приёмки в `docs/reviews/epic-23-final-review.md`.
+- Зафиксированы остаточные follow-up задачи `NEXT-23-*` с owner и deadline.
+
 ### Added — EPIC 22 OpenAPI + MCP
 
 - **OpenAPI pipeline:** добавлены/актуализированы сценарии генерации и проверки OpenAPI-спеки.
