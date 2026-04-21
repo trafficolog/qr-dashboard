@@ -204,17 +204,29 @@
 | NEXT-23-06 | Frontend typecheck-sweep по VueUse auto-import | Отдельный UI track | High | Frontend Lead | 2026-04-24 | mitigated |
 | NEXT-23-07 | Полный e2e regression (`PLAYWRIGHT_AUTH_COOKIE`-scenarios) | Post-release stabilization | High | QA/Automation Lead | 2026-04-25 | open |
 
+### 5.3. Блокеры по незакрытым пунктам чеклиста 6
+
+| Пункт чеклиста | Blocker | Owner | ETA | Status |
+|---|---|---|---|---|
+| 6.1 — `pnpm build` без warning'ов | В build остаются non-blocking warnings (providers/fonts/size); нужен отдельный warning burn-down и повторный чистый прогон | Frontend Platform Lead | 2026-04-24 | open |
+| 6.1 — `pnpm test:e2e` 100% pass | Неполный regression run: часть сценариев зависит от стабильного auth-cookie и окружения Playwright | QA/Automation Lead | 2026-04-25 | open |
+| 6.1 — `pnpm audit` 0 high/critical | Audit-гейт не выполнен в финальном прогоне PR4 | Security Owner | 2026-04-24 | open |
+| 6.1 — проверка `@ts-ignore` / `eslint-disable` | Нужен целевой sweep с фиксацией каждого override через TODO/follow-up ID | Tech Lead | 2026-04-24 | open |
+| 6.3 — `docker compose build && docker compose up` | Интеграционный прогон docker-compose не зафиксирован в финальном протоколе | DevOps Owner | 2026-04-24 | open |
+| 6.3 — CI pipelines green | В репозитории нет доступного CI workflow-run артефакта PR4 для подтверждения | DevOps Owner | 2026-04-24 | open |
+| 6.4 — tag `v0.15.0` после merge | Тег создаётся только после merge; pre-merge состояние ожидаемо незакрыто | Release Manager | 2026-04-22 | planned |
+
 ---
 
 ## 6. Чеклист финальной приёмки
 
 ### 6.1. Код
 
-- [ ] Все 18 задач эпика закрыты (либо явно задокументированы как skipped)
+- [x] Все 18 задач эпика закрыты (либо явно задокументированы как skipped)
 - [ ] `pnpm build` проходит без ошибок и warning'ов
-- [ ] `pnpm typecheck` — 0 ошибок
-- [ ] `pnpm lint` — 0 ошибок
-- [ ] `pnpm test:unit` — 100% pass
+- [x] `pnpm typecheck` — 0 ошибок
+- [x] `pnpm lint` — 0 ошибок
+- [x] `pnpm test:unit` — 100% pass
 - [ ] `pnpm test:e2e` — 100% pass
 - [ ] `pnpm audit` — 0 high/critical
 - [ ] Нет `@ts-ignore` / `eslint-disable` без TODO-ссылки на follow-up
@@ -230,10 +242,10 @@
 
 ### 6.3. Инфраструктура
 
-- [ ] `Dockerfile` обновлён (Node 22 LTS)
+- [x] `Dockerfile` обновлён (Node 22 LTS)
 - [ ] `docker compose build && docker compose up` успешно поднимает стек
-- [ ] `.nvmrc` → 22.12+
-- [ ] `package.json` → `packageManager: pnpm@10.x`
+- [x] `.nvmrc` → 22.12+
+- [x] `package.json` → `packageManager: pnpm@10.x`
 - [ ] CI (если есть) — все пайплайны зелёные на PR4
 
 ### 6.4. Релиз
@@ -248,9 +260,11 @@
 
 ## 7. Итог
 
-*(Заполняется после финальной приёмки)*
+*(Актуализировано после синхронизации разделов 1 и 6, 2026-04-21)*
 
-**Миграция на Nuxt 4.x и обновление ключевых модулей завершены в рамках EPIC 23. Статусы задач 23.1–23.18 зафиксированы как финальные, релизные атрибуты подтверждены: версия `0.15.0`, staging rollout — ready, production rollout — ready with follow-up controls. Остаточные риски формализованы в `NEXT-23-01..NEXT-23-07` с назначенными owner/deadline.**
+**Итоговый вердикт: NO-GO.**
+
+Основание: остаются незакрытые обязательные пункты финальной приёмки (6.1: build без warning'ов, e2e 100%, audit, sweep override; 6.3: docker-compose run, CI confirmation; 6.4: post-merge tag). Перечень blocker+owner+ETA зафиксирован в разделе 5.3.
 
 ---
 
