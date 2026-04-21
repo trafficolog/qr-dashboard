@@ -2,7 +2,8 @@
 # Production Nuxt 3 (Nitro node-server) — multi-stage build
 
 FROM node:22.12-alpine AS deps
-RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
+# corepack prepare pnpm can fail with "Cannot find matching keyid" when bundled keys lag pnpm releases.
+RUN npm install -g pnpm@10.17.1
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
