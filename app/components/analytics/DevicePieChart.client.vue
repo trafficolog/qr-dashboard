@@ -8,7 +8,7 @@
       v-if="loading"
       class="mb-4 flex items-center justify-center"
     >
-      <USkeleton class="size-28 rounded-full" />
+      <Skeleton class="size-28 rounded-full" />
     </div>
 
     <div
