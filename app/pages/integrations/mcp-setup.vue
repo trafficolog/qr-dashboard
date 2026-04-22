@@ -9,24 +9,28 @@
           {{ $t('integrationsPage.mcpSetup.subtitle') }}
         </p>
       </div>
-      <UButton
-        variant="outline"
-        color="neutral"
-        icon="i-lucide-arrow-left"
-        :to="'/integrations'"
-        :label="$t('integrationsPage.backToIntegrations')"
-      />
+      <Button
+        outlined
+        severity="secondary"
+        @click="navigateTo('/integrations')"
+      >
+        <template #icon>
+          <Icon name="i-lucide-arrow-left" />
+        </template>
+        {{ $t('integrationsPage.backToIntegrations') }}
+      </Button>
     </div>
 
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-link" class="size-4 text-[color:var(--text-muted)]" />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('integrationsPage.mcpSetup.serverUrl.title') }}
-          </h2>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-link"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('integrationsPage.mcpSetup.serverUrl.title') }}
+        </h2>
+      </div>
 
       <div class="space-y-3 text-sm text-[color:var(--text-secondary)]">
         <p>{{ $t('integrationsPage.mcpSetup.serverUrl.description') }}</p>
@@ -34,65 +38,78 @@
           {{ serverUrl }}
         </div>
       </div>
-    </UCard>
+    </section>
 
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-key-round" class="size-4 text-[color:var(--text-muted)]" />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('integrationsPage.mcpSetup.apiKey.title') }}
-          </h2>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-key-round"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('integrationsPage.mcpSetup.apiKey.title') }}
+        </h2>
+      </div>
 
       <ol class="list-decimal space-y-2 pl-5 text-sm text-[color:var(--text-secondary)]">
         <li>{{ $t('integrationsPage.mcpSetup.apiKey.step1') }}</li>
         <li>{{ $t('integrationsPage.mcpSetup.apiKey.step2') }}</li>
         <li>{{ $t('integrationsPage.mcpSetup.apiKey.step3') }}</li>
       </ol>
-    </UCard>
+    </section>
 
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-braces" class="size-4 text-[color:var(--text-muted)]" />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('integrationsPage.mcpSetup.examples.title') }}
-          </h2>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-braces"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('integrationsPage.mcpSetup.examples.title') }}
+        </h2>
+      </div>
 
       <div class="space-y-6">
-        <section v-for="example in configExamples" :key="example.id" class="space-y-2">
+        <section
+          v-for="example in configExamples"
+          :key="example.id"
+          class="space-y-2"
+        >
           <div class="flex items-center justify-between gap-3">
             <h3 class="font-medium text-[color:var(--text-primary)]">
               {{ example.title }}
             </h3>
-            <UButton
-              size="xs"
-              variant="outline"
-              color="neutral"
-              icon="i-lucide-copy"
-              :label="copiedExampleId === example.id ? $t('common.copied') : $t('common.copy')"
+            <Button
+              size="small"
+              outlined
+              severity="secondary"
               @click="copyConfig(example.id, example.code)"
-            />
+            >
+              <template #icon>
+                <Icon name="i-lucide-copy" />
+              </template>
+              {{ copiedExampleId === example.id ? $t('common.copied') : $t('common.copy') }}
+            </Button>
           </div>
 
-          <SharedCodeBlock :code="example.code" language="json" />
+          <SharedCodeBlock
+            :code="example.code"
+            language="json"
+          />
         </section>
       </div>
-    </UCard>
+    </section>
 
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-circle-help" class="size-4 text-[color:var(--text-muted)]" />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('integrationsPage.mcpSetup.troubleshooting.title') }}
-          </h2>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-circle-help"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('integrationsPage.mcpSetup.troubleshooting.title') }}
+        </h2>
+      </div>
 
       <div class="space-y-3">
         <div
@@ -111,7 +128,7 @@
           </p>
         </div>
       </div>
-    </UCard>
+    </section>
   </div>
 </template>
 

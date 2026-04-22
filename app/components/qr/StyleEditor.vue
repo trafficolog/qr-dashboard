@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable vue/no-v-html -->
   <div class="space-y-6">
     <!-- Colors -->
     <div>
@@ -15,9 +16,8 @@
               class="h-8 w-8 cursor-pointer rounded border border-[color:var(--border)]"
               @input="updateStyle('foregroundColor', ($event.target as HTMLInputElement).value)"
             >
-            <UInput
+            <InputText
               :model-value="style.foregroundColor || '#000000'"
-              size="sm"
               class="flex-1"
               @update:model-value="updateStyle('foregroundColor', $event)"
             />
@@ -32,9 +32,8 @@
               class="h-8 w-8 cursor-pointer rounded border border-[color:var(--border)]"
               @input="updateStyle('backgroundColor', ($event.target as HTMLInputElement).value)"
             >
-            <UInput
+            <InputText
               :model-value="style.backgroundColor || '#FFFFFF'"
-              size="sm"
               class="flex-1"
               @update:model-value="updateStyle('backgroundColor', $event)"
             />
@@ -49,9 +48,8 @@
               class="h-8 w-8 cursor-pointer rounded border border-[color:var(--border)]"
               @input="updateStyle('cornerColor', ($event.target as HTMLInputElement).value)"
             >
-            <UInput
+            <InputText
               :model-value="style.cornerColor || style.foregroundColor || '#000000'"
-              size="sm"
               class="flex-1"
               @update:model-value="updateStyle('cornerColor', $event)"
             />
@@ -77,6 +75,7 @@
           ]"
           @click="updateStyle('moduleStyle', ms.value)"
         >
+          <!-- eslint-disable-next-line vue/no-v-html -->
           <div
             class="w-6 h-6"
             v-html="ms.icon"
@@ -103,6 +102,7 @@
           ]"
           @click="updateStyle('cornerStyle', cs.value)"
         >
+          <!-- eslint-disable-next-line vue/no-v-html -->
           <div
             class="w-6 h-6"
             v-html="cs.icon"
@@ -117,14 +117,16 @@
       <h4 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
         Коррекция ошибок
       </h4>
-      <USelect
+      <Select
         :model-value="style.errorCorrectionLevel || 'M'"
-        :items="errorLevels"
-        size="sm"
+        :options="errorLevels"
+        option-label="label"
+        option-value="value"
         @update:model-value="updateStyle('errorCorrectionLevel', $event)"
       />
     </div>
   </div>
+  <!-- eslint-enable vue/no-v-html -->
 </template>
 
 <script setup lang="ts">
@@ -140,7 +142,8 @@ const emit = defineEmits<{
 
 const style = computed(() => props.modelValue)
 
-function updateStyle(key: string, value: string) {
+function updateStyle(key: string, value: string | undefined) {
+  if (value === undefined) return
   emit('update:modelValue', { ...props.modelValue, [key]: value })
 }
 
