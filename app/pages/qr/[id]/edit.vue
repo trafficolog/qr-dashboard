@@ -1,18 +1,23 @@
 <template>
   <div>
     <div v-if="qr">
-      <div class="flex items-center justify-between mb-6">
+      <div class="mb-6 flex items-center justify-between">
         <div>
           <div class="flex items-center gap-3">
-            <UButton
-              icon="i-lucide-arrow-left"
-              variant="ghost"
-              color="neutral"
-              size="sm"
-              :aria-label="$t('pages.qrEdit.backToQr')"
-              :title="$t('pages.qrEdit.backToQr')"
-              :to="`/qr/${id}`"
-            />
+            <Button
+              as-child
+              text
+              severity="secondary"
+              size="small"
+            >
+              <NuxtLink
+                :to="`/qr/${id}`"
+                :aria-label="$t('pages.qrEdit.backToQr')"
+                :title="$t('pages.qrEdit.backToQr')"
+              >
+                <Icon name="i-lucide-arrow-left" />
+              </NuxtLink>
+            </Button>
             <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
               {{ $t('pages.qrEdit.title') }}
             </h1>
@@ -20,204 +25,222 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left: Settings -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- URL Section -->
-          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-            <template #header>
-              <div class="flex items-center gap-2">
-                <UIcon
-                  name="i-lucide-link"
-                  class="size-5 text-[color:var(--accent)]"
-                />
-                <span class="font-medium">{{ $t('forms.sections.link') }}</span>
-              </div>
-            </template>
-
-            <div class="space-y-4">
-              <UFormField
-                :label="$t('forms.labels.destinationUrl')"
-                :error="urlError"
-                :hint="isStatic ? $t('forms.hints.destinationUrlStaticLocked') : $t('forms.hints.destinationUrl')"
-                required
-              >
-                <UInput
-                  v-model="form.destinationUrl"
-                  placeholder="https://splat.ru/product"
-                  icon="i-lucide-globe"
-                  size="lg"
-                  :disabled="isStatic"
-                  :aria-invalid="!!urlError"
-                  :aria-describedby="urlError ? qrEditUrlErrorId : undefined"
-                  :aria-required="true"
-                  @blur="validateUrl"
-                />
-                <template #error="{ error }">
-                  <p
-                    v-if="error"
-                    :id="qrEditUrlErrorId"
-                    role="alert"
-                    aria-live="polite"
-                  >
-                    {{ error }}
-                  </p>
-                </template>
-              </UFormField>
-
-              <UCollapsible>
-                <UButton
-                  variant="link"
-                  color="neutral"
-                  size="sm"
-                  icon="i-lucide-tag"
-                  :label="$t('forms.labels.utmParams')"
-                  class="-ml-2"
-                />
-                <template #content>
-                  <div class="grid grid-cols-2 gap-3 pt-3">
-                    <UFormField :label="$t('forms.labels.utmSource')">
-                      <UInput
-                        v-model="form.utmParams.utm_source"
-                        size="sm"
-                      />
-                    </UFormField>
-                    <UFormField :label="$t('forms.labels.utmMedium')">
-                      <UInput
-                        v-model="form.utmParams.utm_medium"
-                        size="sm"
-                      />
-                    </UFormField>
-                    <UFormField :label="$t('forms.labels.utmCampaign')">
-                      <UInput
-                        v-model="form.utmParams.utm_campaign"
-                        size="sm"
-                      />
-                    </UFormField>
-                    <UFormField :label="$t('forms.labels.utmContent')">
-                      <UInput
-                        v-model="form.utmParams.utm_content"
-                        size="sm"
-                      />
-                    </UFormField>
-                  </div>
-                </template>
-              </UCollapsible>
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div class="space-y-6 lg:col-span-2">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+            <div class="mb-4 flex items-center gap-2">
+              <Icon
+                name="i-lucide-link"
+                class="size-5 text-[color:var(--accent)]"
+              />
+              <span class="font-medium">{{ $t('forms.sections.link') }}</span>
             </div>
-          </UCard>
-
-          <!-- Info Section -->
-          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-            <template #header>
-              <div class="flex items-center gap-2">
-                <UIcon
-                  name="i-lucide-info"
-                  class="size-5 text-[color:var(--accent)]"
-                />
-                <span class="font-medium">{{ $t('forms.sections.info') }}</span>
-              </div>
-            </template>
 
             <div class="space-y-4">
-              <UFormField
-                :label="$t('forms.labels.title')"
-                :hint="$t('forms.hints.qrTitle')"
-                :error="titleError"
-                required
-              >
-                <UInput
+              <div>
+                <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">
+                  {{ $t('forms.labels.destinationUrl') }} *
+                </label>
+                <IconField>
+                  <InputIcon>
+                    <Icon name="i-lucide-globe" />
+                  </InputIcon>
+                  <InputText
+                    v-model="form.destinationUrl"
+                    placeholder="https://splat.ru/product"
+                    class="w-full"
+                    :disabled="isStatic"
+                    :invalid="!!urlError"
+                    :aria-invalid="!!urlError"
+                    :aria-describedby="urlError ? qrEditUrlErrorId : undefined"
+                    :aria-required="true"
+                    @blur="validateUrl"
+                  />
+                </IconField>
+                <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                  {{ isStatic ? $t('forms.hints.destinationUrlStaticLocked') : $t('forms.hints.destinationUrl') }}
+                </p>
+                <p
+                  v-if="urlError"
+                  :id="qrEditUrlErrorId"
+                  role="alert"
+                  aria-live="polite"
+                  class="mt-1 text-xs text-[color:var(--color-error)]"
+                >
+                  {{ urlError }}
+                </p>
+              </div>
+
+              <details class="rounded-lg border border-[color:var(--border)] p-3">
+                <summary class="cursor-pointer list-none text-sm font-medium text-[color:var(--text-primary)]">
+                  <span class="inline-flex items-center gap-2">
+                    <Icon name="i-lucide-tag" />
+                    {{ $t('forms.labels.utmParams') }}
+                  </span>
+                </summary>
+                <div class="grid grid-cols-2 gap-3 pt-3">
+                  <div>
+                    <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmSource') }}</label>
+                    <InputText
+                      v-model="form.utmParams.utm_source"
+                      size="small"
+                      class="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmMedium') }}</label>
+                    <InputText
+                      v-model="form.utmParams.utm_medium"
+                      size="small"
+                      class="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmCampaign') }}</label>
+                    <InputText
+                      v-model="form.utmParams.utm_campaign"
+                      size="small"
+                      class="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmContent') }}</label>
+                    <InputText
+                      v-model="form.utmParams.utm_content"
+                      size="small"
+                      class="w-full"
+                    />
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+            <div class="mb-4 flex items-center gap-2">
+              <Icon
+                name="i-lucide-info"
+                class="size-5 text-[color:var(--accent)]"
+              />
+              <span class="font-medium">{{ $t('forms.sections.info') }}</span>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">
+                  {{ $t('forms.labels.title') }} *
+                </label>
+                <InputText
                   v-model="form.title"
+                  class="w-full"
+                  :invalid="!!titleError"
                   :aria-invalid="!!titleError"
                   :aria-describedby="titleError ? qrEditTitleErrorId : undefined"
                   :aria-required="true"
                   @blur="validateTitle"
                 />
-                <template #error="{ error }">
-                  <p
-                    v-if="error"
-                    :id="qrEditTitleErrorId"
-                    role="alert"
-                    aria-live="polite"
-                  >
-                    {{ error }}
-                  </p>
-                </template>
-              </UFormField>
+                <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                  {{ $t('forms.hints.qrTitle') }}
+                </p>
+                <p
+                  v-if="titleError"
+                  :id="qrEditTitleErrorId"
+                  role="alert"
+                  aria-live="polite"
+                  class="mt-1 text-xs text-[color:var(--color-error)]"
+                >
+                  {{ titleError }}
+                </p>
+              </div>
 
-              <UFormField :label="$t('forms.labels.description')">
-                <UTextarea
+              <div>
+                <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.description') }}</label>
+                <Textarea
                   v-model="form.description"
                   :rows="2"
+                  class="w-full"
                 />
-              </UFormField>
+              </div>
 
-              <UFormField :label="$t('forms.labels.folder')">
-                <USelect
+              <div>
+                <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.folder') }}</label>
+                <Select
                   v-model="form.folderId"
-                  :items="folderOptions"
+                  :options="folderOptions"
+                  option-label="label"
+                  option-value="value"
                   :placeholder="$t('forms.options.noFolder')"
+                  class="w-full"
                 />
-              </UFormField>
+              </div>
 
-              <UFormField :label="$t('forms.labels.tags')">
+              <div>
+                <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.tags') }}</label>
                 <SharedTagInput
                   v-model="form.tagIds"
                   :available-tags="availableTags"
                   @create-tag="handleCreateTag"
                 />
-              </UFormField>
+              </div>
 
-              <UFormField :label="$t('forms.labels.status')">
-                <USelect
+              <div>
+                <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.status') }}</label>
+                <Select
                   v-model="form.status"
-                  :items="statusOptions"
+                  :options="statusOptions"
+                  option-label="label"
+                  option-value="value"
+                  class="w-full"
                 />
-              </UFormField>
+              </div>
 
-              <UFormField :label="$t('forms.labels.expiresAt')">
-                <UInput
+              <div>
+                <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.expiresAt') }}</label>
+                <InputText
                   v-model="form.expiresAt"
                   type="datetime-local"
+                  class="w-full"
                 />
-              </UFormField>
-            </div>
-          </UCard>
-
-          <!-- Style Section -->
-          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-            <template #header>
-              <div class="flex items-center gap-2">
-                <UIcon
-                  name="i-lucide-palette"
-                  class="size-5 text-[color:var(--accent)]"
-                />
-                <span class="font-medium">{{ $t('forms.sections.style') }}</span>
               </div>
-            </template>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+            <div class="mb-4 flex items-center gap-2">
+              <Icon
+                name="i-lucide-palette"
+                class="size-5 text-[color:var(--accent)]"
+              />
+              <span class="font-medium">{{ $t('forms.sections.style') }}</span>
+            </div>
 
             <QrStyleEditor v-model="form.style" />
-          </UCard>
+          </div>
 
-          <!-- Actions -->
           <div class="flex items-center gap-3">
-            <UButton
-              :label="$t('forms.actions.saveChanges')"
-              icon="i-lucide-check"
-              size="lg"
+            <Button
               :loading="saving"
+              size="large"
               @click="handleSave"
-            />
-            <UButton
-              :label="$t('forms.actions.cancel')"
-              variant="outline"
-              color="neutral"
-              size="lg"
-              :to="`/qr/${id}`"
-            />
+            >
+              <template #icon>
+                <Icon name="i-lucide-check" />
+              </template>
+              {{ $t('forms.actions.saveChanges') }}
+            </Button>
+            <Button
+              as-child
+              outlined
+              severity="secondary"
+              size="large"
+            >
+              <NuxtLink :to="`/qr/${id}`">
+                {{ $t('forms.actions.cancel') }}
+              </NuxtLink>
+            </Button>
           </div>
         </div>
 
-        <!-- Right: Live Preview -->
         <div class="lg:col-span-1">
           <div class="lg:sticky lg:top-24">
             <QrPreview
@@ -232,34 +255,29 @@
       </div>
     </div>
 
-    <!-- Loading skeleton -->
     <div
       v-else
       class="space-y-6"
     >
-      <!-- Header skeleton -->
       <div class="flex items-center gap-3">
-        <USkeleton class="h-9 w-9 rounded-md" />
-        <USkeleton class="h-8 w-64" />
+        <Skeleton class="h-9 w-9 rounded-md" />
+        <Skeleton class="h-8 w-64" />
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div class="lg:col-span-2 space-y-6">
-          <!-- URL card skeleton -->
-          <USkeleton class="h-52 w-full rounded-lg" />
-          <!-- Info card skeleton -->
-          <USkeleton class="h-72 w-full rounded-lg" />
-          <!-- Style card skeleton -->
-          <USkeleton class="h-64 w-full rounded-lg" />
+          <Skeleton class="h-52 w-full rounded-lg" />
+          <Skeleton class="h-72 w-full rounded-lg" />
+          <Skeleton class="h-64 w-full rounded-lg" />
 
           <div class="flex items-center gap-3">
-            <USkeleton class="h-11 w-48 rounded-md" />
-            <USkeleton class="h-11 w-24 rounded-md" />
+            <Skeleton class="h-11 w-48 rounded-md" />
+            <Skeleton class="h-11 w-24 rounded-md" />
           </div>
         </div>
 
         <div class="lg:col-span-1">
-          <USkeleton class="aspect-square w-full rounded-lg" />
+          <Skeleton class="aspect-square w-full rounded-lg" />
         </div>
       </div>
     </div>
