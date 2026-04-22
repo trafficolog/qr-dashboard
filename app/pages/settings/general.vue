@@ -13,21 +13,19 @@
     </div>
 
     <!-- Theme -->
-    <UCard
+    <section
       id="theme"
-      class="border border-[color:var(--border)] bg-[color:var(--surface-0)]"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
     >
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon
-            name="i-lucide-palette"
-            class="size-4 text-[color:var(--text-muted)]"
-          />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('settings.general.theme.label') }}
-          </h2>
-        </div>
-      </template>
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-palette"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('settings.general.theme.label') }}
+        </h2>
+      </div>
 
       <div class="flex flex-col sm:flex-row gap-3">
         <button
@@ -41,62 +39,60 @@
           ]"
           @click="colorMode.preference = theme.value"
         >
-          <UIcon
+          <Icon
             :name="theme.icon"
             class="size-5 shrink-0"
           />
           <span class="text-sm font-medium text-[color:var(--text-primary)]">{{ theme.label }}</span>
         </button>
       </div>
-    </UCard>
+    </section>
 
     <!-- Language -->
-    <UCard
+    <section
       id="language"
-      class="border border-[color:var(--border)] bg-[color:var(--surface-0)]"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
     >
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon
-            name="i-lucide-languages"
-            class="size-4 text-[color:var(--text-muted)]"
-          />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('settings.general.language.label') }}
-          </h2>
-        </div>
-      </template>
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-languages"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('settings.general.language.label') }}
+        </h2>
+      </div>
 
-      <USelect
-        :model-value="locale"
-        :items="locales"
+      <Select
+        :model-value="localeValue"
+        :options="locales"
+        option-label="label"
+        option-value="value"
         class="w-48"
-        @update:model-value="(v) => setLocale(v as 'ru' | 'en')"
+        @update:model-value="updateLocale"
       />
-    </UCard>
+    </section>
 
     <!-- Timezone -->
-    <UCard
+    <section
       id="timezone"
-      class="border border-[color:var(--border)] bg-[color:var(--surface-0)]"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
     >
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon
-            name="i-lucide-clock"
-            class="size-4 text-[color:var(--text-muted)]"
-          />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('settings.general.timezone.label') }}
-          </h2>
-        </div>
-      </template>
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-clock"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('settings.general.timezone.label') }}
+        </h2>
+      </div>
 
       <p class="text-sm text-[color:var(--text-secondary)]">
         {{ $t('settings.general.timezone.auto') }}:
         <span class="font-medium text-[color:var(--text-primary)]">{{ detectedTimezone }}</span>
       </p>
-    </UCard>
+    </section>
   </div>
 </template>
 
@@ -117,5 +113,11 @@ const locales = [
   { label: 'English', value: 'en' },
 ]
 
+const localeValue = computed(() => locale.value as 'ru' | 'en')
+
 const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+function updateLocale(value: string) {
+  setLocale(value as 'ru' | 'en')
+}
 </script>

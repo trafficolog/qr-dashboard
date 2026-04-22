@@ -1,62 +1,81 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="mb-6 flex items-center justify-between">
       <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
         QR-коды
       </h1>
       <div class="flex items-center gap-2">
-        <UButton
-          icon="i-lucide-upload"
-          label="Массовое создание"
-          to="/qr/bulk"
-          variant="outline"
-        />
-        <UButton
-          icon="i-lucide-plus"
-          label="Создать QR"
-          to="/qr/create"
-        />
+        <Button
+          as-child
+          outlined
+          severity="secondary"
+        >
+          <NuxtLink
+            to="/qr/bulk"
+            class="inline-flex items-center gap-2"
+          >
+            <Icon name="i-lucide-upload" />
+            <span>Массовое создание</span>
+          </NuxtLink>
+        </Button>
+        <Button as-child>
+          <NuxtLink
+            to="/qr/create"
+            class="inline-flex items-center gap-2"
+          >
+            <Icon name="i-lucide-plus" />
+            <span>Создать QR</span>
+          </NuxtLink>
+        </Button>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="flex flex-wrap items-center gap-3 mb-4">
-      <UInput
-        v-model="filters.search"
-        placeholder="Поиск по названию..."
-        icon="i-lucide-search"
-        class="w-full sm:w-64"
-        size="sm"
-      />
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <IconField class="w-full sm:w-64">
+        <InputIcon>
+          <Icon name="i-lucide-search" />
+        </InputIcon>
+        <InputText
+          v-model="filters.search"
+          placeholder="Поиск по названию..."
+          size="small"
+          class="w-full"
+        />
+      </IconField>
 
-      <USelect
+      <Select
         v-model="selectedStatus"
-        :items="statusOptions"
+        :options="statusOptions"
+        option-label="label"
+        option-value="value"
         placeholder="Все статусы"
-        size="sm"
+        size="small"
         class="w-40"
       />
 
-      <USelect
+      <Select
         v-model="selectedFolderId"
-        :items="folderOptions"
+        :options="folderOptions"
+        option-label="label"
+        option-value="value"
         placeholder="Все папки"
-        size="sm"
+        size="small"
         class="w-40"
       />
 
-      <USelect
+      <Select
         v-model="selectedScope"
-        :items="scopeOptions"
+        :options="scopeOptions"
+        option-label="label"
+        option-value="value"
         :placeholder="t('qr.filters.visibility')"
-        size="sm"
+        size="small"
         class="w-44"
       />
 
       <div class="flex-1" />
 
-      <!-- View toggle -->
       <div class="flex overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)]">
         <button
           :class="[
@@ -67,7 +86,7 @@
           ]"
           @click="viewMode = 'table'"
         >
-          <UIcon
+          <Icon
             name="i-lucide-list"
             class="size-4"
           />
@@ -81,7 +100,7 @@
           ]"
           @click="viewMode = 'grid'"
         >
-          <UIcon
+          <Icon
             name="i-lucide-grid-3x3"
             class="size-4"
           />
@@ -89,7 +108,6 @@
       </div>
     </div>
 
-    <!-- Bulk actions bar -->
     <Transition name="slide-down">
       <div
         v-if="selectedIds.length > 0"
@@ -98,44 +116,49 @@
         <span class="text-sm font-medium text-[color:var(--accent)]">
           Выбрано: {{ selectedIds.length }}
         </span>
-        <UButton
+        <Button
           label="Снять выделение"
-          variant="link"
-          size="xs"
+          variant="text"
+          size="small"
           @click="selectedIds = []"
         />
         <div class="flex-1" />
-        <UButton
-          icon="i-lucide-trash-2"
-          label="Удалить"
-          color="error"
-          variant="outline"
-          size="sm"
+        <Button
+          outlined
+          severity="danger"
+          size="small"
           @click="handleBulkDelete"
-        />
-        <UButton
-          icon="i-lucide-eye"
-          label="Изменить видимость"
-          variant="outline"
-          size="sm"
+        >
+          <template #icon>
+            <Icon name="i-lucide-trash-2" />
+          </template>
+          <span>Удалить</span>
+        </Button>
+        <Button
+          outlined
+          severity="secondary"
+          size="small"
           @click="openBulkVisibilityDialog"
-        />
+        >
+          <template #icon>
+            <Icon name="i-lucide-eye" />
+          </template>
+          <span>Изменить видимость</span>
+        </Button>
       </div>
     </Transition>
 
-    <!-- Loading skeleton -->
     <div
       v-if="loading"
       class="space-y-3"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 5"
         :key="i"
         class="h-16 w-full rounded-lg"
       />
     </div>
 
-    <!-- Empty state -->
     <SharedEmptyState
       v-else-if="displayList.length === 0"
       icon="i-lucide-qr-code"
@@ -145,16 +168,21 @@
       :description="filters.search ? t('qr.empty.searchDescription') : t('qr.empty.description')"
     >
       <template #action>
-        <UButton
+        <Button
           v-if="!filters.search"
-          icon="i-lucide-plus"
-          :label="t('qr.empty.createAction')"
-          to="/qr/create"
-        />
+          as-child
+        >
+          <NuxtLink
+            to="/qr/create"
+            class="inline-flex items-center gap-2"
+          >
+            <Icon name="i-lucide-plus" />
+            <span>{{ t('qr.empty.createAction') }}</span>
+          </NuxtLink>
+        </Button>
       </template>
     </SharedEmptyState>
 
-    <!-- Table view -->
     <QrTable
       v-else-if="viewMode === 'table'"
       :items="displayList as any"
@@ -173,7 +201,6 @@
       @change-visibility="handleChangeVisibility"
     />
 
-    <!-- Grid view -->
     <div
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
@@ -191,7 +218,6 @@
       />
     </div>
 
-    <!-- Pagination -->
     <SharedPagination
       v-if="displayList.length > 0"
       :page="filters.page"
@@ -201,7 +227,6 @@
       @update:page="handlePageChange"
     />
 
-    <!-- Delete confirmation -->
     <SharedConfirmDialog
       v-model:open="bulkDeleteDialogOpen"
       title="Удалить выбранные QR-коды?"
@@ -209,79 +234,84 @@
       @confirm="confirmBulkDelete"
     />
 
-    <UModal
-      v-model:open="bulkVisibilityDialogOpen"
+    <Dialog
+      v-model:visible="bulkVisibilityDialogOpen"
+      modal
+      :dismissable-mask="true"
       :close-on-escape="true"
+      class="w-full max-w-lg"
     >
-      <template #content>
-        <div class="space-y-4 p-5">
-          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
-            Изменить видимость выбранных QR
-          </h3>
-          <USelect
-            v-model="bulkVisibility"
-            :items="bulkVisibilityItems"
-            value-key="value"
+      <div class="space-y-4 py-1">
+        <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+          Изменить видимость выбранных QR
+        </h3>
+        <Select
+          v-model="bulkVisibility"
+          :options="bulkVisibilityItems"
+          option-label="label"
+          option-value="value"
+        />
+        <Select
+          v-if="bulkVisibility === 'department'"
+          v-model="bulkDepartmentId"
+          :options="departmentSelectItems"
+          option-label="label"
+          option-value="value"
+          placeholder="Выберите отдел"
+        />
+        <div class="flex justify-end gap-2">
+          <Button
+            label="Отмена"
+            severity="secondary"
+            text
+            @click="bulkVisibilityDialogOpen = false"
           />
-          <USelect
-            v-if="bulkVisibility === 'department'"
-            v-model="bulkDepartmentId"
-            :items="departmentSelectItems"
-            value-key="value"
-            placeholder="Выберите отдел"
+          <Button
+            label="Применить"
+            :disabled="bulkVisibility === 'department' && !bulkDepartmentId"
+            :loading="bulkVisibilityLoading"
+            @click="confirmBulkVisibilityChange"
           />
-          <div class="flex justify-end gap-2">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              label="Отмена"
-              @click="bulkVisibilityDialogOpen = false"
-            />
-            <UButton
-              label="Применить"
-              :disabled="bulkVisibility === 'department' && !bulkDepartmentId"
-              :loading="bulkVisibilityLoading"
-              @click="confirmBulkVisibilityChange"
-            />
-          </div>
         </div>
-      </template>
-    </UModal>
+      </div>
+    </Dialog>
 
-    <UModal
-      v-model:open="departmentPickerOpen"
+    <Dialog
+      v-model:visible="departmentPickerOpen"
+      modal
+      :dismissable-mask="true"
       :close-on-escape="true"
+      class="w-full max-w-lg"
     >
-      <template #content>
-        <div class="space-y-4 p-5">
-          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
-            {{ t('qr.departmentModal.title') }}
-          </h3>
-          <p class="text-sm text-[color:var(--text-secondary)]">
-            {{ t('qr.departmentModal.description') }}
-          </p>
-          <USelect
-            v-model="selectedDepartmentId"
-            :items="departmentSelectItems"
-            value-key="value"
-            placeholder="Выберите отдел"
+      <div class="space-y-4 py-1">
+        <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+          {{ t('qr.departmentModal.title') }}
+        </h3>
+        <p class="text-sm text-[color:var(--text-secondary)]">
+          {{ t('qr.departmentModal.description') }}
+        </p>
+        <Select
+          v-model="selectedDepartmentId"
+          :options="departmentSelectItems"
+          option-label="label"
+          option-value="value"
+          placeholder="Выберите отдел"
+        />
+        <div class="flex justify-end gap-2">
+          <Button
+            :label="t('qr.departmentModal.cancel')"
+            severity="secondary"
+            text
+            @click="closeDepartmentPicker"
           />
-          <div class="flex justify-end gap-2">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              :label="t('qr.departmentModal.cancel')"
-              @click="closeDepartmentPicker"
-            />
-            <UButton
-              :label="t('qr.departmentModal.confirm')"
-              :disabled="!selectedDepartmentId"
-              @click="confirmDepartmentVisibilityChange"
-            />
-          </div>
+          <Button
+            :label="t('qr.departmentModal.confirm')"
+            :disabled="!selectedDepartmentId"
+            @click="confirmDepartmentVisibilityChange"
+          />
         </div>
-      </template>
-    </UModal>
+      </div>
+    </Dialog>
   </div>
 </template>
 

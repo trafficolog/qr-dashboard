@@ -1,80 +1,90 @@
 <template>
   <div class="space-y-6">
-    <!-- Loading header skeleton -->
     <div
       v-if="loadingFolder"
       class="flex items-center gap-3"
     >
-      <div class="size-8 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
-      <div class="h-7 w-48 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
+      <div class="size-8 animate-pulse rounded bg-[color:var(--surface-2)]" />
+      <div class="h-7 w-48 animate-pulse rounded bg-[color:var(--surface-2)]" />
     </div>
 
-    <!-- Header -->
     <div
       v-else
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
     >
       <div class="flex items-center gap-3">
-        <UButton
-          icon="i-lucide-arrow-left"
-          variant="ghost"
-          color="neutral"
-          size="sm"
-          aria-label="Назад к папкам"
-          title="Назад к папкам"
-          to="/folders"
-        />
+        <Button
+          as-child
+          text
+          severity="secondary"
+          size="small"
+        >
+          <NuxtLink
+            to="/folders"
+            aria-label="Назад к папкам"
+            title="Назад к папкам"
+          >
+            <Icon name="i-lucide-arrow-left" />
+          </NuxtLink>
+        </Button>
         <div
           class="p-2 rounded-lg"
           :style="{ backgroundColor: folder?.color ? `${folder.color}1a` : '#f3f4f6' }"
         >
-          <UIcon
+          <Icon
             name="i-lucide-folder-open"
             class="size-5"
             :style="{ color: folder?.color || '#9ca3af' }"
           />
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+          <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
             {{ folder?.name }}
           </h1>
-          <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
+          <p class="text-sm text-[color:var(--text-muted)]">
             {{ qrList.length }} {{ pluralQr(qrList.length) }}
           </p>
         </div>
       </div>
 
       <div class="flex gap-2">
-        <UButton
-          icon="i-lucide-plus"
-          label="Создать QR"
-          size="sm"
-          :to="`/qr/create?folderId=${id}`"
-        />
-        <UButton
-          icon="i-lucide-pencil"
-          label="Переименовать"
-          variant="outline"
-          color="neutral"
-          size="sm"
+        <Button
+          as-child
+          size="small"
+        >
+          <NuxtLink
+            :to="`/qr/create?folderId=${id}`"
+            class="inline-flex items-center gap-2"
+          >
+            <Icon name="i-lucide-plus" />
+            <span>Создать QR</span>
+          </NuxtLink>
+        </Button>
+        <Button
+          outlined
+          severity="secondary"
+          size="small"
           @click="editDialogOpen = true"
-        />
+        >
+          <template #icon>
+            <Icon name="i-lucide-pencil" />
+          </template>
+          Переименовать
+        </Button>
       </div>
     </div>
 
-    <!-- QR list loading -->
     <div
       v-if="loadingQr"
       class="space-y-3"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 4"
         :key="i"
         class="h-16 w-full rounded-lg"
       />
     </div>
 
-    <!-- Empty -->
     <SharedEmptyState
       v-else-if="!qrList.length"
       icon="i-lucide-qr-code"
@@ -82,15 +92,20 @@
       description="Создайте QR-код или перенесите существующие в эту папку."
     >
       <template #action>
-        <UButton
-          icon="i-lucide-plus"
-          label="Создать QR"
-          :to="`/qr/create?folderId=${id}`"
-        />
+        <Button
+          as-child
+        >
+          <NuxtLink
+            :to="`/qr/create?folderId=${id}`"
+            class="inline-flex items-center gap-2"
+          >
+            <Icon name="i-lucide-plus" />
+            <span>Создать QR</span>
+          </NuxtLink>
+        </Button>
       </template>
     </SharedEmptyState>
 
-    <!-- Table -->
     <QrTable
       v-else
       :items="qrList as any"
@@ -106,7 +121,6 @@
       @delete="handleDelete"
     />
 
-    <!-- Pagination -->
     <SharedPagination
       v-if="(meta.totalPages ?? 0) > 1"
       :page="page"
@@ -116,14 +130,12 @@
       @update:page="p => { page = p; fetchQr() }"
     />
 
-    <!-- Edit folder dialog -->
     <FoldersFolderDialog
       v-model:open="editDialogOpen"
       :folder="folder"
       @updated="onFolderUpdated"
     />
 
-    <!-- Delete QR confirmation -->
     <SharedConfirmDialog
       v-model:open="deleteDialogOpen"
       title="Удалить QR-код"

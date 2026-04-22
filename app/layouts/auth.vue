@@ -1,47 +1,42 @@
 <template>
-  <div class="relative min-h-screen flex items-center justify-center bg-[color:var(--surface-1)] px-4">
-    <UButton
-      class="absolute right-4 top-4"
-      color="neutral"
-      variant="outline"
-      size="sm"
-      :icon="themeIcon"
-      @click="toggleTheme"
+  <div class="auth-layout">
+    <button
+      type="button"
+      class="auth-theme-toggle"
+      :aria-label="themeLabel"
+      @click="layout.toggleDarkMode"
     >
-      {{ themeLabel }}
-    </UButton>
+      <Icon
+        :name="themeIcon"
+        class="size-4"
+      />
+      <span>{{ themeLabel }}</span>
+    </button>
 
-    <div class="w-full max-w-md">
-      <div class="text-center mb-8">
+    <div class="auth-layout-card">
+      <div class="auth-layout-brand">
         <img
           src="/splat-logo.svg"
           alt="SPLAT"
-          class="mx-auto mb-4 h-10"
+          class="h-10"
         >
-        <h1 class="text-lg font-semibold text-[color:var(--text-primary)]">
-          {{ $t('app.name') }}
-        </h1>
+        <h1>{{ $t('app.name') }}</h1>
       </div>
-      <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)] shadow-lg shadow-black/5">
+      <div class="auth-layout-content">
         <slot />
-      </UCard>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const colorMode = useColorMode()
 const { t } = useI18n()
+const layout = useLayout()
 
-const isDark = computed(() => colorMode.value === 'dark')
-const themeIcon = computed(() => (
-  isDark.value ? 'i-lucide-sun' : 'i-lucide-moon-star'
-))
-const themeLabel = computed(() => (
-  isDark.value ? t('common.lightTheme') : t('common.darkTheme')
-))
+onMounted(() => {
+  layout.initializeTheme()
+})
 
-function toggleTheme() {
-  colorMode.preference = isDark.value ? 'light' : 'dark'
-}
+const themeIcon = computed(() => layout.layoutConfig.value.darkTheme ? 'i-lucide-sun' : 'i-lucide-moon-star')
+const themeLabel = computed(() => layout.layoutConfig.value.darkTheme ? t('common.lightTheme') : t('common.darkTheme'))
 </script>
