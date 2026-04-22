@@ -1,40 +1,68 @@
 <template>
   <div :class="containerClass">
-    <UButton
-      icon="i-lucide-download"
-      :label="compact ? undefined : 'Download'"
+    <Button
       :aria-label="compact ? 'Скачать QR-код' : undefined"
       :title="compact ? 'Скачать QR-код' : undefined"
-      :size="compact ? 'xs' : 'sm'"
-      variant="outline"
-      color="neutral"
+      :size="compact ? 'small' : 'small'"
+      outlined
+      severity="secondary"
       @click="exportOpen = true"
-    />
+    >
+      <template #icon>
+        <Icon name="i-lucide-download" />
+      </template>
+      <span v-if="!compact">Download</span>
+    </Button>
 
-    <UButton
-      icon="i-lucide-copy"
-      :label="compact ? undefined : 'Copy URL'"
+    <Button
       :aria-label="compact ? 'Скопировать URL' : undefined"
       :title="compact ? 'Скопировать URL' : undefined"
-      :size="compact ? 'xs' : 'sm'"
-      variant="outline"
-      color="neutral"
+      :size="compact ? 'small' : 'small'"
+      outlined
+      severity="secondary"
       @click="copyUrl"
-    />
+    >
+      <template #icon>
+        <Icon name="i-lucide-copy" />
+      </template>
+      <span v-if="!compact">Copy URL</span>
+    </Button>
 
-    <UTooltip :text="makeDepartmentTooltip">
-      <UDropdownMenu :items="moreActions">
-        <UButton
-          icon="i-lucide-more-horizontal"
-          :label="compact ? undefined : 'More'"
-          :aria-label="`Открыть дополнительные действия для QR-кода ${title}`"
-          :title="`Открыть дополнительные действия для QR-кода ${title}`"
-          :size="compact ? 'xs' : 'sm'"
-          variant="ghost"
-          color="neutral"
-        />
-      </UDropdownMenu>
-    </UTooltip>
+    <Button
+      :aria-label="`Открыть дополнительные действия для QR-кода ${title}`"
+      :title="`Открыть дополнительные действия для QR-кода ${title}`"
+      :size="compact ? 'small' : 'small'"
+      text
+      severity="secondary"
+      @click="toggleMenu"
+    >
+      <template #icon>
+        <Icon name="i-lucide-more-horizontal" />
+      </template>
+      <span v-if="!compact">More</span>
+    </Button>
+
+    <Menu
+      ref="menuRef"
+      :model="flatMenuItems"
+      popup
+      class="min-w-56"
+    >
+      <template #item="{ item }">
+        <button
+          class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
+          :disabled="item.disabled"
+          :title="item.key === 'department' ? makeDepartmentTooltip : undefined"
+          @click="item.command?.()"
+        >
+          <Icon
+            :name="item.icon"
+            class="size-4"
+          />
+          <span>{{ item.label }}</span>
+        </button>
+      </template>
+    </Menu>
 
     <QrExportDialog
       v-model:open="exportOpen"
@@ -46,6 +74,7 @@
 
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
+import type Menu from 'primevue/menu'
 
 const props = withDefaults(defineProps<{
   qrId: string
@@ -76,6 +105,7 @@ const emit = defineEmits<{
 const toast = useA11yToast()
 const { copy } = useClipboard()
 const exportOpen = ref(false)
+const menuRef = ref<InstanceType<typeof Menu> | null>(null)
 
 const containerClass = computed(() => props.compact
   ? 'flex items-center justify-end gap-1'
@@ -98,18 +128,21 @@ const moreActions = computed(() => [
   ],
   [
     {
+      key: 'public',
       label: 'Сделать публичным',
       icon: 'i-lucide-globe',
       disabled: props.visibility === 'public',
       onSelect: () => emit('changeVisibility', { id: props.qrId, visibility: 'public' }),
     },
     {
+      key: 'private',
       label: 'Сделать приватным',
       icon: 'i-lucide-lock',
       disabled: props.visibility === 'private',
       onSelect: () => emit('changeVisibility', { id: props.qrId, visibility: 'private' }),
     },
     {
+      key: 'department',
       label: 'Поделиться с отделом',
       icon: 'i-lucide-building-2',
       disabled: !canShareWithDepartment.value,
@@ -124,6 +157,12 @@ const moreActions = computed(() => [
     { label: 'Удалить', icon: 'i-lucide-trash-2', onSelect: () => emit('delete', props.qrId) },
   ],
 ])
+
+const flatMenuItems = computed(() => moreActions.value.flat())
+
+function toggleMenu(event: Event) {
+  menuRef.value?.toggle(event)
+}
 
 async function copyUrl() {
   try {
