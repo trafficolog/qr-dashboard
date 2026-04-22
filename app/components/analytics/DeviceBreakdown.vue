@@ -4,7 +4,7 @@
       v-if="loading"
       class="space-y-1.5"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 4"
         :key="i"
         class="h-5 rounded-md"

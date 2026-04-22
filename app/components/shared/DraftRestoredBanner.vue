@@ -1,33 +1,54 @@
 <template>
-  <UAlert
+  <Message
     v-if="hasDraft"
-    icon="i-lucide-history"
-    color="info"
-    variant="soft"
-    :title="$t('forms.draft.restored')"
-    :description="savedAgo"
+    severity="info"
+    :closable="false"
   >
-    <template #actions>
-      <div class="flex gap-2">
-        <UButton
-          size="xs"
-          color="info"
-          variant="solid"
-          icon="i-lucide-rotate-ccw"
-          :label="$t('forms.draft.keep')"
-          @click="emit('restore')"
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <Icon
+          name="i-lucide-history"
+          class="size-4"
         />
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-x"
-          :label="$t('forms.draft.discard')"
-          @click="emit('discard')"
-        />
+        <div>
+          <p class="font-medium">
+            {{ $t('forms.draft.restored') }}
+          </p>
+          <p class="text-sm opacity-80">
+            {{ savedAgo }}
+          </p>
+        </div>
       </div>
-    </template>
-  </UAlert>
+      <div class="flex gap-2">
+        <Button
+          size="small"
+          @click="emit('restore')"
+        >
+          <template #icon>
+            <Icon
+              name="i-lucide-rotate-ccw"
+              class="size-4"
+            />
+          </template>
+          {{ $t('forms.draft.keep') }}
+        </Button>
+        <Button
+          size="small"
+          text
+          severity="secondary"
+          @click="emit('discard')"
+        >
+          <template #icon>
+            <Icon
+              name="i-lucide-x"
+              class="size-4"
+            />
+          </template>
+          {{ $t('forms.draft.discard') }}
+        </Button>
+      </div>
+    </div>
+  </Message>
 </template>
 
 <script setup lang="ts">

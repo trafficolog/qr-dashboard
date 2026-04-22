@@ -1,101 +1,116 @@
 <template>
-  <UModal
-    v-model:open="open"
+  <Dialog
+    v-model:visible="open"
+    modal
+    :dismissable-mask="true"
     :close-on-escape="true"
+    class="w-full max-w-lg"
   >
-    <template #content>
-      <div class="bg-[color:var(--surface-0)] p-6">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
-            {{ folder ? 'Редактировать папку' : 'Новая папка' }}
-          </h3>
-          <span
-            v-if="saving"
-            class="text-sm text-[color:var(--text-muted)]"
+    <div class="space-y-4 py-1">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+          {{ folder ? 'Редактировать папку' : 'Новая папка' }}
+        </h3>
+        <span
+          v-if="saving"
+          class="text-sm text-[color:var(--text-muted)]"
+          aria-live="polite"
+        >
+          {{ folder ? 'Сохранение...' : 'Создание...' }}
+        </span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">Название *</label>
+          <InputText
+            v-model="form.name"
+            placeholder="Например: Промо-акции 2025"
+            autofocus
+            class="w-full"
+            :invalid="!!nameError"
+            :disabled="saving"
+          />
+          <p
+            v-if="nameError"
+            class="mt-1 text-xs text-[color:var(--color-error)]"
+            role="alert"
             aria-live="polite"
           >
-            {{ folder ? 'Сохранение...' : 'Создание...' }}
-          </span>
+            {{ nameError }}
+          </p>
         </div>
 
-        <div class="mt-4 space-y-4">
-          <UFormField
-            label="Название"
-            required
-            :error="nameError"
-          >
-            <UInput
-              v-model="form.name"
-              placeholder="Например: Промо-акции 2025"
-              autofocus
+        <div>
+          <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">Цвет</label>
+          <div class="flex items-center gap-3">
+            <input
+              v-model="form.color"
+              type="color"
+              class="h-8 w-10 cursor-pointer rounded border border-[color:var(--border)] p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="saving"
-            />
-          </UFormField>
-
-          <UFormField label="Цвет">
-            <div class="flex items-center gap-3">
-              <input
-                v-model="form.color"
-                type="color"
-                class="h-8 w-10 cursor-pointer rounded border border-[color:var(--border)] dark:border-[color:var(--border)] p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="saving"
-              >
-              <span class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] font-mono">{{ form.color || '#6b7280' }}</span>
-              <UButton
-                v-if="form.color"
-                variant="ghost"
-                color="neutral"
-                size="xs"
-                icon="i-lucide-x"
-                aria-label="Сбросить выбранный цвет"
-                title="Сбросить выбранный цвет"
-                :disabled="saving"
-                @click="form.color = ''"
-              />
-            </div>
-            <div class="flex gap-2 mt-2">
-              <button
-                v-for="preset in colorPresets"
-                :key="preset"
-                :style="{ backgroundColor: preset }"
-                class="size-6 rounded-full border-2 transition-transform hover:scale-110"
-                :class="form.color === preset ? 'border-[color:var(--text-primary)] dark:border-[color:var(--text-primary)]' : 'border-transparent'"
-                :disabled="saving"
-                @click="form.color = preset"
-              />
-            </div>
-          </UFormField>
-
-          <UFormField
-            v-if="parentOptions.length > 1"
-            label="Родительская папка"
-          >
-            <USelect
-              v-model="form.parentId"
-              :items="parentOptions"
-              placeholder="Корневая папка"
+            >
+            <span class="font-mono text-sm text-[color:var(--text-muted)]">{{ form.color || '#6b7280' }}</span>
+            <Button
+              v-if="form.color"
+              text
+              severity="secondary"
+              size="small"
+              aria-label="Сбросить выбранный цвет"
+              title="Сбросить выбранный цвет"
               :disabled="saving"
+              @click="form.color = ''"
+            >
+              <template #icon>
+                <Icon name="i-lucide-x" />
+              </template>
+            </Button>
+          </div>
+          <div class="mt-2 flex gap-2">
+            <button
+              v-for="preset in colorPresets"
+              :key="preset"
+              :style="{ backgroundColor: preset }"
+              class="size-6 rounded-full border-2 transition-transform hover:scale-110"
+              :class="form.color === preset ? 'border-[color:var(--text-primary)]' : 'border-transparent'"
+              :disabled="saving"
+              @click="form.color = preset"
             />
-          </UFormField>
+          </div>
         </div>
 
-        <div class="mt-6 flex justify-end gap-3">
-          <UButton
-            label="Отмена"
-            variant="outline"
-            color="neutral"
-            @click="open = false"
-          />
-          <UButton
-            :label="submitButtonLabel"
-            :loading="saving"
-            :disabled="!form.name.trim() || saving"
-            @click="handleSubmit"
+        <div v-if="parentOptions.length > 1">
+          <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">Родительская папка</label>
+          <Select
+            v-model="form.parentId"
+            :options="parentOptions"
+            option-label="label"
+            option-value="value"
+            placeholder="Корневая папка"
+            class="w-full"
+            :disabled="saving"
           />
         </div>
       </div>
-    </template>
-  </UModal>
+
+      <div class="mt-6 flex justify-end gap-3">
+        <Button
+          outlined
+          severity="secondary"
+          @click="open = false"
+        >
+          Отмена
+        </Button>
+        <Button
+          :loading="saving"
+          :disabled="!form.name.trim() || saving"
+          @click="handleSubmit"
+        >
+          {{ submitButtonLabel }}
+        </Button>
+      </div>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">

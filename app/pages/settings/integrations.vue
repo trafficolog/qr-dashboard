@@ -11,48 +11,75 @@
           </p>
         </div>
 
-        <UButton
-          color="neutral"
-          variant="outline"
-          icon="i-lucide-bot"
-          :to="'/integrations/mcp-setup'"
-          :label="$t('settings.integrations.openMcpSetup')"
-        />
+        <Button
+          outlined
+          severity="secondary"
+          @click="navigateTo('/integrations/mcp-setup')"
+        >
+          <template #icon>
+            <Icon name="i-lucide-bot" />
+          </template>
+          {{ $t('settings.integrations.openMcpSetup') }}
+        </Button>
       </div>
     </div>
 
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-key" class="size-4 text-[color:var(--text-muted)]" />
-            <h2 class="font-medium text-[color:var(--text-primary)]">
-              {{ $t('settings.integrations.apiKeys.label') }}
-            </h2>
-          </div>
-          <UButton
-            icon="i-lucide-plus"
-            size="sm"
-            variant="outline"
-            :label="$t('settings.integrations.apiKeys.create')"
-            @click="createKeyOpen = true"
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <Icon
+            name="i-lucide-key"
+            class="size-4 text-[color:var(--text-muted)]"
           />
+          <h2 class="font-medium text-[color:var(--text-primary)]">
+            {{ $t('settings.integrations.apiKeys.label') }}
+          </h2>
         </div>
-      </template>
-
-      <div v-if="loading" class="space-y-3">
-        <USkeleton v-for="i in 3" :key="i" class="h-14 w-full rounded-lg" />
+        <Button
+          outlined
+          size="small"
+          @click="createKeyOpen = true"
+        >
+          <template #icon>
+            <Icon name="i-lucide-plus" />
+          </template>
+          {{ $t('settings.integrations.apiKeys.create') }}
+        </Button>
       </div>
 
-      <div v-else-if="keys.length === 0" class="py-8 text-center text-[color:var(--text-secondary)]">
-        <UIcon name="i-lucide-key" class="mx-auto mb-2 size-10 text-[color:var(--text-muted)]/40" />
+      <div
+        v-if="loading"
+        class="space-y-3"
+      >
+        <Skeleton
+          v-for="i in 3"
+          :key="i"
+          class="h-14 w-full rounded-lg"
+        />
+      </div>
+
+      <div
+        v-else-if="keys.length === 0"
+        class="py-8 text-center text-[color:var(--text-secondary)]"
+      >
+        <Icon
+          name="i-lucide-key"
+          class="mx-auto mb-2 size-10 text-[color:var(--text-muted)]/40"
+        />
         <p class="text-sm">
           {{ $t('settings.integrations.apiKeys.empty') }}
         </p>
       </div>
 
-      <ul v-else class="divide-y divide-[color:var(--surface-2)]">
-        <li v-for="key in keys" :key="key.id" class="py-3 space-y-2">
+      <ul
+        v-else
+        class="divide-y divide-[color:var(--surface-2)]"
+      >
+        <li
+          v-for="key in keys"
+          :key="key.id"
+          class="py-3 space-y-2"
+        >
           <div class="flex items-center justify-between gap-4">
             <div class="flex-1 min-w-0">
               <p class="font-medium text-sm text-[color:var(--text-primary)] truncate">
@@ -65,126 +92,198 @@
             <span class="hidden sm:block text-xs text-[color:var(--text-muted)] whitespace-nowrap">
               {{ formatDate(key.createdAt) }}
             </span>
-            <UButton
-              icon="i-lucide-trash-2"
-              variant="ghost"
-              color="error"
-              size="xs"
+            <Button
+              text
+              severity="danger"
+              size="small"
               :aria-label="`Удалить ключ ${key.name}`"
               :title="`Удалить ключ ${key.name}`"
               :loading="deletingId === key.id"
               @click="handleDeleteKey(key.id)"
-            />
+            >
+              <template #icon>
+                <Icon name="i-lucide-trash-2" />
+              </template>
+            </Button>
           </div>
 
           <div class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--text-secondary)]">
-            <UBadge v-for="permission in key.permissions" :key="permission" color="neutral" variant="soft">
+            <Tag
+              v-for="permission in key.permissions"
+              :key="permission"
+              severity="secondary"
+            >
               {{ permissionLabel(permission) }}
-            </UBadge>
-            <UBadge v-if="key.allowedIps.length" color="neutral" variant="outline">
+            </Tag>
+            <Tag
+              v-if="key.allowedIps.length"
+              severity="contrast"
+            >
               {{ $t('settings.integrations.apiKeys.allowedIpsList', { count: key.allowedIps.length }) }}
-            </UBadge>
-            <UBadge v-else color="neutral" variant="outline">
+            </Tag>
+            <Tag
+              v-else
+              severity="contrast"
+            >
               {{ $t('settings.integrations.apiKeys.allowedIpsAny') }}
-            </UBadge>
-            <UBadge color="neutral" variant="outline">
+            </Tag>
+            <Tag severity="contrast">
               {{ $t('settings.integrations.apiKeys.expiresAtLabel') }}: {{ formatDateTime(key.expiresAt) }}
-            </UBadge>
-            <UBadge v-if="isExpiringSoon(key.expiresAt)" color="warning" variant="soft">
+            </Tag>
+            <Tag
+              v-if="isExpiringSoon(key.expiresAt)"
+              severity="warn"
+            >
               {{ $t('settings.integrations.apiKeys.expiringSoon') }}
-            </UBadge>
+            </Tag>
           </div>
         </li>
       </ul>
-    </UCard>
+    </section>
 
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-webhook" class="size-4 text-[color:var(--text-muted)]" />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            Webhooks
-          </h2>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-webhook"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          Webhooks
+        </h2>
+      </div>
       <p class="text-sm text-[color:var(--text-secondary)]">
         {{ $t('settings.integrations.webhooks.comingSoon') }}
       </p>
-    </UCard>
+    </section>
 
-    <UModal v-model:open="createKeyOpen" :title="$t('settings.integrations.apiKeys.create')" :close-on-escape="true">
-      <template #body>
+    <Dialog
+      v-model:visible="createKeyOpen"
+      modal
+      :header="$t('settings.integrations.apiKeys.create')"
+    >
+      <template #default>
         <div class="space-y-4">
-          <UFormField :label="$t('settings.integrations.apiKeys.nameLabel')" :error="createError">
-            <UInput v-model="newKeyName" :placeholder="$t('settings.integrations.apiKeys.namePlaceholder')" autofocus />
-          </UFormField>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">
+              {{ $t('settings.integrations.apiKeys.nameLabel') }}
+            </label>
+            <InputText
+              v-model="newKeyName"
+              class="w-full"
+              :placeholder="$t('settings.integrations.apiKeys.namePlaceholder')"
+              autofocus
+            />
+            <p
+              v-if="createError"
+              class="text-sm text-[color:var(--color-error)]"
+            >
+              {{ createError }}
+            </p>
+          </div>
 
-          <UFormField :label="$t('settings.integrations.apiKeys.permissionsLabel')">
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">
+              {{ $t('settings.integrations.apiKeys.permissionsLabel') }}
+            </label>
             <div class="space-y-3">
-              <UButton
-                size="xs"
-                color="neutral"
-                variant="outline"
-                icon="i-lucide-sparkles"
-                :label="$t('settings.integrations.apiKeys.mcpPreset')"
+              <Button
+                size="small"
+                outlined
+                severity="secondary"
                 @click="applyMcpPreset"
-              />
+              >
+                <template #icon>
+                  <Icon name="i-lucide-sparkles" />
+                </template>
+                {{ $t('settings.integrations.apiKeys.mcpPreset') }}
+              </Button>
 
               <div class="grid gap-2">
-                <UCheckbox
+                <div
                   v-for="option in permissionOptions"
                   :key="option.value"
-                  :model-value="newKeyPermissions.includes(option.value)"
-                  :label="option.label"
-                  @update:model-value="(checked) => togglePermission(option.value, checked === true)"
-                />
+                  class="flex items-center gap-2"
+                >
+                  <Checkbox
+                    :model-value="newKeyPermissions.includes(option.value)"
+                    binary
+                    @update:model-value="(checked) => togglePermission(option.value, checked === true)"
+                  />
+                  <span class="text-sm text-[color:var(--text-primary)]">{{ option.label }}</span>
+                </div>
               </div>
             </div>
-          </UFormField>
+          </div>
 
-          <UFormField :label="$t('settings.integrations.apiKeys.allowedIpsLabel')">
-            <UTextarea
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">
+              {{ $t('settings.integrations.apiKeys.allowedIpsLabel') }}
+            </label>
+            <Textarea
               v-model="allowedIpsInput"
               :rows="3"
+              class="w-full"
               :placeholder="$t('settings.integrations.apiKeys.allowedIpsPlaceholder')"
             />
-          </UFormField>
+          </div>
 
-          <UFormField :label="$t('settings.integrations.apiKeys.expiresAtLabel')">
-            <UInput v-model="expiresAtInput" type="datetime-local" />
-          </UFormField>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">
+              {{ $t('settings.integrations.apiKeys.expiresAtLabel') }}
+            </label>
+            <InputText
+              v-model="expiresAtInput"
+              type="datetime-local"
+              class="w-full"
+            />
+          </div>
 
-          <div v-if="createdKey" class="rounded-lg bg-[color:var(--surface-2)] p-3">
+          <div
+            v-if="createdKey"
+            class="rounded-lg bg-[color:var(--surface-2)] p-3"
+          >
             <p class="mb-1 text-xs font-medium text-[color:var(--text-secondary)]">
               {{ $t('settings.integrations.apiKeys.copyHint') }}
             </p>
             <div class="flex items-center gap-2">
               <code class="flex-1 truncate text-xs font-mono text-[color:var(--text-primary)]">{{ createdKey }}</code>
-              <UButton
-                icon="i-lucide-copy"
-                size="xs"
-                variant="ghost"
+              <Button
+                text
+                size="small"
                 :aria-label="$t('common.copy')"
                 :title="$t('common.copy')"
                 @click="copyKey"
-              />
+              >
+                <template #icon>
+                  <Icon name="i-lucide-copy" />
+                </template>
+              </Button>
             </div>
           </div>
         </div>
       </template>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton :label="$t('common.cancel')" variant="outline" color="neutral" @click="closeCreateModal" />
-          <UButton
+          <Button
+            outlined
+            severity="secondary"
+            @click="closeCreateModal"
+          >
+            {{ $t('common.cancel') }}
+          </Button>
+          <Button
             v-if="!createdKey"
-            :label="$t('settings.integrations.apiKeys.create')"
             :loading="creating"
-            icon="i-lucide-plus"
             @click="handleCreateKey"
-          />
+          >
+            <template #icon>
+              <Icon name="i-lucide-plus" />
+            </template>
+            {{ $t('settings.integrations.apiKeys.create') }}
+          </Button>
         </div>
       </template>
-    </UModal>
+    </Dialog>
   </div>
 </template>
 
