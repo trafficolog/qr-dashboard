@@ -5,7 +5,7 @@
       class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded bg-[color:var(--surface-3)] hover:bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
       @click="copy"
     >
-      <UIcon
+      <Icon
         :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
         class="size-3.5"
       />

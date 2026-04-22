@@ -1,7 +1,7 @@
 <template>
-  <USlideover
-    v-model:open="isOpen"
-    side="left"
+  <Drawer
+    v-model:visible="isOpen"
+    position="left"
     class="md:hidden"
   >
     <template #header>
@@ -15,7 +15,7 @@
       </div>
     </template>
 
-    <template #body>
+    <div class="flex h-full flex-col">
       <nav class="space-y-1 p-2">
         <NuxtLink
           v-for="item in navItems"
@@ -29,7 +29,7 @@
           ]"
           @click="isOpen = false"
         >
-          <UIcon
+          <Icon
             :name="item.icon"
             class="size-5"
           />
@@ -37,12 +37,11 @@
         </NuxtLink>
       </nav>
 
-      <!-- User info at bottom -->
       <div class="mt-auto border-t border-[color:var(--border)] p-4">
-        <div class="flex items-center gap-3 mb-3">
-          <UAvatar
-            :text="initials"
-            size="sm"
+        <div class="mb-3 flex items-center gap-3">
+          <Avatar
+            :label="initials"
+            shape="circle"
           />
           <div class="min-w-0">
             <p class="truncate text-sm font-medium text-[color:var(--text-primary)]">
@@ -53,17 +52,20 @@
             </p>
           </div>
         </div>
-        <UButton
-          icon="i-lucide-log-out"
-          label="Выйти"
-          variant="outline"
-          color="neutral"
-          block
+        <Button
+          outlined
+          severity="secondary"
+          class="w-full"
           @click="handleLogout"
-        />
+        >
+          <template #icon>
+            <Icon name="i-lucide-log-out" />
+          </template>
+          Выйти
+        </Button>
       </div>
-    </template>
-  </USlideover>
+    </div>
+  </Drawer>
 </template>
 
 <script setup lang="ts">

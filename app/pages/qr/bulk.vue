@@ -1,27 +1,30 @@
 <template>
-  <div class="max-w-4xl mx-auto space-y-6">
-    <!-- Header -->
+  <div class="mx-auto max-w-4xl space-y-6">
     <div class="flex items-center gap-3">
-      <UButton
-        icon="i-lucide-arrow-left"
-        variant="ghost"
-        color="neutral"
-        size="sm"
-        aria-label="Назад к списку QR-кодов"
-        title="Назад к списку QR-кодов"
-        to="/qr"
-      />
+      <Button
+        as-child
+        text
+        severity="secondary"
+        size="small"
+      >
+        <NuxtLink
+          to="/qr"
+          aria-label="Назад к списку QR-кодов"
+          title="Назад к списку QR-кодов"
+        >
+          <Icon name="i-lucide-arrow-left" />
+        </NuxtLink>
+      </Button>
       <div>
-        <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+        <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
           Массовое создание QR-кодов
         </h1>
-        <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] mt-0.5">
+        <p class="mt-0.5 text-sm text-[color:var(--text-muted)]">
           Загрузите CSV-файл для создания нескольких QR-кодов за раз
         </p>
       </div>
     </div>
 
-    <!-- Step indicator -->
     <div class="flex items-center gap-2">
       <div
         v-for="(label, i) in stepLabels"
@@ -32,7 +35,7 @@
           class="flex items-center justify-center size-7 rounded-full text-xs font-semibold transition-interactive"
           :class="stepCircleClass(i + 1)"
         >
-          <UIcon
+          <Icon
             v-if="step > i + 1"
             name="i-lucide-check"
             class="size-3.5"
@@ -41,52 +44,49 @@
         </div>
         <span
           class="text-sm hidden sm:block"
-          :class="step === i + 1 ? 'font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)]'"
+          :class="step === i + 1 ? 'font-medium text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)]'"
         >
           {{ label }}
         </span>
-        <UIcon
+        <Icon
           v-if="i < stepLabels.length - 1"
           name="i-lucide-chevron-right"
-          class="size-4 text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)]"
+          class="size-4 text-[color:var(--text-secondary)]"
         />
       </div>
     </div>
 
-    <!-- ───────── Step 1: Upload ───────── -->
-    <UCard v-if="step === 1">
-      <template #header>
-        <h2 class="font-semibold">
-          Загрузите CSV-файл
-        </h2>
-      </template>
+    <div
+      v-if="step === 1"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
+    >
+      <h2 class="mb-5 font-semibold">
+        Загрузите CSV-файл
+      </h2>
 
-      <!-- Template download -->
-      <UAlert
-        icon="i-lucide-info"
-        color="info"
-        variant="soft"
+      <Message
         class="mb-5"
       >
-        <template #description>
-          Используйте наш шаблон для правильного формата колонок.
-          <UButton
-            variant="link"
-            size="xs"
-            class="ml-1 p-0"
-            @click="downloadTemplate"
-          >
-            Скачать шаблон CSV
-          </UButton>
-        </template>
-      </UAlert>
+        <Icon
+          name="i-lucide-info"
+          class="mr-1 inline size-4"
+        />
+        Используйте наш шаблон для правильного формата колонок.
+        <Button
+          text
+          size="small"
+          class="ml-1 p-0"
+          @click="downloadTemplate"
+        >
+          Скачать шаблон CSV
+        </Button>
+      </Message>
 
-      <!-- Drop zone -->
       <div
         class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-interactive cursor-pointer"
         :class="isDragging
-          ? 'border-[color:var(--color-success)] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)]'
-          : 'border-[color:var(--border)] dark:border-[color:var(--border)] hover:border-[color:var(--color-success)] hover:bg-[color:var(--surface-0)] dark:hover:bg-[color:var(--surface-2)]/50'"
+          ? 'border-[color:var(--color-success)] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)]'
+          : 'border-[color:var(--border)] hover:border-[color:var(--color-success)] hover:bg-[color:var(--surface-0)]'"
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop.prevent="onFileDrop"
@@ -99,11 +99,11 @@
           class="hidden"
           @change="onFileSelect"
         >
-        <UIcon
+        <Icon
           name="i-lucide-upload-cloud"
-          class="size-12 text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)] mb-3"
+          class="mb-3 size-12 text-[color:var(--text-secondary)]"
         />
-        <p class="font-medium text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)]">
+        <p class="font-medium text-[color:var(--text-secondary)]">
           Перетащите CSV-файл или нажмите для выбора
         </p>
         <p class="text-sm text-[color:var(--text-muted)] mt-1">
@@ -113,13 +113,13 @@
 
       <div
         v-if="selectedFile"
-        class="mt-4 flex items-center gap-3 rounded-lg border border-[color:color-mix(in_srgb,var(--color-success)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] px-4 py-3"
+        class="mt-4 flex items-center gap-3 rounded-lg border border-[color:color-mix(in_srgb,var(--color-success)_35%,var(--border))] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] px-4 py-3"
       >
-        <UIcon
+        <Icon
           name="i-lucide-file-text"
-          class="size-5 text-[color:var(--color-success)] shrink-0"
+          class="size-5 shrink-0 text-[color:var(--color-success)]"
         />
-        <div class="flex-1 min-w-0">
+        <div class="min-w-0 flex-1">
           <p class="font-medium text-sm truncate">
             {{ selectedFile.name }}
           </p>
@@ -127,15 +127,18 @@
             {{ formatFileSize(selectedFile.size) }}
           </p>
         </div>
-        <UButton
-          icon="i-lucide-x"
-          variant="ghost"
-          color="neutral"
-          size="xs"
+        <Button
+          text
+          severity="secondary"
+          size="small"
           aria-label="Очистить выбранный файл"
           title="Очистить выбранный файл"
           @click="clearFile"
-        />
+        >
+          <template #icon>
+            <Icon name="i-lucide-x" />
+          </template>
+        </Button>
       </div>
 
       <p
@@ -145,38 +148,37 @@
         {{ parseError }}
       </p>
 
-      <template #footer>
-        <div class="flex justify-end">
-          <UButton
-            label="Далее — Просмотр"
-            trailing-icon="i-lucide-arrow-right"
-            :disabled="!parsedRows.length"
-            @click="step = 2"
+      <div class="mt-5 flex justify-end">
+        <Button
+          :disabled="!parsedRows.length"
+          @click="step = 2"
+        >
+          Далее — Просмотр
+          <Icon
+            name="i-lucide-arrow-right"
+            class="ml-1 size-4"
           />
-        </div>
-      </template>
-    </UCard>
+        </Button>
+      </div>
+    </div>
 
-    <!-- ───────── Step 2: Preview ───────── -->
-    <UCard v-if="step === 2">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <h2 class="font-semibold">
-            Просмотр данных
-          </h2>
-          <UBadge
-            color="neutral"
-            variant="subtle"
-          >
-            {{ parsedRows.length }} строк
-          </UBadge>
-        </div>
-      </template>
+    <div
+      v-if="step === 2"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
+    >
+      <div class="mb-5 flex items-center justify-between">
+        <h2 class="font-semibold">
+          Просмотр данных
+        </h2>
+        <Tag class="px-2 py-0.5 text-xs">
+          {{ parsedRows.length }} строк
+        </Tag>
+      </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-[color:var(--border)] dark:border-[color:var(--border)]">
+            <tr class="border-b border-[color:var(--border)]">
               <th
                 v-for="col in detectedHeaders"
                 :key="col"
@@ -184,7 +186,7 @@
               >
                 <div class="flex items-center gap-1">
                   {{ col }}
-                  <UIcon
+                  <Icon
                     v-if="requiredHeaders.includes(col)"
                     name="i-lucide-asterisk"
                     class="size-2.5 text-[color:var(--color-error)]"
@@ -197,12 +199,12 @@
             <tr
               v-for="(row, i) in previewRows"
               :key="i"
-              class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60"
+              class="border-b border-[color:var(--border)]/60"
             >
               <td
                 v-for="col in detectedHeaders"
                 :key="col"
-                class="py-2 pr-4 max-w-[200px] truncate text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)]"
+                class="max-w-[200px] truncate py-2 pr-4 text-[color:var(--text-secondary)]"
               >
                 {{ row[col] || '—' }}
               </td>
@@ -218,54 +220,57 @@
         Показаны первые 5 из {{ parsedRows.length }} строк
       </p>
 
-      <template #footer>
-        <div class="flex justify-between">
-          <UButton
-            label="Назад"
-            variant="outline"
-            color="neutral"
-            @click="step = 1"
+      <div class="mt-5 flex justify-between">
+        <Button
+          outlined
+          severity="secondary"
+          @click="step = 1"
+        >
+          Назад
+        </Button>
+        <Button @click="runValidation">
+          Далее — Валидация
+          <Icon
+            name="i-lucide-arrow-right"
+            class="ml-1 size-4"
           />
-          <UButton
-            label="Далее — Валидация"
-            trailing-icon="i-lucide-arrow-right"
-            @click="runValidation"
-          />
-        </div>
-      </template>
-    </UCard>
+        </Button>
+      </div>
+    </div>
 
-    <!-- ───────── Step 3: Validation ───────── -->
-    <UCard v-if="step === 3">
-      <template #header>
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <h2 class="font-semibold">
-            Результаты проверки
-          </h2>
-          <div class="flex gap-2">
-            <UBadge
-              color="success"
-              variant="subtle"
-              icon="i-lucide-check"
-            >
-              Готовы: {{ validRows.length }}
-            </UBadge>
-            <UBadge
-              v-if="rowErrors.length"
-              color="error"
-              variant="subtle"
-              icon="i-lucide-x"
-            >
-              Ошибки: {{ rowErrors.length }}
-            </UBadge>
-          </div>
+    <div
+      v-if="step === 3"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
+    >
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-2">
+        <h2 class="font-semibold">
+          Результаты проверки
+        </h2>
+        <div class="flex gap-2">
+          <Tag class="px-2 py-0.5 text-xs">
+            <Icon
+              name="i-lucide-check"
+              class="mr-1 size-3"
+            />
+            Готовы: {{ validRows.length }}
+          </Tag>
+          <Tag
+            v-if="rowErrors.length"
+            class="px-2 py-0.5 text-xs"
+          >
+            <Icon
+              name="i-lucide-x"
+              class="mr-1 size-3"
+            />
+            Ошибки: {{ rowErrors.length }}
+          </Tag>
         </div>
-      </template>
+      </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-[color:var(--border)] dark:border-[color:var(--border)]">
+            <tr class="border-b border-[color:var(--border)]">
               <th class="py-2 pr-3 w-10 text-left text-xs text-[color:var(--text-muted)]">
                 #
               </th>
@@ -284,15 +289,15 @@
             <tr
               v-for="item in validationItems"
               :key="item.row"
-              class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60"
-              :class="item.valid ? '' : 'bg-[color:var(--color-error-soft)] dark:bg-[color:var(--color-error-soft)]'"
+              class="border-b border-[color:var(--border)]/60"
+              :class="item.valid ? '' : 'bg-[color:var(--color-error-soft)]'"
             >
               <td class="py-2.5 pr-3 text-[color:var(--text-muted)] tabular-nums">
                 {{ item.row }}
               </td>
               <td
                 class="py-2.5 pr-3 font-medium"
-                :class="item.valid ? 'text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]' : 'text-[color:var(--color-error)] dark:text-[color:var(--color-error)]'"
+                :class="item.valid ? 'text-[color:var(--text-primary)]' : 'text-[color:var(--color-error)]'"
               >
                 {{ item.title || '—' }}
               </td>
@@ -302,9 +307,9 @@
               <td class="py-2.5">
                 <div
                   v-if="item.valid"
-                  class="flex items-center gap-1 text-[color:var(--color-success)] dark:text-[color:var(--color-success)]"
+                  class="flex items-center gap-1 text-[color:var(--color-success)]"
                 >
-                  <UIcon
+                  <Icon
                     name="i-lucide-check-circle"
                     class="size-4"
                   />
@@ -312,7 +317,7 @@
                 </div>
                 <div
                   v-else
-                  class="text-xs text-[color:var(--color-error)] dark:text-[color:var(--color-error)]"
+                  class="text-xs text-[color:var(--color-error)]"
                 >
                   {{ item.errorMsg }}
                 </div>
@@ -322,130 +327,135 @@
         </table>
       </div>
 
-      <template #footer>
-        <div class="flex justify-between">
-          <UButton
-            label="Назад"
-            variant="outline"
-            color="neutral"
-            @click="step = 2"
+      <div class="mt-5 flex justify-between">
+        <Button
+          outlined
+          severity="secondary"
+          @click="step = 2"
+        >
+          Назад
+        </Button>
+        <Button
+          :disabled="!validRows.length"
+          @click="step = 4"
+        >
+          Создать {{ validRows.length }} QR-кодов
+          <Icon
+            name="i-lucide-arrow-right"
+            class="ml-1 size-4"
           />
-          <UButton
-            :label="`Создать ${validRows.length} QR-кодов`"
-            trailing-icon="i-lucide-arrow-right"
-            :disabled="!validRows.length"
-            @click="step = 4"
-          />
-        </div>
-      </template>
-    </UCard>
+        </Button>
+      </div>
+    </div>
 
-    <!-- ───────── Step 4: Confirmation ───────── -->
-    <UCard v-if="step === 4">
-      <template #header>
-        <h2 class="font-semibold">
-          Подтверждение
-        </h2>
-      </template>
+    <div
+      v-if="step === 4"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
+    >
+      <h2 class="mb-5 font-semibold">
+        Подтверждение
+      </h2>
 
       <div class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="rounded-xl border border-[color:color-mix(in_srgb,var(--color-success)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] p-4 text-center">
-            <p class="text-3xl font-bold text-[color:var(--color-success)] dark:text-[color:var(--color-success)]">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div class="rounded-xl border border-[color:color-mix(in_srgb,var(--color-success)_35%,var(--border))] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] p-4 text-center">
+            <p class="text-3xl font-bold text-[color:var(--color-success)]">
               {{ validRows.length }}
             </p>
-            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-1">
+            <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
               Будет создано
             </p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] dark:border-[color:var(--border)] bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)]/50 p-4 text-center">
-            <p class="text-3xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4 text-center">
+            <p class="text-3xl font-bold text-[color:var(--text-primary)]">
               {{ parsedRows.length }}
             </p>
-            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-1">
+            <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
               Всего строк
             </p>
           </div>
-          <div class="rounded-xl border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--color-error)_45%,var(--border))] bg-[color:var(--color-error-soft)] dark:bg-[color:var(--color-error-soft)] p-4 text-center">
+          <div class="rounded-xl border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--border))] bg-[color:var(--color-error-soft)] p-4 text-center">
             <p class="text-3xl font-bold text-[color:var(--color-error)]">
               {{ rowErrors.length }}
             </p>
-            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-1">
+            <p class="mt-1 text-sm text-[color:var(--text-secondary)]">
               Пропущено (ошибки)
             </p>
           </div>
         </div>
 
-        <UAlert
+        <Message
           v-if="rowErrors.length > 0"
-          icon="i-lucide-alert-triangle"
-          color="warning"
-          variant="soft"
-          :description="`${rowErrors.length} строк с ошибками будут пропущены. Проверьте данные и загрузите исправленный файл.`"
-        />
+        >
+          <Icon
+            name="i-lucide-alert-triangle"
+            class="mr-1 inline size-4"
+          />
+          {{ `${rowErrors.length} строк с ошибками будут пропущены. Проверьте данные и загрузите исправленный файл.` }}
+        </Message>
 
-        <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)]">
+        <p class="text-sm text-[color:var(--text-muted)]">
           Все QR-коды будут созданы с типом <strong>«Динамический»</strong> и стилем по умолчанию.
           После создания вы сможете отредактировать каждый QR-код отдельно.
         </p>
       </div>
 
-      <template #footer>
-        <div class="flex justify-between">
-          <UButton
-            label="Назад"
-            variant="outline"
-            color="neutral"
-            @click="step = 3"
-          />
-          <UButton
-            label="Создать QR-коды"
-            icon="i-lucide-zap"
-            :loading="creating"
-            :disabled="creating"
-            @click="handleCreate"
-          />
-        </div>
-      </template>
-    </UCard>
+      <div class="mt-5 flex justify-between">
+        <Button
+          outlined
+          severity="secondary"
+          @click="step = 3"
+        >
+          Назад
+        </Button>
+        <Button
+          :loading="creating"
+          :disabled="creating"
+          @click="handleCreate"
+        >
+          <template #icon>
+            <Icon name="i-lucide-zap" />
+          </template>
+          Создать QR-коды
+        </Button>
+      </div>
+    </div>
 
-    <!-- ───────── Step 5: Result ───────── -->
-    <UCard v-if="step === 5">
-      <template #header>
-        <h2 class="font-semibold">
-          Результат
-        </h2>
-      </template>
+    <div
+      v-if="step === 5"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
+    >
+      <h2 class="mb-5 font-semibold">
+        Результат
+      </h2>
 
       <div class="space-y-5">
-        <!-- Success -->
         <div
           v-if="result.created > 0"
-          class="flex items-center gap-4 rounded-xl border border-[color:color-mix(in_srgb,var(--color-success)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--color-success)_45%,var(--border))] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] p-5"
+          class="flex items-center gap-4 rounded-xl border border-[color:color-mix(in_srgb,var(--color-success)_35%,var(--border))] bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] p-5"
         >
-          <UIcon
+          <Icon
             name="i-lucide-check-circle"
-            class="size-10 text-[color:var(--color-success)] shrink-0"
+            class="size-10 shrink-0 text-[color:var(--color-success)]"
           />
           <div>
-            <p class="text-xl font-bold text-[color:var(--color-success)] dark:text-[color:var(--color-success)]">
+            <p class="text-xl font-bold text-[color:var(--color-success)]">
               {{ result.created }} QR-кодов создано
             </p>
-            <p class="text-sm text-[color:var(--text-secondary)] dark:text-[color:var(--text-muted)] mt-0.5">
+            <p class="mt-0.5 text-sm text-[color:var(--text-secondary)]">
               Все QR-коды доступны в разделе «QR-коды»
             </p>
           </div>
         </div>
 
-        <!-- Errors -->
         <div v-if="result.failed > 0">
-          <p class="text-sm font-medium text-[color:var(--text-secondary)] dark:text-[color:var(--text-secondary)] mb-2">
+          <p class="mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
             Ошибки ({{ result.failed }}):
           </p>
-          <div class="rounded-lg border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--color-error)_45%,var(--border))] overflow-hidden">
+          <div class="overflow-hidden rounded-lg border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--border))]">
             <table class="w-full text-sm">
               <thead>
-                <tr class="bg-[color:var(--color-error-soft)] dark:bg-[color:var(--color-error-soft)]">
+                <tr class="bg-[color:var(--color-error-soft)]">
                   <th class="py-2 px-3 text-left text-xs text-[color:var(--color-error)]">
                     Строка
                   </th>
@@ -461,7 +471,7 @@
                 <tr
                   v-for="(err, i) in result.errors.slice(0, 20)"
                   :key="i"
-                  class="border-t border-[color:color-mix(in_srgb,var(--color-error)_25%,var(--border))] dark:border-[color:color-mix(in_srgb,var(--color-error)_45%,var(--border))]/50"
+                  class="border-t border-[color:color-mix(in_srgb,var(--color-error)_25%,var(--border))]"
                 >
                   <td class="py-2 px-3 tabular-nums">
                     {{ err.row }}
@@ -469,7 +479,7 @@
                   <td class="py-2 px-3 text-[color:var(--text-muted)]">
                     {{ err.field }}
                   </td>
-                  <td class="py-2 px-3 text-[color:var(--color-error)] dark:text-[color:var(--color-error)]">
+                  <td class="py-2 px-3 text-[color:var(--color-error)]">
                     {{ err.message }}
                   </td>
                 </tr>
@@ -485,23 +495,28 @@
         </div>
       </div>
 
-      <template #footer>
-        <div class="flex gap-3">
-          <UButton
-            icon="i-lucide-qr-code"
-            label="Перейти к QR-кодам"
+      <div class="mt-5 flex gap-3">
+        <Button as-child>
+          <NuxtLink
             to="/qr"
-          />
-          <UButton
-            icon="i-lucide-refresh-cw"
-            label="Загрузить ещё"
-            variant="outline"
-            color="neutral"
-            @click="reset"
-          />
-        </div>
-      </template>
-    </UCard>
+            class="inline-flex items-center gap-2"
+          >
+            <Icon name="i-lucide-qr-code" />
+            <span>Перейти к QR-кодам</span>
+          </NuxtLink>
+        </Button>
+        <Button
+          outlined
+          severity="secondary"
+          @click="reset"
+        >
+          <template #icon>
+            <Icon name="i-lucide-refresh-cw" />
+          </template>
+          Загрузить ещё
+        </Button>
+      </div>
+    </div>
   </div>
 </template>
 

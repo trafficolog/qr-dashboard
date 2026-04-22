@@ -1,17 +1,22 @@
+import { SplatPreset } from './app/themes/splat-preset'
+
+const isNuxtUiDisabled = process.env.NUXT_UI_DISABLED === '1'
+
 export default defineNuxtConfig({
   modules: [
-    '@nuxt/ui',
+    '@primevue/nuxt-module',
+    !isNuxtUiDisabled && '@nuxt/ui',
     '@nuxt/icon',
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-  ],
+  ].filter(Boolean),
 
   ssr: true,
 
   devtools: { enabled: true },
 
-  css: ['~~/app/assets/css/main.css', '@scalar/api-reference/style.css'],
+  css: ['~~/app/assets/css/main.css', '~~/app/assets/layout/layout.scss', '@scalar/api-reference/style.css'],
 
   colorMode: {
     preference: 'system',
@@ -93,6 +98,18 @@ export default defineNuxtConfig({
   },
 
   icon: {
-    serverBundle: 'remote',
+    serverBundle: process.env.NUXT_ICON_SERVER_BUNDLE || 'remote',
+  },
+
+  primevue: {
+    options: {
+      theme: {
+        preset: SplatPreset,
+        options: {
+          darkModeSelector: '.app-dark',
+        },
+      },
+      ripple: true,
+    },
   },
 })

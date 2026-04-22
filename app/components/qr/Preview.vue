@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable vue/no-v-html -->
   <div class="flex flex-col items-center">
     <!-- QR SVG -->
     <div
@@ -7,6 +8,7 @@
       role="img"
       :aria-label="previewAlt"
     >
+      <!-- eslint-disable-next-line vue/no-v-html -->
       <div
         v-if="svgHtml"
         class="w-full aspect-square"
@@ -16,7 +18,7 @@
         v-else
         class="flex aspect-square w-full items-center justify-center text-[color:var(--text-muted)]/50"
       >
-        <UIcon
+        <Icon
           name="i-lucide-qr-code"
           class="size-16"
         />
@@ -29,17 +31,18 @@
       class="mt-3 flex cursor-pointer items-center gap-2 text-sm text-[color:var(--text-secondary)] transition-interactive hover:text-[color:var(--accent)]"
       @click="copyUrl"
     >
-      <UIcon
+      <Icon
         name="i-lucide-link"
         class="size-4 shrink-0"
       />
       <span class="truncate max-w-[240px]">{{ redirectUrl }}</span>
-      <UIcon
+      <Icon
         :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
         class="size-4 shrink-0"
       />
     </div>
   </div>
+  <!-- eslint-enable vue/no-v-html -->
 </template>
 
 <script setup lang="ts">
