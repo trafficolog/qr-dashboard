@@ -110,4 +110,16 @@ export default defineNuxtConfig({
       ripple: true,
     },
   },
+
+  primevue: {
+    options: {
+      theme: {
+        preset: SplatPreset,
+        options: {
+          darkModeSelector: '.app-dark',
+        },
+      },
+      ripple: true,
+    },
+  },
 })
