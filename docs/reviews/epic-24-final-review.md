@@ -44,8 +44,8 @@
 | 24.26 | Empty states | ✅ | PR5 | `b9f14b1` | Shared EmptyState переведён на `@nuxt/icon`/PrimeVue stack (без Nuxt UI icon). |
 | 24.27 | Toast notifications replacement | ✅ | PR5 | `700e1fd` | `useA11yToast` переведён на PrimeVue ToastService + A11y announce. |
 | 24.28 | ConfirmDialog для destructive actions | ✅ | PR5 | `606b433` | Shared ConfirmDialog мигрирован на PrimeVue Dialog/Button. |
-| 24.29 | Departments management | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.30 | Allowed + Destination Domains | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.29 | Departments management | ✅ | PR5 | `follow-up commits (settings/departments primevue migration)` | `/settings/departments` переведена на PrimeVue Dialog/InputText/Select/MultiSelect/Button pattern с сохранением CRUD, member-management и admin-only ACL поведения. |
+| 24.30 | Allowed + Destination Domains | ✅ | PR5 | `follow-up commits (settings/domains + destination-domains primevue migration)` | `/settings/domains` и `/settings/destination-domains` переведены на PrimeVue forms/list/actions patterns; Allowed + Destination domains CRUD/whitelist flows сохранены. |
 | 24.31 | API Docs page (Scalar) | ✅ | PR5 | `follow-up commit (api-docs legacy primevue cleanup)` | `/api-docs/index` остаётся на Scalar, а `app/pages/api-docs/_legacy.vue` очищен от Nuxt UI (`UCard/UBadge` → PrimeVue `Tag` + token-based containers). |
 | 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
 | 24.33 | Typecheck sweep | ✅ | PR6 | `follow-up commit (type-safety fixes for PrimeVue menu/actions + toolchain deps)` | `pnpm typecheck` проходит; исправлены TS-ошибки в `AppTopbar`, `UserMenu`, `QuickActions`, `StyleEditor`, `qr/[id]`. Остаются только non-blocking предупреждения Nuxt/Volar (duplicated imports / plugin path warning). |
