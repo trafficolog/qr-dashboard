@@ -1,14 +1,17 @@
 <template>
-  <UModal
-    v-model:open="isOpen"
+  <Dialog
+    v-model:visible="isOpen"
+    modal
     :close-on-escape="true"
-    class="max-w-xl"
+    :dismissable-mask="true"
+    :style="{ width: '42rem', maxWidth: '95vw' }"
+    @hide="close"
   >
-    <template #content>
-      <div class="flex flex-col max-h-[70vh]">
+    <template #container>
+      <div class="flex max-h-[70vh] flex-col rounded-xl bg-[color:var(--surface-0)]">
         <!-- Search input -->
         <div class="flex items-center gap-3 border-b border-[color:var(--border)] px-4 py-3">
-          <UIcon
+          <Icon
             name="i-lucide-search"
             class="size-5 shrink-0 text-[color:var(--text-muted)]"
           />
@@ -17,16 +20,14 @@
             v-model="query"
             type="text"
             :placeholder="$t('search.placeholder')"
-            class="flex-1 bg-transparent text-[color:var(--text-primary)] placeholder:text-[color:var(--text-muted)] outline-none text-sm"
+            class="flex-1 bg-transparent text-sm text-[color:var(--text-primary)] placeholder:text-[color:var(--text-muted)] outline-none"
             data-testid="global-search-input"
             @keydown.escape="close"
           >
-          <UKbd
+          <kbd
             v-if="!query"
-            class="shrink-0"
-          >
-            Esc
-          </UKbd>
+            class="search-kbd"
+          >Esc</kbd>
           <button
             v-else
             aria-label="Очистить поисковый запрос"
@@ -34,7 +35,7 @@
             class="shrink-0 text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]"
             @click="query = ''"
           >
-            <UIcon
+            <Icon
               name="i-lucide-x"
               class="size-4"
             />
@@ -52,7 +53,7 @@
             v-if="loading"
             class="flex items-center justify-center py-8"
           >
-            <UIcon
+            <Icon
               name="i-lucide-loader-2"
               class="size-5 animate-spin text-[color:var(--text-muted)]"
             />
@@ -68,7 +69,6 @@
             </div>
 
             <template v-else>
-              <!-- QR codes -->
               <SearchSection
                 v-if="qrResults.length"
                 :label="$t('search.categories.qr')"
@@ -86,7 +86,6 @@
                 />
               </SearchSection>
 
-              <!-- Folders -->
               <SearchSection
                 v-if="folderResults.length"
                 :label="$t('search.categories.folders')"
@@ -102,7 +101,6 @@
                 />
               </SearchSection>
 
-              <!-- Pages -->
               <SearchSection
                 v-if="pageResults.length"
                 :label="$t('search.categories.pages')"
@@ -130,12 +128,12 @@
             </div>
 
             <template v-else>
-              <div class="flex items-center justify-between px-4 pt-3 pb-1">
+              <div class="flex items-center justify-between px-4 pb-1 pt-3">
                 <span class="text-xs font-medium uppercase tracking-wide text-[color:var(--text-muted)]">
                   {{ $t('search.recent') }}
                 </span>
                 <button
-                  class="text-xs text-[color:var(--text-muted)] hover:text-[color:var(--accent)] transition-interactive"
+                  class="text-xs text-[color:var(--text-muted)] transition-interactive hover:text-[color:var(--accent)]"
                   @click="discardRecent"
                 >
                   {{ $t('search.clearHistory') }}
@@ -155,20 +153,20 @@
         </div>
 
         <!-- Footer -->
-        <div class="shrink-0 border-t border-[color:var(--border)] px-4 py-2 flex items-center gap-4 text-xs text-[color:var(--text-muted)]">
+        <div class="flex shrink-0 items-center gap-4 border-t border-[color:var(--border)] px-4 py-2 text-xs text-[color:var(--text-muted)]">
           <span>
-            <UKbd size="sm">↑↓</UKbd> {{ $t('search.keybinds.navigate') }}
+            <kbd class="search-kbd search-kbd-sm">↑↓</kbd> {{ $t('search.keybinds.navigate') }}
           </span>
           <span>
-            <UKbd size="sm">↵</UKbd> {{ $t('search.keybinds.select') }}
+            <kbd class="search-kbd search-kbd-sm">↵</kbd> {{ $t('search.keybinds.select') }}
           </span>
           <span>
-            <UKbd size="sm">Esc</UKbd> {{ $t('search.keybinds.close') }}
+            <kbd class="search-kbd search-kbd-sm">Esc</kbd> {{ $t('search.keybinds.close') }}
           </span>
         </div>
       </div>
     </template>
-  </UModal>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -182,7 +180,6 @@ const focusReturn = createDialogFocusReturn()
 
 const inputRef = ref<HTMLInputElement | null>(null)
 
-// Focus input when modal opens
 watch(isOpen, (v) => {
   if (v) {
     focusReturn.save()
@@ -194,18 +191,15 @@ watch(isOpen, (v) => {
   }
 })
 
-// Reset focus index on results change
 const focusedIndex = ref(0)
 watch(results, () => {
   focusedIndex.value = 0
 })
 
-// Grouped results
 const qrResults = computed(() => results.value.filter((r): r is Extract<SearchResult, { kind: 'qr' }> => r.kind === 'qr'))
 const folderResults = computed(() => results.value.filter((r): r is Extract<SearchResult, { kind: 'folder' }> => r.kind === 'folder'))
 const pageResults = computed(() => results.value.filter((r): r is Extract<SearchResult, { kind: 'page' }> => r.kind === 'page'))
 
-// Map (kind, localIdx) → flat index for keyboard nav
 function flatIndex(kind: 'qr' | 'folder' | 'page', localIdx: number): number {
   if (kind === 'qr') return localIdx
   if (kind === 'folder') return qrResults.value.length + localIdx
@@ -223,7 +217,6 @@ function handleEnter() {
   if (item) select(item)
 }
 
-// Global keydown for Enter within the modal
 function onKeydown(e: KeyboardEvent) {
   if (!isOpen.value) return
   if (e.key === 'Enter') {
@@ -241,3 +234,17 @@ function recentIcon(kind: string): string {
   return 'i-lucide-file'
 }
 </script>
+
+<style scoped>
+.search-kbd {
+  border: 1px solid var(--layout-border, var(--border));
+  border-radius: 0.4rem;
+  padding: 0.12rem 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.search-kbd-sm {
+  font-size: 0.68rem;
+}
+</style>
