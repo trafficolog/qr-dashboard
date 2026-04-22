@@ -96,7 +96,19 @@ export default defineNuxtConfig({
   },
 
   icon: {
-    serverBundle: 'remote',
+    serverBundle: process.env.NUXT_ICON_SERVER_BUNDLE || 'remote',
+  },
+
+  primevue: {
+    options: {
+      theme: {
+        preset: SplatPreset,
+        options: {
+          darkModeSelector: '.app-dark',
+        },
+      },
+      ripple: true,
+    },
   },
 
   primevue: {
