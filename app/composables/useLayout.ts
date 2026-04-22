@@ -3,9 +3,6 @@ import { readonly } from 'vue'
 export type MenuMode = 'static'
 
 interface LayoutConfig {
-  preset: 'Aura'
-  primary: 'red'
-  surface: 'zinc'
   darkTheme: boolean
   menuMode: MenuMode
 }
@@ -16,13 +13,10 @@ interface LayoutState {
   mobileMenuActive: boolean
 }
 
-const STORAGE_KEY = 'splat-layout-dark-theme'
+const THEME_COOKIE_KEY = 'splat-theme'
 
 export function useLayout() {
   const layoutConfig = useState<LayoutConfig>('layout-config', () => ({
-    preset: 'Aura',
-    primary: 'red',
-    surface: 'zinc',
     darkTheme: false,
     menuMode: 'static',
   }))
@@ -50,24 +44,28 @@ export function useLayout() {
   }
 
   function initializeTheme() {
-    if (!import.meta.client) {
+    const themeCookie = useCookie<string | null>(THEME_COOKIE_KEY, { default: () => null })
+
+    if (themeCookie.value === 'dark') {
+      layoutConfig.value.darkTheme = true
+      applyDarkClass(true)
       return
     }
 
-    const saved = localStorage.getItem(STORAGE_KEY)
-
-    if (saved !== null) {
-      layoutConfig.value.darkTheme = saved === 'true'
-      applyDarkClass(layoutConfig.value.darkTheme)
+    if (themeCookie.value === 'light') {
+      layoutConfig.value.darkTheme = false
+      applyDarkClass(false)
       return
     }
 
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    layoutConfig.value.darkTheme = prefersDark
-    applyDarkClass(prefersDark)
+    if (import.meta.client) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      layoutConfig.value.darkTheme = prefersDark
+      applyDarkClass(prefersDark)
+    }
   }
 
-  function toggleMenu() {
+  function onMenuToggle() {
     if (isDesktop()) {
       layoutState.value.staticMenuDesktopInactive = !layoutState.value.staticMenuDesktopInactive
       return
@@ -90,18 +88,20 @@ export function useLayout() {
     layoutConfig.value.darkTheme = !layoutConfig.value.darkTheme
     applyDarkClass(layoutConfig.value.darkTheme)
 
-    if (!import.meta.client) {
-      return
-    }
-
-    localStorage.setItem(STORAGE_KEY, String(layoutConfig.value.darkTheme))
+    const themeCookie = useCookie<string>(THEME_COOKIE_KEY, {
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: 'lax',
+      path: '/',
+    })
+    themeCookie.value = layoutConfig.value.darkTheme ? 'dark' : 'light'
   }
 
   return {
     layoutConfig: readonly(layoutConfig),
     layoutState,
+    isDarkTheme: computed(() => layoutConfig.value.darkTheme),
     initializeTheme,
-    toggleMenu,
+    onMenuToggle,
     closeMobileMenu,
     onMenuItemClick,
     toggleDarkMode,

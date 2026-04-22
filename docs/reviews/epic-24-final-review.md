@@ -47,7 +47,7 @@
 | 24.29 | Departments management | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.30 | Allowed + Destination Domains | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.31 | API Docs page (Scalar) | ✅ | PR5 | `follow-up commit (api-docs legacy primevue cleanup)` | `/api-docs/index` остаётся на Scalar, а `app/pages/api-docs/_legacy.vue` очищен от Nuxt UI (`UCard/UBadge` → PrimeVue `Tag` + token-based containers). |
-| 24.32 | Theme switcher + persistence | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
 | 24.33 | Typecheck sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.34 | Lint sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.35 | Unit + E2E фиксы | ⬜ / ✅ / ❌ | PR6 | | |
@@ -61,7 +61,7 @@
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.32+
+- **Не начато:** 24.33+
 
 ---
 
@@ -206,7 +206,7 @@
 |----------|--------|-----------------------------------|-------------|
 | `preset = Aura` | ✅ | `nuxt.config.ts` / PR1 | В конфигурации PrimeVue используется Aura preset как baseline для темы. |
 | `primary = red` | ✅ | `app/assets/styles/tokens.css`, `app/theme/splat-preset.ts` / PR1 | Красная SPLAT-палитра закреплена в токенах и кастомном preset-слое. |
-| `darkModeSelector = '.app-dark'` | ✅ | `nuxt.config.ts`, `app/composables/useTheme.ts` / PR1, PR5 | Dark mode привязан к селектору `.app-dark` и синхронизирован с переключателем темы. |
+| `darkModeSelector = '.app-dark'` | ✅ | `nuxt.config.ts`, `app/composables/useLayout.ts` / PR1, PR5 | Dark mode привязан к селектору `.app-dark` и синхронизирован с переключателем темы. |
 | `menuMode = 'static'` | ✅ | `app/layouts/default.vue` / PR3 | Боковое меню работает в static-режиме согласно Amendment A1. |
 | Отсутствует `AppConfigurator` и UI-триггеры configurator | ✅ | `app/components/app/*`, `app/components/layout/*` / PR3 | Конфигуратор Sakai не подключён; кнопки/панели runtime-настройки в UI отсутствуют. |
 
