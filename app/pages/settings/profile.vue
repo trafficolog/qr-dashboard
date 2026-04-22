@@ -10,66 +10,69 @@
     </div>
 
     <!-- Profile info -->
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon
-            name="i-lucide-user"
-            class="size-4 text-[color:var(--text-muted)]"
-          />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('settings.profile.info.label') }}
-          </h2>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-user"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('settings.profile.info.label') }}
+        </h2>
+      </div>
 
       <form
         class="space-y-4"
         @submit.prevent="saveProfile"
       >
-        <UFormField :label="$t('settings.profile.info.name')">
-          <UInput
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-[color:var(--text-primary)]">
+            {{ $t('settings.profile.info.name') }}
+          </label>
+          <InputText
             v-model="form.name"
-            icon="i-lucide-user"
             :placeholder="$t('settings.profile.info.namePlaceholder')"
+            class="w-full"
           />
-        </UFormField>
+        </div>
 
-        <UFormField :label="$t('settings.profile.info.email')">
-          <UInput
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-[color:var(--text-primary)]">
+            {{ $t('settings.profile.info.email') }}
+          </label>
+          <InputText
             :model-value="user?.email || ''"
-            icon="i-lucide-mail"
+            class="w-full"
             disabled
           />
-          <template #hint>
-            <span class="text-xs text-[color:var(--text-muted)]">{{ $t('settings.profile.info.emailHint') }}</span>
-          </template>
-        </UFormField>
+          <span class="text-xs text-[color:var(--text-muted)]">{{ $t('settings.profile.info.emailHint') }}</span>
+        </div>
 
         <div class="flex justify-end">
-          <UButton
+          <Button
             type="submit"
             :loading="saving"
-            icon="i-lucide-save"
-            :label="$t('forms.actions.save')"
-          />
+          >
+            <template #icon>
+              <Icon name="i-lucide-save" />
+            </template>
+            {{ $t('forms.actions.save') }}
+          </Button>
         </div>
       </form>
-    </UCard>
+    </section>
 
     <!-- Account info -->
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon
-            name="i-lucide-shield"
-            class="size-4 text-[color:var(--text-muted)]"
-          />
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('settings.profile.account.label') }}
-          </h2>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center gap-2">
+        <Icon
+          name="i-lucide-shield"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('settings.profile.account.label') }}
+        </h2>
+      </div>
 
       <dl class="space-y-3 text-sm">
         <div class="flex items-center justify-between">
@@ -77,12 +80,9 @@
             {{ $t('settings.profile.account.role') }}
           </dt>
           <dd>
-            <UBadge
-              :color="user?.role === 'admin' ? 'error' : user?.role === 'editor' ? 'warning' : 'neutral'"
-              variant="soft"
-            >
+            <Tag :severity="roleSeverity(user?.role)">
               {{ roleLabel(user?.role) }}
-            </UBadge>
+            </Tag>
           </dd>
         </div>
         <div class="flex items-center justify-between">
@@ -94,7 +94,7 @@
           </dd>
         </div>
       </dl>
-    </UCard>
+    </section>
   </div>
 </template>
 
@@ -112,6 +112,12 @@ function roleLabel(role?: string) {
   if (role === 'admin') return t('settings.profile.account.roleAdmin')
   if (role === 'editor') return t('settings.profile.account.roleEditor')
   return t('settings.profile.account.roleViewer')
+}
+
+function roleSeverity(role?: string) {
+  if (role === 'admin') return 'danger'
+  if (role === 'editor') return 'warn'
+  return 'secondary'
 }
 
 async function saveProfile() {

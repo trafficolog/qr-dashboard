@@ -11,36 +11,44 @@
     </div>
 
     <!-- Info banner -->
-    <UAlert
+    <Message
       class="mb-6"
-      icon="i-lucide-info"
-      color="primary"
-      variant="soft"
-      :title="$t('pages.domains.accessMode.title')"
-      :description="domains.length === 0
-        ? $t('pages.domains.accessMode.openDescription')
-        : $t('pages.domains.accessMode.whitelistDescription', { active: activeDomains, total: domains.length })"
-    />
+      severity="info"
+      variant="simple"
+    >
+      <div class="flex items-start gap-2">
+        <Icon
+          name="i-lucide-info"
+          class="mt-0.5 size-4"
+        />
+        <div>
+          <p class="font-medium">
+            {{ $t('pages.domains.accessMode.title') }}
+          </p>
+          <p class="text-sm">
+            {{ domains.length === 0
+              ? $t('pages.domains.accessMode.openDescription')
+              : $t('pages.domains.accessMode.whitelistDescription', { active: activeDomains, total: domains.length }) }}
+          </p>
+        </div>
+      </div>
+    </Message>
 
     <!-- Add domain form -->
-    <UCard class="mb-6">
-      <template #header>
-        <h2 class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-          {{ $t('forms.actions.addDomain') }}
-        </h2>
-      </template>
+    <section class="mb-6 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+        {{ $t('forms.actions.addDomain') }}
+      </h2>
 
       <form
         class="flex gap-3"
         @submit.prevent="handleAdd"
       >
-        <UFormField
-          class="flex-1"
-        >
-          <UInput
+        <div class="flex-1">
+          <InputText
             v-model="newDomain"
             placeholder="example.com"
-            icon="i-lucide-globe"
+            class="w-full"
             :disabled="adding"
             :aria-invalid="Boolean(domainError)"
             :aria-describedby="domainError ? domainErrorId : undefined"
@@ -56,32 +64,32 @@
           >
             {{ domainError }}
           </p>
-        </UFormField>
-        <UButton
+        </div>
+        <Button
           type="submit"
-          icon="i-lucide-plus"
           :loading="adding"
           :disabled="!newDomain.trim()"
         >
+          <template #icon>
+            <Icon name="i-lucide-plus" />
+          </template>
           {{ $t('forms.actions.add') }}
-        </UButton>
+        </Button>
       </form>
-    </UCard>
+    </section>
 
     <!-- Domains list -->
-    <UCard>
-      <template #header>
-        <h2 class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-          {{ $t('pages.domains.listTitle') }}
-          <span class="ml-2 text-sm font-normal text-[color:var(--text-muted)]">({{ domains.length }})</span>
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+        {{ $t('pages.domains.listTitle') }}
+        <span class="ml-2 text-sm font-normal text-[color:var(--text-muted)]">({{ domains.length }})</span>
+      </h2>
 
       <div
         v-if="loading"
         class="py-8 flex justify-center"
       >
-        <UIcon
+        <Icon
           name="i-lucide-loader-2"
           class="size-6 animate-spin text-[color:var(--text-muted)]"
         />
@@ -91,7 +99,7 @@
         v-else-if="domains.length === 0"
         class="py-8 text-center text-[color:var(--text-muted)]"
       >
-        <UIcon
+        <Icon
           name="i-lucide-globe"
           class="size-10 mx-auto mb-2 text-[color:var(--text-secondary)]"
         />
@@ -111,37 +119,36 @@
           class="flex items-center justify-between py-3"
         >
           <div class="flex items-center gap-3">
-            <UBadge
-              :color="d.isActive ? 'success' : 'neutral'"
-              variant="soft"
-              size="sm"
-            >
+            <Tag :severity="d.isActive ? 'success' : 'secondary'">
               {{ d.isActive ? $t('pages.domains.status.active') : $t('pages.domains.status.disabled') }}
-            </UBadge>
+            </Tag>
             <span class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">{{ d.domain }}</span>
             <span class="text-xs text-[color:var(--text-muted)]">
               {{ formatDate(d.createdAt) }}
             </span>
           </div>
           <div class="flex items-center gap-2">
-            <UToggle
+            <ToggleSwitch
               :model-value="d.isActive"
               size="sm"
               @update:model-value="handleToggle(d.id, $event)"
             />
-            <UButton
-              icon="i-lucide-trash-2"
-              variant="ghost"
-              color="error"
-              size="sm"
+            <Button
+              text
+              severity="danger"
+              size="small"
               :aria-label="$t('pages.domains.actions.deleteDomain', { domain: d.domain })"
               :title="$t('pages.domains.actions.deleteDomain', { domain: d.domain })"
               @click="handleDelete(d)"
-            />
+            >
+              <template #icon>
+                <Icon name="i-lucide-trash-2" />
+              </template>
+            </Button>
           </div>
         </li>
       </ul>
-    </UCard>
+    </section>
 
     <!-- Confirm delete dialog -->
     <SharedConfirmDialog
