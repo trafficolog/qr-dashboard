@@ -35,7 +35,7 @@
 | 24.17 | Folders | ✅ | PR4 | `follow-up commit (folders pages + dialog primevue)` | `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern. |
 | 24.18 | Analytics | ✅ | PR4 | `follow-up commit (analytics primevue migration)` | `/analytics` и аналитические блоки (`GeoMap`, `GeoTable`, `DeviceBreakdown`, `DevicePieChart`, `HourlyChart`, `WeekdayChart`) переведены на PrimeVue Message/Button/Skeleton/Icon patterns. |
 | 24.19 | Integrations | ✅ | PR5 | `follow-up commit (integrations pages primevue migration)` | `/integrations` и `/integrations/mcp-setup` переведены на PrimeVue section-card + Button/Icon patterns. |
-| 24.20 | Settings | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.20 | Settings | ⚠️ | PR5 | `follow-up commit (settings shell + general primevue migration)` | Начата migration `/settings`: shell navigation и `/settings/general` переведены на PrimeVue InputText/Select/Icon patterns; остальные settings subpages ещё в работе. |
 | 24.21 | Notifications | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.22 | Shared QR (EPIC 19) | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.23 | Auth `/auth/login` | ✅ | PR5 | `12b0bfa` | Страница login переведена на PrimeVue InputText/InputOtp/Button/Message. |
@@ -61,7 +61,7 @@
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.20+
+- **Не начато:** 24.21+
 
 ---
 
