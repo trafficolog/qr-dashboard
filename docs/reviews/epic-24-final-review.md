@@ -33,7 +33,7 @@
 | 24.15 | QR Edit `/qr/[id]/edit` | ✅ | PR4 | `follow-up commit (qr/[id]/edit full controls migration)` | `/qr/[id]/edit` переведена на PrimeVue controls/patterns (cards, inputs/selects, actions, loading skeleton). |
 | 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ✅ | PR4 | `follow-up commits (qr/bulk full steps migration)` | `/qr/bulk` (stepper + шаги 1–5) переведён на PrimeVue pattern. |
 | 24.17 | Folders | ✅ | PR4 | `follow-up commit (folders pages + dialog primevue)` | `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern. |
-| 24.18 | Analytics | ⬜ / ✅ / ❌ | PR4 | | |
+| 24.18 | Analytics | ✅ | PR4 | `follow-up commit (analytics primevue migration)` | `/analytics` и аналитические блоки (`GeoMap`, `GeoTable`, `DeviceBreakdown`, `DevicePieChart`, `HourlyChart`, `WeekdayChart`) переведены на PrimeVue Message/Button/Skeleton/Icon patterns. |
 | 24.19 | Integrations | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.20 | Settings | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.21 | Notifications | ⬜ / ✅ / ❌ | PR5 | | |
@@ -61,7 +61,7 @@
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.18+
+- **Не начато:** 24.19+
 
 ---
 

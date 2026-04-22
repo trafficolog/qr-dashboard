@@ -12,7 +12,7 @@
 
 ---
 
-**Прогресс реализации (обновлено 2026-04-21):**
+**Прогресс реализации (обновлено 2026-04-22):**
 - ✅ Базовый PrimeVue bootstrap + Sakai shell: коммиты `1c50d2e`, `d928dfb`
 - ✅ Глобальные PrimeVue сервисы Toast/Confirm: коммит `fd13824`
 - ✅ Миграция auth login на PrimeVue controls: коммит `12b0bfa`
@@ -25,6 +25,7 @@
 - ✅ QR Edit migration: `/qr/[id]/edit` page переведена на PrimeVue controls/patterns
 - ✅ Bulk CSV migration: `/qr/bulk` stepper и шаги 1–5 переведены на PrimeVue pattern
 - ✅ Folders migration: `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern
+- ✅ Analytics migration: `/analytics` + `GeoMap/GeoTable/DeviceBreakdown/DevicePieChart/HourlyChart/WeekdayChart` переведены на PrimeVue Message/Button/Skeleton/Icon patterns
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
@@ -33,7 +34,7 @@
 ### Checkpoint 24.1–24.12 (2026-04-21)
 - ✅ Done: 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - ⚠️ In progress: 24.1, 24.6, 24.8, 24.11, 24.14
-- ⬜ Not started: 24.18+
+- ⬜ Not started: 24.19+
 
 ## 1. Проблема и обоснование
 
