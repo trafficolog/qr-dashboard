@@ -4,35 +4,46 @@
       Показано {{ from }}–{{ to }} из {{ total }}
     </p>
     <div class="flex items-center gap-1">
-      <UButton
-        icon="i-lucide-chevron-left"
-        variant="outline"
-        color="neutral"
-        size="sm"
+      <Button
+        severity="secondary"
+        outlined
+        size="small"
         aria-label="Предыдущая страница"
         title="Предыдущая страница"
         :disabled="page <= 1"
         @click="$emit('update:page', page - 1)"
-      />
-      <UButton
+      >
+        <Icon
+          name="i-lucide-chevron-left"
+          class="size-4"
+        />
+      </Button>
+
+      <Button
         v-for="p in visiblePages"
         :key="p"
-        :label="String(p)"
-        :variant="p === page ? 'solid' : 'outline'"
-        :color="p === page ? 'primary' : 'neutral'"
-        size="sm"
+        size="small"
+        :severity="p === page ? 'primary' : 'secondary'"
+        :outlined="p !== page"
         @click="$emit('update:page', p)"
-      />
-      <UButton
-        icon="i-lucide-chevron-right"
-        variant="outline"
-        color="neutral"
-        size="sm"
+      >
+        {{ p }}
+      </Button>
+
+      <Button
+        severity="secondary"
+        outlined
+        size="small"
         aria-label="Следующая страница"
         title="Следующая страница"
         :disabled="page >= totalPages"
         @click="$emit('update:page', page + 1)"
-      />
+      >
+        <Icon
+          name="i-lucide-chevron-right"
+          class="size-4"
+        />
+      </Button>
     </div>
   </div>
 </template>
