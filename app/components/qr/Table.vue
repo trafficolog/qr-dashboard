@@ -28,7 +28,7 @@
             @click="$emit('sort', 'title')"
           >
             Название
-            <UIcon
+            <Icon
               v-if="sortBy === 'title'"
               :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'"
               class="size-3 inline"
@@ -52,7 +52,7 @@
             @click="$emit('sort', 'totalScans')"
           >
             Сканы
-            <UIcon
+            <Icon
               v-if="sortBy === 'totalScans'"
               :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'"
               class="size-3 inline"
@@ -64,7 +64,7 @@
             @click="$emit('sort', 'createdAt')"
           >
             Создан
-            <UIcon
+            <Icon
               v-if="sortBy === 'createdAt'"
               :name="sortOrder === 'asc' ? 'i-lucide-arrow-up' : 'i-lucide-arrow-down'"
               class="size-3 inline"
@@ -120,15 +120,14 @@
               v-if="qr.tags?.length"
               class="flex gap-1 mt-1 flex-wrap"
             >
-              <UBadge
+              <Tag
                 v-for="tag in qr.tags?.slice(0, 3)"
                 :key="tag.id"
-                variant="subtle"
-                size="xs"
                 :style="tag.color ? { backgroundColor: tag.color + '30', color: tag.color } : {}"
+                class="px-2 py-0.5 text-xs"
               >
                 {{ tag.name }}
-              </UBadge>
+              </Tag>
             </div>
           </td>
           <td class="py-3 px-3 hidden lg:table-cell">
@@ -138,15 +137,13 @@
           </td>
           <td class="py-3 px-3">
             <QrStatusBadge :status="qr.status" />
-            <UBadge
-              :icon="getVisibilityBadge(qr).icon"
-              variant="soft"
-              color="neutral"
-              size="xs"
-              class="mt-1"
-            >
+            <Tag class="mt-1 px-2 py-0.5 text-xs">
+              <Icon
+                :name="getVisibilityBadge(qr).icon"
+                class="mr-1 size-3"
+              />
               {{ getVisibilityBadge(qr).label }}
-            </UBadge>
+            </Tag>
           </td>
           <td class="px-3 py-3 text-right font-medium text-[color:var(--text-primary)]">
             {{ qr.totalScans.toLocaleString('ru-RU') }}

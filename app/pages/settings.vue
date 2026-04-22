@@ -7,14 +7,18 @@
       :aria-label="$t('settings.nav.label')"
     >
       <!-- Settings search -->
-      <UInput
-        ref="settingsInputRef"
-        v-model="settingsQuery"
-        :placeholder="$t('settings.nav.searchPlaceholder')"
-        icon="i-lucide-search"
-        size="sm"
-        class="mb-4"
-      />
+      <div class="relative mb-4">
+        <Icon
+          name="i-lucide-search"
+          class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[color:var(--text-muted)]"
+        />
+        <InputText
+          v-model="settingsQuery"
+          :placeholder="$t('settings.nav.searchPlaceholder')"
+          class="w-full !pl-9"
+          size="small"
+        />
+      </div>
 
       <nav class="space-y-0.5">
         <NuxtLink
@@ -29,7 +33,7 @@
           ]"
           :data-testid="`settings-nav-${item.key}`"
         >
-          <UIcon
+          <Icon
             :name="item.icon"
             class="size-4 shrink-0"
           />
@@ -59,7 +63,7 @@
               : 'text-[color:var(--text-secondary)] hover-accent',
           ]"
         >
-          <UIcon
+          <Icon
             :name="item.icon"
             class="size-4"
           />
@@ -84,8 +88,6 @@ const { user } = useAuth()
 const isAdmin = computed(() => user.value?.role === 'admin')
 
 const settingsQuery = ref('')
-const settingsInputRef = ref<{ input?: HTMLInputElement } | null>(null)
-
 interface NavItem {
   key: string
   label: string

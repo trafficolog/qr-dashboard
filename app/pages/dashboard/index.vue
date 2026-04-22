@@ -1,55 +1,73 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <h1 class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
         {{ $t('nav.dashboard') }}
       </h1>
       <div
         class="flex gap-3"
         data-onboarding="dashboard-actions"
       >
-        <UButton
-          icon="i-lucide-plus"
-          label="Создать QR"
-          to="/qr/create"
-          size="sm"
-        />
-        <UButton
-          icon="i-lucide-qr-code"
-          label="Все QR-коды"
-          to="/qr"
-          variant="outline"
-          size="sm"
-        />
+        <Button
+          as-child
+          size="small"
+        >
+          <NuxtLink
+            to="/qr/create"
+            class="inline-flex items-center gap-2"
+          >
+            <Icon
+              name="i-lucide-plus"
+              class="size-4"
+            />
+            <span>Создать QR</span>
+          </NuxtLink>
+        </Button>
+        <Button
+          as-child
+          size="small"
+          severity="secondary"
+          outlined
+        >
+          <NuxtLink
+            to="/qr"
+            class="inline-flex items-center gap-2"
+          >
+            <Icon
+              name="i-lucide-qr-code"
+              class="size-4"
+            />
+            <span>Все QR-коды</span>
+          </NuxtLink>
+        </Button>
       </div>
     </div>
-    <!-- Date range picker -->
+
     <div data-onboarding="dashboard-date-range">
       <AnalyticsDateRangePicker v-model="dateRange" />
     </div>
-    <!-- Error -->
-    <UAlert
+
+    <Message
       v-if="error"
-      icon="i-lucide-alert-circle"
-      color="error"
-      :description="error"
-    />
-    <!-- Stat cards skeleton -->
+      severity="error"
+    >
+      {{ error }}
+    </Message>
+
     <div
       v-if="loading"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 4"
         :key="i"
         class="h-24 rounded-xl"
       />
     </div>
-    <!-- Stat cards -->
+
     <div
       v-else
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
       data-onboarding="dashboard-stats"
     >
       <AnalyticsStatCard
@@ -81,44 +99,55 @@
         :loading="loading"
       />
     </div>
-    <!-- Chart skeleton -->
-    <USkeleton
+
+    <Skeleton
       v-if="loading"
       class="h-72 rounded-xl"
     />
-    <!-- Chart -->
-    <UCard v-else>
-      <template #header>
-        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-          Динамика сканирований
-        </h2>
-      </template>
+
+    <section
+      v-else
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
+    >
+      <h2 class="font-semibold text-[color:var(--text-primary)]">
+        Динамика сканирований
+      </h2>
       <AnalyticsScanChart
         :data="timeSeries"
         :loading="loading"
       />
-    </UCard>
-    <!-- Top QR -->
-    <UCard data-onboarding="dashboard-top-qr">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-            Топ QR-кодов
-          </h2>
-          <UButton
+    </section>
+
+    <section
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
+      data-onboarding="dashboard-top-qr"
+    >
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="font-semibold text-[color:var(--text-primary)]">
+          Топ QR-кодов
+        </h2>
+        <Button
+          as-child
+          variant="text"
+          size="small"
+        >
+          <NuxtLink
             to="/analytics"
-            variant="ghost"
-            size="sm"
-            label="Подробнее"
-            trailing-icon="i-lucide-arrow-right"
-          />
-        </div>
-      </template>
+            class="inline-flex items-center gap-2"
+          >
+            <span>Подробнее</span>
+            <Icon
+              name="i-lucide-arrow-right"
+              class="size-4"
+            />
+          </NuxtLink>
+        </Button>
+      </div>
       <AnalyticsTopQrTable
         :data="topQr"
         :loading="loading"
       />
-    </UCard>
+    </section>
 
     <SharedOnboardingOverlay
       v-if="shouldShow"
