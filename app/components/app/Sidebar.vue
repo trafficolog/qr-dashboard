@@ -35,7 +35,7 @@
             : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)] hover-accent',
         ]"
       >
-        <UIcon
+        <Icon
           :name="item.icon"
           class="size-5 shrink-0"
         />
@@ -66,7 +66,7 @@
         class="flex w-full items-center justify-center rounded-lg p-2 text-[color:var(--text-muted)] transition-interactive hover:bg-[color:var(--surface-2)] hover:text-[color:var(--text-primary)]"
         @click="$emit('toggle')"
       >
-        <UIcon
+        <Icon
           :name="collapsed ? 'i-lucide-chevrons-right' : 'i-lucide-chevrons-left'"
           class="size-5"
         />

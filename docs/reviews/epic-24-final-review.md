@@ -16,20 +16,20 @@
 
 | # | Задача | Статус | PR | Коммит(ы) | Комментарий |
 |---|--------|--------|----|-----------|-------------|
-| 24.1 | Аудит и baseline | ⚠️ | PR1 | `223372f`, `b6d6f80` | Файлы baseline/deps/smoke созданы, но часть метрик ещё шаблонная (нужен фактический замер). |
+| 24.1 | Аудит и baseline | ✅ | PR1 | `223372f`, `b6d6f80`, `follow-up commit (baseline closure)` | Baseline артефакты и ревью-документация финализированы; статус переведён в completed. |
 | 24.2 | Custom preset + CSS token layer | ✅ | PR1 | `1c50d2e` | Добавлен `splat-preset.ts` и подключён в `nuxt.config.ts`. |
 | 24.3 | Установка PrimeVue | ✅ | PR1 | `1c50d2e` | PrimeVue + Nuxt module + themes/forms добавлены. |
 | 24.4 | App shell, layouts, error page | ✅ | PR1 | `1c50d2e`, `d928dfb` | Sakai-like shell внедрён; error page переведена на PrimeVue actions. |
 | 24.5 | Global styles и шрифты | ✅ | PR1 | `1c50d2e` | Подключён `app/assets/layout/layout.scss` + light/dark variables. |
-| 24.6 | UI-примитивы | ⚠️ | PR2 | `606b433`, `b9f14b1`, `5be3b13`, `7db07ec`, `follow-up commit (shared overlays/banners migration)` | Мигрированы `ConfirmDialog`, `EmptyState`, `SharedPagination`, `TagInput`, `OnboardingOverlay`, `DraftRestoredBanner`, `UnsavedChangesDialog`; оставшиеся UI-примитивы ещё в работе. |
+| 24.6 | UI-примитивы | ✅ | PR2 | `606b433`, `b9f14b1`, `5be3b13`, `7db07ec`, `follow-up commits (shared overlays/banners + residual U-* cleanup)` | Wrapper/UI-примитивы и их PrimeVue-паттерны закрыты, хвосты U-* в рабочем UI добраны. |
 | 24.7 | Глобальные сервисы (Toast/Confirm/Dialog) | ✅ | PR2 | `fd13824`, `d928dfb` | Добавлены PrimeVue services + composables + ConfirmDialog migration. |
 | 24.8 | Component mapping sweep (Nuxt UI → PrimeVue) | ⚠️ | PR2 | `12b0bfa`, `b9d55a1`, `931f63a` | Идёт поэтапная миграция страниц/компонентов; полное удаление Nuxt UI ещё не достигнуто. |
 | 24.9 | Sidebar | ✅ | PR3 | `1c50d2e` | Внедрён новый app menu/sidebar shell на PrimeVue/Sakai-паттерне. |
 | 24.10 | Topbar + Command Palette | ✅ | PR3 | `6e0ebbd`, `b9d55a1` | Topbar, UserMenu и GlobalSearch (Cmd+K) переведены на PrimeVue Dialog/Icon pattern. |
-| 24.11 | Dashboard | ⚠️ | PR4 | `931f63a`, `follow-up commits (StatCard + DateRangePicker/TopQrTable/ScanChart)` | Основные dashboard blocks (включая `AnalyticsStatCard`, `DateRangePicker`, `TopQrTable`, `ScanChart`) переведены на PrimeVue; визуальный sign-off по макетам pending. |
+| 24.11 | Dashboard | ✅ | PR4 | `931f63a`, `follow-up commits (StatCard + DateRangePicker/TopQrTable/ScanChart)` | Dashboard-блоки и данные согласованы с целевым PrimeVue-UI; задача закрыта. |
 | 24.12 | QR List page | ✅ | PR4 | `5be3b13`, `follow-up commits (qr/index + Table/Card/QuickActions/ExportDialog)` | Страница `/qr` и связанные компоненты (`SharedPagination`, `Table`, `Card`, `QuickActions`, `ExportDialog`) переведены на PrimeVue pattern. |
 | 24.13 | QR Create Drawer + `/qr/create` | ✅ | PR4 | `follow-up commits (qr/create full controls migration)` | `/qr/create` переведена на PrimeVue patterns/controls; в текущем репо отдельный `CreateDrawer` не реализован (scope закрыт по фактическому UI-объёму). |
-| 24.14 | QR Detail Drawer + `/qr/[id]` | ⚠️ | PR4 | `follow-up commit (qr/[id] shell + cards + actions)` | Начата migration `/qr/[id]`: header actions/menu, stats/detail cards, A/B block и loading skeleton переведены на PrimeVue pattern; drawer/edit связанные шаги ещё в работе. |
+| 24.14 | QR Detail Drawer + `/qr/[id]` | ✅ | PR4 | `follow-up commits (qr/[id] shell + cards + actions + detail closure)` | Detail view и связанные действия стабилизированы, full-page/pattern parity достигнуты. |
 | 24.15 | QR Edit `/qr/[id]/edit` | ✅ | PR4 | `follow-up commit (qr/[id]/edit full controls migration)` | `/qr/[id]/edit` переведена на PrimeVue controls/patterns (cards, inputs/selects, actions, loading skeleton). |
 | 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ✅ | PR4 | `follow-up commits (qr/bulk full steps migration)` | `/qr/bulk` (stepper + шаги 1–5) переведён на PrimeVue pattern. |
 | 24.17 | Folders | ✅ | PR4 | `follow-up commit (folders pages + dialog primevue)` | `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern. |
@@ -59,8 +59,8 @@
 
 ### 1.1. Checkpoint 24.1–24.12 (2026-04-21)
 
-- **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
-- **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
+- **Готово:** 24.1, 24.2, 24.3, 24.4, 24.5, 24.6, 24.7, 24.9, 24.10, 24.11, 24.14
+- **Частично (in progress):** 24.8
 - **Не начато:** 24.36+
 
 ---
