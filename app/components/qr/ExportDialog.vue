@@ -1,60 +1,71 @@
 <template>
-  <UModal
-    v-model:open="isOpen"
+  <Dialog
+    v-model:visible="isOpen"
+    modal
+    :dismissable-mask="true"
     :close-on-escape="true"
+    class="w-full max-w-lg"
   >
-    <template #content>
-      <div class="bg-[color:var(--surface-0)] p-6">
-        <h3 class="mb-4 text-lg font-semibold text-[color:var(--text-primary)]">
-          Экспорт QR-кода
-        </h3>
+    <div class="space-y-4 py-1">
+      <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+        Экспорт QR-кода
+      </h3>
 
-        <div class="space-y-4">
-          <!-- Format -->
-          <UFormField label="Формат">
-            <div class="flex gap-2">
-              <UButton
-                v-for="f in formats"
-                :key="f.value"
-                :variant="format === f.value ? 'solid' : 'outline'"
-                :color="format === f.value ? 'primary' : 'neutral'"
-                :label="f.label"
-                size="sm"
-                @click="format = f.value"
-              />
-            </div>
-          </UFormField>
-
-          <!-- Size (PNG only) -->
-          <UFormField
-            v-if="format === 'png'"
-            label="Размер (px)"
-          >
-            <USelect
-              v-model="size"
-              :items="sizeOptions"
-              size="sm"
-            />
-          </UFormField>
+      <div class="space-y-4">
+        <div>
+          <p class="mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
+            Формат
+          </p>
+          <div class="flex gap-2">
+            <Button
+              v-for="f in formats"
+              :key="f.value"
+              :outlined="format !== f.value"
+              :severity="format === f.value ? 'primary' : 'secondary'"
+              size="small"
+              @click="format = f.value"
+            >
+              {{ f.label }}
+            </Button>
+          </div>
         </div>
 
-        <div class="flex justify-end gap-3 mt-6">
-          <UButton
-            variant="outline"
-            color="neutral"
-            label="Отмена"
-            @click="isOpen = false"
-          />
-          <UButton
-            icon="i-lucide-download"
-            label="Скачать"
-            :loading="downloading"
-            @click="handleDownload"
+        <div v-if="format === 'png'">
+          <p class="mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
+            Размер (px)
+          </p>
+          <Select
+            v-model="size"
+            :options="sizeOptions"
+            option-label="label"
+            option-value="value"
+            size="small"
           />
         </div>
       </div>
-    </template>
-  </UModal>
+
+      <div class="mt-6 flex justify-end gap-3">
+        <Button
+          outlined
+          severity="secondary"
+          size="small"
+          @click="isOpen = false"
+        >
+          Отмена
+        </Button>
+        <Button
+          :loading="downloading"
+          size="small"
+          @click="handleDownload"
+        >
+          <template #icon>
+            <Icon name="i-lucide-download" />
+          </template>
+          Скачать
+        </Button>
+      </div>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
