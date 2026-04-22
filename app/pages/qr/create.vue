@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="mb-6 flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
           {{ $t('pages.qrCreate.title') }}
@@ -20,67 +20,70 @@
       @discard="draft.discard"
     />
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Left: Settings -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- URL Section -->
-        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon
-                name="i-lucide-link"
-                class="size-5 text-[color:var(--accent)]"
-              />
-              <span class="font-medium">{{ $t('forms.sections.link') }}</span>
-            </div>
-          </template>
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div class="space-y-6 lg:col-span-2">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+          <div class="mb-4 flex items-center gap-2">
+            <Icon
+              name="i-lucide-link"
+              class="size-5 text-[color:var(--accent)]"
+            />
+            <span class="font-medium">{{ $t('forms.sections.link') }}</span>
+          </div>
 
           <div class="space-y-4">
-            <UFormField
-              :label="$t('forms.labels.destinationUrl')"
-              :error="urlError"
-              :hint="$t('forms.hints.destinationUrl')"
-              required
-            >
-              <UInput
-                v-model="form.destinationUrl"
-                placeholder="https://splat.ru/product"
-                icon="i-lucide-globe"
-                size="lg"
-                :aria-invalid="!!urlError"
-                :aria-describedby="urlError ? qrCreateUrlErrorId : undefined"
-                :aria-required="true"
-                @blur="validateUrl"
-              />
-              <template #error="{ error }">
-                <p
-                  v-if="error"
-                  :id="qrCreateUrlErrorId"
-                  role="alert"
-                  aria-live="polite"
-                >
-                  {{ error }}
-                </p>
-              </template>
-            </UFormField>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">
+                {{ $t('forms.labels.destinationUrl') }} *
+              </label>
+              <IconField>
+                <InputIcon>
+                  <Icon name="i-lucide-globe" />
+                </InputIcon>
+                <InputText
+                  v-model="form.destinationUrl"
+                  placeholder="https://splat.ru/product"
+                  class="w-full"
+                  :invalid="!!urlError"
+                  :aria-invalid="!!urlError"
+                  :aria-describedby="urlError ? qrCreateUrlErrorId : undefined"
+                  :aria-required="true"
+                  @blur="validateUrl"
+                />
+              </IconField>
+              <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                {{ $t('forms.hints.destinationUrl') }}
+              </p>
+              <p
+                v-if="urlError"
+                :id="qrCreateUrlErrorId"
+                role="alert"
+                aria-live="polite"
+                class="mt-1 text-xs text-[color:var(--color-error)]"
+              >
+                {{ urlError }}
+              </p>
+            </div>
 
             <div class="flex items-center gap-4">
               <label class="text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.qrType') }}</label>
               <div class="flex gap-2">
-                <UButton
-                  :variant="form.type === 'dynamic' ? 'solid' : 'outline'"
-                  :color="form.type === 'dynamic' ? 'primary' : 'neutral'"
-                  size="sm"
-                  :label="$t('forms.options.qrType.dynamic')"
+                <Button
+                  :outlined="form.type !== 'dynamic'"
+                  :severity="form.type === 'dynamic' ? 'primary' : 'secondary'"
+                  size="small"
                   @click="form.type = 'dynamic'"
-                />
-                <UButton
-                  :variant="form.type === 'static' ? 'solid' : 'outline'"
-                  :color="form.type === 'static' ? 'primary' : 'neutral'"
-                  size="sm"
-                  :label="$t('forms.options.qrType.static')"
+                >
+                  {{ $t('forms.options.qrType.dynamic') }}
+                </Button>
+                <Button
+                  :outlined="form.type !== 'static'"
+                  :severity="form.type === 'static' ? 'primary' : 'secondary'"
+                  size="small"
                   @click="form.type = 'static'"
-                />
+                >
+                  {{ $t('forms.options.qrType.static') }}
+                </Button>
               </div>
             </div>
 
@@ -91,163 +94,176 @@
               }}
             </p>
 
-            <!-- UTM params (collapsible) -->
-            <UCollapsible>
-              <UButton
-                variant="link"
-                color="neutral"
-                size="sm"
-                icon="i-lucide-tag"
-                :label="$t('forms.labels.utmParams')"
-                class="-ml-2"
-              />
-              <template #content>
-                <div class="grid grid-cols-2 gap-3 pt-3">
-                  <UFormField :label="$t('forms.labels.utmSource')">
-                    <UInput
-                      v-model="form.utmParams.utm_source"
-                      placeholder="qr-code"
-                      size="sm"
-                    />
-                  </UFormField>
-                  <UFormField :label="$t('forms.labels.utmMedium')">
-                    <UInput
-                      v-model="form.utmParams.utm_medium"
-                      placeholder="packaging"
-                      size="sm"
-                    />
-                  </UFormField>
-                  <UFormField :label="$t('forms.labels.utmCampaign')">
-                    <UInput
-                      v-model="form.utmParams.utm_campaign"
-                      placeholder="summer2025"
-                      size="sm"
-                    />
-                  </UFormField>
-                  <UFormField :label="$t('forms.labels.utmContent')">
-                    <UInput
-                      v-model="form.utmParams.utm_content"
-                      placeholder=""
-                      size="sm"
-                    />
-                  </UFormField>
+            <details class="rounded-lg border border-[color:var(--border)] p-3">
+              <summary class="cursor-pointer list-none text-sm font-medium text-[color:var(--text-primary)]">
+                <span class="inline-flex items-center gap-2">
+                  <Icon name="i-lucide-tag" />
+                  {{ $t('forms.labels.utmParams') }}
+                </span>
+              </summary>
+              <div class="grid grid-cols-2 gap-3 pt-3">
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmSource') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_source"
+                    placeholder="qr-code"
+                    size="small"
+                    class="w-full"
+                  />
                 </div>
-              </template>
-            </UCollapsible>
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmMedium') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_medium"
+                    placeholder="packaging"
+                    size="small"
+                    class="w-full"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmCampaign') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_campaign"
+                    placeholder="summer2025"
+                    size="small"
+                    class="w-full"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1 block text-sm text-[color:var(--text-secondary)]">{{ $t('forms.labels.utmContent') }}</label>
+                  <InputText
+                    v-model="form.utmParams.utm_content"
+                    size="small"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+            </details>
           </div>
-        </UCard>
+        </div>
 
-        <!-- Info Section -->
-        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon
-                name="i-lucide-info"
-                class="size-5 text-[color:var(--accent)]"
-              />
-              <span class="font-medium">{{ $t('forms.sections.info') }}</span>
-            </div>
-          </template>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+          <div class="mb-4 flex items-center gap-2">
+            <Icon
+              name="i-lucide-info"
+              class="size-5 text-[color:var(--accent)]"
+            />
+            <span class="font-medium">{{ $t('forms.sections.info') }}</span>
+          </div>
 
           <div class="space-y-4">
-            <UFormField
-              :label="$t('forms.labels.title')"
-              :hint="$t('forms.hints.qrTitle')"
-              :error="titleError"
-              required
-            >
-              <UInput
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">
+                {{ $t('forms.labels.title') }} *
+              </label>
+              <InputText
                 v-model="form.title"
                 :placeholder="$t('forms.placeholders.qrTitle')"
+                class="w-full"
+                :invalid="!!titleError"
                 :aria-invalid="!!titleError"
                 :aria-describedby="titleError ? qrCreateTitleErrorId : undefined"
                 :aria-required="true"
                 @blur="validateTitle"
               />
-              <template #error="{ error }">
-                <p
-                  v-if="error"
-                  :id="qrCreateTitleErrorId"
-                  role="alert"
-                  aria-live="polite"
-                >
-                  {{ error }}
-                </p>
-              </template>
-            </UFormField>
+              <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                {{ $t('forms.hints.qrTitle') }}
+              </p>
+              <p
+                v-if="titleError"
+                :id="qrCreateTitleErrorId"
+                role="alert"
+                aria-live="polite"
+                class="mt-1 text-xs text-[color:var(--color-error)]"
+              >
+                {{ titleError }}
+              </p>
+            </div>
 
-            <UFormField :label="$t('forms.labels.folder')">
-              <USelect
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.folder') }}</label>
+              <Select
                 v-model="form.folderId"
-                :items="folderOptions"
+                :options="folderOptions"
+                option-label="label"
+                option-value="value"
                 :placeholder="$t('forms.options.noFolder')"
+                class="w-full"
               />
-            </UFormField>
+            </div>
 
-            <UFormField :label="$t('forms.labels.tags')">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.tags') }}</label>
               <SharedTagInput
                 v-model="form.tagIds"
                 :available-tags="availableTags"
                 @create-tag="handleCreateTag"
               />
-            </UFormField>
+            </div>
 
-            <UFormField :label="$t('forms.labels.description')">
-              <UTextarea
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.description') }}</label>
+              <Textarea
                 v-model="form.description"
                 :placeholder="$t('forms.placeholders.description')"
                 :rows="2"
+                class="w-full"
               />
-            </UFormField>
-
-            <UFormField :label="$t('forms.labels.expiresAt')">
-              <UInput
-                v-model="form.expiresAt"
-                :hint="$t('forms.hints.expiresAt')"
-                type="datetime-local"
-              />
-            </UFormField>
-          </div>
-        </UCard>
-
-        <!-- Style Section -->
-        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon
-                name="i-lucide-palette"
-                class="size-5 text-[color:var(--accent)]"
-              />
-              <span class="font-medium">{{ $t('forms.sections.style') }}</span>
             </div>
-          </template>
+
+            <div>
+              <label class="mb-1 block text-sm font-medium text-[color:var(--text-primary)]">{{ $t('forms.labels.expiresAt') }}</label>
+              <InputText
+                v-model="form.expiresAt"
+                type="datetime-local"
+                class="w-full"
+              />
+              <p class="mt-1 text-xs text-[color:var(--text-muted)]">
+                {{ $t('forms.hints.expiresAt') }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+          <div class="mb-4 flex items-center gap-2">
+            <Icon
+              name="i-lucide-palette"
+              class="size-5 text-[color:var(--accent)]"
+            />
+            <span class="font-medium">{{ $t('forms.sections.style') }}</span>
+          </div>
 
           <QrStyleEditor v-model="form.style" />
-        </UCard>
+        </div>
 
-        <!-- Actions -->
         <div class="flex items-center gap-3">
-          <UButton
-            :label="$t('forms.actions.createQr')"
-            icon="i-lucide-check"
-            size="lg"
+          <Button
             :loading="saving"
             :disabled="!isValid || saving"
+            size="large"
             @click="handleCreate"
-          />
-          <UButton
-            :label="$t('forms.actions.cancel')"
-            variant="outline"
-            color="neutral"
-            size="lg"
-            to="/qr"
-          />
+          >
+            <template #icon>
+              <Icon name="i-lucide-check" />
+            </template>
+            {{ $t('forms.actions.createQr') }}
+          </Button>
+          <Button
+            as-child
+            outlined
+            severity="secondary"
+            size="large"
+          >
+            <NuxtLink to="/qr">
+              {{ $t('forms.actions.cancel') }}
+            </NuxtLink>
+          </Button>
         </div>
       </div>
 
-      <!-- Right: Live Preview (sticky) -->
       <div class="lg:col-span-1">
-        <div class="lg:sticky lg:top-24 space-y-4">
+        <div class="space-y-4 lg:sticky lg:top-24">
           <QrPreview
             :url="form.destinationUrl || 'https://splat.ru'"
             :style="form.style"
