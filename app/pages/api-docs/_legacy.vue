@@ -16,7 +16,7 @@
       <h2 class="text-lg font-semibold text-[color:var(--text-primary)] mb-3">
         Аутентификация
       </h2>
-      <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
         <p class="text-sm text-[color:var(--text-secondary)] mb-3">
           Передавайте API-ключ в заголовке <code class="font-mono">Authorization</code> каждого запроса:
         </p>
@@ -34,7 +34,7 @@
           </NuxtLink>.
           Rate limit: <strong>100 запросов / минуту</strong> на ключ.
         </p>
-      </UCard>
+      </div>
     </section>
 
     <!-- Endpoints -->
@@ -46,20 +46,19 @@
         {{ group.title }}
       </h2>
       <div class="space-y-3">
-        <UCard
+        <div
           v-for="ep in group.endpoints"
           :key="ep.method + ep.path"
-          class="border border-[color:var(--border)] bg-[color:var(--surface-0)]"
+          class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4"
         >
           <!-- Endpoint title -->
           <div class="flex items-center gap-3 mb-3">
-            <UBadge
-              :color="methodColor(ep.method)"
-              variant="solid"
+            <Tag
+              :severity="methodColor(ep.method)"
               class="font-mono text-xs min-w-[52px] justify-center"
             >
               {{ ep.method }}
-            </UBadge>
+            </Tag>
             <code class="text-sm font-mono text-[color:var(--text-primary)]">{{ ep.path }}</code>
             <span class="text-sm text-[color:var(--text-secondary)]">— {{ ep.description }}</span>
           </div>
@@ -122,7 +121,7 @@
               :code="ep.example"
             />
           </div>
-        </UCard>
+        </div>
       </div>
     </section>
 
@@ -131,7 +130,7 @@
       <h2 class="text-lg font-semibold text-[color:var(--text-primary)] mb-3">
         Коды ошибок
       </h2>
-      <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-[color:var(--border)]">
@@ -158,7 +157,7 @@
             </tr>
           </tbody>
         </table>
-      </UCard>
+      </div>
     </section>
   </div>
 </template>
@@ -167,14 +166,14 @@
 const config = useRuntimeConfig()
 const baseUrl = computed(() => config.public.appUrl || 'http://localhost:3000')
 
-function methodColor(method: string): 'success' | 'info' | 'warning' | 'error' | 'neutral' {
-  const map: Record<string, 'success' | 'info' | 'warning' | 'error' | 'neutral'> = {
+function methodColor(method: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
+  const map: Record<string, 'success' | 'info' | 'warn' | 'danger' | 'secondary'> = {
     GET: 'info',
     POST: 'success',
-    PUT: 'warning',
-    DELETE: 'error',
+    PUT: 'warn',
+    DELETE: 'danger',
   }
-  return map[method] ?? 'neutral'
+  return map[method] ?? 'secondary'
 }
 
 const endpointGroups = [

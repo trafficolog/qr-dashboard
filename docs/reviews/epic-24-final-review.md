@@ -46,7 +46,7 @@
 | 24.28 | ConfirmDialog для destructive actions | ✅ | PR5 | `606b433` | Shared ConfirmDialog мигрирован на PrimeVue Dialog/Button. |
 | 24.29 | Departments management | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.30 | Allowed + Destination Domains | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.31 | API Docs page (Scalar) | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.31 | API Docs page (Scalar) | ✅ | PR5 | `follow-up commit (api-docs legacy primevue cleanup)` | `/api-docs/index` остаётся на Scalar, а `app/pages/api-docs/_legacy.vue` очищен от Nuxt UI (`UCard/UBadge` → PrimeVue `Tag` + token-based containers). |
 | 24.32 | Theme switcher + persistence | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.33 | Typecheck sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.34 | Lint sweep | ⬜ / ✅ / ❌ | PR6 | | |
@@ -61,7 +61,7 @@
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.26+
+- **Не начато:** 24.32+
 
 ---
 
