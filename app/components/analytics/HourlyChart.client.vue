@@ -8,7 +8,7 @@
       v-if="loading"
       class="space-y-2"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 8"
         :key="i"
         class="h-6 rounded-lg"

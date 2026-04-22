@@ -9,8 +9,8 @@
     />
 
     <div class="relative z-10 flex min-h-full items-end justify-center p-4 sm:items-center">
-      <UCard class="w-full max-w-lg">
-        <template #header>
+      <div class="w-full max-w-lg rounded-xl bg-[color:var(--surface-0)] p-5 shadow-lg ring-1 ring-[color:var(--border)]">
+        <div class="space-y-4">
           <div class="flex items-start justify-between gap-3">
             <div>
               <p class="text-sm text-[color:var(--text-secondary)]">
@@ -20,45 +20,52 @@
                 {{ t(steps[currentStep]!.titleKey) }}
               </h3>
             </div>
-            <UButton
-              variant="ghost"
-              color="neutral"
-              icon="i-lucide-x"
+            <Button
+              text
+              severity="secondary"
               :aria-label="$t('onboarding.actions.skip')"
               @click="emit('close')"
-            />
+            >
+              <template #icon>
+                <Icon
+                  name="i-lucide-x"
+                  class="size-4"
+                />
+              </template>
+            </Button>
           </div>
-        </template>
 
-        <p class="text-sm text-[color:var(--text-secondary)]">
-          {{ t(steps[currentStep]!.descriptionKey) }}
-        </p>
+          <p class="text-sm text-[color:var(--text-secondary)]">
+            {{ t(steps[currentStep]!.descriptionKey) }}
+          </p>
 
-        <template #footer>
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              :label="$t('onboarding.actions.skip')"
+            <Button
+              text
+              severity="secondary"
               @click="emit('close')"
-            />
+            >
+              {{ $t('onboarding.actions.skip') }}
+            </Button>
 
             <div class="flex items-center gap-2">
-              <UButton
+              <Button
                 v-if="currentStep > 0"
-                variant="outline"
-                color="neutral"
-                :label="$t('onboarding.actions.back')"
+                outlined
+                severity="secondary"
                 @click="goBack"
-              />
-              <UButton
-                :label="isLastStep ? $t('onboarding.actions.finish') : $t('onboarding.actions.next')"
+              >
+                {{ $t('onboarding.actions.back') }}
+              </Button>
+              <Button
                 @click="goNext"
-              />
+              >
+                {{ isLastStep ? $t('onboarding.actions.finish') : $t('onboarding.actions.next') }}
+              </Button>
             </div>
           </div>
-        </template>
-      </UCard>
+        </div>
+      </div>
     </div>
   </div>
 </template>
