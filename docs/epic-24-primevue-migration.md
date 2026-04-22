@@ -27,7 +27,7 @@
 - ✅ Folders migration: `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern
 - ✅ Analytics migration: `/analytics` + `GeoMap/GeoTable/DeviceBreakdown/DevicePieChart/HourlyChart/WeekdayChart` переведены на PrimeVue Message/Button/Skeleton/Icon patterns
 - ✅ Integrations migration: `/integrations` и `/integrations/mcp-setup` переведены на PrimeVue section-card + Button/Icon patterns
-- ⚠️ Settings migration in progress: `/settings` shell navigation, `/settings/general`, `/settings/profile`, `/settings/team` и `/settings/domains` переведены на PrimeVue InputText/Select/Icon/Tag/Dialog/Message/ToggleSwitch patterns
+- ⚠️ Settings migration in progress: `/settings` shell navigation, `/settings/general`, `/settings/profile`, `/settings/team`, `/settings/domains` и `/settings/destination-domains` переведены на PrimeVue InputText/Select/Icon/Tag/Dialog/Message/ToggleSwitch patterns
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
