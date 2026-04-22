@@ -1,28 +1,45 @@
 <template>
-  <UModal
-    v-model:open="openModel"
-    :title="$t('forms.unsaved.title')"
-    :description="$t('forms.unsaved.description')"
-    :dismissible="false"
+  <Dialog
+    v-model:visible="openModel"
+    modal
+    :dismissable-mask="false"
     :close-on-escape="true"
+    :closable="false"
+    :style="{ width: '30rem', maxWidth: '95vw' }"
   >
-    <template #footer>
-      <div class="flex items-center justify-end gap-3 w-full">
-        <UButton
-          variant="outline"
-          color="neutral"
-          :label="$t('forms.unsaved.stay')"
-          @click="handleCancel"
-        />
-        <UButton
-          color="error"
-          icon="i-lucide-log-out"
-          :label="$t('forms.unsaved.leave')"
-          @click="handleConfirm"
-        />
+    <div class="space-y-6">
+      <div>
+        <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+          {{ $t('forms.unsaved.title') }}
+        </h3>
+        <p class="mt-2 text-sm text-[color:var(--text-secondary)]">
+          {{ $t('forms.unsaved.description') }}
+        </p>
       </div>
-    </template>
-  </UModal>
+
+      <div class="flex items-center justify-end gap-3 w-full">
+        <Button
+          outlined
+          severity="secondary"
+          @click="handleCancel"
+        >
+          {{ $t('forms.unsaved.stay') }}
+        </Button>
+        <Button
+          severity="danger"
+          @click="handleConfirm"
+        >
+          <template #icon>
+            <Icon
+              name="i-lucide-log-out"
+              class="size-4"
+            />
+          </template>
+          {{ $t('forms.unsaved.leave') }}
+        </Button>
+      </div>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
