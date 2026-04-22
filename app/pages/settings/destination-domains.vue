@@ -37,7 +37,10 @@
         {{ $t('pages.destinationDomains.addTitle') }}
       </h2>
 
-      <form class="flex gap-3" @submit.prevent="handleAdd">
+      <form
+        class="flex gap-3"
+        @submit.prevent="handleAdd"
+      >
         <div class="flex-1">
           <InputText
             v-model="newDomain"
@@ -48,11 +51,21 @@
             :aria-describedby="domainError ? domainErrorId : undefined"
             @blur="validateDomain"
           />
-          <p v-if="domainError" :id="domainErrorId" role="alert" aria-live="polite" class="mt-1 text-sm text-[color:var(--ui-error)]">
+          <p
+            v-if="domainError"
+            :id="domainErrorId"
+            role="alert"
+            aria-live="polite"
+            class="mt-1 text-sm text-[color:var(--ui-error)]"
+          >
             {{ domainError }}
           </p>
         </div>
-        <Button type="submit" :loading="adding" :disabled="!newDomain.trim()">
+        <Button
+          type="submit"
+          :loading="adding"
+          :disabled="!newDomain.trim()"
+        >
           <template #icon>
             <Icon name="i-lucide-plus" />
           </template>
@@ -67,20 +80,39 @@
         <span class="ml-2 text-sm font-normal text-[color:var(--text-muted)]">({{ domains.length }})</span>
       </h2>
 
-      <div v-if="loading" class="py-8 flex justify-center">
-        <Icon name="i-lucide-loader-2" class="size-6 animate-spin text-[color:var(--text-muted)]" />
+      <div
+        v-if="loading"
+        class="py-8 flex justify-center"
+      >
+        <Icon
+          name="i-lucide-loader-2"
+          class="size-6 animate-spin text-[color:var(--text-muted)]"
+        />
       </div>
 
-      <div v-else-if="domains.length === 0" class="py-8 text-center text-[color:var(--text-muted)]">
-        <Icon name="i-lucide-shield-alert" class="size-10 mx-auto mb-2 text-[color:var(--text-secondary)]" />
+      <div
+        v-else-if="domains.length === 0"
+        class="py-8 text-center text-[color:var(--text-muted)]"
+      >
+        <Icon
+          name="i-lucide-shield-alert"
+          class="size-10 mx-auto mb-2 text-[color:var(--text-secondary)]"
+        />
         <p>{{ $t('pages.destinationDomains.empty.title') }}</p>
         <p class="text-sm text-[color:var(--text-muted)] mt-1">
           {{ $t('pages.destinationDomains.empty.description') }}
         </p>
       </div>
 
-      <ul v-else class="divide-y divide-[color:var(--border)]">
-        <li v-for="d in domains" :key="d.id" class="flex items-center justify-between py-3">
+      <ul
+        v-else
+        class="divide-y divide-[color:var(--border)]"
+      >
+        <li
+          v-for="d in domains"
+          :key="d.id"
+          class="flex items-center justify-between py-3"
+        >
           <div class="flex items-center gap-3">
             <span class="font-medium text-[color:var(--text-primary)]">{{ d.domain }}</span>
             <span class="text-xs text-[color:var(--text-muted)]">{{ formatDate(d.createdAt) }}</span>

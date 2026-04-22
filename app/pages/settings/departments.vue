@@ -56,13 +56,22 @@
           </div>
 
           <div class="flex items-center gap-2">
-            <Button outlined size="small" @click="openEdit(department)">
+            <Button
+              outlined
+              size="small"
+              @click="openEdit(department)"
+            >
               <template #icon>
                 <Icon name="i-lucide-pencil" />
               </template>
               Редактировать
             </Button>
-            <Button text severity="danger" size="small" @click="handleDelete(department)">
+            <Button
+              text
+              severity="danger"
+              size="small"
+              @click="handleDelete(department)"
+            >
               <template #icon>
                 <Icon name="i-lucide-trash-2" />
               </template>
@@ -108,7 +117,11 @@
           </div>
 
           <div class="flex justify-end">
-            <Button size="small" :loading="savingMembersId === department.id" @click="saveMembers(department)">
+            <Button
+              size="small"
+              :loading="savingMembersId === department.id"
+              @click="saveMembers(department)"
+            >
               <template #icon>
                 <Icon name="i-lucide-save" />
               </template>
@@ -131,23 +144,36 @@
         >
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-[color:var(--text-primary)]">Название</label>
-            <InputText v-model="form.name" class="w-full" />
+            <InputText
+              v-model="form.name"
+              class="w-full"
+            />
           </div>
 
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-[color:var(--text-primary)]">Slug</label>
             <small class="text-xs text-[color:var(--text-muted)]">Только lowercase + дефисы</small>
-            <InputText v-model="form.slug" class="w-full" />
+            <InputText
+              v-model="form.slug"
+              class="w-full"
+            />
           </div>
 
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-[color:var(--text-primary)]">Описание</label>
-            <Textarea v-model="form.description" class="w-full" />
+            <Textarea
+              v-model="form.description"
+              class="w-full"
+            />
           </div>
 
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-[color:var(--text-primary)]">Цвет (HEX)</label>
-            <InputText v-model="form.color" placeholder="#0EA5E9" class="w-full" />
+            <InputText
+              v-model="form.color"
+              placeholder="#0EA5E9"
+              class="w-full"
+            />
           </div>
 
           <div class="space-y-1.5">
@@ -166,10 +192,17 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <Button outlined severity="secondary" @click="formOpen = false">
+          <Button
+            outlined
+            severity="secondary"
+            @click="formOpen = false"
+          >
             Отмена
           </Button>
-          <Button :loading="savingForm" @click="submitForm">
+          <Button
+            :loading="savingForm"
+            @click="submitForm"
+          >
             Сохранить
           </Button>
         </div>

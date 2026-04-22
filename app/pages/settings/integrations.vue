@@ -27,12 +27,19 @@
     <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
       <div class="mb-3 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <Icon name="i-lucide-key" class="size-4 text-[color:var(--text-muted)]" />
+          <Icon
+            name="i-lucide-key"
+            class="size-4 text-[color:var(--text-muted)]"
+          />
           <h2 class="font-medium text-[color:var(--text-primary)]">
             {{ $t('settings.integrations.apiKeys.label') }}
           </h2>
         </div>
-        <Button outlined size="small" @click="createKeyOpen = true">
+        <Button
+          outlined
+          size="small"
+          @click="createKeyOpen = true"
+        >
           <template #icon>
             <Icon name="i-lucide-plus" />
           </template>
@@ -40,19 +47,39 @@
         </Button>
       </div>
 
-      <div v-if="loading" class="space-y-3">
-        <Skeleton v-for="i in 3" :key="i" class="h-14 w-full rounded-lg" />
+      <div
+        v-if="loading"
+        class="space-y-3"
+      >
+        <Skeleton
+          v-for="i in 3"
+          :key="i"
+          class="h-14 w-full rounded-lg"
+        />
       </div>
 
-      <div v-else-if="keys.length === 0" class="py-8 text-center text-[color:var(--text-secondary)]">
-        <Icon name="i-lucide-key" class="mx-auto mb-2 size-10 text-[color:var(--text-muted)]/40" />
+      <div
+        v-else-if="keys.length === 0"
+        class="py-8 text-center text-[color:var(--text-secondary)]"
+      >
+        <Icon
+          name="i-lucide-key"
+          class="mx-auto mb-2 size-10 text-[color:var(--text-muted)]/40"
+        />
         <p class="text-sm">
           {{ $t('settings.integrations.apiKeys.empty') }}
         </p>
       </div>
 
-      <ul v-else class="divide-y divide-[color:var(--surface-2)]">
-        <li v-for="key in keys" :key="key.id" class="py-3 space-y-2">
+      <ul
+        v-else
+        class="divide-y divide-[color:var(--surface-2)]"
+      >
+        <li
+          v-for="key in keys"
+          :key="key.id"
+          class="py-3 space-y-2"
+        >
           <div class="flex items-center justify-between gap-4">
             <div class="flex-1 min-w-0">
               <p class="font-medium text-sm text-[color:var(--text-primary)] truncate">
@@ -81,19 +108,32 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--text-secondary)]">
-            <Tag v-for="permission in key.permissions" :key="permission" severity="secondary">
+            <Tag
+              v-for="permission in key.permissions"
+              :key="permission"
+              severity="secondary"
+            >
               {{ permissionLabel(permission) }}
             </Tag>
-            <Tag v-if="key.allowedIps.length" severity="contrast">
+            <Tag
+              v-if="key.allowedIps.length"
+              severity="contrast"
+            >
               {{ $t('settings.integrations.apiKeys.allowedIpsList', { count: key.allowedIps.length }) }}
             </Tag>
-            <Tag v-else severity="contrast">
+            <Tag
+              v-else
+              severity="contrast"
+            >
               {{ $t('settings.integrations.apiKeys.allowedIpsAny') }}
             </Tag>
             <Tag severity="contrast">
               {{ $t('settings.integrations.apiKeys.expiresAtLabel') }}: {{ formatDateTime(key.expiresAt) }}
             </Tag>
-            <Tag v-if="isExpiringSoon(key.expiresAt)" severity="warn">
+            <Tag
+              v-if="isExpiringSoon(key.expiresAt)"
+              severity="warn"
+            >
               {{ $t('settings.integrations.apiKeys.expiringSoon') }}
             </Tag>
           </div>
@@ -103,7 +143,10 @@
 
     <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
       <div class="mb-3 flex items-center gap-2">
-        <Icon name="i-lucide-webhook" class="size-4 text-[color:var(--text-muted)]" />
+        <Icon
+          name="i-lucide-webhook"
+          class="size-4 text-[color:var(--text-muted)]"
+        />
         <h2 class="font-medium text-[color:var(--text-primary)]">
           Webhooks
         </h2>
@@ -113,15 +156,27 @@
       </p>
     </section>
 
-    <Dialog v-model:visible="createKeyOpen" modal :header="$t('settings.integrations.apiKeys.create')">
+    <Dialog
+      v-model:visible="createKeyOpen"
+      modal
+      :header="$t('settings.integrations.apiKeys.create')"
+    >
       <template #default>
         <div class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-[color:var(--text-primary)]">
               {{ $t('settings.integrations.apiKeys.nameLabel') }}
             </label>
-            <InputText v-model="newKeyName" class="w-full" :placeholder="$t('settings.integrations.apiKeys.namePlaceholder')" autofocus />
-            <p v-if="createError" class="text-sm text-[color:var(--color-error)]">
+            <InputText
+              v-model="newKeyName"
+              class="w-full"
+              :placeholder="$t('settings.integrations.apiKeys.namePlaceholder')"
+              autofocus
+            />
+            <p
+              v-if="createError"
+              class="text-sm text-[color:var(--color-error)]"
+            >
               {{ createError }}
             </p>
           </div>
@@ -131,7 +186,12 @@
               {{ $t('settings.integrations.apiKeys.permissionsLabel') }}
             </label>
             <div class="space-y-3">
-              <Button size="small" outlined severity="secondary" @click="applyMcpPreset">
+              <Button
+                size="small"
+                outlined
+                severity="secondary"
+                @click="applyMcpPreset"
+              >
                 <template #icon>
                   <Icon name="i-lucide-sparkles" />
                 </template>
@@ -171,16 +231,29 @@
             <label class="text-sm font-medium text-[color:var(--text-primary)]">
               {{ $t('settings.integrations.apiKeys.expiresAtLabel') }}
             </label>
-            <InputText v-model="expiresAtInput" type="datetime-local" class="w-full" />
+            <InputText
+              v-model="expiresAtInput"
+              type="datetime-local"
+              class="w-full"
+            />
           </div>
 
-          <div v-if="createdKey" class="rounded-lg bg-[color:var(--surface-2)] p-3">
+          <div
+            v-if="createdKey"
+            class="rounded-lg bg-[color:var(--surface-2)] p-3"
+          >
             <p class="mb-1 text-xs font-medium text-[color:var(--text-secondary)]">
               {{ $t('settings.integrations.apiKeys.copyHint') }}
             </p>
             <div class="flex items-center gap-2">
               <code class="flex-1 truncate text-xs font-mono text-[color:var(--text-primary)]">{{ createdKey }}</code>
-              <Button text size="small" :aria-label="$t('common.copy')" :title="$t('common.copy')" @click="copyKey">
+              <Button
+                text
+                size="small"
+                :aria-label="$t('common.copy')"
+                :title="$t('common.copy')"
+                @click="copyKey"
+              >
                 <template #icon>
                   <Icon name="i-lucide-copy" />
                 </template>
@@ -191,7 +264,11 @@
       </template>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <Button outlined severity="secondary" @click="closeCreateModal">
+          <Button
+            outlined
+            severity="secondary"
+            @click="closeCreateModal"
+          >
             {{ $t('common.cancel') }}
           </Button>
           <Button

@@ -34,6 +34,8 @@
 - ✅ API docs migration: `/api-docs` (Scalar) и legacy docs card/tag blocks приведены к PrimeVue/token-based pattern
 - ✅ Theme switcher + persistence: `useLayout().toggleDarkMode()` инициализирует/переключает `.app-dark`, выбор сохраняется в cookie `splat-theme`
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
+- ⚠️ Typecheck sweep in progress: после обновления зависимостей остался блокер `vue-tsc`/Volar plugin (`vue-router/volar/sfc-route-blocks`)
+- ⚠️ Lint sweep in progress: auto-fix выполнен для `/qr/shared` и ключевых `/settings/*` страниц, предупреждения снижены до 6 (только `vue/no-v-html`)
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
@@ -41,7 +43,7 @@
 ### Checkpoint 24.1–24.12 (2026-04-21)
 - ✅ Done: 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - ⚠️ In progress: 24.1, 24.6, 24.8, 24.11, 24.14
-- ⬜ Not started: 24.33+
+- ⬜ Not started: 24.35+
 
 ## 1. Проблема и обоснование
 

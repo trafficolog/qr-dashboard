@@ -4,7 +4,7 @@
       class="layout-topbar-menu-button"
       type="button"
       :aria-label="t('a11y.actions.openMenu')"
-      @click="layout.toggleMenu"
+      @click="layout.onMenuToggle"
     >
       <Icon
         name="i-lucide-menu"

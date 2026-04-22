@@ -61,10 +61,17 @@
       </template>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button outlined severity="secondary" @click="closeDepartmentPicker">
+          <Button
+            outlined
+            severity="secondary"
+            @click="closeDepartmentPicker"
+          >
             Отмена
           </Button>
-          <Button :disabled="!selectedDepartmentId" @click="confirmDepartmentVisibilityChange">
+          <Button
+            :disabled="!selectedDepartmentId"
+            @click="confirmDepartmentVisibilityChange"
+          >
             Применить
           </Button>
         </div>

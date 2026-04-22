@@ -48,8 +48,8 @@
 | 24.30 | Allowed + Destination Domains | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.31 | API Docs page (Scalar) | ✅ | PR5 | `follow-up commit (api-docs legacy primevue cleanup)` | `/api-docs/index` остаётся на Scalar, а `app/pages/api-docs/_legacy.vue` очищен от Nuxt UI (`UCard/UBadge` → PrimeVue `Tag` + token-based containers). |
 | 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
-| 24.33 | Typecheck sweep | ⬜ / ✅ / ❌ | PR6 | | |
-| 24.34 | Lint sweep | ⬜ / ✅ / ❌ | PR6 | | |
+| 24.33 | Typecheck sweep | ⚠️ | PR6 | `follow-up commit (deps refresh + typecheck investigation)` | `pnpm typecheck` запускается после refresh зависимостей, но блокируется на `vue-tsc`/Volar plugin error (`vue-router/volar/sfc-route-blocks`) — требуется отдельный toolchain fix. |
+| 24.34 | Lint sweep | ⚠️ | PR6 | `follow-up commit (eslint auto-fix settings/shared)` | Auto-fix применён для `/qr/shared`, `/settings/departments`, `/settings/destination-domains`, `/settings/integrations`; предупреждения снижены до 6 (остались только `vue/no-v-html` в QR preview/search компонентах). |
 | 24.35 | Unit + E2E фиксы | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.36 | A11y sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.37 | Smoke E2E ручной | ⬜ / ✅ / ❌ | PR6 | | |
@@ -61,7 +61,7 @@
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.33+
+- **Не начато:** 24.35+
 
 ---
 
