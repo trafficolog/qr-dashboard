@@ -36,6 +36,7 @@
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
+- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (33/33), `pnpm test:e2e` падает массово и требует обновления e2e-сценариев/селекторов после PrimeVue migration
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
@@ -43,7 +44,7 @@
 ### Checkpoint 24.1–24.12 (2026-04-21)
 - ✅ Done: 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - ⚠️ In progress: 24.1, 24.6, 24.8, 24.11, 24.14
-- ⬜ Not started: 24.35+
+- ⬜ Not started: 24.36+
 
 ## 1. Проблема и обоснование
 

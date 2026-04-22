@@ -50,7 +50,7 @@
 | 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
 | 24.33 | Typecheck sweep | ✅ | PR6 | `follow-up commit (type-safety fixes for PrimeVue menu/actions + toolchain deps)` | `pnpm typecheck` проходит; исправлены TS-ошибки в `AppTopbar`, `UserMenu`, `QuickActions`, `StyleEditor`, `qr/[id]`. Остаются только non-blocking предупреждения Nuxt/Volar (duplicated imports / plugin path warning). |
 | 24.34 | Lint sweep | ✅ | PR6 | `follow-up commit (eslint zero-warning sweep)` | `pnpm lint` проходит с 0 warnings/0 errors; выполнен cleanup для `/settings/*`, `/qr/shared` и `app/components/app|qr` (включая controlled `v-html` cases). |
-| 24.35 | Unit + E2E фиксы | ⬜ / ✅ / ❌ | PR6 | | |
+| 24.35 | Unit + E2E фиксы | ⚠️ | PR6 | `follow-up commit (test sweep: unit pass, e2e regression baseline)` | `pnpm test:unit` проходит (33/33), `pnpm test:e2e` падает массово (regression wave после UI migration; требуется отдельный sweep сценариев/селекторов и стабилизация playwright smoke). |
 | 24.36 | A11y sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.37 | Smoke E2E ручной | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.38 | Bundle size audit | ⬜ / ✅ / ❌ | PR6 | | |
@@ -61,7 +61,7 @@
 
 - **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
 - **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
-- **Не начато:** 24.35+
+- **Не начато:** 24.36+
 
 ---
 
