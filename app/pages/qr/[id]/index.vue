@@ -1,18 +1,22 @@
 <template>
   <div v-if="qr">
-    <!-- Header -->
-    <div class="flex items-start justify-between mb-6">
+    <div class="mb-6 flex items-start justify-between">
       <div>
-        <div class="flex items-center gap-3 mb-1">
-          <UButton
-            icon="i-lucide-arrow-left"
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            aria-label="Назад к списку QR-кодов"
-            title="Назад к списку QR-кодов"
-            to="/qr"
-          />
+        <div class="mb-1 flex items-center gap-3">
+          <Button
+            as-child
+            text
+            severity="secondary"
+            size="small"
+          >
+            <NuxtLink
+              to="/qr"
+              aria-label="Назад к списку QR-кодов"
+              title="Назад к списку QR-кодов"
+            >
+              <Icon name="i-lucide-arrow-left" />
+            </NuxtLink>
+          </Button>
           <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
             {{ qr.title }}
           </h1>
@@ -27,30 +31,53 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <UButton
-          icon="i-lucide-download"
-          label="Экспорт"
-          variant="outline"
+        <Button
+          outlined
+          severity="secondary"
           @click="exportOpen = true"
-        />
-        <UDropdownMenu :items="actions">
-          <UButton
-            icon="i-lucide-more-horizontal"
-            variant="outline"
-            color="neutral"
-            aria-label="Открыть действия для QR-кода"
-            title="Открыть действия для QR-кода"
-          />
-        </UDropdownMenu>
+        >
+          <template #icon>
+            <Icon name="i-lucide-download" />
+          </template>
+          Экспорт
+        </Button>
+        <Button
+          outlined
+          severity="secondary"
+          aria-label="Открыть действия для QR-кода"
+          title="Открыть действия для QR-кода"
+          @click="toggleActionsMenu"
+        >
+          <template #icon>
+            <Icon name="i-lucide-more-horizontal" />
+          </template>
+        </Button>
+        <Menu
+          ref="actionsMenuRef"
+          :model="flatActions"
+          popup
+          class="min-w-56"
+        >
+          <template #item="{ item }">
+            <button
+              class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
+              @click="item.command?.()"
+            >
+              <Icon
+                :name="item.icon"
+                class="size-4"
+              />
+              <span>{{ item.label }}</span>
+            </button>
+          </template>
+        </Menu>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Left: Info + Stats -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Stats cards -->
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div class="space-y-6 lg:col-span-2">
         <div class="grid grid-cols-3 gap-4">
-          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
             <div class="text-center">
               <p class="text-2xl font-bold text-[color:var(--text-primary)]">
                 {{ qr.totalScans.toLocaleString() }}
@@ -59,8 +86,8 @@
                 Всего сканов
               </p>
             </div>
-          </UCard>
-          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
             <div class="text-center">
               <p class="text-2xl font-bold text-[color:var(--text-primary)]">
                 {{ qr.uniqueScans.toLocaleString() }}
@@ -69,8 +96,8 @@
                 Уникальных
               </p>
             </div>
-          </UCard>
-          <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
             <div class="text-center">
               <p class="text-2xl font-bold text-[color:var(--text-primary)]">
                 {{ qr.type === 'dynamic' ? 'Дин.' : 'Стат.' }}
@@ -79,14 +106,11 @@
                 Тип QR
               </p>
             </div>
-          </UCard>
+          </div>
         </div>
 
-        <!-- Details -->
-        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-          <template #header>
-            <span class="font-medium">Детали</span>
-          </template>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+          <span class="mb-4 block font-medium">Детали</span>
           <div class="space-y-3 text-sm">
             <div class="flex items-center justify-between">
               <span class="text-[color:var(--text-secondary)]">URL назначения</span>
@@ -117,14 +141,13 @@
             >
               <span class="text-[color:var(--text-secondary)]">Теги</span>
               <div class="flex gap-1">
-                <UBadge
+                <Tag
                   v-for="tag in qr.tags"
                   :key="tag.id"
-                  variant="subtle"
-                  size="xs"
+                  class="px-2 py-0.5 text-xs"
                 >
                   {{ tag.name }}
-                </UBadge>
+                </Tag>
               </div>
             </div>
             <div class="flex items-center justify-between">
@@ -139,28 +162,31 @@
               <span>{{ formatDateTime(qr.expiresAt) }}</span>
             </div>
           </div>
-        </UCard>
+        </div>
 
-        <!-- A/B destinations results -->
-        <UCard
+        <div
           v-if="destinations.length > 0"
-          class="border border-[color:var(--border)] bg-[color:var(--surface-0)]"
+          class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
         >
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="font-medium">A/B-варианты</span>
-              <UButton
-                icon="i-lucide-settings-2"
-                variant="ghost"
-                size="xs"
-                label="Управление"
-                :to="`/qr/${id}/edit#ab`"
-              />
-            </div>
-          </template>
+          <div class="mb-4 flex items-center justify-between">
+            <span class="font-medium">A/B-варианты</span>
+            <Button
+              as-child
+              text
+              size="small"
+            >
+              <NuxtLink :to="`/qr/${id}/edit#ab`">
+                <Icon
+                  name="i-lucide-settings-2"
+                  class="mr-1"
+                />
+                Управление
+              </NuxtLink>
+            </Button>
+          </div>
 
           <!-- Traffic bar -->
-          <div class="flex h-2.5 w-full overflow-hidden rounded-full mb-4">
+          <div class="mb-4 flex h-2.5 w-full overflow-hidden rounded-full">
             <div
               v-for="(dest, i) in destinations.filter(d => d.isActive)"
               :key="dest.id"
@@ -172,7 +198,7 @@
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="border-b border-[color:var(--border)] dark:border-[color:var(--border)]">
+                <tr class="border-b border-[color:var(--border)]">
                   <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)]">
                     Вариант
                   </th>
@@ -195,6 +221,7 @@
                   v-for="(dest, i) in destinations"
                   :key="dest.id"
                   class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60"
+
                   :class="!dest.isActive && 'opacity-50'"
                 >
                   <td class="py-2.5 pr-3">
@@ -203,7 +230,7 @@
                         class="inline-block size-2.5 rounded-full shrink-0"
                         :style="{ backgroundColor: abColors[i % abColors.length] }"
                       />
-                      <span class="font-medium text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+                      <span class="font-medium text-[color:var(--text-primary)]">
                         {{ dest.label || `Вариант ${i + 1}` }}
                       </span>
                     </div>
@@ -212,7 +239,7 @@
                     <a
                       :href="dest.url"
                       target="_blank"
-                      class="text-[color:var(--color-success)] dark:text-[color:var(--color-success)] hover:underline truncate max-w-[200px] block"
+                      class="block max-w-[200px] truncate text-[color:var(--color-success)] hover:underline"
                     >
                       {{ dest.url }}
                     </a>
@@ -230,21 +257,17 @@
               </tbody>
             </table>
           </div>
-        </UCard>
+        </div>
 
-        <!-- Analytics (scan chart) -->
-        <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-          <template #header>
-            <span class="font-medium">Аналитика сканирований</span>
-          </template>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+          <span class="mb-4 block font-medium">Аналитика сканирований</span>
           <AnalyticsScanChart
             :data="timeSeries"
             :loading="loadingStats"
           />
-        </UCard>
+        </div>
       </div>
 
-      <!-- Right: QR Preview -->
       <div class="lg:col-span-1">
         <div class="lg:sticky lg:top-24">
           <QrPreview
@@ -274,18 +297,17 @@
     />
   </div>
 
-  <!-- Loading -->
   <div
     v-else-if="loadingQr"
     class="space-y-4"
   >
-    <USkeleton class="h-8 w-64" />
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <Skeleton class="h-8 w-64" />
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
       <div class="lg:col-span-2 space-y-4">
-        <USkeleton class="h-24 w-full rounded-lg" />
-        <USkeleton class="h-48 w-full rounded-lg" />
+        <Skeleton class="h-24 w-full rounded-lg" />
+        <Skeleton class="h-48 w-full rounded-lg" />
       </div>
-      <USkeleton class="h-80 w-full rounded-lg" />
+      <Skeleton class="h-80 w-full rounded-lg" />
     </div>
   </div>
 </template>
@@ -293,6 +315,7 @@
 <script setup lang="ts">
 import type { QrCode, QrStatus } from '#shared/types/qr'
 import type { ScanTimeSeriesPoint } from '#shared/types/analytics'
+import type Menu from 'primevue/menu'
 
 interface Destination {
   id: string
@@ -317,6 +340,7 @@ const qr = ref<QrDetails | null>(null)
 const loadingQr = ref(true)
 const exportOpen = ref(false)
 const deleteOpen = ref(false)
+const actionsMenuRef = ref<InstanceType<typeof Menu> | null>(null)
 
 // A/B destinations
 const destinations = ref<Destination[]>([])
@@ -382,6 +406,15 @@ const actions = computed(() => [
     },
   ],
 ])
+const flatActions = computed(() => actions.value.flat().map(action => ({
+  label: action.label,
+  icon: action.icon,
+  command: action.onSelect,
+})))
+
+function toggleActionsMenu(event: Event) {
+  actionsMenuRef.value?.toggle(event)
+}
 
 function formatDateTime(date: string | Date) {
   return new Date(date).toLocaleDateString('ru-RU', {

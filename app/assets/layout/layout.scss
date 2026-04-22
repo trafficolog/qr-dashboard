@@ -1,0 +1,48 @@
+@use './variables/_light';
+@use './variables/_dark';
+@use './_core';
+@use './_topbar';
+@use './_menu';
+@use './_footer';
+@use './_responsive';
+
+.auth-layout {
+  min-height: 100vh;
+  background: var(--layout-bg);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  position: relative;
+}
+
+.auth-theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 1px solid var(--layout-border);
+  background: var(--layout-card);
+  color: var(--layout-text);
+  border-radius: 0.625rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.auth-layout-card {
+  width: min(100%, 30rem);
+  background: var(--layout-card);
+  border: 1px solid var(--layout-border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.auth-layout-brand {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.auth-layout-brand h1 {
+  margin-top: 0.75rem;
+  font-weight: 700;
+}
