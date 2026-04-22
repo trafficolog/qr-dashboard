@@ -36,7 +36,7 @@
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
-- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (33/33); для e2e добавлен `webServer` bootstrap в Playwright config, `NUXT_ICON_SERVER_BUNDLE=local` для офлайн-режима и исправлен cookie setup в `auth.spec`, но прогон всё ещё блокируется network-зависимостями `unifont/fontless` при старте dev-server
+- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (33/33); для e2e добавлены `webServer` bootstrap, `NUXT_ICON_SERVER_BUNDLE=local` и `NUXT_UI_DISABLED=1` в Playwright env + исправлен cookie setup в `auth.spec`; harness стал стабильнее, но полный e2e sweep всё ещё требует финальной стабилизации окружения
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)

@@ -28,7 +28,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm install --prefer-offline --ignore-scripts && NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001',
+    command: 'pnpm install --prefer-offline --ignore-scripts && NUXT_UI_DISABLED=1 NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001',
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
