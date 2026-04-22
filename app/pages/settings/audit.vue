@@ -9,57 +9,63 @@
       </p>
     </div>
 
-    <UCard class="mb-4">
+    <section class="mb-4 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
       <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
-        <UInput
+        <InputText
           v-model="filters.userId"
           :placeholder="$t('pages.audit.filters.userId')"
         />
-        <USelect
+        <Select
           v-model="filters.action"
-          :items="actionOptions"
+          :options="actionOptions"
+          option-label="label"
+          option-value="value"
           :placeholder="$t('pages.audit.filters.action')"
         />
-        <UInput
+        <InputText
           v-model="filters.entityType"
           :placeholder="$t('pages.audit.filters.entityType')"
         />
-        <UInput
+        <InputText
           v-model="filters.dateFrom"
           type="date"
           :placeholder="$t('pages.audit.filters.dateFrom')"
         />
-        <UInput
+        <InputText
           v-model="filters.dateTo"
           type="date"
           :placeholder="$t('pages.audit.filters.dateTo')"
         />
         <div class="flex gap-2">
-          <UButton
+          <Button
             class="flex-1"
-            icon="i-lucide-search"
             @click="applyFilters"
           >
+            <template #icon>
+              <Icon name="i-lucide-search" />
+            </template>
             {{ $t('forms.actions.apply') }}
-          </UButton>
-          <UButton
-            variant="outline"
-            color="neutral"
-            icon="i-lucide-x"
+          </Button>
+          <Button
+            outlined
+            severity="secondary"
             @click="resetFilters"
           >
+            <template #icon>
+              <Icon name="i-lucide-x" />
+            </template>
             {{ $t('forms.actions.reset') }}
-          </UButton>
+          </Button>
         </div>
       </div>
-    </UCard>
+    </section>
 
-    <UCard>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
       <div
         v-if="loading"
         class="space-y-2"
       >
-        <USkeleton
+        <Skeleton
           v-for="i in 6"
           :key="i"
           class="h-10 w-full"
@@ -108,25 +114,24 @@
                 {{ row.user?.email || '—' }}
               </td>
               <td class="py-2">
-                <UBadge
-                  color="neutral"
-                  variant="soft"
-                >
+                <Tag severity="secondary">
                   {{ row.action }}
-                </UBadge>
+                </Tag>
               </td>
               <td class="py-2">
                 {{ row.entityType }}: {{ row.entityId || '—' }}
               </td>
               <td class="py-2">
-                <UButton
-                  size="xs"
-                  variant="ghost"
-                  icon="i-lucide-eye"
+                <Button
+                  size="small"
+                  text
                   @click="selected = row"
                 >
+                  <template #icon>
+                    <Icon name="i-lucide-eye" />
+                  </template>
                   {{ $t('pages.audit.table.view') }}
-                </UButton>
+                </Button>
               </td>
             </tr>
           </tbody>
@@ -141,17 +146,18 @@
         :total-pages="meta.totalPages"
         @update:page="handlePageChange"
       />
-    </UCard>
+    </section>
 
-    <UModal
-      :open="!!selected"
-      :title="$t('pages.audit.detailsTitle')"
-      @update:open="selected = null"
+    <Dialog
+      :visible="!!selected"
+      modal
+      :header="$t('pages.audit.detailsTitle')"
+      @update:visible="selected = null"
     >
-      <template #body>
+      <template #default>
         <pre class="max-h-[60vh] overflow-auto rounded bg-[color:var(--surface-2)] p-3 text-xs">{{ selected ? JSON.stringify(selected, null, 2) : '' }}</pre>
       </template>
-    </UModal>
+    </Dialog>
   </div>
 </template>
 

@@ -1,55 +1,53 @@
 <template>
-  <UCard>
-    <!-- Skeleton -->
+  <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
     <div
       v-if="loading"
       class="flex items-center gap-3"
     >
-      <div class="size-10 rounded-lg bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] animate-pulse shrink-0" />
+      <div class="size-10 shrink-0 animate-pulse rounded-lg bg-[color:var(--surface-2)]" />
       <div class="flex-1 space-y-2">
-        <div class="h-7 w-20 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
-        <div class="h-4 w-28 bg-[color:var(--surface-2)] dark:bg-[color:var(--surface-2)] rounded animate-pulse" />
+        <div class="h-7 w-20 animate-pulse rounded bg-[color:var(--surface-2)]" />
+        <div class="h-4 w-28 animate-pulse rounded bg-[color:var(--surface-2)]" />
       </div>
     </div>
 
-    <!-- Content -->
     <div
       v-else
       class="flex items-start gap-3"
       :data-motion-enabled="!props.reducedMotion"
     >
-      <div class="p-2 rounded-lg bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] dark:bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)] shrink-0">
-        <UIcon
+      <div class="shrink-0 rounded-lg p-2 bg-[color:color-mix(in_srgb,var(--color-success)_20%,transparent)]">
+        <Icon
           :name="icon"
-          class="size-5 text-[color:var(--color-success)] dark:text-[color:var(--color-success)]"
+          class="size-5 text-[color:var(--color-success)]"
         />
       </div>
       <div class="min-w-0">
-        <p class="text-2xl font-bold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)] tabular-nums">
+        <p class="tabular-nums text-2xl font-bold text-[color:var(--text-primary)]">
           {{ formattedValue }}
         </p>
-        <p class="text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted)] mt-0.5">
+        <p class="mt-0.5 text-sm text-[color:var(--text-muted)]">
           {{ label }}
         </p>
         <div
           v-if="change !== undefined"
-          class="flex items-center gap-1 mt-1"
+          class="mt-1 flex items-center gap-1"
         >
-          <UIcon
+          <Icon
             :name="change >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
             class="size-3.5"
             :class="change >= 0 ? 'text-[color:var(--color-success)]' : 'text-[color:var(--color-error)]'"
           />
           <span
             class="text-xs font-medium"
-            :class="change >= 0 ? 'text-[color:var(--color-success)] dark:text-[color:var(--color-success)]' : 'text-[color:var(--color-error)] dark:text-[color:var(--color-error)]'"
+            :class="change >= 0 ? 'text-[color:var(--color-success)]' : 'text-[color:var(--color-error)]'"
           >
             {{ change >= 0 ? '+' : '' }}{{ change }}% vs прошлый период
           </span>
         </div>
       </div>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
