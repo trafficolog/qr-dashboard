@@ -61,10 +61,10 @@
           <template #item="{ item }">
             <button
               class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
-              @click="item.command?.()"
+              @click="item.command?.({ originalEvent: $event, item })"
             >
               <Icon
-                :name="item.icon"
+                :name="item.icon || 'i-lucide-circle'"
                 class="size-4"
               />
               <span>{{ item.label }}</span>

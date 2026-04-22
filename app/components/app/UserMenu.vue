@@ -33,7 +33,7 @@
           class="flex items-center gap-2 px-3 py-2 text-sm"
         >
           <Icon
-            :name="slotProps.item.icon"
+            :name="slotProps.item.icon || 'i-lucide-circle'"
             class="size-4"
           />
           <span>{{ slotProps.item.label }}</span>
@@ -41,10 +41,10 @@
         <button
           v-else
           class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
-          @click="slotProps.item.command?.()"
+          @click="slotProps.item.command?.({ originalEvent: $event, item: slotProps.item })"
         >
           <Icon
-            :name="slotProps.item.icon"
+            :name="slotProps.item.icon || 'i-lucide-circle'"
             class="size-4"
           />
           <span>{{ slotProps.item.label }}</span>

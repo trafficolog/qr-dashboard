@@ -73,12 +73,12 @@ const routeMeta: Record<string, { title: string, subtitle: string }> = {
 
 const pageTitle = computed(() => {
   const match = Object.keys(routeMeta).find(prefix => route.path.startsWith(prefix))
-  return match ? routeMeta[match].title : t('app.name')
+  return match ? routeMeta[match]?.title || t('app.name') : t('app.name')
 })
 
 const pageSubtitle = computed(() => {
   const match = Object.keys(routeMeta).find(prefix => route.path.startsWith(prefix))
-  return match ? routeMeta[match].subtitle : 'SPLAT QR Service'
+  return match ? routeMeta[match]?.subtitle || 'SPLAT QR Service' : 'SPLAT QR Service'
 })
 
 const themeIcon = computed(() => layout.layoutConfig.value.darkTheme ? 'i-lucide-sun' : 'i-lucide-moon')

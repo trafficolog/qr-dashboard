@@ -48,8 +48,8 @@
 | 24.30 | Allowed + Destination Domains | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.31 | API Docs page (Scalar) | ✅ | PR5 | `follow-up commit (api-docs legacy primevue cleanup)` | `/api-docs/index` остаётся на Scalar, а `app/pages/api-docs/_legacy.vue` очищен от Nuxt UI (`UCard/UBadge` → PrimeVue `Tag` + token-based containers). |
 | 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
-| 24.33 | Typecheck sweep | ⚠️ | PR6 | `follow-up commit (deps refresh + typecheck investigation)` | `pnpm typecheck` запускается после refresh зависимостей, но блокируется на `vue-tsc`/Volar plugin error (`vue-router/volar/sfc-route-blocks`) — требуется отдельный toolchain fix. |
-| 24.34 | Lint sweep | ⚠️ | PR6 | `follow-up commit (eslint auto-fix settings/shared)` | Auto-fix применён для `/qr/shared`, `/settings/departments`, `/settings/destination-domains`, `/settings/integrations`; предупреждения снижены до 6 (остались только `vue/no-v-html` в QR preview/search компонентах). |
+| 24.33 | Typecheck sweep | ✅ | PR6 | `follow-up commit (type-safety fixes for PrimeVue menu/actions + toolchain deps)` | `pnpm typecheck` проходит; исправлены TS-ошибки в `AppTopbar`, `UserMenu`, `QuickActions`, `StyleEditor`, `qr/[id]`. Остаются только non-blocking предупреждения Nuxt/Volar (duplicated imports / plugin path warning). |
+| 24.34 | Lint sweep | ✅ | PR6 | `follow-up commit (eslint zero-warning sweep)` | `pnpm lint` проходит с 0 warnings/0 errors; выполнен cleanup для `/settings/*`, `/qr/shared` и `app/components/app|qr` (включая controlled `v-html` cases). |
 | 24.35 | Unit + E2E фиксы | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.36 | A11y sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.37 | Smoke E2E ручной | ⬜ / ✅ / ❌ | PR6 | | |
