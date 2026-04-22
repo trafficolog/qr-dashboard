@@ -1,13 +1,17 @@
 <template>
-  <UModal
-    v-model:open="isOpen"
+  <Dialog
+    v-model:visible="isOpen"
+    modal
+    :closable="true"
+    :dismissable-mask="true"
     :close-on-escape="true"
+    :style="{ width: '30rem', maxWidth: '95vw' }"
   >
-    <template #content>
-      <div class="bg-[color:var(--surface-0)] p-6">
+    <template #container>
+      <div class="rounded-xl bg-[color:var(--surface-0)] p-6">
         <div class="flex items-start gap-4">
           <div class="shrink-0 rounded-full bg-[color:var(--accent-light)] p-2">
-            <UIcon
+            <Icon
               :name="icon"
               class="size-5 text-[color:var(--color-error)]"
             />
@@ -22,23 +26,25 @@
           </div>
         </div>
 
-        <div class="flex justify-end gap-3 mt-6">
-          <UButton
-            variant="outline"
-            color="neutral"
-            :label="cancelLabel"
+        <div class="mt-6 flex justify-end gap-3">
+          <Button
+            severity="secondary"
+            outlined
             @click="isOpen = false"
-          />
-          <UButton
-            color="error"
-            :label="confirmLabel"
+          >
+            {{ cancelLabel }}
+          </Button>
+          <Button
+            severity="danger"
             :loading="loading"
             @click="handleConfirm"
-          />
+          >
+            {{ confirmLabel }}
+          </Button>
         </div>
       </div>
     </template>
-  </UModal>
+  </Dialog>
 </template>
 
 <script setup lang="ts">

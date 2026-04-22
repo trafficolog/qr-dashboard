@@ -12,6 +12,32 @@
 
 ---
 
+**Прогресс реализации (обновлено 2026-04-22):**
+- ✅ Базовый PrimeVue bootstrap + Sakai shell: коммиты `1c50d2e`, `d928dfb`
+- ✅ Глобальные PrimeVue сервисы Toast/Confirm: коммит `fd13824`
+- ✅ Миграция auth login на PrimeVue controls: коммит `12b0bfa`
+- ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`
+- ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
+- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue (ожидается визуальный sign-off)
+- ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
+- ✅ QR Create migration: `/qr/create` page переведена на PrimeVue controls/patterns (в текущем репо отдельный `CreateDrawer` отсутствует)
+- ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; связанные drawer/edit flows ещё в работе
+- ✅ QR Edit migration: `/qr/[id]/edit` page переведена на PrimeVue controls/patterns
+- ✅ Bulk CSV migration: `/qr/bulk` stepper и шаги 1–5 переведены на PrimeVue pattern
+- ✅ Folders migration: `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern
+- ✅ Analytics migration: `/analytics` + `GeoMap/GeoTable/DeviceBreakdown/DevicePieChart/HourlyChart/WeekdayChart` переведены на PrimeVue Message/Button/Skeleton/Icon patterns
+- ✅ Integrations migration: `/integrations` и `/integrations/mcp-setup` переведены на PrimeVue section-card + Button/Icon patterns
+- ✅ Settings migration: `/settings` shell navigation, `/settings/general`, `/settings/profile`, `/settings/team`, `/settings/domains`, `/settings/destination-domains`, `/settings/integrations`, `/settings/audit` и `/settings/departments` переведены на PrimeVue InputText/Select/Icon/Tag/Dialog/Message/ToggleSwitch/MultiSelect patterns
+- ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
+- ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
+- ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
+- ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
+
+### Checkpoint 24.1–24.12 (2026-04-21)
+- ✅ Done: 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
+- ⚠️ In progress: 24.1, 24.6, 24.8, 24.11, 24.14
+- ⬜ Not started: 24.21+
+
 ## 1. Проблема и обоснование
 
 После завершения EPIC 23 проект работает на Nuxt 4 + Nuxt UI v4. Команда приняла решение перейти на **PrimeVue 4.x** как основную UI-библиотеку по следующим причинам:
