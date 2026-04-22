@@ -10,35 +10,31 @@
           {{ $t('pages.team.subtitle') }}
         </p>
       </div>
-      <UButton
-        icon="i-lucide-user-plus"
-        :label="$t('forms.actions.invite')"
-        @click="inviteOpen = true"
-      />
+      <Button @click="inviteOpen = true">
+        <template #icon>
+          <Icon name="i-lucide-user-plus" />
+        </template>
+        {{ $t('forms.actions.invite') }}
+      </Button>
     </div>
 
     <!-- Members table -->
-    <UCard class="border border-[color:var(--border)] bg-[color:var(--surface-0)]">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <h2 class="font-medium text-[color:var(--text-primary)]">
-            {{ $t('team.members.title') }}
-          </h2>
-          <UBadge
-            color="neutral"
-            variant="subtle"
-          >
-            {{ members.length }}
-          </UBadge>
-        </div>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="font-medium text-[color:var(--text-primary)]">
+          {{ $t('team.members.title') }}
+        </h2>
+        <Tag severity="secondary">
+          {{ members.length }}
+        </Tag>
+      </div>
 
       <!-- Loading -->
       <div
         v-if="loading"
         class="space-y-3 py-2"
       >
-        <USkeleton
+        <Skeleton
           v-for="i in 4"
           :key="i"
           class="h-14 w-full rounded-lg"
@@ -50,7 +46,7 @@
         v-else-if="members.length === 0"
         class="py-10 text-center text-[color:var(--text-secondary)]"
       >
-        <UIcon
+        <Icon
           name="i-lucide-users"
           class="mx-auto mb-2 size-10 text-[color:var(--text-muted)]/50"
         />
@@ -68,10 +64,10 @@
           class="flex items-center gap-4 py-3"
         >
           <!-- Avatar -->
-          <UAvatar
+          <Avatar
             :alt="member.name || member.email"
-            :src="member.avatarUrl || undefined"
-            size="sm"
+            :image="member.avatarUrl || undefined"
+            shape="circle"
           />
 
           <!-- Info -->
@@ -99,134 +95,144 @@
 
           <!-- Role badge (self — not editable) -->
           <div v-if="member.id === currentUser?.id">
-            <UBadge
-              :color="roleColor(member.role)"
-              variant="soft"
-            >
+            <Tag :severity="roleSeverity(member.role)">
               {{ roleLabel(member.role) }}
-            </UBadge>
+            </Tag>
           </div>
 
           <!-- Role select for others -->
-          <USelect
+          <Select
             v-else
             :model-value="member.role"
-            :items="roleItems"
-            size="xs"
+            :options="roleItems"
+            option-label="label"
+            option-value="value"
             class="w-28"
             :disabled="updatingId === member.id"
             @update:model-value="handleRoleChange(member, $event as RoleValue)"
           />
 
           <!-- Delete -->
-          <UButton
-            icon="i-lucide-trash-2"
-            variant="ghost"
-            color="error"
-            size="xs"
+          <Button
+            text
+            severity="danger"
+            size="small"
             :aria-label="t('a11y.actions.deleteMember', { name: member.name || member.email })"
             :title="t('a11y.actions.deleteMember', { name: member.name || member.email })"
             :disabled="member.id === currentUser?.id"
             :loading="deletingId === member.id"
             @click="handleDelete(member)"
-          />
+          >
+            <template #icon>
+              <Icon name="i-lucide-trash-2" />
+            </template>
+          </Button>
         </li>
       </ul>
-    </UCard>
+    </section>
 
     <!-- Invite modal -->
-    <UModal
-      :open="inviteOpen"
-      :title="$t('team.invite.modalTitle')"
-      :close-on-escape="true"
-      @update:open="handleInviteModalOpenChange"
+    <Dialog
+      :visible="inviteOpen"
+      modal
+      :header="$t('team.invite.modalTitle')"
+      :closable="true"
+      @update:visible="handleInviteModalOpenChange"
     >
-      <template #body>
-        <form
-          class="space-y-4"
-          @submit.prevent="handleInvite"
-        >
-          <UFormField
-            :label="$t('forms.labels.email')"
-            :error="inviteEmailError"
-            :hint="$t('forms.hints.inviteEmail')"
-            required
-          >
-            <UInput
-              v-model="inviteForm.email"
-              type="email"
-              placeholder="user@company.com"
-              icon="i-lucide-mail"
-              :aria-invalid="!!inviteEmailError"
-              :aria-describedby="inviteEmailError ? inviteEmailErrorId : undefined"
-              :aria-required="true"
-              autofocus
-              @blur="validateInviteEmail"
-            />
-            <template #error="{ error }">
-              <p
-                v-if="error"
-                :id="inviteEmailErrorId"
-                role="alert"
-                aria-live="polite"
-              >
-                {{ error }}
-              </p>
-            </template>
-          </UFormField>
-
-          <UFormField
-            :label="$t('forms.labels.role')"
-            :error="inviteRoleError"
-            required
-          >
-            <USelect
-              v-model="inviteForm.role"
-              :items="roleItems"
-              class="w-full"
-              :aria-invalid="!!inviteRoleError"
-              :aria-describedby="inviteRoleError ? inviteRoleErrorId : undefined"
-              :aria-required="true"
-              @update:model-value="validateInviteRole"
-            />
-            <template #error="{ error }">
-              <p
-                v-if="error"
-                :id="inviteRoleErrorId"
-                role="alert"
-                aria-live="polite"
-              >
-                {{ error }}
-              </p>
-            </template>
-          </UFormField>
-
-          <UAlert
-            icon="i-lucide-info"
-            color="info"
-            variant="soft"
-            :description="$t('team.invite.alertDescription')"
+      <form
+        class="space-y-4"
+        @submit.prevent="handleInvite"
+      >
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-[color:var(--text-primary)]">
+            {{ $t('forms.labels.email') }}
+            <span class="text-[color:var(--color-error)]">*</span>
+          </label>
+          <InputText
+            v-model="inviteForm.email"
+            type="email"
+            placeholder="user@company.com"
+            class="w-full"
+            :aria-invalid="!!inviteEmailError"
+            :aria-describedby="inviteEmailError ? inviteEmailErrorId : undefined"
+            :aria-required="true"
+            autofocus
+            @blur="validateInviteEmail"
           />
-        </form>
-      </template>
+          <span class="text-xs text-[color:var(--text-muted)]">{{ $t('forms.hints.inviteEmail') }}</span>
+          <p
+            v-if="inviteEmailError"
+            :id="inviteEmailErrorId"
+            class="text-sm text-[color:var(--color-error)]"
+            role="alert"
+            aria-live="polite"
+          >
+            {{ inviteEmailError }}
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-[color:var(--text-primary)]">
+            {{ $t('forms.labels.role') }}
+            <span class="text-[color:var(--color-error)]">*</span>
+          </label>
+          <Select
+            v-model="inviteForm.role"
+            :options="roleItems"
+            option-label="label"
+            option-value="value"
+            class="w-full"
+            :aria-invalid="!!inviteRoleError"
+            :aria-describedby="inviteRoleError ? inviteRoleErrorId : undefined"
+            :aria-required="true"
+            @update:model-value="validateInviteRole"
+          />
+          <p
+            v-if="inviteRoleError"
+            :id="inviteRoleErrorId"
+            class="text-sm text-[color:var(--color-error)]"
+            role="alert"
+            aria-live="polite"
+          >
+            {{ inviteRoleError }}
+          </p>
+        </div>
+
+        <Message
+          severity="info"
+          variant="simple"
+        >
+          <div class="flex items-center gap-2">
+            <Icon
+              name="i-lucide-info"
+              class="size-4"
+            />
+            <span>{{ $t('team.invite.alertDescription') }}</span>
+          </div>
+        </Message>
+      </form>
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton
-            :label="$t('forms.actions.cancel')"
-            variant="outline"
-            color="neutral"
+          <Button
+            outlined
+            severity="secondary"
             @click="requestInviteClose"
-          />
-          <UButton
-            :label="$t('forms.actions.invite')"
-            icon="i-lucide-send"
+          >
+            {{ $t('forms.actions.cancel') }}
+          </Button>
+          <Button
             :loading="inviting"
             @click="handleInvite"
-          />
+          >
+            <template #icon>
+              <Icon name="i-lucide-send" />
+            </template>
+            {{ $t('forms.actions.invite') }}
+          </Button>
         </div>
       </template>
-    </UModal>
+    </Dialog>
 
     <SharedUnsavedChangesDialog
       v-model:open="inviteUnsaved.showDialog.value"
@@ -320,10 +326,10 @@ function roleLabel(role: RoleValue) {
   return roleItems.value.find(r => r.value === role)?.label ?? role
 }
 
-function roleColor(role: RoleValue): 'error' | 'warning' | 'neutral' {
-  if (role === 'admin') return 'error'
-  if (role === 'editor') return 'warning'
-  return 'neutral'
+function roleSeverity(role: RoleValue): 'danger' | 'warn' | 'secondary' {
+  if (role === 'admin') return 'danger'
+  if (role === 'editor') return 'warn'
+  return 'secondary'
 }
 
 function formatDate(iso: string) {

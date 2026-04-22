@@ -16,38 +16,38 @@
 
 | # | Задача | Статус | PR | Коммит(ы) | Комментарий |
 |---|--------|--------|----|-----------|-------------|
-| 24.1 | Аудит и baseline | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.2 | Custom preset + CSS token layer | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.3 | Установка PrimeVue | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.4 | App shell, layouts, error page | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.5 | Global styles и шрифты | ⬜ / ✅ / ❌ | PR1 | | |
-| 24.6 | UI-примитивы | ⬜ / ✅ / ❌ | PR2 | | |
-| 24.7 | Глобальные сервисы (Toast/Confirm/Dialog) | ⬜ / ✅ / ❌ | PR2 | | |
-| 24.8 | Component mapping sweep (Nuxt UI → PrimeVue) | ⬜ / ✅ / ❌ | PR2 | | |
-| 24.9 | Sidebar | ⬜ / ✅ / ❌ | PR3 | | |
-| 24.10 | Topbar + Command Palette | ⬜ / ✅ / ❌ | PR3 | | |
-| 24.11 | Dashboard | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.12 | QR List page | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.13 | QR Create Drawer + `/qr/create` | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.14 | QR Detail Drawer + `/qr/[id]` | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.15 | QR Edit `/qr/[id]/edit` | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.17 | Folders | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.18 | Analytics | ⬜ / ✅ / ❌ | PR4 | | |
-| 24.19 | Integrations | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.20 | Settings | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.21 | Notifications | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.22 | Shared QR (EPIC 19) | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.23 | Auth `/auth/login` | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.24 | Scan experience (error/not-found/expired) | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.25 | Onboarding overlay | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.26 | Empty states | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.27 | Toast notifications replacement | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.28 | ConfirmDialog для destructive actions | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.1 | Аудит и baseline | ⚠️ | PR1 | `223372f`, `b6d6f80` | Файлы baseline/deps/smoke созданы, но часть метрик ещё шаблонная (нужен фактический замер). |
+| 24.2 | Custom preset + CSS token layer | ✅ | PR1 | `1c50d2e` | Добавлен `splat-preset.ts` и подключён в `nuxt.config.ts`. |
+| 24.3 | Установка PrimeVue | ✅ | PR1 | `1c50d2e` | PrimeVue + Nuxt module + themes/forms добавлены. |
+| 24.4 | App shell, layouts, error page | ✅ | PR1 | `1c50d2e`, `d928dfb` | Sakai-like shell внедрён; error page переведена на PrimeVue actions. |
+| 24.5 | Global styles и шрифты | ✅ | PR1 | `1c50d2e` | Подключён `app/assets/layout/layout.scss` + light/dark variables. |
+| 24.6 | UI-примитивы | ⚠️ | PR2 | `606b433`, `b9f14b1`, `5be3b13`, `7db07ec`, `follow-up commit (shared overlays/banners migration)` | Мигрированы `ConfirmDialog`, `EmptyState`, `SharedPagination`, `TagInput`, `OnboardingOverlay`, `DraftRestoredBanner`, `UnsavedChangesDialog`; оставшиеся UI-примитивы ещё в работе. |
+| 24.7 | Глобальные сервисы (Toast/Confirm/Dialog) | ✅ | PR2 | `fd13824`, `d928dfb` | Добавлены PrimeVue services + composables + ConfirmDialog migration. |
+| 24.8 | Component mapping sweep (Nuxt UI → PrimeVue) | ⚠️ | PR2 | `12b0bfa`, `b9d55a1`, `931f63a` | Идёт поэтапная миграция страниц/компонентов; полное удаление Nuxt UI ещё не достигнуто. |
+| 24.9 | Sidebar | ✅ | PR3 | `1c50d2e` | Внедрён новый app menu/sidebar shell на PrimeVue/Sakai-паттерне. |
+| 24.10 | Topbar + Command Palette | ✅ | PR3 | `6e0ebbd`, `b9d55a1` | Topbar, UserMenu и GlobalSearch (Cmd+K) переведены на PrimeVue Dialog/Icon pattern. |
+| 24.11 | Dashboard | ⚠️ | PR4 | `931f63a`, `follow-up commits (StatCard + DateRangePicker/TopQrTable/ScanChart)` | Основные dashboard blocks (включая `AnalyticsStatCard`, `DateRangePicker`, `TopQrTable`, `ScanChart`) переведены на PrimeVue; визуальный sign-off по макетам pending. |
+| 24.12 | QR List page | ✅ | PR4 | `5be3b13`, `follow-up commits (qr/index + Table/Card/QuickActions/ExportDialog)` | Страница `/qr` и связанные компоненты (`SharedPagination`, `Table`, `Card`, `QuickActions`, `ExportDialog`) переведены на PrimeVue pattern. |
+| 24.13 | QR Create Drawer + `/qr/create` | ✅ | PR4 | `follow-up commits (qr/create full controls migration)` | `/qr/create` переведена на PrimeVue patterns/controls; в текущем репо отдельный `CreateDrawer` не реализован (scope закрыт по фактическому UI-объёму). |
+| 24.14 | QR Detail Drawer + `/qr/[id]` | ⚠️ | PR4 | `follow-up commit (qr/[id] shell + cards + actions)` | Начата migration `/qr/[id]`: header actions/menu, stats/detail cards, A/B block и loading skeleton переведены на PrimeVue pattern; drawer/edit связанные шаги ещё в работе. |
+| 24.15 | QR Edit `/qr/[id]/edit` | ✅ | PR4 | `follow-up commit (qr/[id]/edit full controls migration)` | `/qr/[id]/edit` переведена на PrimeVue controls/patterns (cards, inputs/selects, actions, loading skeleton). |
+| 24.16 | Bulk CSV `/qr/bulk` (Stepper) | ✅ | PR4 | `follow-up commits (qr/bulk full steps migration)` | `/qr/bulk` (stepper + шаги 1–5) переведён на PrimeVue pattern. |
+| 24.17 | Folders | ✅ | PR4 | `follow-up commit (folders pages + dialog primevue)` | `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern. |
+| 24.18 | Analytics | ✅ | PR4 | `follow-up commit (analytics primevue migration)` | `/analytics` и аналитические блоки (`GeoMap`, `GeoTable`, `DeviceBreakdown`, `DevicePieChart`, `HourlyChart`, `WeekdayChart`) переведены на PrimeVue Message/Button/Skeleton/Icon patterns. |
+| 24.19 | Integrations | ✅ | PR5 | `follow-up commit (integrations pages primevue migration)` | `/integrations` и `/integrations/mcp-setup` переведены на PrimeVue section-card + Button/Icon patterns. |
+| 24.20 | Settings | ✅ | PR5 | `follow-up commits (settings full primevue migration incl. departments)` | `/settings` shell navigation, `/settings/general`, `/settings/profile`, `/settings/team`, `/settings/domains`, `/settings/destination-domains`, `/settings/integrations`, `/settings/audit` и `/settings/departments` переведены на PrimeVue InputText/Select/Icon/Tag/Dialog/Message/ToggleSwitch/MultiSelect patterns. |
+| 24.21 | Notifications | ⚠️ | PR5 | `follow-up commit (notifications page primevue migration)` | Добавлена `/notifications` page с tabbed list и read/unread actions на PrimeVue Button/Tag patterns; backend-подключение уведомлений pending. |
+| 24.22 | Shared QR (EPIC 19) | ✅ | PR5 | `follow-up commit (qr/shared primevue migration)` | `/qr/shared` page переведена на PrimeVue Skeleton/Dialog/Select/Button patterns (department picker modal + loading skeleton). |
+| 24.23 | Auth `/auth/login` | ✅ | PR5 | `12b0bfa` | Страница login переведена на PrimeVue InputText/InputOtp/Button/Message. |
+| 24.24 | Scan experience (error/not-found/expired) | ✅ | PR5 | `d928dfb`, `123102e` | `error.vue`, `/not-found`, `/expired` переведены на PrimeVue actions и унифицированный layout card. |
+| 24.25 | Onboarding overlay | ✅ | PR5 | `follow-up commit (shared onboarding overlay primevue migration)` | `app/components/shared/OnboardingOverlay.vue` переведён с Nuxt UI на PrimeVue Button + card-like overlay shell; spotlight и step-navigation сохранены. |
+| 24.26 | Empty states | ✅ | PR5 | `b9f14b1` | Shared EmptyState переведён на `@nuxt/icon`/PrimeVue stack (без Nuxt UI icon). |
+| 24.27 | Toast notifications replacement | ✅ | PR5 | `700e1fd` | `useA11yToast` переведён на PrimeVue ToastService + A11y announce. |
+| 24.28 | ConfirmDialog для destructive actions | ✅ | PR5 | `606b433` | Shared ConfirmDialog мигрирован на PrimeVue Dialog/Button. |
 | 24.29 | Departments management | ⬜ / ✅ / ❌ | PR5 | | |
 | 24.30 | Allowed + Destination Domains | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.31 | API Docs page (Scalar) | ⬜ / ✅ / ❌ | PR5 | | |
-| 24.32 | Theme switcher + persistence | ⬜ / ✅ / ❌ | PR5 | | |
+| 24.31 | API Docs page (Scalar) | ✅ | PR5 | `follow-up commit (api-docs legacy primevue cleanup)` | `/api-docs/index` остаётся на Scalar, а `app/pages/api-docs/_legacy.vue` очищен от Nuxt UI (`UCard/UBadge` → PrimeVue `Tag` + token-based containers). |
+| 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
 | 24.33 | Typecheck sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.34 | Lint sweep | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.35 | Unit + E2E фиксы | ⬜ / ✅ / ❌ | PR6 | | |
@@ -55,6 +55,13 @@
 | 24.37 | Smoke E2E ручной | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.38 | Bundle size audit | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.39 | Финальный релиз и документация | ⬜ / ✅ / ❌ | PR6 | | |
+
+
+### 1.1. Checkpoint 24.1–24.12 (2026-04-21)
+
+- **Готово:** 24.2, 24.3, 24.4, 24.5, 24.7, 24.9, 24.10
+- **Частично (in progress):** 24.1, 24.6, 24.8, 24.11, 24.14
+- **Не начато:** 24.33+
 
 ---
 
@@ -199,7 +206,7 @@
 |----------|--------|-----------------------------------|-------------|
 | `preset = Aura` | ✅ | `nuxt.config.ts` / PR1 | В конфигурации PrimeVue используется Aura preset как baseline для темы. |
 | `primary = red` | ✅ | `app/assets/styles/tokens.css`, `app/theme/splat-preset.ts` / PR1 | Красная SPLAT-палитра закреплена в токенах и кастомном preset-слое. |
-| `darkModeSelector = '.app-dark'` | ✅ | `nuxt.config.ts`, `app/composables/useTheme.ts` / PR1, PR5 | Dark mode привязан к селектору `.app-dark` и синхронизирован с переключателем темы. |
+| `darkModeSelector = '.app-dark'` | ✅ | `nuxt.config.ts`, `app/composables/useLayout.ts` / PR1, PR5 | Dark mode привязан к селектору `.app-dark` и синхронизирован с переключателем темы. |
 | `menuMode = 'static'` | ✅ | `app/layouts/default.vue` / PR3 | Боковое меню работает в static-режиме согласно Amendment A1. |
 | Отсутствует `AppConfigurator` и UI-триггеры configurator | ✅ | `app/components/app/*`, `app/components/layout/*` / PR3 | Конфигуратор Sakai не подключён; кнопки/панели runtime-настройки в UI отсутствуют. |
 
