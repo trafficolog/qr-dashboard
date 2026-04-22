@@ -8,7 +8,7 @@
       v-if="loading"
       class="space-y-2"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 6"
         :key="i"
         class="h-12 rounded-lg"
@@ -36,7 +36,7 @@
                 @click="setSort('country')"
               >
                 {{ $t('analytics.geo.columns.country') }}
-                <UIcon
+                <Icon
                   :name="sortIcon('country')"
                   class="size-3"
                 />
@@ -49,7 +49,7 @@
                 @click="setSort('city')"
               >
                 {{ $t('analytics.geo.columns.city') }}
-                <UIcon
+                <Icon
                   :name="sortIcon('city')"
                   class="size-3"
                 />
@@ -62,7 +62,7 @@
                 @click="setSort('scans')"
               >
                 {{ $t('analytics.geo.columns.scans') }}
-                <UIcon
+                <Icon
                   :name="sortIcon('scans')"
                   class="size-3"
                 />
@@ -75,7 +75,7 @@
                 @click="setSort('uniqueScans')"
               >
                 {{ $t('analytics.geo.columns.uniqueScans') }}
-                <UIcon
+                <Icon
                   :name="sortIcon('uniqueScans')"
                   class="size-3"
                 />
