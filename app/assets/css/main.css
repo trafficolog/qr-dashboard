@@ -102,7 +102,8 @@ html {
   color-scheme: light;
 }
 
-html.dark {
+html.dark,
+html.app-dark {
   color-scheme: dark;
   --surface-0: #12070a;
   --surface-1: #190b0f;
@@ -224,17 +225,20 @@ a:focus-visible,
   color: #166534;
 }
 
-html.dark .score-low {
+html.dark .score-low,
+html.app-dark .score-low {
   background: #450a0a;
   color: #fca5a5;
 }
 
-html.dark .score-mid {
+html.dark .score-mid,
+html.app-dark .score-mid {
   background: #451a03;
   color: #fcd34d;
 }
 
-html.dark .score-high {
+html.dark .score-high,
+html.app-dark .score-high {
   background: #052e16;
   color: #86efac;
 }
