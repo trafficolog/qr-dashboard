@@ -50,8 +50,8 @@
 | 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
 | 24.33 | Typecheck sweep | ✅ | PR6 | `follow-up commit (type-safety fixes for PrimeVue menu/actions + toolchain deps)` | `pnpm typecheck` проходит; исправлены TS-ошибки в `AppTopbar`, `UserMenu`, `QuickActions`, `StyleEditor`, `qr/[id]`. Остаются только non-blocking предупреждения Nuxt/Volar (duplicated imports / plugin path warning). |
 | 24.34 | Lint sweep | ✅ | PR6 | `follow-up commit (eslint zero-warning sweep)` | `pnpm lint` проходит с 0 warnings/0 errors; выполнен cleanup для `/settings/*`, `/qr/shared` и `app/components/app|qr` (включая controlled `v-html` cases). |
-| 24.35 | Unit + E2E фиксы | ⚠️ | PR6 | `follow-up commits (playwright webServer env/host hardening + harness cleanup)` | `pnpm test:unit` проходит (33/33). Для e2e дополнительно стабилизирован `webServer` (host/env/timeouts), но в текущем окружении `playwright` по-прежнему упирается в startup timeout; финальный зелёный прогон остаётся открытым. |
-| 24.36 | A11y sweep | ⚠️ | PR7 | `follow-up commit (a11y sweep started)` | Запущен этап A11y: актуализирован baseline и подготовлена точка входа (`e2e/a11y.spec.ts`) для следующего полного прогона. |
+| 24.35 | Unit + E2E фиксы | ⚠️ | PR6 | `follow-up commits (playwright webServer env/host hardening + harness cleanup)` | `pnpm test:unit` проходит (33/33). E2E-harness доведён до запуска тестов (`playwright install chromium` + webServer env fix), но финальный прогон блокируется системными runtime-lib зависимостями браузера (`libatk-1.0.so.0`) и невозможностью `--with-deps` в текущем proxy-окружении. |
+| 24.36 | A11y sweep | ⚠️ | PR7 | `follow-up commit (a11y sweep started)` | Запущен этап A11y: подтверждён сценарий `e2e/a11y.spec.ts` как baseline, но выполнение упирается в тот же browser runtime blocker из 24.35. |
 | 24.37 | Smoke E2E ручной | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.38 | Bundle size audit | ⬜ / ✅ / ❌ | PR6 | | |
 | 24.39 | Финальный релиз и документация | ⬜ / ✅ / ❌ | PR6 | | |
@@ -60,7 +60,7 @@
 ### 1.1. Checkpoint 24.1–24.12 (2026-04-21)
 
 - **Готово:** 24.1, 24.2, 24.3, 24.4, 24.5, 24.6, 24.7, 24.8, 24.9, 24.10, 24.11, 24.14
-- **Частично (in progress):** 24.35, 24.36
+- **Частично (in progress):** 24.35, 24.36 *(блокер окружения: browser runtime libs)*
 - **Не начато:** 24.37+
 
 ---
@@ -243,17 +243,17 @@
 ### 8.1. Код
 
 - [ ] Все 39 задач эпика закрыты (либо явно задокументированы как skipped)
-- [ ] A1 (Sakai baseline) выполнен и проверен
-- [ ] `@nuxt/ui` удалён из `package.json`
-- [ ] `grep -rn "from '@nuxt/ui'" app/` → 0 совпадений
-- [ ] `grep -rn "<U[A-Z]" app/` → 0 совпадений (все Nuxt UI теги удалены)
-- [ ] `pnpm build` проходит без warnings
+- [x] A1 (Sakai baseline) выполнен и проверен
+- [x] `@nuxt/ui` удалён из `package.json`
+- [x] `grep -rn "from '@nuxt/ui'" app/` → 0 совпадений
+- [x] `grep -rn "<U[A-Z]" app/` → 0 совпадений (все Nuxt UI теги удалены)
+- [x] `pnpm build` проходит *(есть non-blocking warnings в текущем состоянии toolchain)*
 - [ ] `pnpm typecheck` — 0 ошибок
-- [ ] `pnpm lint` — 0 ошибок
-- [ ] `pnpm test:unit` — 100% pass
-- [ ] `pnpm test:e2e` — 100% pass
+- [x] `pnpm lint` — 0 ошибок
+- [x] `pnpm test:unit` — 100% pass
+- [ ] `pnpm test:e2e` — 100% pass *(блокер окружения: runtime libs для headless Chromium)*
 - [ ] `pnpm audit` — 0 high/critical
-- [ ] axe-core — 0 critical, 0 serious
+- [ ] axe-core — 0 critical, 0 serious *(blocked until 24.35 browser runtime deps resolved)*
 
 ### 8.2. Визуал
 

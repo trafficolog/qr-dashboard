@@ -1,11 +1,8 @@
 import { SplatPreset } from './app/themes/splat-preset'
 
-const isNuxtUiDisabled = process.env.NUXT_UI_DISABLED === '1'
-
 export default defineNuxtConfig({
   modules: [
     '@primevue/nuxt-module',
-    !isNuxtUiDisabled && '@nuxt/ui',
     '@nuxt/icon',
     '@nuxtjs/i18n',
     '@pinia/nuxt',
@@ -98,7 +95,7 @@ export default defineNuxtConfig({
   },
 
   icon: {
-    serverBundle: process.env.NUXT_ICON_SERVER_BUNDLE || 'remote',
+    serverBundle: (process.env.NUXT_ICON_SERVER_BUNDLE as 'auto' | 'local' | 'remote' | undefined) || 'remote',
   },
 
   primevue: {

@@ -36,7 +36,7 @@
 - ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
-- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (33/33); для e2e добавлены `webServer` bootstrap, `NUXT_ICON_SERVER_BUNDLE=local` и `NUXT_UI_DISABLED=1` в Playwright env + исправлен cookie setup в `auth.spec`; harness стал стабильнее, но полный e2e sweep всё ещё требует финальной стабилизации окружения
+- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (33/33); e2e-harness доведён до старта сценариев (`playwright install chromium`, webServer env/host hardening), но финальный прогон блокируется отсутствующими системными runtime-библиотеками headless Chromium (`libatk-1.0.so.0`) и ошибками apt proxy при `playwright install --with-deps`
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
@@ -1533,7 +1533,7 @@ app/layouts/auth.vue             — initial theme initialize
 
 **Критерии приёмки:**
 - [x] `pnpm test:unit` — 100% зелёное
-- [ ] `pnpm test:e2e` — 100% зелёное
+- [ ] `pnpm test:e2e` — 100% зелёное *(blocked by environment runtime libs for browser)*
 - [ ] Все критические user flow (auth, QR create/edit/delete, bulk, analytics, settings, MCP) проходят
 
 ---
@@ -1551,7 +1551,7 @@ app/layouts/auth.vue             — initial theme initialize
 4. Проверка contrast ratio всех pairs token'ов (`--text` на `--bg`, `--text` на `--bg-elev`, accent-ink на accent — WCAG AA).
 
 **Критерии приёмки:**
-- [ ] axe-core: 0 critical, 0 serious issues *(старт выполнен: подготовлен baseline через `e2e/a11y.spec.ts`)*
+- [ ] axe-core: 0 critical, 0 serious issues *(старт выполнен: baseline `e2e/a11y.spec.ts`; blocked by 24.35 browser runtime deps)*
 - [ ] Все interactive elements фокусируются и активируются с клавиатуры
 - [ ] Все Drawer'ы и Dialog'и имеют focus-trap (PrimeVue нативно)
 
