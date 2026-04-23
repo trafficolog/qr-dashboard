@@ -33,7 +33,8 @@ const scalarConfig = {
   --scalar-button-1-color: #fff;
 }
 
-:global(html.dark) .api-docs-page :deep(.scalar-app) {
+:global(html.dark) .api-docs-page :deep(.scalar-app),
+:global(html.app-dark) .api-docs-page :deep(.scalar-app) {
   --scalar-button-1-color: var(--surface-0);
 }
 </style>

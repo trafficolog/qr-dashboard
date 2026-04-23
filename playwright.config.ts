@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001'
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001'
 
 export default defineConfig({
   testDir: './e2e',
@@ -28,9 +28,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm install --prefer-offline --ignore-scripts && NUXT_UI_DISABLED=1 NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001',
+    command: 'OTP_PEPPER=test-pepper CSRF_SECRET=test-csrf NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001 --host 127.0.0.1',
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 240 * 1000,
   },
 })

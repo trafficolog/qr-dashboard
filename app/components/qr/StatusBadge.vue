@@ -1,15 +1,13 @@
 <template>
-  <UBadge
-    :color="badgeColor"
-    variant="subtle"
-    size="sm"
-  >
-    <UIcon
-      :name="statusIcon"
-      class="size-3.5 mr-1"
-    />
-    {{ statusLabel }}
-  </UBadge>
+  <Tag :severity="tagSeverity">
+    <div class="inline-flex items-center gap-1">
+      <Icon
+        :name="statusIcon"
+        class="size-3.5"
+      />
+      <span>{{ statusLabel }}</span>
+    </div>
+  </Tag>
 </template>
 
 <script setup lang="ts">
@@ -17,19 +15,19 @@ const props = defineProps<{
   status: string
 }>()
 
-type BadgeColor = 'primary' | 'warning' | 'error' | 'neutral'
+type TagSeverity = 'primary' | 'warn' | 'danger' | 'secondary'
 
 const { t } = useI18n()
 
-const badgeColor = computed<BadgeColor>(() => {
-  const map: Record<string, BadgeColor> = {
+const tagSeverity = computed<TagSeverity>(() => {
+  const map: Record<string, TagSeverity> = {
     active: 'primary',
-    paused: 'warning',
-    expired: 'error',
-    archived: 'neutral',
+    paused: 'warn',
+    expired: 'danger',
+    archived: 'secondary',
   }
 
-  return map[props.status] ?? 'neutral'
+  return map[props.status] ?? 'secondary'
 })
 
 const statusIcon = computed(() => {

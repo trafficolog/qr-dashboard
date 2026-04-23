@@ -139,11 +139,14 @@
                 step="1"
                 class="flex-1 h-1.5 rounded-full accent-[color:var(--color-success)] cursor-pointer"
               >
-              <InputText
-                v-model.number="dest.weight"
-                type="number"
-                min="1"
-                max="100"
+              <InputNumber
+                v-model="dest.weight"
+                input-class="w-full text-center"
+                :min="1"
+                :max="100"
+                :min-fraction-digits="0"
+                :max-fraction-digits="0"
+                :use-grouping="false"
                 class="w-16"
               />
             </div>
