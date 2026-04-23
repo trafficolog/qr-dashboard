@@ -22,21 +22,31 @@
           @submit.prevent="handlePrimaryAction"
         >
           <template v-if="step === 'email'">
-            <UFormField
-              label="Email"
-              :error="emailError"
-            >
-              <UInput
-                v-model="email"
-                type="email"
-                placeholder="name@splat.com"
-                icon="i-lucide-mail"
-                size="lg"
-                class="w-full"
-                autofocus
-                :disabled="loading"
-              />
-            </UFormField>
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium text-[color:var(--text-primary)]">Email</label>
+              <IconField>
+                <InputIcon>
+                  <Icon
+                    name="i-lucide-mail"
+                    class="size-4"
+                  />
+                </InputIcon>
+                <InputText
+                  v-model="email"
+                  type="email"
+                  placeholder="name@splat.com"
+                  class="w-full"
+                  autofocus
+                  :disabled="loading"
+                />
+              </IconField>
+              <small
+                v-if="emailError"
+                class="text-red-500"
+              >
+                {{ emailError }}
+              </small>
+            </div>
           </template>
 
           <template v-else>
@@ -46,12 +56,11 @@
                   {{ $t('auth.codeLabel') }}
                 </label>
                 <div class="flex justify-center">
-                  <UPinInput
-                    v-model="codeDigits"
+                  <InputOtp
+                    v-model="codeValue"
                     :length="6"
-                    type="number"
-                    size="lg"
-                    otp
+                    integer-only
+                    :disabled="loading"
                     @complete="handleVerify"
                   />
                 </div>
@@ -61,10 +70,10 @@
                 <span class="text-[color:var(--text-secondary)]">
                   {{ $t('auth.codeValid') }}: {{ formatTime(countdown) }}
                 </span>
-                <UButton
+                <Button
                   type="button"
-                  variant="link"
-                  size="sm"
+                  variant="text"
+                  size="small"
                   :disabled="resendCooldown > 0 || loading"
                   @click="handleResend"
                 >
@@ -73,43 +82,40 @@
                       ? $t('auth.resendIn', { seconds: resendCooldown })
                       : $t('auth.resend')
                   }}
-                </UButton>
+                </Button>
               </div>
             </div>
           </template>
 
-          <UButton
+          <Button
             type="submit"
-            block
-            color="primary"
-            size="lg"
+            class="w-full"
             :loading="loading"
             :disabled="isPrimaryDisabled"
           >
             {{ step === 'email' ? $t('auth.getCode') : $t('auth.confirm') }}
-          </UButton>
+          </Button>
         </form>
 
-        <UAlert
+        <Message
           v-if="errorMessage"
-          color="error"
-          variant="soft"
-          :title="errorMessage"
-        />
+          severity="error"
+        >
+          {{ errorMessage }}
+        </Message>
 
         <div
           v-if="step === 'code'"
           class="pt-2"
         >
-          <UButton
+          <Button
             type="button"
-            variant="link"
-            block
-            color="neutral"
+            variant="text"
+            class="w-full"
             @click="handleUseAnotherEmail"
           >
             &larr; {{ $t('auth.otherEmail') }}
-          </UButton>
+          </Button>
         </div>
 
         <p class="text-center text-xs leading-5 text-[color:var(--text-muted)]">
@@ -138,14 +144,14 @@ const email = ref('')
 const emailError = ref('')
 const errorMessage = ref('')
 const loading = ref(false)
-const codeDigits = ref<number[]>([])
+const codeValue = ref('')
 const countdown = ref(600)
 const resendCooldown = ref(0)
 
 let countdownInterval: ReturnType<typeof setInterval> | undefined
 let resendInterval: ReturnType<typeof setInterval> | undefined
 
-const codeString = computed(() => codeDigits.value.join(''))
+const codeString = computed(() => codeValue.value.replace(/\D/g, '').slice(0, 6))
 const isPrimaryDisabled = computed(() => {
   if (loading.value) {
     return true
@@ -279,7 +285,7 @@ async function handleSubmit() {
   try {
     const response = await login(normalizedEmail)
     step.value = 'code'
-    codeDigits.value = []
+    codeValue.value = ''
     restartTimers(response.data.expiresIn)
     await syncRouteQuery()
   }
@@ -307,7 +313,7 @@ async function handleVerify() {
   }
   catch (error: unknown) {
     errorMessage.value = getSecurityMessage(error, t('auth.invalidCode'))
-    codeDigits.value = []
+    codeValue.value = ''
   }
   finally {
     loading.value = false
@@ -320,7 +326,7 @@ async function handleResend() {
   loading.value = true
   try {
     const response = await login(email.value)
-    codeDigits.value = []
+    codeValue.value = ''
     restartTimers(response.data.expiresIn)
   }
   catch (error: unknown) {
@@ -333,7 +339,7 @@ async function handleResend() {
 
 async function handleUseAnotherEmail() {
   step.value = 'email'
-  codeDigits.value = []
+  codeValue.value = ''
   errorMessage.value = ''
   stopTimers()
   await syncRouteQuery()

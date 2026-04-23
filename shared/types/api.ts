@@ -1,3 +1,5 @@
+import type { QrVisibility } from './qr'
+
 export interface ApiMeta {
   total?: number
   page?: number
@@ -5,7 +7,6 @@ export interface ApiMeta {
   totalPages?: number
 }
 
-export type QrVisibility = 'private' | 'department' | 'public'
 export type QrListScope = 'mine' | 'department' | 'public' | 'all'
 
 export interface QrListQuery {

@@ -1,25 +1,23 @@
 <template>
   <div class="relative">
-    <!-- Skeleton -->
     <div
       v-if="loading"
-      class="h-64 w-full bg-[color:var(--surface-0)] dark:bg-[color:var(--surface-2)] rounded-lg animate-pulse flex items-center justify-center"
+      class="flex h-64 w-full animate-pulse items-center justify-center rounded-lg bg-[color:var(--surface-2)]"
     >
-      <UIcon
+      <Icon
         name="i-lucide-bar-chart-3"
-        class="size-10 text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)]"
+        class="size-10 text-[color:var(--text-muted)]"
       />
     </div>
 
-    <!-- Empty state -->
     <div
       v-else-if="!data.length"
-      class="h-64 flex items-center justify-center text-[color:var(--text-muted)] dark:text-[color:var(--text-secondary)]"
+      class="flex h-64 items-center justify-center text-[color:var(--text-muted)]"
     >
       <div class="text-center">
-        <UIcon
+        <Icon
           name="i-lucide-bar-chart-3"
-          class="size-10 mx-auto mb-2"
+          class="mx-auto mb-2 size-10"
         />
         <p class="text-sm">
           Нет данных за выбранный период
@@ -27,7 +25,6 @@
       </div>
     </div>
 
-    <!-- Chart -->
     <VChart
       v-else
       class="h-64 w-full"

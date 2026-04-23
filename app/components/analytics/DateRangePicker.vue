@@ -1,32 +1,31 @@
 <template>
   <div class="flex flex-wrap items-center gap-2">
-    <!-- Preset buttons -->
     <div class="flex gap-1">
-      <UButton
+      <Button
         v-for="preset in presets"
         :key="preset.key"
-        :label="preset.label"
-        size="sm"
-        :variant="activePreset === preset.key ? 'solid' : 'outline'"
-        :color="activePreset === preset.key ? 'primary' : 'neutral'"
+        :severity="activePreset === preset.key ? 'primary' : 'secondary'"
+        :outlined="activePreset !== preset.key"
+        size="small"
         @click="applyPreset(preset)"
-      />
+      >
+        {{ preset.label }}
+      </Button>
     </div>
 
-    <!-- Custom date inputs -->
-    <div class="flex items-center gap-2 ml-2">
-      <UInput
+    <div class="ml-2 flex items-center gap-2">
+      <InputText
         v-model="fromInput"
         type="date"
-        size="sm"
+        size="small"
         :max="toInput"
         @change="onCustomChange"
       />
       <span class="text-sm text-[color:var(--text-muted)]">—</span>
-      <UInput
+      <InputText
         v-model="toInput"
         type="date"
-        size="sm"
+        size="small"
         :min="fromInput"
         :max="todayStr"
         @change="onCustomChange"

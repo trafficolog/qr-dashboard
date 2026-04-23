@@ -10,18 +10,19 @@
         </p>
       </div>
 
-      <UButton
-        icon="i-lucide-plus"
-        label="Создать подразделение"
-        @click="openCreate"
-      />
+      <Button @click="openCreate">
+        <template #icon>
+          <Icon name="i-lucide-plus" />
+        </template>
+        Создать подразделение
+      </Button>
     </div>
 
     <div
       v-if="loading"
       class="space-y-3"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 5"
         :key="i"
         class="h-24 w-full rounded-lg"
@@ -39,42 +40,46 @@
       v-else
       class="space-y-4"
     >
-      <UCard
+      <section
         v-for="department in departments"
         :key="department.id"
+        class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
       >
-        <template #header>
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <h2 class="text-lg font-semibold text-[color:var(--text-primary)]">
-                {{ department.name }}
-              </h2>
-              <p class="text-xs text-[color:var(--text-muted)] mt-1">
-                slug: {{ department.slug }} · участников: {{ department.memberCount }}
-              </p>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <UButton
-                icon="i-lucide-pencil"
-                size="sm"
-                variant="outline"
-                @click="openEdit(department)"
-              >
-                Редактировать
-              </UButton>
-              <UButton
-                icon="i-lucide-trash-2"
-                size="sm"
-                color="error"
-                variant="ghost"
-                @click="handleDelete(department)"
-              />
-            </div>
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-[color:var(--text-primary)]">
+              {{ department.name }}
+            </h2>
+            <p class="text-xs text-[color:var(--text-muted)] mt-1">
+              slug: {{ department.slug }} · участников: {{ department.memberCount }}
+            </p>
           </div>
-        </template>
 
-        <div class="space-y-4">
+          <div class="flex items-center gap-2">
+            <Button
+              outlined
+              size="small"
+              @click="openEdit(department)"
+            >
+              <template #icon>
+                <Icon name="i-lucide-pencil" />
+              </template>
+              Редактировать
+            </Button>
+            <Button
+              text
+              severity="danger"
+              size="small"
+              @click="handleDelete(department)"
+            >
+              <template #icon>
+                <Icon name="i-lucide-trash-2" />
+              </template>
+            </Button>
+          </div>
+        </div>
+
+        <div class="space-y-4 mt-4">
           <p
             v-if="department.description"
             class="text-sm text-[color:var(--text-secondary)]"
@@ -83,105 +88,126 @@
           </p>
 
           <div class="grid gap-4 md:grid-cols-2">
-            <UFormField label="Руководитель">
-              <USelect
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium text-[color:var(--text-primary)]">Руководитель</label>
+              <Select
                 :model-value="department.headUserId ?? ''"
-                :items="memberOptions"
+                :options="memberOptions"
+                option-label="label"
+                option-value="value"
                 placeholder="Не назначен"
+                class="w-full"
                 @update:model-value="updateHead(department, $event as string)"
               />
-            </UFormField>
+            </div>
 
-            <UFormField label="Участники">
-              <USelectMenu
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium text-[color:var(--text-primary)]">Участники</label>
+              <MultiSelect
                 :model-value="selectedMembersByDepartment[department.id] ?? []"
-                :items="memberOptions"
-                value-key="value"
-                multiple
-                searchable
+                :options="memberOptions"
+                option-label="label"
+                option-value="value"
+                filter
                 placeholder="Выберите участников"
+                class="w-full"
                 @update:model-value="setSelectedMembers(department.id, $event as string[])"
               />
-            </UFormField>
+            </div>
           </div>
 
           <div class="flex justify-end">
-            <UButton
-              size="sm"
-              icon="i-lucide-save"
+            <Button
+              size="small"
               :loading="savingMembersId === department.id"
               @click="saveMembers(department)"
             >
+              <template #icon>
+                <Icon name="i-lucide-save" />
+              </template>
               Сохранить участников
-            </UButton>
+            </Button>
           </div>
         </div>
-      </UCard>
+      </section>
     </div>
 
-    <UModal
-      v-model:open="formOpen"
-      :title="editingDepartment ? 'Редактировать подразделение' : 'Создать подразделение'"
-      :close-on-escape="true"
+    <Dialog
+      v-model:visible="formOpen"
+      modal
+      :header="editingDepartment ? 'Редактировать подразделение' : 'Создать подразделение'"
     >
-      <template #body>
+      <template #default>
         <form
           class="space-y-4"
           @submit.prevent="submitForm"
         >
-          <UFormField
-            label="Название"
-            required
-          >
-            <UInput v-model="form.name" />
-          </UFormField>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">Название</label>
+            <InputText
+              v-model="form.name"
+              class="w-full"
+            />
+          </div>
 
-          <UFormField
-            label="Slug"
-            hint="Только lowercase + дефисы"
-            required
-          >
-            <UInput v-model="form.slug" />
-          </UFormField>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">Slug</label>
+            <small class="text-xs text-[color:var(--text-muted)]">Только lowercase + дефисы</small>
+            <InputText
+              v-model="form.slug"
+              class="w-full"
+            />
+          </div>
 
-          <UFormField label="Описание">
-            <UTextarea v-model="form.description" />
-          </UFormField>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">Описание</label>
+            <Textarea
+              v-model="form.description"
+              class="w-full"
+            />
+          </div>
 
-          <UFormField label="Цвет (HEX)">
-            <UInput
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">Цвет (HEX)</label>
+            <InputText
               v-model="form.color"
               placeholder="#0EA5E9"
+              class="w-full"
             />
-          </UFormField>
+          </div>
 
-          <UFormField label="Руководитель">
-            <USelect
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-[color:var(--text-primary)]">Руководитель</label>
+            <Select
               v-model="form.headUserId"
-              :items="memberOptions"
+              :options="memberOptions"
+              option-label="label"
+              option-value="value"
               placeholder="Не назначен"
+              class="w-full"
             />
-          </UFormField>
+          </div>
         </form>
       </template>
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton
-            variant="outline"
+          <Button
+            outlined
+            severity="secondary"
             @click="formOpen = false"
           >
             Отмена
-          </UButton>
-          <UButton
+          </Button>
+          <Button
             :loading="savingForm"
             @click="submitForm"
           >
             Сохранить
-          </UButton>
+          </Button>
         </div>
       </template>
-    </UModal>
+    </Dialog>
 
     <SharedConfirmDialog
       v-model:open="deleteOpen"
@@ -397,6 +423,7 @@ async function confirmDelete() {
     toast.add({ title: 'Ошибка удаления подразделения', color: 'error' })
   }
   finally {
+    deleteOpen.value = false
     deletingDepartment.value = null
   }
 }
