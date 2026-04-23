@@ -97,7 +97,7 @@ defineEmits<{
 
 const route = useRoute()
 const { t } = useI18n()
-const colorMode = useColorMode()
+const { isDarkTheme, toggleDarkMode } = useLayout()
 const globalSearch = useGlobalSearch()
 
 // Cmd+K / Ctrl+K shortcut
@@ -110,13 +110,13 @@ whenever(
 )
 
 const themeIcon = computed(() =>
-  colorMode.value === 'dark'
+  isDarkTheme.value
     ? 'i-lucide-sun'
     : 'i-lucide-moon',
 )
 
 const themeLabel = computed(() =>
-  colorMode.value === 'dark'
+  isDarkTheme.value
     ? t('common.lightTheme')
     : t('common.darkTheme'),
 )
@@ -146,6 +146,6 @@ const breadcrumbs = computed(() => {
 })
 
 function toggleTheme() {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+  toggleDarkMode()
 }
 </script>

@@ -33,11 +33,11 @@
           :key="theme.value"
           :class="[
             'flex flex-1 items-center gap-3 rounded-lg border-2 p-3 transition-interactive text-left',
-            colorMode.preference === theme.value
+            selectedTheme === theme.value
               ? 'border-[color:var(--accent)] bg-[color:var(--accent-light)]'
               : 'border-[color:var(--border)] hover:border-[color:var(--accent)]/50',
           ]"
-          @click="colorMode.preference = theme.value"
+          @click="setTheme(theme.value)"
         >
           <Icon
             :name="theme.icon"
@@ -97,25 +97,31 @@
 </template>
 
 <script setup lang="ts">
-import { useColorMode, useI18n } from '#imports'
+import { useI18n } from '#imports'
 
-const colorMode = useColorMode()
+const { isDarkTheme, toggleDarkMode } = useLayout()
 const { locale, setLocale } = useI18n()
 
 const themes = [
   { value: 'light', label: 'Светлая', icon: 'i-lucide-sun' },
   { value: 'dark', label: 'Тёмная', icon: 'i-lucide-moon' },
-  { value: 'system', label: 'Системная', icon: 'i-lucide-monitor' },
-]
+] as const
 
 const locales = [
   { label: 'Русский', value: 'ru' },
   { label: 'English', value: 'en' },
 ]
 
+const selectedTheme = computed<'light' | 'dark'>(() => (isDarkTheme.value ? 'dark' : 'light'))
 const localeValue = computed(() => locale.value as 'ru' | 'en')
 
 const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+function setTheme(value: 'light' | 'dark') {
+  if ((value === 'dark') !== isDarkTheme.value) {
+    toggleDarkMode()
+  }
+}
 
 function updateLocale(value: string) {
   setLocale(value as 'ru' | 'en')

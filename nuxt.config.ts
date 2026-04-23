@@ -15,12 +15,6 @@ export default defineNuxtConfig({
 
   css: ['~~/app/assets/css/main.css', '~~/app/assets/layout/layout.scss', '@scalar/api-reference/style.css'],
 
-  colorMode: {
-    preference: 'system',
-    fallback: 'light',
-    classSuffix: '',
-  },
-
   runtimeConfig: {
     // Server-only
     databaseUrl: process.env.DATABASE_URL || '',
