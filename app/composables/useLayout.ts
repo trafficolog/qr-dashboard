@@ -1,9 +1,11 @@
 import { readonly } from 'vue'
 
 export type MenuMode = 'static'
+export type ThemePreference = 'light' | 'dark' | 'system'
 
 interface LayoutConfig {
   darkTheme: boolean
+  themePreference: ThemePreference
   menuMode: MenuMode
 }
 
@@ -18,6 +20,7 @@ const THEME_COOKIE_KEY = 'splat-theme'
 export function useLayout() {
   const layoutConfig = useState<LayoutConfig>('layout-config', () => ({
     darkTheme: false,
+    themePreference: 'system',
     menuMode: 'static',
   }))
 
@@ -44,25 +47,10 @@ export function useLayout() {
   }
 
   function initializeTheme() {
-    const themeCookie = useCookie<string | null>(THEME_COOKIE_KEY, { default: () => null })
+    const themeCookie = useCookie<ThemePreference | null>(THEME_COOKIE_KEY, { default: () => null })
 
-    if (themeCookie.value === 'dark') {
-      layoutConfig.value.darkTheme = true
-      applyDarkClass(true)
-      return
-    }
-
-    if (themeCookie.value === 'light') {
-      layoutConfig.value.darkTheme = false
-      applyDarkClass(false)
-      return
-    }
-
-    if (import.meta.client) {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      layoutConfig.value.darkTheme = prefersDark
-      applyDarkClass(prefersDark)
-    }
+    const preference = themeCookie.value || 'system'
+    setThemePreference(preference)
   }
 
   function onMenuToggle() {
@@ -85,25 +73,36 @@ export function useLayout() {
   }
 
   function toggleDarkMode() {
-    layoutConfig.value.darkTheme = !layoutConfig.value.darkTheme
-    applyDarkClass(layoutConfig.value.darkTheme)
+    setThemePreference(layoutConfig.value.darkTheme ? 'light' : 'dark')
+  }
 
-    const themeCookie = useCookie<string>(THEME_COOKIE_KEY, {
+  function setThemePreference(preference: ThemePreference) {
+    layoutConfig.value.themePreference = preference
+
+    const darkThemeEnabled = preference === 'system'
+      ? (import.meta.client ? window.matchMedia('(prefers-color-scheme: dark)').matches : false)
+      : preference === 'dark'
+    layoutConfig.value.darkTheme = darkThemeEnabled
+    applyDarkClass(darkThemeEnabled)
+
+    const themeCookie = useCookie<ThemePreference>(THEME_COOKIE_KEY, {
       maxAge: 60 * 60 * 24 * 365,
       sameSite: 'lax',
       path: '/',
     })
-    themeCookie.value = layoutConfig.value.darkTheme ? 'dark' : 'light'
+    themeCookie.value = preference
   }
 
   return {
     layoutConfig: readonly(layoutConfig),
     layoutState,
     isDarkTheme: computed(() => layoutConfig.value.darkTheme),
+    themePreference: computed(() => layoutConfig.value.themePreference),
     initializeTheme,
     onMenuToggle,
     closeMobileMenu,
     onMenuItemClick,
     toggleDarkMode,
+    setThemePreference,
   }
 }

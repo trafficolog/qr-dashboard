@@ -99,12 +99,13 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
 
-const { isDarkTheme, toggleDarkMode } = useLayout()
+const { themePreference, setThemePreference } = useLayout()
 const { locale, setLocale } = useI18n()
 
 const themes = [
   { value: 'light', label: 'Светлая', icon: 'i-lucide-sun' },
   { value: 'dark', label: 'Тёмная', icon: 'i-lucide-moon' },
+  { value: 'system', label: 'Системная', icon: 'i-lucide-monitor' },
 ] as const
 
 const locales = [
@@ -112,15 +113,13 @@ const locales = [
   { label: 'English', value: 'en' },
 ]
 
-const selectedTheme = computed<'light' | 'dark'>(() => (isDarkTheme.value ? 'dark' : 'light'))
+const selectedTheme = computed<'light' | 'dark' | 'system'>(() => themePreference.value)
 const localeValue = computed(() => locale.value as 'ru' | 'en')
 
 const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-function setTheme(value: 'light' | 'dark') {
-  if ((value === 'dark') !== isDarkTheme.value) {
-    toggleDarkMode()
-  }
+function setTheme(value: 'light' | 'dark' | 'system') {
+  setThemePreference(value)
 }
 
 function updateLocale(value: string) {
