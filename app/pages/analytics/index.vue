@@ -12,12 +12,19 @@
       <AnalyticsDateRangePicker v-model="dateRange" />
     </div>
 
-    <UAlert
+    <Message
       v-if="error"
-      icon="i-lucide-alert-circle"
-      color="error"
-      :description="error"
-    />
+      severity="error"
+      variant="simple"
+    >
+      <div class="flex items-center gap-2">
+        <Icon
+          name="i-lucide-alert-circle"
+          class="size-4"
+        />
+        <span>{{ error }}</span>
+      </div>
+    </Message>
 
     <SharedEmptyState
       v-else-if="showEmptyAnalytics"
@@ -28,18 +35,16 @@
     />
 
     <template v-else>
-      <UCard>
-        <template #header>
-          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-            {{ $t('analytics.kpi.title') }}
-          </h2>
-        </template>
+      <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+          {{ $t('analytics.kpi.title') }}
+        </h2>
 
         <div
           v-if="loadingSections.overview"
           class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
         >
-          <USkeleton
+          <Skeleton
             v-for="i in 4"
             :key="i"
             class="h-24 rounded-xl"
@@ -90,29 +95,31 @@
             :reduced-motion="reducedMotion"
           />
         </div>
-      </UCard>
+      </section>
 
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-              {{ $t('analytics.compare.scanChartTitle') }}
-            </h2>
-            <UButton
-              size="xs"
-              variant="outline"
-              :icon="comparePrevious ? 'i-lucide-check' : 'i-lucide-git-compare'"
-              :label="$t('analytics.compare.toggle')"
-              @click="toggleCompare"
-            />
-          </div>
-        </template>
+      <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+            {{ $t('analytics.compare.scanChartTitle') }}
+          </h2>
+          <Button
+            size="small"
+            severity="secondary"
+            outlined
+            @click="toggleCompare"
+          >
+            <template #icon>
+              <Icon :name="comparePrevious ? 'i-lucide-check' : 'i-lucide-git-compare'" />
+            </template>
+            {{ $t('analytics.compare.toggle') }}
+          </Button>
+        </div>
 
         <div
           v-if="loadingSections.timeSeries"
           class="h-72"
         >
-          <USkeleton class="h-full rounded-xl" />
+          <Skeleton class="h-full rounded-xl" />
         </div>
 
         <div
@@ -136,20 +143,18 @@
         >
           {{ $t('analytics.compare.enabledHint') }}
         </p>
-      </UCard>
+      </section>
 
-      <UCard>
-        <template #header>
-          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-            {{ $t('analytics.topQr.title') }}
-          </h2>
-        </template>
+      <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+          {{ $t('analytics.topQr.title') }}
+        </h2>
 
         <div
           v-if="loadingSections.topQr"
           class="space-y-3"
         >
-          <USkeleton
+          <Skeleton
             v-for="i in 5"
             :key="i"
             class="h-12 rounded-lg"
@@ -167,14 +172,12 @@
           v-else
           :data="topQr"
         />
-      </UCard>
+      </section>
 
-      <UCard>
-        <template #header>
-          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-            {{ $t('analytics.geo.title') }}
-          </h2>
-        </template>
+      <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+          {{ $t('analytics.geo.title') }}
+        </h2>
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <AnalyticsGeoMap
@@ -188,14 +191,12 @@
             :loading="loadingSections.geo"
           />
         </div>
-      </UCard>
+      </section>
 
-      <UCard>
-        <template #header>
-          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-            {{ $t('analytics.devices.title') }}
-          </h2>
-        </template>
+      <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+          {{ $t('analytics.devices.title') }}
+        </h2>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           <div
@@ -224,14 +225,12 @@
             </div>
           </div>
         </div>
-      </UCard>
+      </section>
 
-      <UCard>
-        <template #header>
-          <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
-            {{ $t('analytics.time.title') }}
-          </h2>
-        </template>
+      <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+        <h2 class="font-semibold text-[color:var(--text-primary)] dark:text-[color:var(--text-primary)]">
+          {{ $t('analytics.time.title') }}
+        </h2>
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <AnalyticsHourlyChart
@@ -243,7 +242,7 @@
             :loading="loadingSections.timeDistribution"
           />
         </div>
-      </UCard>
+      </section>
     </template>
   </div>
 </template>

@@ -4,120 +4,32 @@
       Docs UI / Navigation
     </h1>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Section navigation
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-semibold">
+        Section navigation
+      </h2>
       <div class="flex flex-wrap gap-2">
-        <UButton
+        <NuxtLink
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
-          :variant="item.active ? 'solid' : 'outline'"
-          :color="item.active ? 'primary' : 'neutral'"
-          size="sm"
         >
-          {{ item.label }}
-        </UButton>
-        <UButton
-          label="Disabled"
-          size="sm"
-          variant="outline"
-          disabled
-        />
+          <Button
+            :severity="item.active ? 'primary' : 'secondary'"
+            :outlined="!item.active"
+            size="small"
+          >
+            {{ item.label }}
+          </Button>
+        </NuxtLink>
       </div>
-    </UCard>
-
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Search + quick links
-        </h2>
-      </template>
-      <div class="space-y-3">
-        <UInput
-          icon="i-lucide-search"
-          placeholder="Search components"
-        />
-        <div class="flex flex-wrap gap-2">
-          <UButton
-            label="Buttons"
-            variant="ghost"
-            color="neutral"
-            to="/docs-ui/buttons"
-          />
-          <UButton
-            label="Forms"
-            variant="ghost"
-            color="neutral"
-            to="/docs-ui/forms"
-          />
-          <UButton
-            label="Feedback"
-            variant="ghost"
-            color="neutral"
-            to="/docs-ui/feedback"
-          />
-          <UButton
-            label="Overlays"
-            variant="ghost"
-            color="neutral"
-            to="/docs-ui/overlays"
-          />
-        </div>
-      </div>
-    </UCard>
-
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Pagination controls (button-based)
-        </h2>
-      </template>
-      <div class="flex items-center gap-2">
-        <UButton
-          icon="i-lucide-chevron-left"
-          variant="outline"
-          color="neutral"
-          size="xs"
-          disabled
-        />
-        <UButton
-          label="1"
-          size="xs"
-        />
-        <UButton
-          label="2"
-          size="xs"
-          variant="outline"
-          color="neutral"
-        />
-        <UButton
-          label="3"
-          size="xs"
-          variant="outline"
-          color="neutral"
-        />
-        <UButton
-          icon="i-lucide-chevron-right"
-          variant="outline"
-          color="neutral"
-          size="xs"
-        />
-      </div>
-    </UCard>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: ['docs-ui-enabled', 'admin-only'],
-})
-
+definePageMeta({ middleware: ['docs-ui-enabled', 'admin-only'] })
 const route = useRoute()
-
 const navItems = computed(() => [
   { to: '/docs-ui/buttons', label: 'Buttons', active: route.path === '/docs-ui/buttons' },
   { to: '/docs-ui/forms', label: 'Forms', active: route.path === '/docs-ui/forms' },
