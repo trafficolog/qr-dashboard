@@ -423,6 +423,7 @@ async function confirmDelete() {
     toast.add({ title: 'Ошибка удаления подразделения', color: 'error' })
   }
   finally {
+    deleteOpen.value = false
     deletingDepartment.value = null
   }
 }
