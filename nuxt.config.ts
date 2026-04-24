@@ -61,7 +61,12 @@ export default defineNuxtConfig({
   // See https://github.com/nuxt/nuxt/issues/33606 — re-enable when fixed in your Nuxt version if you need manifest prefetch.
   experimental: {
     appManifest: false,
+    // Default true stacks nitropack + @nuxt/nitro-server `useAppConfig` auto-imports → noisy duplicate warning (unimport 5.7+).
+    // false enables nitro-server’s preset cleanup (single registration). Safe if you don’t rely on per-request appConfig cloning.
+    // See https://github.com/nuxt/nuxt/issues/34812
+    serverAppConfig: false,
   },
+
   compatibilityDate: '2025-01-01',
 
   nitro: {
@@ -98,7 +103,7 @@ export default defineNuxtConfig({
   },
 
   icon: {
-    serverBundle: process.env.NUXT_ICON_SERVER_BUNDLE || 'remote',
+    serverBundle: (process.env.NUXT_ICON_SERVER_BUNDLE || 'remote') as false | 'auto' | 'local' | 'remote',
   },
 
   primevue: {
