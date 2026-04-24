@@ -4,88 +4,59 @@
       Docs UI / Feedback
     </h1>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Alerts states
-        </h2>
-      </template>
-      <div class="space-y-3">
-        <UAlert
-          icon="i-lucide-check-circle"
-          color="success"
-          title="Success"
-          description="Операция выполнена успешно"
-        />
-        <UAlert
-          icon="i-lucide-info"
-          color="info"
-          title="Info"
-          description="Информационное сообщение"
-        />
-        <UAlert
-          icon="i-lucide-triangle-alert"
-          color="warning"
-          title="Warning"
-          description="Проверьте введённые данные"
-        />
-        <UAlert
-          icon="i-lucide-circle-x"
-          color="error"
-          title="Error"
-          description="Что-то пошло не так"
-        />
-      </div>
-    </UCard>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5 space-y-3">
+      <h2 class="font-semibold">
+        Messages
+      </h2>
+      <Message severity="success">
+        Операция выполнена успешно
+      </Message>
+      <Message severity="info">
+        Информационное сообщение
+      </Message>
+      <Message severity="warn">
+        Проверьте введённые данные
+      </Message>
+      <Message severity="error">
+        Что-то пошло не так
+      </Message>
+    </section>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Badges variants
-        </h2>
-      </template>
-      <div class="flex flex-wrap gap-3">
-        <UBadge label="Neutral" />
-        <UBadge
-          label="Success"
-          color="success"
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-semibold">
+        Tags
+      </h2>
+      <div class="flex flex-wrap gap-2">
+        <Tag
+          value="Neutral"
+          severity="secondary"
         />
-        <UBadge
-          label="Warning"
-          color="warning"
+        <Tag
+          value="Success"
+          severity="success"
         />
-        <UBadge
-          label="Error"
-          color="error"
+        <Tag
+          value="Warning"
+          severity="warn"
         />
-        <UBadge
-          label="Soft"
-          variant="soft"
-        />
-        <UBadge
-          label="Outline"
-          variant="outline"
+        <Tag
+          value="Error"
+          severity="danger"
         />
       </div>
-    </UCard>
+    </section>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Loading placeholders
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-semibold">
+        Skeletons
+      </h2>
       <div class="space-y-3">
-        <USkeleton class="h-5 w-1/3" />
-        <USkeleton class="h-5 w-2/3" />
-        <USkeleton class="h-24 w-full" />
+        <Skeleton class="h-5 w-1/3" /><Skeleton class="h-5 w-2/3" /><Skeleton class="h-24 w-full" />
       </div>
-    </UCard>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: ['docs-ui-enabled', 'admin-only'],
-})
+definePageMeta({ middleware: ['docs-ui-enabled', 'admin-only'] })
 </script>

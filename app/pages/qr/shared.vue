@@ -13,7 +13,7 @@
       v-if="pending"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 8"
         :key="i"
         class="h-72 rounded-lg"
@@ -42,37 +42,41 @@
       />
     </div>
 
-    <UModal
-      v-model:open="departmentPickerOpen"
-      :close-on-escape="true"
+    <Dialog
+      v-model:visible="departmentPickerOpen"
+      modal
+      header="Выберите отдел"
     >
-      <template #content>
-        <div class="space-y-4 p-5">
-          <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
-            Выберите отдел
-          </h3>
-          <USelect
+      <template #default>
+        <div class="space-y-4">
+          <Select
             v-model="selectedDepartmentId"
-            :items="departmentSelectItems"
-            value-key="value"
+            :options="departmentSelectItems"
+            option-label="label"
+            option-value="value"
             placeholder="Выберите отдел"
+            class="w-full"
           />
-          <div class="flex justify-end gap-2">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              label="Отмена"
-              @click="closeDepartmentPicker"
-            />
-            <UButton
-              label="Применить"
-              :disabled="!selectedDepartmentId"
-              @click="confirmDepartmentVisibilityChange"
-            />
-          </div>
         </div>
       </template>
-    </UModal>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <Button
+            outlined
+            severity="secondary"
+            @click="closeDepartmentPicker"
+          >
+            Отмена
+          </Button>
+          <Button
+            :disabled="!selectedDepartmentId"
+            @click="confirmDepartmentVisibilityChange"
+          >
+            Применить
+          </Button>
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
 

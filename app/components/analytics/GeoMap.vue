@@ -6,18 +6,16 @@
       </h3>
 
       <div class="inline-flex rounded-lg bg-[color:var(--surface-1)] p-1">
-        <button
+        <Button
           v-for="mode in mapModes"
           :key="mode"
-          type="button"
-          class="rounded-md px-3 py-1 text-xs transition"
-          :class="activeMode === mode
-            ? 'bg-[color:var(--color-success)] text-[color:var(--text-primary)]'
-            : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]'"
+          :label="$t(mode === 'russia' ? 'analytics.geo.toggle.russia' : 'analytics.geo.toggle.world')"
+          size="small"
+          text
+          :severity="activeMode === mode ? 'success' : 'secondary'"
+          class="!px-3 !py-1 !text-xs"
           @click="activeMode = mode"
-        >
-          {{ $t(mode === 'russia' ? 'analytics.geo.toggle.russia' : 'analytics.geo.toggle.world') }}
-        </button>
+        />
       </div>
     </div>
 
@@ -25,7 +23,7 @@
       v-if="loading"
       class="space-y-2"
     >
-      <USkeleton
+      <Skeleton
         v-for="i in 6"
         :key="i"
         class="h-6 rounded-lg"

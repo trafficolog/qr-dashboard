@@ -9,82 +9,128 @@
       </p>
     </div>
 
-    <UAlert
+    <Message
       class="mb-6"
-      icon="i-lucide-shield-alert"
-      color="warning"
-      variant="soft"
-      :title="$t('pages.destinationDomains.accessMode.title')"
-      :description="domains.length === 0
-        ? $t('pages.destinationDomains.accessMode.openDescription')
-        : $t('pages.destinationDomains.accessMode.whitelistDescription', { total: domains.length })"
-    />
+      severity="warn"
+      variant="simple"
+    >
+      <div class="flex items-start gap-2">
+        <Icon
+          name="i-lucide-shield-alert"
+          class="mt-0.5 size-4"
+        />
+        <div>
+          <p class="font-medium">
+            {{ $t('pages.destinationDomains.accessMode.title') }}
+          </p>
+          <p class="text-sm">
+            {{ domains.length === 0
+              ? $t('pages.destinationDomains.accessMode.openDescription')
+              : $t('pages.destinationDomains.accessMode.whitelistDescription', { total: domains.length }) }}
+          </p>
+        </div>
+      </div>
+    </Message>
 
-    <UCard class="mb-6">
-      <template #header>
-        <h2 class="font-medium text-[color:var(--text-primary)]">
-          {{ $t('pages.destinationDomains.addTitle') }}
-        </h2>
-      </template>
+    <section class="mb-6 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-medium text-[color:var(--text-primary)]">
+        {{ $t('pages.destinationDomains.addTitle') }}
+      </h2>
 
-      <form class="flex gap-3" @submit.prevent="handleAdd">
-        <UFormField class="flex-1">
-          <UInput
+      <form
+        class="flex gap-3"
+        @submit.prevent="handleAdd"
+      >
+        <div class="flex-1">
+          <InputText
             v-model="newDomain"
             placeholder="example.com"
-            icon="i-lucide-globe"
+            class="w-full"
             :disabled="adding"
             :aria-invalid="Boolean(domainError)"
             :aria-describedby="domainError ? domainErrorId : undefined"
             @blur="validateDomain"
           />
-          <p v-if="domainError" :id="domainErrorId" role="alert" aria-live="polite" class="mt-1 text-sm text-[color:var(--ui-error)]">
+          <p
+            v-if="domainError"
+            :id="domainErrorId"
+            role="alert"
+            aria-live="polite"
+            class="mt-1 text-sm text-[color:var(--ui-error)]"
+          >
             {{ domainError }}
           </p>
-        </UFormField>
-        <UButton type="submit" icon="i-lucide-plus" :loading="adding" :disabled="!newDomain.trim()">
+        </div>
+        <Button
+          type="submit"
+          :loading="adding"
+          :disabled="!newDomain.trim()"
+        >
+          <template #icon>
+            <Icon name="i-lucide-plus" />
+          </template>
           {{ $t('forms.actions.add') }}
-        </UButton>
+        </Button>
       </form>
-    </UCard>
+    </section>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-medium text-[color:var(--text-primary)]">
-          {{ $t('pages.destinationDomains.listTitle') }}
-          <span class="ml-2 text-sm font-normal text-[color:var(--text-muted)]">({{ domains.length }})</span>
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-medium text-[color:var(--text-primary)]">
+        {{ $t('pages.destinationDomains.listTitle') }}
+        <span class="ml-2 text-sm font-normal text-[color:var(--text-muted)]">({{ domains.length }})</span>
+      </h2>
 
-      <div v-if="loading" class="py-8 flex justify-center">
-        <UIcon name="i-lucide-loader-2" class="size-6 animate-spin text-[color:var(--text-muted)]" />
+      <div
+        v-if="loading"
+        class="py-8 flex justify-center"
+      >
+        <Icon
+          name="i-lucide-loader-2"
+          class="size-6 animate-spin text-[color:var(--text-muted)]"
+        />
       </div>
 
-      <div v-else-if="domains.length === 0" class="py-8 text-center text-[color:var(--text-muted)]">
-        <UIcon name="i-lucide-shield-alert" class="size-10 mx-auto mb-2 text-[color:var(--text-secondary)]" />
+      <div
+        v-else-if="domains.length === 0"
+        class="py-8 text-center text-[color:var(--text-muted)]"
+      >
+        <Icon
+          name="i-lucide-shield-alert"
+          class="size-10 mx-auto mb-2 text-[color:var(--text-secondary)]"
+        />
         <p>{{ $t('pages.destinationDomains.empty.title') }}</p>
         <p class="text-sm text-[color:var(--text-muted)] mt-1">
           {{ $t('pages.destinationDomains.empty.description') }}
         </p>
       </div>
 
-      <ul v-else class="divide-y divide-[color:var(--border)]">
-        <li v-for="d in domains" :key="d.id" class="flex items-center justify-between py-3">
+      <ul
+        v-else
+        class="divide-y divide-[color:var(--border)]"
+      >
+        <li
+          v-for="d in domains"
+          :key="d.id"
+          class="flex items-center justify-between py-3"
+        >
           <div class="flex items-center gap-3">
             <span class="font-medium text-[color:var(--text-primary)]">{{ d.domain }}</span>
             <span class="text-xs text-[color:var(--text-muted)]">{{ formatDate(d.createdAt) }}</span>
           </div>
-          <UButton
-            icon="i-lucide-trash-2"
-            variant="ghost"
-            color="error"
-            size="sm"
+          <Button
+            text
+            severity="danger"
+            size="small"
             :aria-label="$t('pages.destinationDomains.actions.deleteDomain', { domain: d.domain })"
             @click="handleDelete(d)"
-          />
+          >
+            <template #icon>
+              <Icon name="i-lucide-trash-2" />
+            </template>
+          </Button>
         </li>
       </ul>
-    </UCard>
+    </section>
 
     <SharedConfirmDialog
       v-model:open="confirmOpen"
@@ -211,6 +257,7 @@ async function confirmDelete() {
     toast.add({ title: t('pages.destinationDomains.toasts.deleteError'), color: 'error' })
   }
   finally {
+    confirmOpen.value = false
     deletingDomain.value = null
   }
 }

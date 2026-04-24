@@ -28,7 +28,6 @@ test.describe('Authentication', () => {
         name: 'session_token',
         value: 'invalid-or-revoked-token',
         url: baseUrl,
-        path: '/',
       },
     ])
 
