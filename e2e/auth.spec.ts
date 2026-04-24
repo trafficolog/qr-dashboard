@@ -12,16 +12,17 @@ test.describe('Authentication', () => {
     await expect(page.getByRole('button', { name: /получить код|get code/i })).toBeVisible()
   })
 
-  test('shows error for invalid email', async ({ page }) => {
+  test('shows validation state for invalid email', async ({ page }) => {
     await page.goto('/auth/login')
     await page.locator('input[type="email"]').fill('not-an-email')
-    await page.getByRole('button', { name: /получить код|get code/i }).click()
-    // Expect an inline error or the form not to advance
+
+    const submitButton = page.getByRole('button', { name: /получить код|get code/i })
+    await expect(submitButton).toBeDisabled()
     await expect(page).toHaveURL(/\/auth\/login/)
   })
 
   test('redirects to /auth/login when session cookie is invalidated', async ({ page, context }) => {
-    const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001'
+    const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001'
 
     await context.addCookies([
       {

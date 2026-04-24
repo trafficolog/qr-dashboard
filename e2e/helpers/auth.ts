@@ -8,11 +8,11 @@ export function requireAuthCookie(): string {
 
 export async function applyAuthCookie(context: BrowserContext) {
   const sessionCookie = requireAuthCookie()
-  const domain = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001').hostname
+  const domain = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname
 
   await context.addCookies([
     {
-      name: 'session',
+      name: 'session_token',
       value: sessionCookie,
       domain,
       path: '/',

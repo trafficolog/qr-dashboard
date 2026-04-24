@@ -17,7 +17,7 @@
     "db:seed": "npx tsx server/db/seed.ts",
     "typecheck": "nuxt typecheck",
     "e2e:install-browsers": "playwright install --with-deps chromium",
-    "test:e2e": "playwright test",
+    "test:e2e": "pnpm install --frozen-lockfile && pnpm exec playwright install --with-deps chromium && playwright test",
     "test:unit": "vitest run",
     "openapi:generate": "tsx server/openapi/generate.ts",
     "openapi:validate": "node -e \"JSON.parse(require('fs').readFileSync('public/openapi.json','utf8')); console.log('openapi.json is valid JSON')\"",
