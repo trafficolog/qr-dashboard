@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const baseHost = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001').hostname
+const baseHost = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname
 
 test.describe('QR quick actions visibility flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -10,7 +10,7 @@ test.describe('QR quick actions visibility flow', () => {
 
     await page.context().addCookies([
       {
-        name: 'session',
+        name: 'session_token',
         value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
         domain: baseHost,
         path: '/',
