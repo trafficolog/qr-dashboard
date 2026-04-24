@@ -16,6 +16,7 @@ interface LayoutState {
 }
 
 const THEME_COOKIE_KEY = 'splat-theme'
+let systemThemeListenerAttached = false
 
 export function useLayout() {
   const layoutConfig = useState<LayoutConfig>('layout-config', () => ({
@@ -78,6 +79,19 @@ export function useLayout() {
 
   function setThemePreference(preference: ThemePreference) {
     layoutConfig.value.themePreference = preference
+
+    if (preference === 'system' && import.meta.client && !systemThemeListenerAttached) {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      mediaQuery.addEventListener('change', (event) => {
+        if (layoutConfig.value.themePreference !== 'system') {
+          return
+        }
+
+        layoutConfig.value.darkTheme = event.matches
+        applyDarkClass(event.matches)
+      })
+      systemThemeListenerAttached = true
+    }
 
     const darkThemeEnabled = preference === 'system'
       ? (import.meta.client ? window.matchMedia('(prefers-color-scheme: dark)').matches : false)
