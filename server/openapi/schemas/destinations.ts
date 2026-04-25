@@ -70,7 +70,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/qr/{id}/destinations',
   summary: 'List destinations',
   description: 'Returns destinations for a QR code.',
-  tags: ['V1', 'Destinations'],
+  tags: ['Destinations'],
   security: [{ ApiKeyAuth: ['qr:read'] }],
   request: { params: uuidParamSchema },
   responses: {
@@ -105,7 +105,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/qr/{id}/destinations',
   summary: 'Create destination',
   description: 'Adds a destination for a QR code.',
-  tags: ['V1', 'Destinations'],
+  tags: ['Destinations'],
   security: [{ ApiKeyAuth: ['qr:write'] }],
   request: {
     params: uuidParamSchema,
@@ -153,7 +153,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/qr/{id}/destinations/{destid}',
   summary: 'Update destination',
   description: 'Updates an existing destination.',
-  tags: ['V1', 'Destinations'],
+  tags: ['Destinations'],
   security: [{ ApiKeyAuth: ['qr:write'] }],
   request: {
     params: qrDestinationDetailParamsSchema,
@@ -201,7 +201,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/qr/{id}/destinations/{destid}',
   summary: 'Delete destination',
   description: 'Deletes a destination from a QR code.',
-  tags: ['V1', 'Destinations'],
+  tags: ['Destinations'],
   security: [{ ApiKeyAuth: ['qr:write'] }],
   request: { params: qrDestinationDetailParamsSchema },
   responses: {
