@@ -194,6 +194,17 @@ describe('server middleware order smoke checks', () => {
     expect(event.responseHeaders['X-Content-Type-Options']).toBe('nosniff')
   })
 
+  it('keeps OpenAPI schema public for Scalar API docs', async () => {
+    const event = createMockEvent({
+      method: 'GET',
+      path: '/api/openapi.json',
+    })
+
+    await expect(runPipeline(event)).resolves.toBeUndefined()
+    expect(verifySessionMock).not.toHaveBeenCalled()
+    expect(verifyApiKeyMock).not.toHaveBeenCalled()
+  })
+
   it('applies /mcp rate-limit by event.context.apiKeyId and returns v1-like 429 payload/headers', async () => {
     dbExecuteMock.mockResolvedValue({ rows: [{ count: 100, resetAt: new Date(Date.now() + 60_000) }] })
 

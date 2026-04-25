@@ -2,7 +2,7 @@
  * Copy Scalar API Reference bundled CSS into public/ so Nuxt/Vite does not emit
  * broken /@fsD:/... URLs on Windows (see https://github.com/nuxt/nuxt/issues/34766).
  */
-import { copyFileSync, existsSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -15,4 +15,5 @@ if (!existsSync(src)) {
   process.exit(0)
 }
 
+mkdirSync(resolve(root, 'public'), { recursive: true })
 copyFileSync(src, dest)
