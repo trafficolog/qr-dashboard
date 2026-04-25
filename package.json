@@ -17,11 +17,12 @@
     "db:seed": "npx tsx server/db/seed.ts",
     "typecheck": "nuxt typecheck",
     "e2e:install-browsers": "playwright install --with-deps chromium",
-    "test:e2e": "pnpm install --frozen-lockfile && pnpm exec playwright install --with-deps chromium && playwright test",
+    "test:e2e": "pnpm install --frozen-lockfile && pnpm run e2e:install-system-deps && pnpm exec playwright install chromium && playwright test",
     "test:unit": "vitest run",
     "openapi:generate": "tsx server/openapi/generate.ts",
     "openapi:validate": "node -e \"JSON.parse(require('fs').readFileSync('public/openapi.json','utf8')); console.log('openapi.json is valid JSON')\"",
-    "sdks:generate": "bash scripts/generate-sdks.sh"
+    "sdks:generate": "bash scripts/generate-sdks.sh",
+    "e2e:install-system-deps": "bash -lc 'if command -v apt-get >/dev/null 2>&1 && [ \"$(id -u)\" = \"0\" ]; then if [ ! -f /tmp/.playwright-system-deps-ok ]; then apt-get update && apt-get install -y libatk1.0-0t64 libatk-bridge2.0-0t64 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2t64 libxkbcommon0 && touch /tmp/.playwright-system-deps-ok; fi; fi'"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",

@@ -1,5 +1,9 @@
 import { expect, type BrowserContext } from '@playwright/test'
 
+export function hasAuthCookie(): boolean {
+  return Boolean(process.env.PLAYWRIGHT_AUTH_COOKIE)
+}
+
 export function requireAuthCookie(): string {
   const cookie = process.env.PLAYWRIGHT_AUTH_COOKIE
   expect(cookie, 'PLAYWRIGHT_AUTH_COOKIE must be set for authenticated e2e scenarios').toBeTruthy()

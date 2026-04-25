@@ -1,8 +1,8 @@
 import { test, expect, type APIRequestContext } from '@playwright/test'
-import { applyAuthCookie, requireAuthCookie } from './helpers/auth'
+import { applyAuthCookie, hasAuthCookie, requireAuthCookie } from './helpers/auth'
 
 function cookieHeader() {
-  return { Cookie: `session=${requireAuthCookie()}` }
+  return { Cookie: `session_token=${requireAuthCookie()}` }
 }
 
 async function createTestQr(request: APIRequestContext, title: string) {
@@ -29,6 +29,10 @@ async function deleteTestQr(request: APIRequestContext, id: string) {
 
 test.describe('Toast Undo — QR delete', () => {
   test.beforeEach(async ({ context }) => {
+    if (!hasAuthCookie()) {
+      test.skip()
+    }
+
     await applyAuthCookie(context)
   })
 

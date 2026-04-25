@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { applyAuthCookie } from './helpers/auth'
+import { applyAuthCookie, hasAuthCookie } from './helpers/auth'
 
 test.describe('Settings navigation', () => {
   test.beforeEach(async ({ context }) => {
+    if (!hasAuthCookie()) {
+      test.skip()
+    }
+
     await applyAuthCookie(context)
   })
 
