@@ -99,6 +99,13 @@
       "when": 1777099800000,
       "tag": "0013_expand_otp_hash_length",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1777100400000,
+      "tag": "0014_add_destination_domains_table",
+      "breakpoints": true
     }
   ]
 }

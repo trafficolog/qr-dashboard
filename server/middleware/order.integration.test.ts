@@ -194,6 +194,20 @@ describe('server middleware order smoke checks', () => {
     expect(event.responseHeaders['X-Content-Type-Options']).toBe('nosniff')
   })
 
+  it('uses Scalar-compatible CSP only for API docs page', async () => {
+    const event = createMockEvent({
+      method: 'GET',
+      path: '/api-docs',
+    })
+
+    await runPipeline(event)
+
+    const csp = event.responseHeaders['Content-Security-Policy']
+    expect(csp).toContain(`script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:`)
+    expect(csp).toContain(`worker-src 'self' blob:`)
+    expect(csp).toContain(`connect-src 'self' ws: wss: http: https:`)
+  })
+
   it('keeps OpenAPI schema public for Scalar API docs', async () => {
     const event = createMockEvent({
       method: 'GET',
