@@ -23,7 +23,7 @@
     "openapi:generate": "tsx server/openapi/generate.ts",
     "openapi:validate": "node -e \"JSON.parse(require('fs').readFileSync('public/openapi.json','utf8')); console.log('openapi.json is valid JSON')\"",
     "sdks:generate": "bash scripts/generate-sdks.sh",
-    "e2e:install-system-deps": "bash -lc 'if command -v apt-get >/dev/null 2>&1 && [ \"$(id -u)\" = \"0\" ]; then marker=\"$HOME/.cache/playwright-system-deps-ok\"; mkdir -p \"$(dirname \"$marker\")\"; if [ ! -f \"$marker\" ]; then apt-get update && apt-get install -y libatk1.0-0t64 libatk-bridge2.0-0t64 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2t64 libxkbcommon0 && touch \"$marker\"; fi; fi'"
+    "e2e:install-system-deps": "bash scripts/e2e-install-system-deps.sh"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
