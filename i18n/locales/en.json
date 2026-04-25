@@ -79,6 +79,155 @@
     "integrations": "Integrations",
     "departments": "Departments"
   },
+  "seo": {
+    "pages": {
+      "home": {
+        "title": "SPLAT QR Service",
+        "subtitle": "Internal QR code management service",
+        "description": "SPLAT internal service for managing QR codes, analytics and integrations."
+      },
+      "login": {
+        "title": "Sign in",
+        "subtitle": "Email code authentication",
+        "description": "Sign in to SPLAT QR Service with a one-time verification code."
+      },
+      "verify": {
+        "title": "Verify sign-in",
+        "subtitle": "Enter your one-time code",
+        "description": "Verify sign-in to SPLAT QR Service with a one-time OTP code."
+      },
+      "dashboard": {
+        "title": "Dashboard",
+        "subtitle": "Activity summary and latest changes",
+        "description": "Overview of QR code activity, latest events and key service metrics."
+      },
+      "qrList": {
+        "title": "QR codes",
+        "subtitle": "Manage codes and statuses",
+        "description": "QR code list, filters, statuses, visibility and bulk actions."
+      },
+      "qrCreate": {
+        "title": "Create QR code",
+        "subtitle": "New dynamic or static QR code",
+        "description": "Create a QR code with destination, style, folders, tags and UTM parameters."
+      },
+      "qrBulk": {
+        "title": "Bulk QR creation",
+        "subtitle": "Import and create QR codes in bulk",
+        "description": "Bulk QR code creation from CSV with data validation preview."
+      },
+      "qrShared": {
+        "title": "Shared QR",
+        "subtitle": "Team and public QR codes",
+        "description": "View QR codes with shared, public or team visibility."
+      },
+      "qrDetails": {
+        "title": "QR code details",
+        "subtitle": "Details, destinations and statistics",
+        "description": "Detailed QR code page with settings, destinations and scan statistics."
+      },
+      "qrEdit": {
+        "title": "Edit QR code",
+        "subtitle": "Update destination, style and settings",
+        "description": "Edit QR code destination, visibility, folder, tags and appearance."
+      },
+      "folders": {
+        "title": "Folders",
+        "subtitle": "Organize by campaigns and projects",
+        "description": "Manage folders for organizing QR codes by projects and campaigns."
+      },
+      "folderDetails": {
+        "title": "Folder",
+        "subtitle": "Selected folder contents",
+        "description": "View QR codes and nested structure of the selected folder."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "subtitle": "Scans, sources and geography",
+        "description": "QR scan analytics: trends, geography, devices and top codes."
+      },
+      "integrations": {
+        "title": "Integrations",
+        "subtitle": "Connections, API and external flows",
+        "description": "Configure SPLAT QR Service integrations, API access and external connections."
+      },
+      "mcpSetup": {
+        "title": "MCP setup",
+        "subtitle": "Model Context Protocol connection",
+        "description": "Instructions and settings for connecting MCP to SPLAT QR Service."
+      },
+      "apiDocs": {
+        "title": "API Docs",
+        "subtitle": "Interactive OpenAPI documentation",
+        "description": "Interactive SPLAT QR Service API documentation with methods and schemas."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "subtitle": "System events and alerts",
+        "description": "SPLAT QR Service user notification center."
+      },
+      "settings": {
+        "title": "Settings",
+        "subtitle": "Workspace and team settings",
+        "description": "SPLAT QR Service settings section."
+      },
+      "settingsGeneral": {
+        "title": "General settings",
+        "subtitle": "Base service options",
+        "description": "General workspace and base service settings."
+      },
+      "settingsProfile": {
+        "title": "Profile",
+        "subtitle": "Personal user settings",
+        "description": "User profile and personal account settings."
+      },
+      "settingsTeam": {
+        "title": "Team",
+        "subtitle": "Users, roles and invitations",
+        "description": "Manage team members, roles and invitations."
+      },
+      "settingsDomains": {
+        "title": "Sign-in domains",
+        "subtitle": "Allowed email domains",
+        "description": "Configure email domains allowed for user sign-in."
+      },
+      "settingsDestinationDomains": {
+        "title": "Destination domains",
+        "subtitle": "Destination URL restrictions",
+        "description": "Manage domains allowed as QR code destinations."
+      },
+      "settingsDepartments": {
+        "title": "Departments",
+        "subtitle": "Team structure and access",
+        "description": "Manage departments and user membership."
+      },
+      "settingsAudit": {
+        "title": "Audit log",
+        "subtitle": "Action and security event log",
+        "description": "Audit log of user actions and security events."
+      },
+      "settingsIntegrations": {
+        "title": "API keys",
+        "subtitle": "Access keys and integrations",
+        "description": "Manage API keys, permissions and integration settings."
+      },
+      "docsUi": {
+        "title": "UI Kit",
+        "subtitle": "Internal component documentation",
+        "description": "Internal UI component and design system documentation."
+      },
+      "expired": {
+        "title": "Expired",
+        "subtitle": "QR code is no longer available",
+        "description": "Expired QR code page."
+      },
+      "notFound": {
+        "title": "Page not found",
+        "subtitle": "Requested section is unavailable",
+        "description": "Requested SPLAT QR Service page was not found."
+      }
+    }
+  },
   "analytics": {
     "title": "Analytics",
     "subtitle": "Scan statistics for your QR codes",

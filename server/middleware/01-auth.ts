@@ -16,6 +16,7 @@ type PermissionRule = {
 const PUBLIC_PATHS = [
   '/api/auth/login',
   '/api/auth/verify',
+  '/api/openapi.json',
   '/api/_', // Nuxt internal
 ]
 

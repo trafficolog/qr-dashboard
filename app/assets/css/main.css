@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Explicit roots: default heuristics can miss `app/` when the entry is nested under `app/assets/css/`. */
+@source "../../**/*.{vue,ts}";
+
 @theme {
   --color-splat-50: #fff6f8;
   --color-splat-100: #fde8ee;

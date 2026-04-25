@@ -41,7 +41,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/tags',
   summary: 'List tags',
   description: 'Returns all available tags.',
-  tags: ['V1', 'Tags'],
+  tags: ['Tags'],
   security: [{ ApiKeyAuth: ['qr:read'] }],
   responses: {
     200: {
@@ -73,7 +73,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/tags',
   summary: 'Create tag',
   description: 'Creates a new tag.',
-  tags: ['V1', 'Tags'],
+  tags: ['Tags'],
   security: [{ ApiKeyAuth: ['qr:write'] }],
   request: {
     body: {
