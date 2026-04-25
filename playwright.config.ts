@@ -28,7 +28,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm install --frozen-lockfile && OTP_PEPPER=test-pepper CSRF_SECRET=test-csrf NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001 --host 127.0.0.1',
+    command: 'pnpm run e2e:prepare && OTP_PEPPER=test-pepper CSRF_SECRET=test-csrf NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001 --host 127.0.0.1',
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 240 * 1000,
