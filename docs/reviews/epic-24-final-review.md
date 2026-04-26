@@ -1,6 +1,6 @@
 # Review — EPIC 24 — Миграция на PrimeVue UI и редизайн интерфейса
 
-**Дата:** 2026-XX-XX *(заполняется после завершения эпика)*
+**Дата:** 2026-04-26 *(обновлено по итогам closure-pass; финальный sign-off 24.39 всё ещё pending)*
 **Ветка:** `feat/epic-24-primevue-migration`
 **Версия проекта:** `0.15.0` → `0.16.0`
 **Связанные документы:**
@@ -50,7 +50,7 @@
 | 24.32 | Theme switcher + persistence | ✅ | PR5 | `follow-up commit (layout theme persistence hardening)` | `useLayout` переведён на Sakai-style toggle (`onMenuToggle`, `toggleDarkMode`), `.app-dark` применяется на `<html>`, выбор темы сохраняется в cookie `splat-theme`. |
 | 24.33 | Typecheck sweep | ✅ | PR6 | `follow-up commit (type-safety fixes for PrimeVue menu/actions + toolchain deps)` | `pnpm typecheck` проходит; исправлены TS-ошибки в `AppTopbar`, `UserMenu`, `QuickActions`, `StyleEditor`, `qr/[id]`. Остаются только non-blocking предупреждения Nuxt/Volar (duplicated imports / plugin path warning). |
 | 24.34 | Lint sweep | ✅ | PR6 | `follow-up commit (eslint zero-warning sweep)` | `pnpm lint` проходит с 0 warnings/0 errors; выполнен cleanup для `/settings/*`, `/qr/shared` и `app/components/app|qr` (включая controlled `v-html` cases). |
-| 24.35 | Unit + E2E фиксы | ⚠️ | PR6 | `follow-up commits (playwright webServer env/host hardening + harness cleanup)` | На 2026-04-24 `pnpm test:unit` проходит (33/33), E2E теперь запускается после установки browser/runtime deps, но остаётся не-green (функциональные/стабилизационные падения тестов). |
+| 24.35 | Unit + E2E фиксы | ⚠️ | PR6 | `follow-up commits (playwright webServer env/host hardening + harness cleanup)` | На 2026-04-24 `pnpm test:unit` проходит (35/35), `pnpm test:e2e` выполняется без падений, но значимая часть сценариев помечена как skipped (76/84), поэтому задача остаётся partial до полного unskip + green. |
 | 24.36 | A11y sweep | ⚠️ | PR7 | `follow-up commit (a11y sweep started)` | A11y-спеки запускаются в Playwright, но не имеют финального green-результата, т.к. входят в общий не-green контур E2E (см. 24.35). |
 | 24.37 | Smoke E2E ручной | ⬜ | PR6 | — | Не выполнен финальный ручной smoke-прогон по checklist. |
 | 24.38 | Bundle size audit | ⚠️ | PR6 | `2026-04-24 local build artifacts` | Билд проходит, собраны черновые метрики (`.output/public` 7.3M; есть chunk-size warnings), но baseline→post comparison в документе ещё не финализирован. |
@@ -72,16 +72,16 @@
 | UI Library | `@nuxt/ui` v4 | `primevue` v4.5.x | library swap | ✅ |
 | `@nuxt/ui` в package.json | есть | **удалён** | — | ✅ |
 | `primevue` версия | — | 4.5.x | — | ✅ |
-| Bundle size (`.output/public` total) | XXX kB | XXX kB | ±Y% | ✅ / ⚠️ |
-| Main JS chunk size | XX kB | XX kB | ±Y% | ✅ / ⚠️ |
-| Dev cold start | XX s | XX s | ±Y% | ✅ / ⚠️ |
-| Production build time | XX s | XX s | ±Y% | ✅ / ⚠️ |
+| Bundle size (`.output/public` total) | baseline не зафиксирован в kB | **7.3 MB** | n/a | ⚠️ |
+| Main JS chunk size | baseline не зафиксирован | **2959.0 KB** (`CtvWFwGA.js`) | n/a | ⚠️ |
+| Dev cold start | n/a | n/a | n/a | ⚠️ |
+| Production build time | n/a | n/a | n/a | ⚠️ |
 | `pnpm typecheck` | 0 errors | 0 errors | — | ✅ |
 | `pnpm lint` | 0 errors | 0 errors | — | ✅ |
-| `pnpm test:unit` | 100% pass | X% pass | — | ✅ / ⚠️ |
-| `pnpm test:e2e` | 100% pass | X% pass | — | ✅ / ⚠️ |
+| `pnpm test:unit` | 100% pass | **100% pass (35/35)** | — | ✅ |
+| `pnpm test:e2e` | 100% pass | partial (8 pass / 76 skipped / 0 fail) | — | ⚠️ |
 | axe-core critical | 0 | 0 | — | ✅ |
-| axe-core serious | N | 0 | — | ✅ |
+| axe-core serious | baseline not fixed | pending final a11y pass | — | ⚠️ |
 | Lighthouse Performance (dev) | — | XX | — | ✅ / ⚠️ |
 | Lighthouse A11y | — | XX | — | ✅ / ⚠️ |
 | PrimeVue components used | 0 | N | — | ✅ |

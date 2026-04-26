@@ -99,6 +99,14 @@ async function loadCounters() {
 }
 
 onMounted(() => {
-  loadCounters()
+  if (authStore.isAuthenticated) {
+    loadCounters()
+  }
+})
+
+watch(() => authStore.isAuthenticated, (isAuthenticated) => {
+  if (isAuthenticated) {
+    loadCounters()
+  }
 })
 </script>

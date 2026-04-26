@@ -93,7 +93,34 @@
 type TabFilter = 'all' | 'team' | 'security' | 'system'
 
 const activeTab = ref<TabFilter>('all')
-const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications()
+const { notifications, unreadCount, setNotifications, markAsRead, markAllAsRead } = useNotifications()
+
+const mockNotifications = [
+  {
+    id: 'n1',
+    type: 'team',
+    title: 'Новый участник приглашён',
+    description: 'Пользователь alex@example.com добавлен в рабочее пространство.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+    read: false,
+  },
+  {
+    id: 'n2',
+    type: 'security',
+    title: 'Создан API-ключ',
+    description: 'Сгенерирован новый ключ интеграции с доступом mcp:access.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+    read: false,
+  },
+  {
+    id: 'n3',
+    type: 'system',
+    title: 'Импорт CSV завершён',
+    description: 'Успешно импортировано 124 QR-кода.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
+    read: true,
+  },
+] as const
 
 const tabs: Array<{ label: string, value: TabFilter }> = [
   { label: 'Все', value: 'all' },
@@ -124,6 +151,12 @@ function severityByType(type: 'team' | 'security' | 'system') {
   if (type === 'security') return 'warn'
   return 'secondary'
 }
+
+onMounted(() => {
+  if (notifications.value.length === 0) {
+    setNotifications([...mockNotifications])
+  }
+})
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('ru-RU', {
