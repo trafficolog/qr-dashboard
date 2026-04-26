@@ -9,7 +9,12 @@
     "analytics": "Analytics",
     "integrations": "Integrations",
     "settings": "Settings",
-    "sharedQr": "Shared QR"
+    "sharedQr": "Shared QR",
+    "workspace": "Workspace",
+    "integrationsSection": "Integrations",
+    "apiDocs": "API Docs",
+    "admin": "Admin",
+    "notifications": "Notifications"
   },
   "common": {
     "search": "Search",

@@ -1,5 +1,4 @@
-type PageMetadataKey =
-  | 'home'
+type PageMetadataKey = 'home'
   | 'login'
   | 'verify'
   | 'dashboard'

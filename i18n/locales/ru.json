@@ -9,7 +9,12 @@
     "analytics": "Аналитика",
     "integrations": "Интеграции",
     "settings": "Настройки",
-    "sharedQr": "Общие QR"
+    "sharedQr": "Общие QR",
+    "workspace": "Рабочее пространство",
+    "integrationsSection": "Интеграции",
+    "apiDocs": "API Docs",
+    "admin": "Администрирование",
+    "notifications": "Уведомления"
   },
   "common": {
     "search": "Поиск",

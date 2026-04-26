@@ -90,20 +90,12 @@
 </template>
 
 <script setup lang="ts">
-type NotificationType = 'team' | 'security' | 'system'
-type TabFilter = 'all' | NotificationType
-
-interface NotificationItem {
-  id: string
-  type: NotificationType
-  title: string
-  description: string
-  createdAt: string
-  read: boolean
-}
+type TabFilter = 'all' | 'team' | 'security' | 'system'
 
 const activeTab = ref<TabFilter>('all')
-const notifications = ref<NotificationItem[]>([
+const { notifications, unreadCount, setNotifications, markAsRead, markAllAsRead } = useNotifications()
+
+const mockNotifications = [
   {
     id: 'n1',
     type: 'team',
@@ -128,7 +120,7 @@ const notifications = ref<NotificationItem[]>([
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
     read: true,
   },
-])
+] as const
 
 const tabs: Array<{ label: string, value: TabFilter }> = [
   { label: 'Все', value: 'all' },
@@ -143,32 +135,28 @@ const filtered = computed(() => (
     : notifications.value.filter(item => item.type === activeTab.value)
 ))
 
-const unreadCount = computed(() => notifications.value.filter(item => !item.read).length)
-
 function countByTab(tab: TabFilter) {
   if (tab === 'all') return notifications.value.length
   return notifications.value.filter(item => item.type === tab).length
 }
 
-function labelByType(type: NotificationType) {
+function labelByType(type: 'team' | 'security' | 'system') {
   if (type === 'team') return 'Команда'
   if (type === 'security') return 'Безопасность'
   return 'Система'
 }
 
-function severityByType(type: NotificationType) {
+function severityByType(type: 'team' | 'security' | 'system') {
   if (type === 'team') return 'info'
   if (type === 'security') return 'warn'
   return 'secondary'
 }
 
-function markAsRead(id: string) {
-  notifications.value = notifications.value.map(item => item.id === id ? { ...item, read: true } : item)
-}
-
-function markAllAsRead() {
-  notifications.value = notifications.value.map(item => ({ ...item, read: true }))
-}
+onMounted(() => {
+  if (notifications.value.length === 0) {
+    setNotifications([...mockNotifications])
+  }
+})
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('ru-RU', {
