@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
+  <div class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-4">
     <div
       v-if="loading"
       class="flex items-center gap-3"
@@ -23,7 +23,7 @@
         />
       </div>
       <div class="min-w-0">
-        <p class="tabular-nums text-2xl font-bold text-[color:var(--text-primary)]">
+        <p class="tabular-nums text-2xl font-bold text-[color:var(--text-color)]">
           {{ formattedValue }}
         </p>
         <p class="mt-0.5 text-sm text-[color:var(--text-muted)]">

@@ -19,7 +19,7 @@
 - ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`; выполнен дополнительный Sakai token sweep для `/qr` list primitives (surface/text/border vars)
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
 - ✅ Sidebar role filtering aligned with Amendment A1: для non-admin скрывается только `Settings`, секция `Admin` и `Notifications` остаются доступными; маршрут settings в меню унифицирован на `/settings`
-- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue (ожидается визуальный sign-off)
+- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue; выполнен Sakai token sweep для dashboard/analytics surfaces и typographic text tokens, ожидается визуальный sign-off
 - ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
 - ✅ QR Create migration: `/qr/create` page переведена на PrimeVue controls/patterns (в текущем репо отдельный `CreateDrawer` отсутствует)
 - ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; добавлен quick preview `Drawer` в `/qr` list (table double-click + card action), pending: финальный visual sign-off detail-drawer parity
