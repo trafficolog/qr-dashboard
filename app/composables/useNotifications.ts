@@ -1,12 +1,15 @@
 type NotificationType = 'team' | 'security' | 'system'
+type NotificationSeverity = 'success' | 'info' | 'warn'
 
 export interface NotificationItem {
   id: string
   type: NotificationType
+  severity: NotificationSeverity
   title: string
   description: string
   createdAt: string
   read: boolean
+  deeplink?: string | null
 }
 
 const DEFAULT_NOTIFICATIONS: NotificationItem[] = []

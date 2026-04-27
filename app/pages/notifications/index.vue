@@ -74,7 +74,7 @@
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
                 <Tag
-                  :severity="severityByType(item.type)"
+                  :severity="item.severity"
                   :value="labelByType(item.type)"
                 />
                 <span class="text-xs text-[color:var(--text-muted)]">{{ formatDate(item.createdAt) }}</span>
@@ -86,14 +86,26 @@
                 {{ item.description }}
               </p>
             </div>
-            <Button
-              v-if="!item.read"
-              text
-              size="small"
-              @click="markAsRead(item.id)"
-            >
-              Прочитано
-            </Button>
+            <div class="flex items-center gap-2">
+              <Button
+                v-if="item.deeplink"
+                as-child
+                text
+                size="small"
+              >
+                <NuxtLink :to="item.deeplink">
+                  Открыть
+                </NuxtLink>
+              </Button>
+              <Button
+                v-if="!item.read"
+                text
+                size="small"
+                @click="markAsRead(item.id)"
+              >
+                Прочитано
+              </Button>
+            </div>
           </div>
         </li>
       </ul>
@@ -129,12 +141,6 @@ function labelByType(type: 'team' | 'security' | 'system') {
   if (type === 'team') return 'Команда'
   if (type === 'security') return 'Безопасность'
   return 'Система'
-}
-
-function severityByType(type: 'team' | 'security' | 'system') {
-  if (type === 'team') return 'info'
-  if (type === 'security') return 'warn'
-  return 'secondary'
 }
 
 onMounted(() => {
