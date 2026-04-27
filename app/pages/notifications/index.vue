@@ -39,7 +39,19 @@
 
     <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
       <div
-        v-if="!filtered.length"
+        v-if="loading"
+        class="space-y-3"
+      >
+        <Skeleton
+          v-for="index in 4"
+          :key="index"
+          height="3.5rem"
+          border-radius="12px"
+        />
+      </div>
+
+      <div
+        v-else-if="!filtered.length"
         class="py-10 text-center text-[color:var(--text-muted)]"
       >
         Нет уведомлений в выбранной вкладке
@@ -62,7 +74,7 @@
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
                 <Tag
-                  :severity="severityByType(item.type)"
+                  :severity="item.severity"
                   :value="labelByType(item.type)"
                 />
                 <span class="text-xs text-[color:var(--text-muted)]">{{ formatDate(item.createdAt) }}</span>
@@ -74,14 +86,26 @@
                 {{ item.description }}
               </p>
             </div>
-            <Button
-              v-if="!item.read"
-              text
-              size="small"
-              @click="markAsRead(item.id)"
-            >
-              Прочитано
-            </Button>
+            <div class="flex items-center gap-2">
+              <Button
+                v-if="item.deeplink"
+                as-child
+                text
+                size="small"
+              >
+                <NuxtLink :to="item.deeplink">
+                  Открыть
+                </NuxtLink>
+              </Button>
+              <Button
+                v-if="!item.read"
+                text
+                size="small"
+                @click="markAsRead(item.id)"
+              >
+                Прочитано
+              </Button>
+            </div>
           </div>
         </li>
       </ul>
@@ -93,34 +117,7 @@
 type TabFilter = 'all' | 'team' | 'security' | 'system'
 
 const activeTab = ref<TabFilter>('all')
-const { notifications, unreadCount, setNotifications, markAsRead, markAllAsRead } = useNotifications()
-
-const mockNotifications = [
-  {
-    id: 'n1',
-    type: 'team',
-    title: 'Новый участник приглашён',
-    description: 'Пользователь alex@example.com добавлен в рабочее пространство.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
-    read: false,
-  },
-  {
-    id: 'n2',
-    type: 'security',
-    title: 'Создан API-ключ',
-    description: 'Сгенерирован новый ключ интеграции с доступом mcp:access.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    read: false,
-  },
-  {
-    id: 'n3',
-    type: 'system',
-    title: 'Импорт CSV завершён',
-    description: 'Успешно импортировано 124 QR-кода.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
-    read: true,
-  },
-] as const
+const { notifications, loading, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotifications()
 
 const tabs: Array<{ label: string, value: TabFilter }> = [
   { label: 'Все', value: 'all' },
@@ -146,16 +143,8 @@ function labelByType(type: 'team' | 'security' | 'system') {
   return 'Система'
 }
 
-function severityByType(type: 'team' | 'security' | 'system') {
-  if (type === 'team') return 'info'
-  if (type === 'security') return 'warn'
-  return 'secondary'
-}
-
 onMounted(() => {
-  if (notifications.value.length === 0) {
-    setNotifications([...mockNotifications])
-  }
+  fetchNotifications()
 })
 
 function formatDate(iso: string) {

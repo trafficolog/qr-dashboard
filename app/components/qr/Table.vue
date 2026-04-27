@@ -83,6 +83,7 @@
           v-for="qr in items"
           :key="qr.id"
           class="border-b border-[color:var(--surface-2)] transition-interactive hover:bg-[color:var(--surface-2)]/60"
+          @dblclick="$emit('openDetail', qr.id)"
         >
           <td class="py-3 px-2">
             <input
@@ -209,6 +210,7 @@ const emit = defineEmits<{
   delete: [id: string]
   toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
   changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }]
+  openDetail: [id: string]
 }>()
 
 const { t } = useI18n()
