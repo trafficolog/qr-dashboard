@@ -99,7 +99,7 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
 
-const { themePreference, setTheme } = useLayout()
+const { themePreference, toggleDarkMode } = useLayout()
 const { locale, setLocale } = useI18n()
 
 const themes = [
@@ -118,7 +118,9 @@ const localeValue = computed(() => locale.value as 'ru' | 'en')
 const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 function handleThemeSelect(value: 'light' | 'dark') {
-  setTheme(value)
+  if (value !== themePreference.value) {
+    toggleDarkMode()
+  }
 }
 
 function updateLocale(value: string) {

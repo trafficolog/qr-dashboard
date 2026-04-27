@@ -54,9 +54,17 @@ export function useLayout() {
 
   function initializeTheme() {
     const themeCookie = useCookie<ThemePreference | null>(THEME_COOKIE_KEY, { default: () => null })
-    const preference = themeCookie.value === 'dark' ? 'dark' : 'light'
 
-    setTheme(preference)
+    if (themeCookie.value === 'light' || themeCookie.value === 'dark') {
+      applyTheme(themeCookie.value)
+      return
+    }
+
+    const preferredTheme: ThemePreference = import.meta.client && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light'
+
+    applyTheme(preferredTheme)
   }
 
   function onMenuToggle() {
@@ -79,10 +87,10 @@ export function useLayout() {
   }
 
   function toggleDarkMode() {
-    setTheme(layoutConfig.value.darkTheme ? 'light' : 'dark')
+    applyTheme(layoutConfig.value.darkTheme ? 'light' : 'dark')
   }
 
-  function setTheme(preference: ThemePreference) {
+  function applyTheme(preference: ThemePreference) {
     layoutConfig.value.themePreference = preference
 
     const darkThemeEnabled = preference === 'dark'
@@ -107,6 +115,5 @@ export function useLayout() {
     closeMobileMenu,
     onMenuItemClick,
     toggleDarkMode,
-    setTheme,
   }
 }

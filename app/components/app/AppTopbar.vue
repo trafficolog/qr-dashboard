@@ -1,16 +1,19 @@
 <template>
   <header class="layout-topbar">
-    <button
+    <Button
       class="layout-topbar-menu-button"
-      type="button"
+      text
+      severity="secondary"
       :aria-label="t('a11y.actions.openMenu')"
       @click="layout.onMenuToggle"
     >
-      <Icon
-        name="i-lucide-menu"
-        class="size-5"
-      />
-    </button>
+      <template #icon>
+        <Icon
+          name="i-lucide-menu"
+          class="size-5"
+        />
+      </template>
+    </Button>
 
     <div class="layout-topbar-title">
       <h1>{{ pageTitle }}</h1>
@@ -18,17 +21,55 @@
     </div>
 
     <div class="layout-topbar-actions">
-      <button
+      <Button
         type="button"
+        text
+        severity="secondary"
+        class="layout-topbar-action layout-topbar-search hidden sm:inline-flex"
+        :aria-label="t('a11y.actions.openSearch')"
+        @click="openGlobalSearch"
+      >
+        <template #icon>
+          <Icon
+            name="i-lucide-search"
+            class="size-4"
+          />
+        </template>
+        <span class="text-xs text-[color:var(--text-secondary)]">{{ $t('common.search') }}</span>
+        <span class="rounded border border-[color:var(--surface-border)] px-1.5 py-0.5 text-[10px] text-[color:var(--text-secondary)]">{{ searchShortcutHint }}</span>
+      </Button>
+
+      <Button
+        type="button"
+        text
+        severity="secondary"
+        class="layout-topbar-action sm:hidden"
+        :aria-label="t('a11y.actions.openSearch')"
+        @click="openGlobalSearch"
+      >
+        <template #icon>
+          <Icon
+            name="i-lucide-search"
+            class="size-4"
+          />
+        </template>
+      </Button>
+
+      <Button
+        type="button"
+        text
+        severity="secondary"
         class="layout-topbar-action"
         :aria-label="themeLabel"
         @click="layout.toggleDarkMode"
       >
-        <Icon
-          :name="themeIcon"
-          class="size-4"
-        />
-      </button>
+        <template #icon>
+          <Icon
+            :name="themeIcon"
+            class="size-4"
+          />
+        </template>
+      </Button>
 
       <NuxtLink
         to="/notifications"
@@ -60,14 +101,58 @@
 
       <AppUserMenu />
     </div>
+
+    <AppGlobalSearch />
   </header>
 </template>
 
 <script setup lang="ts">
+import { useEventListener } from '@vueuse/core'
+import { useGlobalSearch } from '~/composables/useGlobalSearch'
+
 const { t } = useI18n()
 const layout = useLayout()
 const { pageTitle, pageSubtitle } = usePageMetadata()
 const { unreadCount } = useNotifications()
+const globalSearch = useGlobalSearch()
+
+const searchShortcutHint = computed(() => {
+  if (!import.meta.client) {
+    return 'Ctrl K'
+  }
+
+  return /mac|iphone|ipad|ipod/i.test(window.navigator.platform)
+    ? '⌘K'
+    : 'Ctrl K'
+})
+
+function openGlobalSearch() {
+  globalSearch.open()
+}
+
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) {
+    return false
+  }
+
+  return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+}
+
+useEventListener(import.meta.client ? window : undefined, 'keydown', (event: KeyboardEvent) => {
+  if (isTypingTarget(event.target)) {
+    return
+  }
+
+  const isMetaOrCtrl = event.metaKey || event.ctrlKey
+  const isShortcut = isMetaOrCtrl && event.key.toLowerCase() === 'k'
+
+  if (!isShortcut) {
+    return
+  }
+
+  event.preventDefault()
+  openGlobalSearch()
+})
 
 const themeIcon = computed(() => layout.layoutConfig.value.darkTheme ? 'i-lucide-sun' : 'i-lucide-moon')
 const themeLabel = computed(() => layout.layoutConfig.value.darkTheme ? t('common.lightTheme') : t('common.darkTheme'))
