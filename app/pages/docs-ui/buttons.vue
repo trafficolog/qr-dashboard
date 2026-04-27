@@ -4,97 +4,58 @@
       Docs UI / Buttons
     </h1>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Variants
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-semibold">
+        Variants
+      </h2>
       <div class="flex flex-wrap gap-3">
-        <UButton label="Solid" />
-        <UButton
+        <Button label="Solid" />
+        <Button
           label="Outline"
-          variant="outline"
+          outlined
         />
-        <UButton
-          label="Soft"
-          variant="soft"
+        <Button
+          label="Text"
+          text
+          severity="secondary"
         />
-        <UButton
-          label="Ghost"
-          variant="ghost"
-        />
-        <UButton
+        <Button
           label="Link"
-          variant="link"
+          link
         />
       </div>
-    </UCard>
+    </section>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Colors & states
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-semibold">
+        Colors & states
+      </h2>
       <div class="flex flex-wrap gap-3">
-        <UButton
+        <Button
           label="Success"
-          color="success"
+          severity="success"
         />
-        <UButton
+        <Button
           label="Warning"
-          color="warning"
+          severity="warn"
         />
-        <UButton
-          label="Error"
-          color="error"
+        <Button
+          label="Danger"
+          severity="danger"
         />
-        <UButton
+        <Button
           label="Disabled"
           disabled
         />
-        <UButton
+        <Button
           label="Loading"
           loading
         />
       </div>
-    </UCard>
-
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Sizes
-        </h2>
-      </template>
-      <div class="flex flex-wrap items-center gap-3">
-        <UButton
-          label="XS"
-          size="xs"
-        />
-        <UButton
-          label="SM"
-          size="sm"
-        />
-        <UButton
-          label="MD"
-          size="md"
-        />
-        <UButton
-          label="LG"
-          size="lg"
-        />
-        <UButton
-          label="XL"
-          size="xl"
-        />
-      </div>
-    </UCard>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: ['docs-ui-enabled', 'admin-only'],
-})
+definePageMeta({ middleware: ['docs-ui-enabled', 'admin-only'] })
 </script>

@@ -307,6 +307,7 @@ async function confirmDelete() {
     toast.add({ title: t('pages.domains.toasts.deleteError'), color: 'error' })
   }
   finally {
+    confirmOpen.value = false
     deletingDomain.value = null
   }
 }

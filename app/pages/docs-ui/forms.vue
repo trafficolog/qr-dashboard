@@ -4,95 +4,45 @@
       Docs UI / Forms
     </h1>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Inputs: default / hint / error / disabled
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-semibold">
+        Inputs / Textarea / Select
+      </h2>
       <div class="grid gap-4 md:grid-cols-2">
-        <UFormField label="Default input">
-          <UInput placeholder="Type something..." />
-        </UFormField>
-
-        <UFormField
-          label="With hint"
-          hint="Hint: minimum 8 characters"
-        >
-          <UInput placeholder="Password" />
-        </UFormField>
-
-        <UFormField
-          label="With error"
-          error="Обязательное поле"
-        >
-          <UInput placeholder="Email" />
-        </UFormField>
-
-        <UFormField label="Disabled">
-          <UInput
-            model-value="readonly@example.com"
-            disabled
+        <div class="space-y-1">
+          <label>Default input</label><InputText
+            placeholder="Type something..."
+            class="w-full"
           />
-        </UFormField>
-      </div>
-    </UCard>
-
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Sizes
-        </h2>
-      </template>
-      <div class="space-y-3">
-        <UInput
-          placeholder="Size xs"
-          size="xs"
-        />
-        <UInput
-          placeholder="Size sm"
-          size="sm"
-        />
-        <UInput
-          placeholder="Size md"
-          size="md"
-        />
-        <UInput
-          placeholder="Size lg"
-          size="lg"
-        />
-      </div>
-    </UCard>
-
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Textarea & Select variants
-        </h2>
-      </template>
-      <div class="grid gap-4 md:grid-cols-2">
-        <UFormField label="Textarea">
-          <UTextarea
+        </div>
+        <div class="space-y-1">
+          <label>Password</label><Password
+            placeholder="Password"
+            :feedback="false"
+            toggle-mask
+            class="w-full"
+          />
+        </div>
+        <div class="space-y-1">
+          <label>Textarea</label><Textarea
             placeholder="Комментарий"
             :rows="4"
+            class="w-full"
           />
-        </UFormField>
-
-        <UFormField label="Select">
-          <USelect
-            :items="selectItems"
+        </div>
+        <div class="space-y-1">
+          <label>Select</label><Select
+            :options="selectItems"
             placeholder="Выберите вариант"
+            class="w-full"
           />
-        </UFormField>
+        </div>
       </div>
-    </UCard>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: ['docs-ui-enabled', 'admin-only'],
-})
-
+definePageMeta({ middleware: ['docs-ui-enabled', 'admin-only'] })
 const selectItems = ['Default', 'Option A', 'Option B']
 </script>

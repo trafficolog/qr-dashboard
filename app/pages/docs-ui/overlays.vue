@@ -4,147 +4,79 @@
       Docs UI / Overlays
     </h1>
 
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Modal states
-        </h2>
-      </template>
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <h2 class="mb-3 font-semibold">
+        Dialog states
+      </h2>
       <div class="flex flex-wrap gap-3">
-        <UButton
-          label="Open default modal"
+        <Button
+          label="Open default dialog"
           @click="defaultOpen = true"
         />
-        <UButton
-          label="Open loading modal"
-          color="warning"
+        <Button
+          label="Open loading dialog"
+          severity="warn"
           @click="loadingOpen = true"
         />
-        <UButton
-          label="Disabled trigger"
-          disabled
+      </div>
+    </section>
+
+    <Dialog
+      v-model:visible="defaultOpen"
+      modal
+      header="Default dialog"
+      :style="{ width: '30rem' }"
+    >
+      <p class="text-sm text-[color:var(--text-secondary)]">
+        Базовое состояние диалога.
+      </p>
+      <template #footer>
+        <Button
+          outlined
+          severity="secondary"
+          label="Close"
+          @click="defaultOpen = false"
         />
-      </div>
-    </UCard>
-
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">
-          Dropdown variants
-        </h2>
+        <Button
+          label="Action"
+          @click="defaultOpen = false"
+        />
       </template>
-      <div class="flex flex-wrap gap-3">
-        <UDropdownMenu :items="dropdownItems">
-          <UButton
-            label="Default menu"
-            variant="outline"
-          />
-        </UDropdownMenu>
+    </Dialog>
 
-        <UDropdownMenu :items="dropdownItemsDisabled">
-          <UButton
-            label="With disabled item"
-            variant="soft"
-            color="neutral"
-          />
-        </UDropdownMenu>
-      </div>
-    </UCard>
-
-    <UModal
-      v-model:open="defaultOpen"
-      :close-on-escape="true"
+    <Dialog
+      v-model:visible="loadingOpen"
+      modal
+      header="Loading dialog"
+      :style="{ width: '30rem' }"
     >
-      <template #header>
-        <h3 class="text-base font-semibold">
-          Default modal
-        </h3>
-      </template>
       <p class="text-sm text-[color:var(--text-secondary)]">
-        Базовое состояние модального окна.
+        Демонстрация loading-состояния кнопки.
       </p>
       <template #footer>
-        <div class="flex justify-end gap-2">
-          <UButton
-            label="Close"
-            variant="outline"
-            color="neutral"
-            @click="defaultOpen = false"
-          />
-          <UButton
-            label="Action"
-            @click="defaultOpen = false"
-          />
-        </div>
+        <Button
+          outlined
+          severity="secondary"
+          label="Cancel"
+          @click="loadingOpen = false"
+        />
+        <Button
+          label="Saving..."
+          loading
+        />
       </template>
-    </UModal>
-
-    <UModal
-      v-model:open="loadingOpen"
-      :close-on-escape="true"
-    >
-      <template #header>
-        <h3 class="text-base font-semibold">
-          Loading modal
-        </h3>
-      </template>
-      <p class="text-sm text-[color:var(--text-secondary)]">
-        Демонстрация loading-состояния кнопки в футере.
-      </p>
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <UButton
-            label="Cancel"
-            variant="outline"
-            color="neutral"
-            @click="loadingOpen = false"
-          />
-          <UButton
-            label="Saving..."
-            loading
-          />
-        </div>
-      </template>
-    </UModal>
+    </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
-definePageMeta({
-  middleware: ['docs-ui-enabled', 'admin-only'],
-})
-
+definePageMeta({ middleware: ['docs-ui-enabled', 'admin-only'] })
 const defaultOpen = ref(false)
 const loadingOpen = ref(false)
 const defaultFocusReturn = createDialogFocusReturn()
 const loadingFocusReturn = createDialogFocusReturn()
-
-watch(defaultOpen, (open) => {
-  if (open) defaultFocusReturn.save()
-  else defaultFocusReturn.restore()
-})
-
-watch(loadingOpen, (open) => {
-  if (open) loadingFocusReturn.save()
-  else loadingFocusReturn.restore()
-})
-
-const dropdownItems = [
-  [
-    { label: 'Edit', icon: 'i-lucide-pencil' },
-    { label: 'Duplicate', icon: 'i-lucide-copy' },
-  ],
-  [
-    { label: 'Delete', icon: 'i-lucide-trash', color: 'error' as const },
-  ],
-]
-
-const dropdownItemsDisabled = [
-  [
-    { label: 'Open', icon: 'i-lucide-folder-open' },
-    { label: 'Coming soon', icon: 'i-lucide-clock', disabled: true },
-  ],
-]
+watch(defaultOpen, open => (open ? defaultFocusReturn.save() : defaultFocusReturn.restore()))
+watch(loadingOpen, open => (open ? loadingFocusReturn.save() : loadingFocusReturn.restore()))
 </script>

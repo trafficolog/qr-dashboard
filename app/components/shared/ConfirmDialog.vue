@@ -12,16 +12,16 @@
         <div class="flex items-start gap-4">
           <div class="shrink-0 rounded-full bg-[color:var(--accent-light)] p-2">
             <Icon
-              :name="icon"
+              :name="props.icon"
               class="size-5 text-[color:var(--color-error)]"
             />
           </div>
           <div class="flex-1">
             <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
-              {{ title }}
+              {{ props.title }}
             </h3>
             <p class="mt-2 text-sm text-[color:var(--text-secondary)]">
-              {{ message }}
+              {{ resolvedMessage }}
             </p>
           </div>
         </div>
@@ -32,14 +32,14 @@
             outlined
             @click="isOpen = false"
           >
-            {{ cancelLabel }}
+            {{ props.cancelLabel }}
           </Button>
           <Button
-            severity="danger"
-            :loading="loading"
+            :severity="resolvedSeverity"
+            :loading="props.loading"
             @click="handleConfirm"
           >
-            {{ confirmLabel }}
+            {{ props.confirmLabel }}
           </Button>
         </div>
       </div>
@@ -50,22 +50,26 @@
 <script setup lang="ts">
 import { createDialogFocusReturn } from '~/utils/dialog-focus-return'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     title?: string
     message?: string
+    description?: string
     confirmLabel?: string
     cancelLabel?: string
     icon?: string
     loading?: boolean
+    confirmColor?: 'error' | 'danger' | 'warn' | 'primary' | 'secondary'
   }>(),
   {
     title: 'Подтверждение',
     message: 'Вы уверены? Это действие нельзя отменить.',
+    description: '',
     confirmLabel: 'Удалить',
     cancelLabel: 'Отмена',
     icon: 'i-lucide-alert-triangle',
     loading: false,
+    confirmColor: 'danger',
   },
 )
 
@@ -75,6 +79,9 @@ const focusReturn = createDialogFocusReturn()
 const emit = defineEmits<{
   confirm: []
 }>()
+
+const resolvedMessage = computed(() => props.description || props.message)
+const resolvedSeverity = computed(() => (props.confirmColor === 'error' ? 'danger' : props.confirmColor))
 
 watch(isOpen, (open) => {
   if (open) focusReturn.save()

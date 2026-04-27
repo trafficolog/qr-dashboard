@@ -68,7 +68,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/analytics/overview',
   summary: 'Get analytics overview',
   description: 'Returns aggregate KPI values for the selected period.',
-  tags: ['V1', 'Stats'],
+  tags: ['Analytics'],
   security: [{ ApiKeyAuth: ['qr:stats:read'] }],
   request: {
     query: analyticsOverviewQuerySchema,
@@ -103,7 +103,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/analytics/scans',
   summary: 'Get scans timeseries',
   description: 'Returns scans timeline, optionally with previous-period comparison.',
-  tags: ['V1', 'Stats'],
+  tags: ['Analytics'],
   security: [{ ApiKeyAuth: ['qr:stats:read'] }],
   request: {
     query: analyticsScansQuerySchema,
