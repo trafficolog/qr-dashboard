@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-xl border border-[color:var(--border-color)] p-4">
     <div class="mb-3 flex items-center justify-between gap-3">
-      <h3 class="text-sm font-medium text-[color:var(--text-primary)]">
+      <h3 class="text-sm font-medium text-[color:var(--text-color)]">
         {{ $t('analytics.geo.mapTitle') }}
       </h3>
 
@@ -76,7 +76,7 @@
           class="flex items-center justify-between rounded-lg bg-[color:var(--surface-1)] px-3 py-2 text-xs"
         >
           <span class="text-[color:var(--text-muted)]">{{ region.name }}</span>
-          <span class="tabular-nums text-[color:var(--text-primary)]">{{ (russiaDistribution.get(region.id) ?? 0).toLocaleString() }}</span>
+          <span class="tabular-nums text-[color:var(--text-color)]">{{ (russiaDistribution.get(region.id) ?? 0).toLocaleString() }}</span>
         </p>
       </div>
     </div>
