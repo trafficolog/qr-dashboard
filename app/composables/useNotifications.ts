@@ -53,6 +53,17 @@ export function useNotifications() {
     }
   }
 
+  async function fetchNotifications() {
+    loading.value = true
+    try {
+      const response = await $fetch<{ data: NotificationItem[] }>('/api/notifications')
+      notifications.value = response.data
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
   function markAsRead(id: string) {
     notifications.value = notifications.value.map(item => item.id === id ? { ...item, read: true } : item)
     const readIds = getReadIdsSet()
