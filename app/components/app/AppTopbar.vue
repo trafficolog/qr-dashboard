@@ -1,16 +1,19 @@
 <template>
   <header class="layout-topbar">
-    <button
+    <Button
       class="layout-topbar-menu-button"
-      type="button"
+      text
+      severity="secondary"
       :aria-label="t('a11y.actions.openMenu')"
       @click="layout.onMenuToggle"
     >
-      <Icon
-        name="i-lucide-menu"
-        class="size-5"
-      />
-    </button>
+      <template #icon>
+        <Icon
+          name="i-lucide-menu"
+          class="size-5"
+        />
+      </template>
+    </Button>
 
     <div class="layout-topbar-title">
       <h1>{{ pageTitle }}</h1>
@@ -18,17 +21,39 @@
     </div>
 
     <div class="layout-topbar-actions">
-      <button
+      <Button
         type="button"
+        text
+        severity="secondary"
+        class="layout-topbar-action layout-topbar-search hidden sm:inline-flex"
+        :aria-label="t('a11y.actions.openSearch')"
+        @click="globalSearch.open()"
+      >
+        <template #icon>
+          <Icon
+            name="i-lucide-search"
+            class="size-4"
+          />
+        </template>
+        <span class="text-xs text-[color:var(--text-secondary)]">{{ $t('common.search') }}</span>
+        <span class="rounded border border-[color:var(--surface-border)] px-1.5 py-0.5 text-[10px] text-[color:var(--text-secondary)]">⌘K</span>
+      </Button>
+
+      <Button
+        type="button"
+        text
+        severity="secondary"
         class="layout-topbar-action"
         :aria-label="themeLabel"
         @click="layout.toggleDarkMode"
       >
-        <Icon
-          :name="themeIcon"
-          class="size-4"
-        />
-      </button>
+        <template #icon>
+          <Icon
+            :name="themeIcon"
+            class="size-4"
+          />
+        </template>
+      </Button>
 
       <NuxtLink
         to="/notifications"
@@ -60,14 +85,28 @@
 
       <AppUserMenu />
     </div>
+
+    <AppGlobalSearch />
   </header>
 </template>
 
 <script setup lang="ts">
+import { useMagicKeys, whenever } from '@vueuse/core'
+import { useGlobalSearch } from '~/composables/useGlobalSearch'
+
 const { t } = useI18n()
 const layout = useLayout()
 const { pageTitle, pageSubtitle } = usePageMetadata()
 const { unreadCount } = useNotifications()
+const globalSearch = useGlobalSearch()
+
+const magicKeys = useMagicKeys()
+whenever(
+  () => Boolean((magicKeys.meta?.value || magicKeys.ctrl?.value) && magicKeys.k?.value),
+  () => {
+    globalSearch.open()
+  },
+)
 
 const themeIcon = computed(() => layout.layoutConfig.value.darkTheme ? 'i-lucide-sun' : 'i-lucide-moon')
 const themeLabel = computed(() => layout.layoutConfig.value.darkTheme ? t('common.lightTheme') : t('common.darkTheme'))
