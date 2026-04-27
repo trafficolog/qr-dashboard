@@ -22,6 +22,7 @@
 
     <div class="layout-topbar-actions">
       <Button
+        v-if="showContextSearchDesktop"
         type="button"
         text
         severity="secondary"
@@ -37,22 +38,6 @@
         </template>
         <span class="text-xs text-[color:var(--text-secondary)]">{{ $t('common.search') }}</span>
         <span class="rounded border border-[color:var(--surface-border)] px-1.5 py-0.5 text-[10px] text-[color:var(--text-secondary)]">{{ searchShortcutHint }}</span>
-      </Button>
-
-      <Button
-        type="button"
-        text
-        severity="secondary"
-        class="layout-topbar-action sm:hidden"
-        :aria-label="t('a11y.actions.openSearch')"
-        @click="openGlobalSearch"
-      >
-        <template #icon>
-          <Icon
-            name="i-lucide-search"
-            class="size-4"
-          />
-        </template>
       </Button>
 
       <Button
@@ -88,6 +73,23 @@
         </span>
       </NuxtLink>
 
+      <span
+        class="layout-topbar-divider hidden sm:inline-block"
+        aria-hidden="true"
+      />
+
+      <NuxtLink
+        v-if="showBulkCreateAction"
+        to="/qr/bulk"
+        class="layout-topbar-action layout-topbar-link-action hidden lg:inline-flex"
+      >
+        <Icon
+          name="i-lucide-files"
+          class="size-4"
+        />
+        <span>{{ t('qr.list.bulkGenerate') }}</span>
+      </NuxtLink>
+
       <NuxtLink
         to="/qr/create"
         class="layout-topbar-primary"
@@ -115,6 +117,7 @@ const layout = useLayout()
 const { pageTitle, pageSubtitle } = usePageMetadata()
 const { unreadCount } = useNotifications()
 const globalSearch = useGlobalSearch()
+const route = useRoute()
 
 const searchShortcutHint = computed(() => {
   if (!import.meta.client) {
@@ -156,4 +159,7 @@ useEventListener(import.meta.client ? window : undefined, 'keydown', (event: Key
 
 const themeIcon = computed(() => layout.layoutConfig.value.darkTheme ? 'i-lucide-sun' : 'i-lucide-moon')
 const themeLabel = computed(() => layout.layoutConfig.value.darkTheme ? t('common.lightTheme') : t('common.darkTheme'))
+const isQrListPage = computed(() => route.path === '/qr')
+const showContextSearchDesktop = computed(() => isQrListPage.value)
+const showBulkCreateAction = computed(() => isQrListPage.value)
 </script>
