@@ -8,6 +8,7 @@ const querySchema = z.object({
 })
 
 type NotificationType = 'team' | 'security' | 'system'
+type NotificationSeverity = 'success' | 'info' | 'warn'
 
 function mapType(action: string): NotificationType {
   if (action.startsWith('team.')) {
@@ -19,6 +20,18 @@ function mapType(action: string): NotificationType {
   }
 
   return 'system'
+}
+
+function mapSeverity(action: string): NotificationSeverity {
+  if (action.endsWith('.delete') || action === 'team.delete_user') {
+    return 'warn'
+  }
+
+  if (action.startsWith('security.') || action.startsWith('api_key.') || action.startsWith('auth.')) {
+    return 'info'
+  }
+
+  return 'success'
 }
 
 function mapTitle(action: string): string {
@@ -52,6 +65,30 @@ function mapDescription(action: string, entityType: string, entityId: string | n
   return `Действие ${action} выполнено для ${entityType}.`
 }
 
+function mapDeeplink(action: string, entityId: string | null) {
+  if (action.startsWith('team.')) {
+    return '/settings/team'
+  }
+
+  if (action.startsWith('api_key.')) {
+    return '/settings/integrations'
+  }
+
+  if (action.startsWith('folder.')) {
+    return '/folders'
+  }
+
+  if (action.startsWith('qr.') && entityId) {
+    return `/qr/${entityId}`
+  }
+
+  if (action.startsWith('qr.')) {
+    return '/qr'
+  }
+
+  return '/notifications'
+}
+
 export default defineEventHandler(async (event) => {
   const user = requireAuth(event)
   const query = await getValidatedQuery(event, querySchema.parse)
@@ -72,10 +109,12 @@ export default defineEventHandler(async (event) => {
   const notifications = items.map(item => ({
     id: item.id,
     type: mapType(item.action),
+    severity: mapSeverity(item.action),
     title: mapTitle(item.action),
     description: mapDescription(item.action, item.entityType, item.entityId),
     createdAt: item.createdAt.toISOString(),
     read: false,
+    deeplink: mapDeeplink(item.action, item.entityId),
   }))
 
   return apiSuccess(notifications)
