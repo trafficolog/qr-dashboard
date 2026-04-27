@@ -37,7 +37,7 @@
               ? 'border-[color:var(--accent)] bg-[color:var(--accent-light)]'
               : 'border-[color:var(--border)] hover:border-[color:var(--accent)]/50',
           ]"
-          @click="setTheme(theme.value)"
+          @click="handleThemeSelect(theme.value)"
         >
           <Icon
             :name="theme.icon"
@@ -99,13 +99,12 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
 
-const { themePreference, setThemePreference } = useLayout()
+const { themePreference, toggleDarkMode } = useLayout()
 const { locale, setLocale } = useI18n()
 
 const themes = [
   { value: 'light', label: 'Светлая', icon: 'i-lucide-sun' },
   { value: 'dark', label: 'Тёмная', icon: 'i-lucide-moon' },
-  { value: 'system', label: 'Системная', icon: 'i-lucide-monitor' },
 ] as const
 
 const locales = [
@@ -113,13 +112,15 @@ const locales = [
   { label: 'English', value: 'en' },
 ]
 
-const selectedTheme = computed<'light' | 'dark' | 'system'>(() => themePreference.value)
+const selectedTheme = computed<'light' | 'dark'>(() => themePreference.value)
 const localeValue = computed(() => locale.value as 'ru' | 'en')
 
 const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-function setTheme(value: 'light' | 'dark' | 'system') {
-  setThemePreference(value)
+function handleThemeSelect(value: 'light' | 'dark') {
+  if (value !== themePreference.value) {
+    toggleDarkMode()
+  }
 }
 
 function updateLocale(value: string) {

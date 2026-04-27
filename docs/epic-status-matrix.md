@@ -17,3 +17,5 @@
 | 20 | ✅ Done with notes | 2026-04-20 | v0.13.0 (Unreleased) | [docs/epic-20-ux-analytics-cards.md](./epic-20-ux-analytics-cards.md) | [docs/splat-qr-docs-done.md](./splat-qr-docs-done.md) |
 | 21 | ✅ Completed | 2026-04-20 | 1.0.0 gate | [docs/epic-21-security-hardening.md](./epic-21-security-hardening.md) | [docs/reports/epic-21-security-checklist-2026-04-20.md](./reports/epic-21-security-checklist-2026-04-20.md) |
 | 22 | ✅ Done | 2026-04-20 | v0.15.0 (Unreleased) | [docs/epic-22-mcp-swagger-api.md](./epic-22-mcp-swagger-api.md) | — |
+
+| 24 | 🚧 In Progress | — | v0.16.0 (Planned) | [docs/epic-24-primevue-migration.md](./epic-24-primevue-migration.md) | [docs/reviews/epic-24-final-review.md](./reviews/epic-24-final-review.md) |

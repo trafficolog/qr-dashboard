@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { applyAuthCookie } from './helpers/auth'
+import { applyAuthCookie, hasAuthCookie } from './helpers/auth'
 
 test.describe('Global Search (Cmd+K)', () => {
   test.beforeEach(async ({ context, page }) => {
+    if (!hasAuthCookie()) {
+      test.skip()
+    }
+
     await applyAuthCookie(context)
     await page.goto('/dashboard')
     await expect(page).toHaveURL(/\/dashboard/)

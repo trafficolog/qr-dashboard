@@ -1,12 +1,15 @@
 import { readonly } from 'vue'
 
 export type MenuMode = 'static'
-export type ThemePreference = 'light' | 'dark' | 'system'
+export type ThemePreference = 'light' | 'dark'
 
 interface LayoutConfig {
   darkTheme: boolean
   themePreference: ThemePreference
   menuMode: MenuMode
+  preset: 'Aura'
+  primary: 'red'
+  surface: 'zinc'
 }
 
 interface LayoutState {
@@ -16,13 +19,15 @@ interface LayoutState {
 }
 
 const THEME_COOKIE_KEY = 'splat-theme'
-let systemThemeListenerAttached = false
 
 export function useLayout() {
   const layoutConfig = useState<LayoutConfig>('layout-config', () => ({
     darkTheme: false,
-    themePreference: 'system',
+    themePreference: 'light',
     menuMode: 'static',
+    preset: 'Aura',
+    primary: 'red',
+    surface: 'zinc',
   }))
 
   const layoutState = useState<LayoutState>('layout-state', () => ({
@@ -50,8 +55,16 @@ export function useLayout() {
   function initializeTheme() {
     const themeCookie = useCookie<ThemePreference | null>(THEME_COOKIE_KEY, { default: () => null })
 
-    const preference = themeCookie.value || 'system'
-    setThemePreference(preference)
+    if (themeCookie.value === 'light' || themeCookie.value === 'dark') {
+      applyTheme(themeCookie.value)
+      return
+    }
+
+    const preferredTheme: ThemePreference = import.meta.client && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light'
+
+    applyTheme(preferredTheme)
   }
 
   function onMenuToggle() {
@@ -74,28 +87,13 @@ export function useLayout() {
   }
 
   function toggleDarkMode() {
-    setThemePreference(layoutConfig.value.darkTheme ? 'light' : 'dark')
+    applyTheme(layoutConfig.value.darkTheme ? 'light' : 'dark')
   }
 
-  function setThemePreference(preference: ThemePreference) {
+  function applyTheme(preference: ThemePreference) {
     layoutConfig.value.themePreference = preference
 
-    if (preference === 'system' && import.meta.client && !systemThemeListenerAttached) {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      mediaQuery.addEventListener('change', (event) => {
-        if (layoutConfig.value.themePreference !== 'system') {
-          return
-        }
-
-        layoutConfig.value.darkTheme = event.matches
-        applyDarkClass(event.matches)
-      })
-      systemThemeListenerAttached = true
-    }
-
-    const darkThemeEnabled = preference === 'system'
-      ? (import.meta.client ? window.matchMedia('(prefers-color-scheme: dark)').matches : false)
-      : preference === 'dark'
+    const darkThemeEnabled = preference === 'dark'
     layoutConfig.value.darkTheme = darkThemeEnabled
     applyDarkClass(darkThemeEnabled)
 
@@ -117,6 +115,5 @@ export function useLayout() {
     closeMobileMenu,
     onMenuItemClick,
     toggleDarkMode,
-    setThemePreference,
   }
 }

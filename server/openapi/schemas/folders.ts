@@ -62,7 +62,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/folders',
   summary: 'List folders',
   description: 'Returns folders available for the authenticated user.',
-  tags: ['V1', 'Folders'],
+  tags: ['Folders'],
   security: [{ ApiKeyAuth: ['qr:read'] }],
   responses: {
     200: {
@@ -96,7 +96,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/folders',
   summary: 'Create folder',
   description: 'Creates a new folder.',
-  tags: ['V1', 'Folders'],
+  tags: ['Folders'],
   security: [{ ApiKeyAuth: ['qr:write'] }],
   request: {
     body: {
@@ -142,7 +142,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/folders/{id}',
   summary: 'Update folder',
   description: 'Updates folder fields by id.',
-  tags: ['V1', 'Folders'],
+  tags: ['Folders'],
   security: [{ ApiKeyAuth: ['qr:write'] }],
   request: {
     params: uuidParamSchema,
@@ -188,7 +188,7 @@ openApiRegistry.registerPath({
   path: '/api/v1/folders/{id}',
   summary: 'Delete folder',
   description: 'Deletes folder by id.',
-  tags: ['V1', 'Folders'],
+  tags: ['Folders'],
   security: [{ ApiKeyAuth: ['qr:write'] }],
   request: { params: uuidParamSchema },
   responses: {
