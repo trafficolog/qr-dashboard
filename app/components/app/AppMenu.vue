@@ -71,15 +71,26 @@ const model = computed(() => {
       key: 'admin',
       label: t('nav.admin'),
       items: [
-        { label: t('nav.settings'), icon: 'i-lucide-settings', to: '/settings/general' },
+        { label: t('nav.settings'), icon: 'i-lucide-settings', to: '/settings' },
         { label: t('nav.notifications'), icon: 'i-lucide-bell', to: '/notifications', badge: unreadCount.value || undefined },
       ],
     },
   ]
 
-  return authStore.user?.role === 'admin'
-    ? sections
-    : sections.filter(section => section.key !== 'admin')
+  if (authStore.user?.role === 'admin') {
+    return sections
+  }
+
+  return sections.map((section) => {
+    if (section.key !== 'admin') {
+      return section
+    }
+
+    return {
+      ...section,
+      items: section.items.filter(item => item.to !== '/settings'),
+    }
+  })
 })
 
 async function loadCounters() {

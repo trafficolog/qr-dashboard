@@ -1,6 +1,6 @@
 # EPIC 24 — Миграция на PrimeVue UI и редизайн интерфейса
 
-**Статус:** 🚧 In Progress (updated 2026-04-24)
+**Статус:** 🚧 In Progress (updated 2026-04-27)
 **Целевая версия:** v0.16.0
 **Оценка:** 14–18 дней (включая QA и исправления)
 **Ветка:** `feat/epic-24-primevue-migration`
@@ -12,12 +12,13 @@
 
 ---
 
-**Прогресс реализации (обновлено 2026-04-22):**
+**Прогресс реализации (обновлено 2026-04-27):**
 - ✅ Базовый PrimeVue bootstrap + Sakai shell: коммиты `1c50d2e`, `d928dfb`
 - ✅ Глобальные PrimeVue сервисы Toast/Confirm: коммит `fd13824`
 - ✅ Миграция auth login на PrimeVue controls: коммит `12b0bfa`
 - ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
+- ✅ Sidebar role filtering aligned with Amendment A1: для non-admin скрывается только `Settings`, секция `Admin` и `Notifications` остаются доступными; маршрут settings в меню унифицирован на `/settings`
 - ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue (ожидается визуальный sign-off)
 - ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
 - ✅ QR Create migration: `/qr/create` page переведена на PrimeVue controls/patterns (в текущем репо отдельный `CreateDrawer` отсутствует)
@@ -33,7 +34,7 @@
 - ✅ Onboarding overlay migration: `SharedOnboardingOverlay` переведён на PrimeVue Button/Card-like shell (без Nuxt UI)
 - ✅ API docs migration: `/api-docs` (Scalar) и legacy docs card/tag blocks приведены к PrimeVue/token-based pattern
 - ✅ Theme switcher + persistence: `useLayout().toggleDarkMode()` инициализирует/переключает `.app-dark`, выбор сохраняется в cookie `splat-theme`
-- ⚠️ UI primitives migration: `TagInput` переведён на PrimeVue InputText/Tag
+- ✅ UI primitives migration: `TagInput` доведён до Sakai token-compatible поведения (surface/text/border vars), улучшена a11y-клавиатурная интеракция и защита контрастности для кастомных цветов тега
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
 - ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (33/33); e2e-harness доведён до старта сценариев (`playwright install chromium`, webServer env/host hardening), но финальный прогон блокируется отсутствующими системными runtime-библиотеками headless Chromium (`libatk-1.0.so.0`) и ошибками apt proxy при `playwright install --with-deps`

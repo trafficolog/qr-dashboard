@@ -1,6 +1,6 @@
 # Review — EPIC 24 — Миграция на PrimeVue UI и редизайн интерфейса
 
-**Дата:** 2026-04-26 *(обновлено по итогам closure-pass; финальный sign-off 24.39 всё ещё pending)*
+**Дата:** 2026-04-26 *(обновлено 2026-04-27 по документации и alignment-pass; финальный sign-off 24.39 всё ещё pending)*
 **Ветка:** `feat/epic-24-primevue-migration`
 **Версия проекта:** `0.15.0` → `0.16.0`
 **Связанные документы:**
@@ -208,6 +208,7 @@
 | `primary = red` | ✅ | `app/assets/styles/tokens.css`, `app/theme/splat-preset.ts` / PR1 | Красная SPLAT-палитра закреплена в токенах и кастомном preset-слое. |
 | `darkModeSelector = '.app-dark'` | ✅ | `nuxt.config.ts`, `app/composables/useLayout.ts` / PR1, PR5 | Dark mode привязан к селектору `.app-dark` и синхронизирован с переключателем темы. |
 | `menuMode = 'static'` | ✅ | `app/layouts/default.vue` / PR3 | Боковое меню работает в static-режиме согласно Amendment A1. |
+| Role-based filtering в sidebar на уровне item | ✅ | `app/components/app/AppMenu.vue` / PR8 | Для non-admin скрывается только `Settings`; `Notifications` остаются доступны в секции `Admin`. |
 | Отсутствует `AppConfigurator` и UI-триггеры configurator | ✅ | `app/components/app/*`, `app/components/layout/*` / PR3 | Конфигуратор Sakai не подключён; кнопки/панели runtime-настройки в UI отсутствуют. |
 
 ---
