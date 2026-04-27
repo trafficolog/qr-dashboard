@@ -4,7 +4,7 @@ import type { Transporter } from 'nodemailer'
 // --- Provider abstraction ---
 
 interface EmailProvider {
-  send(to: string, subject: string, html: string): Promise<void>
+  send(to: string, subject: string, html: string, options?: { consolePreview?: string }): Promise<void>
 }
 
 function isSmtpConfigured() {
@@ -42,11 +42,11 @@ class SmtpProvider implements EmailProvider {
 }
 
 class ConsoleProvider implements EmailProvider {
-  async send(to: string, subject: string) {
+  async send(to: string, subject: string, _html: string, options?: { consolePreview?: string }) {
     console.log(`\n📧 ─────────────────────────────────`)
     console.log(`   TO:      ${to}`)
     console.log(`   SUBJECT: ${subject}`)
-    console.log(`   BODY:    [REDACTED_IN_CONSOLE_PROVIDER]`)
+    console.log(`   BODY:    ${options?.consolePreview ?? '[REDACTED_IN_CONSOLE_PROVIDER]'}`)
     console.log(`─────────────────────────────────────\n`)
   }
 }
@@ -109,7 +109,9 @@ export const emailService = {
 </html>`
 
     try {
-      await getProvider().send(email, subject, html)
+      await getProvider().send(email, subject, html, {
+        consolePreview: `Ваш код для входа: ${code}`,
+      })
     }
     catch (error) {
       console.error('[Email] Failed to send OTP:', error)

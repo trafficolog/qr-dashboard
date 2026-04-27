@@ -38,7 +38,7 @@ const qrListResponseSchema = openApiRegistry.register(
 openApiRegistry.registerPath({
   method: 'get',
   path: '/api/qr',
-  tags: ['QR'],
+  tags: ['QR codes'],
   security: [{ ApiKeyAuth: ['qr:read'] }],
   request: {
     query: z.object({

@@ -39,7 +39,19 @@
 
     <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
       <div
-        v-if="!filtered.length"
+        v-if="loading"
+        class="space-y-3"
+      >
+        <Skeleton
+          v-for="index in 4"
+          :key="index"
+          height="3.5rem"
+          border-radius="12px"
+        />
+      </div>
+
+      <div
+        v-else-if="!filtered.length"
         class="py-10 text-center text-[color:var(--text-muted)]"
       >
         Нет уведомлений в выбранной вкладке
@@ -62,7 +74,7 @@
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
                 <Tag
-                  :severity="severityByType(item.type)"
+                  :severity="item.severity"
                   :value="labelByType(item.type)"
                 />
                 <span class="text-xs text-[color:var(--text-muted)]">{{ formatDate(item.createdAt) }}</span>
@@ -74,14 +86,26 @@
                 {{ item.description }}
               </p>
             </div>
-            <Button
-              v-if="!item.read"
-              text
-              size="small"
-              @click="markAsRead(item.id)"
-            >
-              Прочитано
-            </Button>
+            <div class="flex items-center gap-2">
+              <Button
+                v-if="item.deeplink"
+                as-child
+                text
+                size="small"
+              >
+                <NuxtLink :to="item.deeplink">
+                  Открыть
+                </NuxtLink>
+              </Button>
+              <Button
+                v-if="!item.read"
+                text
+                size="small"
+                @click="markAsRead(item.id)"
+              >
+                Прочитано
+              </Button>
+            </div>
           </div>
         </li>
       </ul>
@@ -90,45 +114,10 @@
 </template>
 
 <script setup lang="ts">
-type NotificationType = 'team' | 'security' | 'system'
-type TabFilter = 'all' | NotificationType
-
-interface NotificationItem {
-  id: string
-  type: NotificationType
-  title: string
-  description: string
-  createdAt: string
-  read: boolean
-}
+type TabFilter = 'all' | 'team' | 'security' | 'system'
 
 const activeTab = ref<TabFilter>('all')
-const notifications = ref<NotificationItem[]>([
-  {
-    id: 'n1',
-    type: 'team',
-    title: 'Новый участник приглашён',
-    description: 'Пользователь alex@example.com добавлен в рабочее пространство.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
-    read: false,
-  },
-  {
-    id: 'n2',
-    type: 'security',
-    title: 'Создан API-ключ',
-    description: 'Сгенерирован новый ключ интеграции с доступом mcp:access.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    read: false,
-  },
-  {
-    id: 'n3',
-    type: 'system',
-    title: 'Импорт CSV завершён',
-    description: 'Успешно импортировано 124 QR-кода.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
-    read: true,
-  },
-])
+const { notifications, loading, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotifications()
 
 const tabs: Array<{ label: string, value: TabFilter }> = [
   { label: 'Все', value: 'all' },
@@ -143,32 +132,20 @@ const filtered = computed(() => (
     : notifications.value.filter(item => item.type === activeTab.value)
 ))
 
-const unreadCount = computed(() => notifications.value.filter(item => !item.read).length)
-
 function countByTab(tab: TabFilter) {
   if (tab === 'all') return notifications.value.length
   return notifications.value.filter(item => item.type === tab).length
 }
 
-function labelByType(type: NotificationType) {
+function labelByType(type: 'team' | 'security' | 'system') {
   if (type === 'team') return 'Команда'
   if (type === 'security') return 'Безопасность'
   return 'Система'
 }
 
-function severityByType(type: NotificationType) {
-  if (type === 'team') return 'info'
-  if (type === 'security') return 'warn'
-  return 'secondary'
-}
-
-function markAsRead(id: string) {
-  notifications.value = notifications.value.map(item => item.id === id ? { ...item, read: true } : item)
-}
-
-function markAllAsRead() {
-  notifications.value = notifications.value.map(item => ({ ...item, read: true }))
-}
+onMounted(() => {
+  fetchNotifications()
+})
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('ru-RU', {

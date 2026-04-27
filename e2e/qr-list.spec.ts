@@ -10,9 +10,9 @@ test.describe('QR Code List', () => {
     }
     await page.context().addCookies([
       {
-        name: 'session',
+        name: 'session_token',
         value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
-        domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001').hostname,
+        domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname,
         path: '/',
       },
     ])
