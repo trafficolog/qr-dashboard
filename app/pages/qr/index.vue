@@ -2,7 +2,7 @@
   <div>
     <!-- Header -->
     <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
+      <h1 class="text-2xl font-bold text-[color:var(--text-color)]">
         QR-коды
       </h1>
       <div class="flex items-center gap-2">
@@ -76,12 +76,12 @@
 
       <div class="flex-1" />
 
-      <div class="flex overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)]">
+      <div class="flex overflow-hidden rounded-lg border border-[color:var(--surface-border)] bg-[color:var(--surface-card)]">
         <button
           :class="[
             'p-2 transition-interactive',
             viewMode === 'table'
-              ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
+              ? 'bg-[color:var(--surface-2)] text-[color:var(--text-color)]'
               : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
           ]"
           @click="viewMode = 'table'"
@@ -95,7 +95,7 @@
           :class="[
             'p-2 transition-interactive',
             viewMode === 'grid'
-              ? 'bg-[color:var(--surface-2)] text-[color:var(--text-primary)]'
+              ? 'bg-[color:var(--surface-2)] text-[color:var(--text-color)]'
               : 'text-[color:var(--text-muted)] hover:text-[color:var(--accent)]',
           ]"
           @click="viewMode = 'grid'"
@@ -111,7 +111,7 @@
     <Transition name="slide-down">
       <div
         v-if="selectedIds.length > 0"
-        class="mb-4 flex items-center gap-3 rounded-lg border border-[color:var(--border)] bg-[color:var(--accent-light)] p-3"
+        class="mb-4 flex items-center gap-3 rounded-lg border border-[color:var(--surface-border)] bg-[color:var(--accent-light)] p-3"
       >
         <span class="text-sm font-medium text-[color:var(--accent)]">
           Выбрано: {{ selectedIds.length }}
@@ -244,7 +244,7 @@
       class="w-full max-w-lg"
     >
       <div class="space-y-4 py-1">
-        <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+        <h3 class="text-lg font-semibold text-[color:var(--text-color)]">
           Изменить видимость выбранных QR
         </h3>
         <Select
@@ -286,7 +286,7 @@
       class="w-full max-w-lg"
     >
       <div class="space-y-4 py-1">
-        <h3 class="text-lg font-semibold text-[color:var(--text-primary)]">
+        <h3 class="text-lg font-semibold text-[color:var(--text-color)]">
           {{ t('qr.departmentModal.title') }}
         </h3>
         <p class="text-sm text-[color:var(--text-secondary)]">
