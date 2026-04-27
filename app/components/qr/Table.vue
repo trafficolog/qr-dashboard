@@ -5,7 +5,7 @@
       role="table"
     >
       <thead>
-        <tr class="border-b border-[color:var(--border)]">
+        <tr class="border-b border-[color:var(--surface-border)]">
           <th
             scope="col"
             class="py-3 px-2 w-8"
@@ -14,7 +14,7 @@
               type="checkbox"
               :checked="allSelected"
               :aria-label="t('a11y.actions.selectAllQrs')"
-              class="rounded border-[color:var(--border)] bg-[color:var(--surface-0)]"
+              class="rounded border-[color:var(--surface-border)] bg-[color:var(--surface-card)]"
               @change="$emit('toggleAll')"
             >
           </th>
@@ -83,13 +83,14 @@
           v-for="qr in items"
           :key="qr.id"
           class="border-b border-[color:var(--surface-2)] transition-interactive hover:bg-[color:var(--surface-2)]/60"
+          @dblclick="$emit('openDetail', qr.id)"
         >
           <td class="py-3 px-2">
             <input
               type="checkbox"
               :checked="selectedIds.includes(qr.id)"
               :aria-label="t('a11y.actions.selectQr', { title: qr.title })"
-              class="rounded border-[color:var(--border)] bg-[color:var(--surface-0)]"
+              class="rounded border-[color:var(--surface-border)] bg-[color:var(--surface-card)]"
               @change="$emit('toggleSelect', qr.id)"
             >
           </td>
@@ -101,7 +102,7 @@
               :scans="qr.totalScans"
               :style-config="qr.style as any"
             >
-              <div class="h-10 w-10 overflow-hidden rounded border border-[color:var(--border)] bg-[color:var(--surface-0)] p-0.5">
+              <div class="h-10 w-10 overflow-hidden rounded border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-0.5">
                 <QrPreviewMini
                   :url="qr.destinationUrl"
                   :style-config="qr.style as any"
@@ -112,7 +113,7 @@
           <td class="py-3 px-3">
             <NuxtLink
               :to="`/qr/${qr.id}`"
-              class="font-medium text-[color:var(--text-primary)] hover:text-[color:var(--accent)]"
+              class="font-medium text-[color:var(--text-color)] hover:text-[color:var(--accent)]"
             >
               {{ qr.title }}
             </NuxtLink>
@@ -145,7 +146,7 @@
               {{ getVisibilityBadge(qr).label }}
             </Tag>
           </td>
-          <td class="px-3 py-3 text-right font-medium text-[color:var(--text-primary)]">
+          <td class="px-3 py-3 text-right font-medium text-[color:var(--text-color)]">
             {{ qr.totalScans.toLocaleString('ru-RU') }}
           </td>
           <td class="hidden whitespace-nowrap px-3 py-3 text-[color:var(--text-secondary)] md:table-cell">
@@ -209,6 +210,7 @@ const emit = defineEmits<{
   delete: [id: string]
   toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
   changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }]
+  openDetail: [id: string]
 }>()
 
 const { t } = useI18n()

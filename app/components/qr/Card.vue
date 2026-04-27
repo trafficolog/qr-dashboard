@@ -1,10 +1,10 @@
 <template>
-  <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4 transition-interactive hover-lift">
+  <div class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-4 transition-interactive hover-lift">
     <NuxtLink
       :to="`/qr/${qr.id}`"
       class="mb-3 block"
     >
-      <div class="aspect-square w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-0)] p-3">
+      <div class="aspect-square w-full rounded-lg border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-3">
         <QrPreviewMini
           :url="qr.destinationUrl"
           :style-config="qr.style as any"
@@ -16,7 +16,7 @@
       <div class="flex items-start justify-between gap-2">
         <NuxtLink
           :to="`/qr/${qr.id}`"
-          class="truncate font-medium text-[color:var(--text-primary)] hover:text-[color:var(--accent)]"
+          class="truncate font-medium text-[color:var(--text-color)] hover:text-[color:var(--accent)]"
         >
           {{ qr.title }}
         </NuxtLink>
@@ -68,6 +68,21 @@
           {{ qr.totalScans.toLocaleString('ru-RU') }}
         </span>
       </div>
+
+      <Button
+        text
+        size="small"
+        class="w-full justify-start"
+        @click="emit('openDetail', qr.id)"
+      >
+        <template #icon>
+          <Icon
+            name="i-lucide-panel-right-open"
+            class="size-3"
+          />
+        </template>
+        <span>Быстрый просмотр</span>
+      </Button>
 
       <div
         v-if="qr.tags?.length"
@@ -131,6 +146,7 @@ const emit = defineEmits<{
   delete: [id: string]
   toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
   changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }]
+  openDetail: [id: string]
 }>()
 
 const toast = useA11yToast()
