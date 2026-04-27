@@ -41,23 +41,6 @@
       </Button>
 
       <Button
-        v-if="showContextSearchMobile"
-        type="button"
-        text
-        severity="secondary"
-        class="layout-topbar-action sm:hidden"
-        :aria-label="t('a11y.actions.openSearch')"
-        @click="openGlobalSearch"
-      >
-        <template #icon>
-          <Icon
-            name="i-lucide-search"
-            class="size-4"
-          />
-        </template>
-      </Button>
-
-      <Button
         type="button"
         text
         severity="secondary"
@@ -176,8 +159,7 @@ useEventListener(import.meta.client ? window : undefined, 'keydown', (event: Key
 
 const themeIcon = computed(() => layout.layoutConfig.value.darkTheme ? 'i-lucide-sun' : 'i-lucide-moon')
 const themeLabel = computed(() => layout.layoutConfig.value.darkTheme ? t('common.lightTheme') : t('common.darkTheme'))
-const isQrContext = computed(() => route.path.startsWith('/qr'))
-const showContextSearchDesktop = computed(() => isQrContext.value)
-const showContextSearchMobile = computed(() => isQrContext.value)
-const showBulkCreateAction = computed(() => isQrContext.value && route.path !== '/qr/bulk')
+const isQrListPage = computed(() => route.path === '/qr')
+const showContextSearchDesktop = computed(() => isQrListPage.value)
+const showBulkCreateAction = computed(() => isQrListPage.value)
 </script>
