@@ -69,6 +69,21 @@
         </span>
       </div>
 
+      <Button
+        text
+        size="small"
+        class="w-full justify-start"
+        @click="emit('openDetail', qr.id)"
+      >
+        <template #icon>
+          <Icon
+            name="i-lucide-panel-right-open"
+            class="size-3"
+          />
+        </template>
+        <span>Быстрый просмотр</span>
+      </Button>
+
       <div
         v-if="qr.tags?.length"
         class="flex flex-wrap gap-1"
@@ -131,6 +146,7 @@ const emit = defineEmits<{
   delete: [id: string]
   toggleStatus: [payload: { id: string, status: 'active' | 'paused' }]
   changeVisibility: [payload: { id: string, visibility: 'private' | 'department' | 'public', departmentId?: string | null }]
+  openDetail: [id: string]
 }>()
 
 const toast = useA11yToast()

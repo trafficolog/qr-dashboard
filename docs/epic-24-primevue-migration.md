@@ -22,7 +22,7 @@
 - ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue (ожидается визуальный sign-off)
 - ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
 - ✅ QR Create migration: `/qr/create` page переведена на PrimeVue controls/patterns (в текущем репо отдельный `CreateDrawer` отсутствует)
-- ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; связанные drawer/edit flows ещё в работе
+- ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; добавлен quick preview `Drawer` в `/qr` list (table double-click + card action), pending: финальный visual sign-off detail-drawer parity
 - ✅ QR Edit migration: `/qr/[id]/edit` page переведена на PrimeVue controls/patterns
 - ✅ Bulk CSV migration: `/qr/bulk` stepper и шаги 1–5 переведены на PrimeVue pattern
 - ✅ Folders migration: `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern

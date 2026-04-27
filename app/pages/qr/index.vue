@@ -199,6 +199,7 @@
       @delete="handleDelete"
       @toggle-status="handleToggleStatus"
       @change-visibility="handleChangeVisibility"
+      @open-detail="openDetailDrawer"
     />
 
     <div
@@ -215,6 +216,7 @@
         @delete="handleDelete"
         @toggle-status="handleToggleStatus"
         @change-visibility="handleChangeVisibility"
+        @open-detail="openDetailDrawer"
       />
     </div>
 
@@ -312,6 +314,98 @@
         </div>
       </div>
     </Dialog>
+
+    <Drawer
+      v-model:visible="detailDrawerOpen"
+      position="right"
+      :style="{ width: 'min(560px, 100vw)' }"
+    >
+      <template #header>
+        <div class="flex min-w-0 items-center gap-2">
+          <Icon
+            name="i-lucide-qr-code"
+            class="size-4 text-[color:var(--text-muted)]"
+          />
+          <span class="truncate font-semibold">Быстрый просмотр QR</span>
+        </div>
+      </template>
+
+      <div
+        v-if="detailDrawerLoading"
+        class="space-y-3"
+      >
+        <Skeleton
+          v-for="index in 6"
+          :key="index"
+          height="2.5rem"
+          border-radius="12px"
+        />
+      </div>
+
+      <div
+        v-else-if="detailDrawerQr"
+        class="space-y-4"
+      >
+        <div class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-4">
+          <p class="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+            Название
+          </p>
+          <p class="mt-1 font-semibold text-[color:var(--text-color)]">
+            {{ detailDrawerQr.title }}
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-4">
+          <p class="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+            Ссылка назначения
+          </p>
+          <p class="mt-1 break-all text-sm text-[color:var(--text-color)]">
+            {{ detailDrawerQr.destinationUrl }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-4">
+            <p class="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+              Статус
+            </p>
+            <QrStatusBadge
+              class="mt-2"
+              :status="detailDrawerQr.status"
+            />
+          </div>
+          <div class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-4">
+            <p class="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+              Сканы
+            </p>
+            <p class="mt-2 font-semibold text-[color:var(--text-color)]">
+              {{ detailDrawerQr.totalScans.toLocaleString('ru-RU') }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <Button
+            as-child
+            size="small"
+          >
+            <NuxtLink :to="`/qr/${detailDrawerQr.id}`">
+              Открыть страницу
+            </NuxtLink>
+          </Button>
+          <Button
+            as-child
+            outlined
+            severity="secondary"
+            size="small"
+          >
+            <NuxtLink :to="`/qr/${detailDrawerQr.id}/edit`">
+              Редактировать
+            </NuxtLink>
+          </Button>
+        </div>
+      </div>
+    </Drawer>
   </div>
 </template>
 
@@ -323,7 +417,7 @@ const toast = useA11yToast()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const { qrList, loading, meta, filters, fetchQrList, duplicateQr, deleteQr, bulkDeleteQr, bulkUpdateQrVisibility, updateQr, updateQrVisibility, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
+const { qrList, loading, meta, filters, fetchQrList, fetchQrById, duplicateQr, deleteQr, bulkDeleteQr, bulkUpdateQrVisibility, updateQr, updateQrVisibility, applyFiltersFromQuery, serializeFiltersToQuery } = useQr()
 const ALL_STATUSES = '__all_statuses__'
 const ALL_FOLDERS = '__all_folders__'
 const ALL_VISIBILITY = '__all_visibility__'
@@ -361,6 +455,9 @@ const departmentPickerOpen = ref(false)
 const departmentPickerFocusReturn = createDialogFocusReturn()
 const selectedDepartmentId = ref<string>('')
 const pendingDepartmentVisibilityQrId = ref<string | null>(null)
+const detailDrawerOpen = ref(false)
+const detailDrawerLoading = ref(false)
+const detailDrawerQr = ref<QrCode | null>(null)
 
 async function fetchUserDepartments() {
   try {
@@ -430,6 +527,23 @@ async function handleDuplicate(id: string) {
   }
   catch {
     toast.add({ title: 'Ошибка дублирования', color: 'error' })
+  }
+}
+
+async function openDetailDrawer(id: string) {
+  detailDrawerOpen.value = true
+  detailDrawerLoading.value = true
+  detailDrawerQr.value = null
+
+  try {
+    detailDrawerQr.value = await fetchQrById(id)
+  }
+  catch (error) {
+    toast.add({ title: resolveApiErrorMessage(error, 'Не удалось загрузить быстрый просмотр QR'), color: 'error' })
+    detailDrawerOpen.value = false
+  }
+  finally {
+    detailDrawerLoading.value = false
   }
 }
 
