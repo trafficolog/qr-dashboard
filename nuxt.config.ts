@@ -1,26 +1,30 @@
+import tailwindcss from '@tailwindcss/vite'
 import { SplatPreset } from './app/themes/splat-preset'
 
 export default defineNuxtConfig({
   modules: [
     '@primevue/nuxt-module',
-    '@nuxt/ui',
     '@nuxt/icon',
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-  ],
+  ].filter(Boolean),
 
   ssr: true,
 
   devtools: { enabled: true },
 
-  css: ['~~/app/assets/css/main.css', '~~/app/assets/layout/layout.scss', '@scalar/api-reference/style.css'],
-
-  colorMode: {
-    preference: 'system',
-    fallback: 'light',
-    classSuffix: '',
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/splat-logo.svg' },
+        // Served from public/ (copied on postinstall) — avoids Windows /@fsD:… Vite bug with pkg CSS in `css[]`.
+        { rel: 'stylesheet', href: '/scalar-api-reference.css' },
+      ],
+    },
   },
+
+  css: ['~~/app/assets/css/main.css', '~~/app/assets/layout/layout.scss'],
 
   runtimeConfig: {
     // Server-only
@@ -41,7 +45,7 @@ export default defineNuxtConfig({
 
     // Public (доступны на клиенте)
     public: {
-      appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3001',
+      appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3000',
       mcpServerUrl: process.env.NUXT_PUBLIC_MCP_SERVER_URL || '',
       appName: process.env.NUXT_PUBLIC_APP_NAME || 'SPLAT QR Service',
       csrfHeaderName: process.env.NUXT_PUBLIC_CSRF_HEADER_NAME || 'X-CSRF-Token',
@@ -59,11 +63,18 @@ export default defineNuxtConfig({
   // See https://github.com/nuxt/nuxt/issues/33606 — re-enable when fixed in your Nuxt version if you need manifest prefetch.
   experimental: {
     appManifest: false,
+    // Default true stacks nitropack + @nuxt/nitro-server `useAppConfig` auto-imports → noisy duplicate warning (unimport 5.7+).
+    // false enables nitro-server’s preset cleanup (single registration). Safe if you don’t rely on per-request appConfig cloning.
+    // See https://github.com/nuxt/nuxt/issues/34812
+    serverAppConfig: false,
   },
+
   compatibilityDate: '2025-01-01',
 
   nitro: {
     routeRules: {
+      // Browsers request /favicon.ico even when head declares an SVG icon; avoid a noisy 404 in devtools.
+      '/favicon.ico': { redirect: '/splat-logo.svg' },
       '/api/**': { maxBodySize: '1MB' } as unknown as Record<string, unknown>,
       '/api/v1/**': {
         cors: true,
@@ -79,7 +90,10 @@ export default defineNuxtConfig({
   },
 
   // papaparse is browser-oriented CJS; bundling it through Rollup's CJS plugin fails on worker/Blob code.
+  // Tailwind v4 requires this plugin or utilities from Vue/templates are never generated.
+  // https://tailwindcss.com/docs/installation/framework-guides/nuxt
   vite: {
+    plugins: [tailwindcss()],
     ssr: {
       external: ['papaparse'],
     },
@@ -96,7 +110,7 @@ export default defineNuxtConfig({
   },
 
   icon: {
-    serverBundle: process.env.NUXT_ICON_SERVER_BUNDLE || 'remote',
+    serverBundle: (process.env.NUXT_ICON_SERVER_BUNDLE as 'auto' | 'local' | 'remote' | undefined) || 'remote',
   },
 
   primevue: {

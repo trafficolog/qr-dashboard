@@ -15,6 +15,28 @@ extendZodWithOpenApi(z)
 export const openApiRegistry = new OpenAPIRegistry()
 
 const bearerDescription = 'API key via Authorization: Bearer sqr_live_<64_hex>'
+const apiTags = [
+  {
+    name: 'QR codes',
+    description: 'QR code catalog and lifecycle operations.',
+  },
+  {
+    name: 'Analytics',
+    description: 'Scan statistics, timeseries and KPI endpoints.',
+  },
+  {
+    name: 'Folders',
+    description: 'Folder hierarchy for organizing QR codes.',
+  },
+  {
+    name: 'Tags',
+    description: 'Reusable labels for QR code filtering and grouping.',
+  },
+  {
+    name: 'Destinations',
+    description: 'Dynamic QR destination variants and routing targets.',
+  },
+]
 
 openApiRegistry.registerComponent('securitySchemes', 'ApiKeyAuth', {
   type: 'http',
@@ -35,6 +57,7 @@ export function buildOpenApiDocument() {
     },
     servers: [{ url: '/' }],
     security: [{ ApiKeyAuth: [] }],
+    tags: apiTags,
   })
 }
 

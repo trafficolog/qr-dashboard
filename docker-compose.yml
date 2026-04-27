@@ -40,12 +40,23 @@ services:
       HOST: 0.0.0.0
       PORT: 3000
       DATABASE_URL: postgresql://${POSTGRES_USER:-splat_qr}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-splat_qr}
+      OTP_PEPPER: ${OTP_PEPPER:?OTP_PEPPER is required. Set it in .env}
+      CSRF_SECRET: ${CSRF_SECRET:?CSRF_SECRET is required. Set it in .env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      NUXT_PUBLIC_APP_URL: ${NUXT_PUBLIC_APP_URL:-http://localhost:${APP_PORT:-3000}}
+      NUXT_PUBLIC_APP_NAME: ${NUXT_PUBLIC_APP_NAME:-SPLAT QR Service}
+      NUXT_PUBLIC_MCP_SERVER_URL: ${NUXT_PUBLIC_MCP_SERVER_URL:-}
+      NUXT_PUBLIC_CSRF_HEADER_NAME: ${NUXT_PUBLIC_CSRF_HEADER_NAME:-X-CSRF-Token}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_SECURE: ${SMTP_SECURE:-false}
       SMTP_USER: ${SMTP_USER:-}
-      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_FROM: ${SMTP_FROM:-noreply@splatglobal.com}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      MAXMIND_DB_PATH: ${MAXMIND_DB_PATH:-/app/data/GeoLite2-City.mmdb}
+      PROXY_SCHEME_ENABLED: ${PROXY_SCHEME_ENABLED:-0}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-127.0.0.1,::1}
     volumes:
       - uploads:/app/data/uploads
       - geoip:/app/data

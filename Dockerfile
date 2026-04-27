@@ -6,6 +6,7 @@ FROM node:22.12-alpine AS deps
 RUN npm install -g pnpm@10.17.1
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
+COPY scripts/sync-scalar-css.mjs ./scripts/sync-scalar-css.mjs
 RUN pnpm install --frozen-lockfile
 
 FROM deps AS builder

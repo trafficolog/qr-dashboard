@@ -1,10 +1,15 @@
 import { readonly } from 'vue'
 
 export type MenuMode = 'static'
+export type ThemePreference = 'light' | 'dark'
 
 interface LayoutConfig {
   darkTheme: boolean
+  themePreference: ThemePreference
   menuMode: MenuMode
+  preset: 'Aura'
+  primary: 'red'
+  surface: 'zinc'
 }
 
 interface LayoutState {
@@ -18,7 +23,11 @@ const THEME_COOKIE_KEY = 'splat-theme'
 export function useLayout() {
   const layoutConfig = useState<LayoutConfig>('layout-config', () => ({
     darkTheme: false,
+    themePreference: 'light',
     menuMode: 'static',
+    preset: 'Aura',
+    primary: 'red',
+    surface: 'zinc',
   }))
 
   const layoutState = useState<LayoutState>('layout-state', () => ({
@@ -44,25 +53,18 @@ export function useLayout() {
   }
 
   function initializeTheme() {
-    const themeCookie = useCookie<string | null>(THEME_COOKIE_KEY, { default: () => null })
+    const themeCookie = useCookie<ThemePreference | null>(THEME_COOKIE_KEY, { default: () => null })
 
-    if (themeCookie.value === 'dark') {
-      layoutConfig.value.darkTheme = true
-      applyDarkClass(true)
+    if (themeCookie.value === 'light' || themeCookie.value === 'dark') {
+      applyTheme(themeCookie.value)
       return
     }
 
-    if (themeCookie.value === 'light') {
-      layoutConfig.value.darkTheme = false
-      applyDarkClass(false)
-      return
-    }
+    const preferredTheme: ThemePreference = import.meta.client && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light'
 
-    if (import.meta.client) {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      layoutConfig.value.darkTheme = prefersDark
-      applyDarkClass(prefersDark)
-    }
+    applyTheme(preferredTheme)
   }
 
   function onMenuToggle() {
@@ -85,21 +87,29 @@ export function useLayout() {
   }
 
   function toggleDarkMode() {
-    layoutConfig.value.darkTheme = !layoutConfig.value.darkTheme
-    applyDarkClass(layoutConfig.value.darkTheme)
+    applyTheme(layoutConfig.value.darkTheme ? 'light' : 'dark')
+  }
 
-    const themeCookie = useCookie<string>(THEME_COOKIE_KEY, {
+  function applyTheme(preference: ThemePreference) {
+    layoutConfig.value.themePreference = preference
+
+    const darkThemeEnabled = preference === 'dark'
+    layoutConfig.value.darkTheme = darkThemeEnabled
+    applyDarkClass(darkThemeEnabled)
+
+    const themeCookie = useCookie<ThemePreference>(THEME_COOKIE_KEY, {
       maxAge: 60 * 60 * 24 * 365,
       sameSite: 'lax',
       path: '/',
     })
-    themeCookie.value = layoutConfig.value.darkTheme ? 'dark' : 'light'
+    themeCookie.value = preference
   }
 
   return {
     layoutConfig: readonly(layoutConfig),
     layoutState,
     isDarkTheme: computed(() => layoutConfig.value.darkTheme),
+    themePreference: computed(() => layoutConfig.value.themePreference),
     initializeTheme,
     onMenuToggle,
     closeMobileMenu,

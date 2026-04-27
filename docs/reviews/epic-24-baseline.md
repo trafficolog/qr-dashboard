@@ -1,6 +1,6 @@
 # EPIC 24 — Baseline Metrics (до миграции на PrimeVue)
 
-**Дата фиксации:** 2026-04-XX *(заполняется перед PR1 задачи 24.1)*
+**Дата фиксации:** 2026-04-22
 **Ветка:** `feat/epic-24-primevue-migration` (свежесозданная от `main` после merge EPIC 23)
 **Версия проекта:** `0.15.0` (post-EPIC 23)
 **Заполняет:** разработчик, выполняющий задачу 24.1
@@ -12,10 +12,10 @@
 
 | Параметр | Значение |
 |----------|----------|
-| Node.js | `$(node --version)` — ожидается `v22.x LTS` |
-| pnpm | `$(pnpm --version)` — ожидается `10.x` |
-| ОС снятия baseline | `$(uname -a)` |
-| Git commit | `$(git rev-parse HEAD)` |
+| Node.js | `v22.21.1` |
+| pnpm | `10.17.1` |
+| ОС снятия baseline | `Linux 2e421b329ca1 6.12.47 #1 SMP Mon Oct 27 10:01:15 UTC 2025 x86_64 GNU/Linux` |
+| Git commit | `e5d2c03cfb51b021e5c9754b199c1400aaabac3b` |
 | Git branch origin | `main` после merge EPIC 23 |
 
 ---
