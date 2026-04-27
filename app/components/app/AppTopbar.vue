@@ -22,6 +22,7 @@
 
     <div class="layout-topbar-actions">
       <Button
+        v-if="showContextSearchDesktop"
         type="button"
         text
         severity="secondary"
@@ -40,6 +41,7 @@
       </Button>
 
       <Button
+        v-if="showContextSearchMobile"
         type="button"
         text
         severity="secondary"
@@ -88,6 +90,23 @@
         </span>
       </NuxtLink>
 
+      <span
+        class="layout-topbar-divider hidden sm:inline-block"
+        aria-hidden="true"
+      />
+
+      <NuxtLink
+        v-if="showBulkCreateAction"
+        to="/qr/bulk"
+        class="layout-topbar-action layout-topbar-link-action hidden lg:inline-flex"
+      >
+        <Icon
+          name="i-lucide-files"
+          class="size-4"
+        />
+        <span>{{ t('qr.list.bulkGenerate') }}</span>
+      </NuxtLink>
+
       <NuxtLink
         to="/qr/create"
         class="layout-topbar-primary"
@@ -115,6 +134,7 @@ const layout = useLayout()
 const { pageTitle, pageSubtitle } = usePageMetadata()
 const { unreadCount } = useNotifications()
 const globalSearch = useGlobalSearch()
+const route = useRoute()
 
 const searchShortcutHint = computed(() => {
   if (!import.meta.client) {
@@ -156,4 +176,8 @@ useEventListener(import.meta.client ? window : undefined, 'keydown', (event: Key
 
 const themeIcon = computed(() => layout.layoutConfig.value.darkTheme ? 'i-lucide-sun' : 'i-lucide-moon')
 const themeLabel = computed(() => layout.layoutConfig.value.darkTheme ? t('common.lightTheme') : t('common.darkTheme'))
+const isQrContext = computed(() => route.path.startsWith('/qr'))
+const showContextSearchDesktop = computed(() => isQrContext.value)
+const showContextSearchMobile = computed(() => isQrContext.value)
+const showBulkCreateAction = computed(() => isQrContext.value && route.path !== '/qr/bulk')
 </script>
