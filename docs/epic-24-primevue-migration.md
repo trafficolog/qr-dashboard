@@ -29,7 +29,7 @@
 - ✅ Analytics migration: `/analytics` + `GeoMap/GeoTable/DeviceBreakdown/DevicePieChart/HourlyChart/WeekdayChart` переведены на PrimeVue Message/Button/Skeleton/Icon patterns
 - ✅ Integrations migration: `/integrations` и `/integrations/mcp-setup` переведены на PrimeVue section-card + Button/Icon patterns
 - ✅ Settings migration: `/settings` shell navigation, `/settings/general`, `/settings/profile`, `/settings/team`, `/settings/domains`, `/settings/destination-domains`, `/settings/integrations`, `/settings/audit` и `/settings/departments` переведены на PrimeVue InputText/Select/Icon/Tag/Dialog/Message/ToggleSwitch/MultiSelect patterns
-- ⚠️ Notifications migration in progress: добавлена `/notifications` page с tabbed list + read/unread actions на PrimeVue Button/Tag patterns (данные пока mock)
+- ⚠️ Notifications migration in progress: `/notifications` переведена на PrimeVue Button/Tag/Skeleton patterns и подключена к `/api/notifications` (источник — audit events текущего пользователя); pending: персистентная read-state модель и расширение payload backend-уведомлений
 - ✅ Shared QR migration: `/qr/shared` page переведена на PrimeVue Skeleton/Dialog/Select/Button patterns
 - ✅ Onboarding overlay migration: `SharedOnboardingOverlay` переведён на PrimeVue Button/Card-like shell (без Nuxt UI)
 - ✅ API docs migration: `/api-docs` (Scalar) и legacy docs card/tag blocks приведены к PrimeVue/token-based pattern
