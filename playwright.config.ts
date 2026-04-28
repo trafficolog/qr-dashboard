@@ -1,6 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001'
+const WEB_SERVER_COMMAND = process.env.PLAYWRIGHT_SKIP_PREPARE === '1'
+  ? 'OTP_PEPPER=test-pepper CSRF_SECRET=test-csrf NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001 --host 127.0.0.1'
+  : 'pnpm run e2e:prepare && OTP_PEPPER=test-pepper CSRF_SECRET=test-csrf NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001 --host 127.0.0.1'
 
 export default defineConfig({
   testDir: './e2e',
@@ -28,7 +31,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm run e2e:prepare && OTP_PEPPER=test-pepper CSRF_SECRET=test-csrf NUXT_ICON_SERVER_BUNDLE=local pnpm dev --port 3001 --host 127.0.0.1',
+    command: WEB_SERVER_COMMAND,
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 240 * 1000,

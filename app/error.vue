@@ -37,7 +37,10 @@
         </p>
 
         <div class="flex flex-col justify-center gap-2 pt-1 sm:flex-row">
-          <Button @click="handleGoHome">
+          <Button
+            class="!text-[color:var(--accent-ink)]"
+            @click="handleGoHome"
+          >
             <template #icon>
               <Icon
                 name="i-lucide-house"
