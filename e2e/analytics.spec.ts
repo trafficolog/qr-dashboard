@@ -1,18 +1,13 @@
 import { test, expect } from '@playwright/test'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
 test.describe('Analytics Page', () => {
-  test.beforeEach(async ({ page }) => {
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+  test.beforeEach(async ({ context }) => {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
-    await page.context().addCookies([
-      {
-        name: 'session_token',
-        value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
-        domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname,
-        path: '/',
-      },
-    ])
+
+    await applyAuthCookie(context)
   })
 
   test('renders analytics page with charts', async ({ page }) => {
@@ -22,7 +17,6 @@ test.describe('Analytics Page', () => {
 
   test('has date range selector', async ({ page }) => {
     await page.goto('/analytics')
-    // Date range control should be present
     await expect(page.locator('[data-testid="date-range"], select, [role="combobox"]').first()).toBeVisible()
   })
 
@@ -35,7 +29,7 @@ test.describe('Analytics Page', () => {
     const legend = devicesBlock.locator('[data-testid="devices-legend"]')
     if (await legend.isVisible()) {
       await expect(legend).toContainText(/\d/)
-      await expect(legend).toContainText(/\d+(\s\d{3})*(\.\d+)?%/) // percentage is always rendered
+      await expect(legend).toContainText(/\d+(\s\d{3})*(\.\d+)?%/)
     }
   })
 
@@ -63,7 +57,7 @@ test.describe('Analytics Page', () => {
     await expect(page.locator('[data-testid="device-block-devices"] [data-testid="devices-donut-chart"]')).toHaveCount(0)
   })
 
-  test('analytics endpoints smoke-check return { data }', async ({ page }) => {
+  test('analytics endpoints smoke-check return { data }', async ({ request }) => {
     const endpoints = [
       '/api/analytics/geo',
       '/api/analytics/devices',
@@ -71,7 +65,7 @@ test.describe('Analytics Page', () => {
     ]
 
     for (const endpoint of endpoints) {
-      const response = await page.request.get(endpoint)
+      const response = await request.get(endpoint)
       expect(response.ok(), `${endpoint} should return successful response`).toBeTruthy()
 
       const body = await response.json() as { data?: unknown }

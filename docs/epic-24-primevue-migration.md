@@ -37,7 +37,7 @@
 - ✅ UI primitives migration: `TagInput` доведён до Sakai token-compatible поведения (surface/text/border vars), улучшена a11y-клавиатурная интеракция и защита контрастности для кастомных цветов тега
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
-- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (35/35); исправлен broken lockfile (`pnpm-lock.yaml`, duplicate mapping `unplugin-utils@0.2.5`), e2e-harness разблокирован (`pnpm test:e2e` запускается и проходит smoke-набор: 8 passed / 76 skipped), pending: довести critical user flows до полного прогона без skip
+- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (35/35); e2e auth bootstrap переведён с жёсткой зависимости от `PLAYWRIGHT_AUTH_COOKIE` на auto-provision cookie через `DATABASE_URL` (fallback на env cookie сохранён), pending: выполнить полный unskip прогон в CI-окружении с доступной БД и зафиксировать critical flow coverage
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)

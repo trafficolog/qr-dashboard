@@ -1,25 +1,13 @@
-import { expect, test, type BrowserContext } from '@playwright/test'
-
-const baseHost = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname
-
-async function setSessionCookie(context: BrowserContext, token: string) {
-  await context.addCookies([
-    {
-      name: 'session_token',
-      value: token,
-      domain: baseHost,
-      path: '/',
-    },
-  ])
-}
+import { expect, test } from '@playwright/test'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
 test.describe('Departments delete API', () => {
   test.beforeEach(async ({ context }) => {
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
 
-    await setSessionCookie(context, process.env.PLAYWRIGHT_AUTH_COOKIE!)
+    await applyAuthCookie(context)
   })
 
   test('deleting department reassigns bound department QR to private', async ({ request }) => {
