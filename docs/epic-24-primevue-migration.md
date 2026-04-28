@@ -37,7 +37,7 @@
 - ✅ UI primitives migration: `TagInput` доведён до Sakai token-compatible поведения (surface/text/border vars), улучшена a11y-клавиатурная интеракция и защита контрастности для кастомных цветов тега
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
-- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (33/33); e2e-harness доведён до старта сценариев (`playwright install chromium`, webServer env/host hardening), но финальный прогон блокируется отсутствующими системными runtime-библиотеками headless Chromium (`libatk-1.0.so.0`) и ошибками apt proxy при `playwright install --with-deps`
+- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (35/35); исправлен broken lockfile (`pnpm-lock.yaml`, duplicate mapping `unplugin-utils@0.2.5`), e2e-harness разблокирован (`pnpm test:e2e` запускается и проходит smoke-набор: 8 passed / 76 skipped), pending: довести critical user flows до полного прогона без skip
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
@@ -1533,8 +1533,8 @@ app/layouts/auth.vue             — initial theme initialize
 - Form tests: если использовался `UForm` + Zod, теперь `@primevue/forms`.
 
 **Критерии приёмки:**
-- [x] `pnpm test:unit` — 100% зелёное
-- [ ] `pnpm test:e2e` — 100% зелёное *(blocked by environment runtime libs for browser)*
+- [x] `pnpm test:unit` — 100% зелёное *(35/35)*
+- [ ] `pnpm test:e2e` — 100% зелёное *(harness unblocked; текущий прогон: 8 passed / 76 skipped)*
 - [ ] Все критические user flow (auth, QR create/edit/delete, bulk, analytics, settings, MCP) проходят
 
 ---
@@ -1552,7 +1552,7 @@ app/layouts/auth.vue             — initial theme initialize
 4. Проверка contrast ratio всех pairs token'ов (`--text` на `--bg`, `--text` на `--bg-elev`, accent-ink на accent — WCAG AA).
 
 **Критерии приёмки:**
-- [ ] axe-core: 0 critical, 0 serious issues *(старт выполнен: baseline `e2e/a11y.spec.ts`; blocked by 24.35 browser runtime deps)*
+- [ ] axe-core: 0 critical, 0 serious issues *(baseline `e2e/a11y.spec.ts` запускается после разблокировки browser deps; нужен полный unskip прогон по ключевым страницам)*
 - [ ] Все interactive elements фокусируются и активируются с клавиатуры
 - [ ] Все Drawer'ы и Dialog'и имеют focus-trap (PrimeVue нативно)
 
