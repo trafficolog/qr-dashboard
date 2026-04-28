@@ -19,10 +19,10 @@
 - ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`; дополнительно выровнен token layer и внедрён PrimeVue DataTable-pattern для QR detail A/B variants, pending: финальный visual sign-off
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
 - ✅ Sidebar role filtering aligned with Amendment A1: для non-admin скрывается только `Settings`, секция `Admin` и `Notifications` остаются доступными; маршрут settings в меню унифицирован на `/settings`
-- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue; добавлен блок quick insights (GeoTable + DeviceBreakdown) и унифицированы dashboard/analytics token bindings (`--text-primary`, `--surface-0`, `--border`), ожидается визуальный sign-off
+- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue; добавлен блок quick insights (GeoTable + DeviceBreakdown), завершён cleanup legacy `--border-color` в dashboard analytics primitives, ожидается визуальный sign-off
 - ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
 - ✅ QR Create migration: `/qr/create` page переведена на PrimeVue controls/patterns (в текущем репо отдельный `CreateDrawer` отсутствует)
-- ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; добавлен quick preview `Drawer` в `/qr` list (table double-click + card action), A/B variants block мигрирован на PrimeVue DataTable/Column pattern, pending: финальный visual sign-off detail-drawer parity
+- ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; добавлен quick preview `Drawer` в `/qr` list (table double-click + card action), A/B variants block мигрирован на PrimeVue DataTable/Column pattern; quick preview drawer расширен до parity-полей (shortCode/type/expiresAt), pending: финальный visual sign-off detail-drawer parity
 - ✅ QR Edit migration: `/qr/[id]/edit` page переведена на PrimeVue controls/patterns
 - ✅ Bulk CSV migration: `/qr/bulk` stepper и шаги 1–5 переведены на PrimeVue pattern
 - ✅ Folders migration: `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern

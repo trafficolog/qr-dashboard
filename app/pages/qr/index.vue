@@ -384,6 +384,37 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
+            <p class="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+              Короткий код
+            </p>
+            <p class="mt-2 font-medium text-[color:var(--text-primary)]">
+              {{ detailDrawerQr.shortCode }}
+            </p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4">
+            <p class="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+              Тип
+            </p>
+            <p class="mt-2 font-medium text-[color:var(--text-primary)]">
+              {{ detailDrawerQr.type === 'dynamic' ? 'Динамический' : 'Статический' }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-if="detailDrawerQr.expiresAt"
+          class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-4"
+        >
+          <p class="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+            Срок действия
+          </p>
+          <p class="mt-2 font-medium text-[color:var(--text-primary)]">
+            {{ formatEpicDate(detailDrawerQr.expiresAt) }}
+          </p>
+        </div>
+
         <div class="flex flex-wrap gap-2">
           <Button
             as-child

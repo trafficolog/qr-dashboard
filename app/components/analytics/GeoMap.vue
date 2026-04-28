@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl border border-[color:var(--border-color)] p-4">
+  <div class="rounded-xl border border-[color:var(--border)] p-4">
     <div class="mb-3 flex items-center justify-between gap-3">
       <h3 class="text-sm font-medium text-[color:var(--text-primary)]">
         {{ $t('analytics.geo.mapTitle') }}
@@ -61,7 +61,7 @@
           <path
             :d="region.path"
             :fill="regionColor(region.id)"
-            stroke="var(--border-color)"
+            stroke="var(--border)"
             stroke-width="2"
           >
             <title>{{ regionTooltip(region.id) }}</title>
