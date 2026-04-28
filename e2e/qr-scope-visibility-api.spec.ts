@@ -1,17 +1,5 @@
-import { test, expect, type APIRequestContext, type BrowserContext } from '@playwright/test'
-
-const baseHost = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname
-
-async function setSessionCookie(context: BrowserContext, token: string) {
-  await context.addCookies([
-    {
-      name: 'session_token',
-      value: token,
-      domain: baseHost,
-      path: '/',
-    },
-  ])
-}
+import { test, expect, type APIRequestContext } from '@playwright/test'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
 async function getCurrentUserId(request: APIRequestContext) {
   const me = await request.get('/api/auth/me')
@@ -23,11 +11,11 @@ async function getCurrentUserId(request: APIRequestContext) {
 
 test.describe('QR API scope visibility', () => {
   test.beforeEach(async ({ context }) => {
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
 
-    await setSessionCookie(context, process.env.PLAYWRIGHT_AUTH_COOKIE!)
+    await applyAuthCookie(context)
   })
 
   test('scope=mine returns only my QRs (private scenario)', async ({ request }) => {
@@ -62,12 +50,8 @@ test.describe('QR API scope visibility', () => {
   })
 
   test('admin scope=department without departmentId returns department QRs', async ({ browser }) => {
-    if (!process.env.PLAYWRIGHT_ADMIN_AUTH_COOKIE) {
-      test.skip()
-    }
-
     const adminContext = await browser.newContext()
-    await setSessionCookie(adminContext, process.env.PLAYWRIGHT_ADMIN_AUTH_COOKIE!)
+    await applyAuthCookie(adminContext, { role: 'admin' })
     const adminRequest = adminContext.request
 
     const response = await adminRequest.get('/api/qr?scope=department&limit=100')

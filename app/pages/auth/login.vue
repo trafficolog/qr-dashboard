@@ -35,7 +35,7 @@
                   v-model="email"
                   type="email"
                   placeholder="name@splat.com"
-                  class="w-full"
+                  class="w-full !bg-[color:var(--surface-0)] !text-[color:var(--text-primary)] placeholder:!text-[color:var(--text-secondary)]"
                   autofocus
                   :disabled="loading"
                 />
