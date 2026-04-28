@@ -19,7 +19,7 @@
 
       <div class="mt-6 flex justify-center gap-2">
         <Button
-          class="!text-black"
+          class="!text-[color:var(--accent-ink)]"
           @click="navigateTo('/dashboard')"
         >
           {{ t('errors.goHome') }}

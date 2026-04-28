@@ -37,7 +37,7 @@
 - ✅ UI primitives migration: `TagInput` доведён до Sakai token-compatible поведения (surface/text/border vars), улучшена a11y-клавиатурная интеракция и защита контрастности для кастомных цветов тега
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
-- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (35/35); e2e auth bootstrap переведён с жёсткой зависимости от `PLAYWRIGHT_AUTH_COOKIE` на auto-provision cookie через `DATABASE_URL` (fallback на env cookie сохранён), добавлен keyboard/a11y smoke для публичных scan/auth страниц, pending: выполнить полный unskip прогон приватных critical flows в CI-окружении с доступной БД
+- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (35/35); e2e auth bootstrap переведён с жёсткой зависимости от `PLAYWRIGHT_AUTH_COOKIE` на auto-provision cookie через `DATABASE_URL` (fallback на env cookie сохранён), добавлен keyboard/a11y smoke для публичных scan/auth страниц и стабилизированы публичные проверки `/not-found`/`/expired`; pending: выполнить полный unskip прогон приватных critical flows в CI-окружении с доступной БД
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)
@@ -1552,8 +1552,8 @@ app/layouts/auth.vue             — initial theme initialize
 4. Проверка contrast ratio всех pairs token'ов (`--text` на `--bg`, `--text` на `--bg-elev`, accent-ink на accent — WCAG AA).
 
 **Критерии приёмки:**
-- [ ] axe-core: 0 critical, 0 serious issues *(baseline `e2e/a11y.spec.ts` запускается после разблокировки browser deps; нужен полный unskip прогон по ключевым страницам)*
-- [ ] Все interactive elements фокусируются и активируются с клавиатуры
+- [ ] axe-core: 0 critical, 0 serious issues *(частично закрыто: public `/not-found` и `/expired` проходят light/dark checks; нужен полный unskip прогон по приватным страницам после закрытия 24.35)*
+- [ ] Все interactive elements фокусируются и активируются с клавиатуры *(частично закрыто для public scan/auth keyboard smoke)*
 - [ ] Все Drawer'ы и Dialog'и имеют focus-trap (PrimeVue нативно)
 
 ---

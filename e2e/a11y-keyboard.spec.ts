@@ -1,12 +1,19 @@
 import { expect, test, type Page } from '@playwright/test'
 
 async function openLogin(page: Page) {
-  try {
-    await page.goto('/auth/login')
+  let lastError: unknown
+
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      await page.goto('/auth/login')
+      return
+    }
+    catch (error) {
+      lastError = error
+    }
   }
-  catch {
-    await page.goto('/auth/login')
-  }
+
+  throw lastError
 }
 
 async function focusByTab(page: Page, isTargetFocused: () => Promise<boolean>, maxTabs = 8) {

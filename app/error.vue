@@ -38,7 +38,7 @@
 
         <div class="flex flex-col justify-center gap-2 pt-1 sm:flex-row">
           <Button
-            class="!text-black"
+            class="!text-[color:var(--accent-ink)]"
             @click="handleGoHome"
           >
             <template #icon>
