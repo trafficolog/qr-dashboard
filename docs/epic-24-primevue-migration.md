@@ -16,13 +16,13 @@
 - ✅ Базовый PrimeVue bootstrap + Sakai shell: коммиты `1c50d2e`, `d928dfb`
 - ✅ Глобальные PrimeVue сервисы Toast/Confirm: коммит `fd13824`
 - ✅ Миграция auth login на PrimeVue controls: коммит `12b0bfa`
-- ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`; выполнен дополнительный Sakai token sweep для `/qr` list primitives (surface/text/border vars)
+- ⚠️ In progress: массовый component mapping (`Nuxt UI -> PrimeVue`) по страницам `/qr`, `/dashboard`, `/settings`; дополнительно выровнен token layer и внедрён PrimeVue DataTable-pattern для QR detail A/B variants, pending: финальный visual sign-off
 - ✅ Topbar + Command Palette: AppUserMenu и GlobalSearch переведены на PrimeVue
 - ✅ Sidebar role filtering aligned with Amendment A1: для non-admin скрывается только `Settings`, секция `Admin` и `Notifications` остаются доступными; маршрут settings в меню унифицирован на `/settings`
-- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue; выполнен Sakai token sweep для dashboard/analytics surfaces и typographic text tokens, ожидается визуальный sign-off
+- ⚠️ Dashboard migration in progress: page primitives + `AnalyticsStatCard` + `DateRangePicker/TopQrTable/ScanChart` переведены на PrimeVue; добавлен блок quick insights (GeoTable + DeviceBreakdown) и унифицированы dashboard/analytics token bindings (`--text-primary`, `--surface-0`, `--border`), ожидается визуальный sign-off
 - ✅ QR List migration: `/qr` shell + `Table/Card/QuickActions/ExportDialog` переведены на PrimeVue pattern
 - ✅ QR Create migration: `/qr/create` page переведена на PrimeVue controls/patterns (в текущем репо отдельный `CreateDrawer` отсутствует)
-- ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; добавлен quick preview `Drawer` в `/qr` list (table double-click + card action), pending: финальный visual sign-off detail-drawer parity
+- ⚠️ QR Detail migration in progress: `/qr/[id]` page shell/cards/actions/skeleton переведены на PrimeVue pattern; добавлен quick preview `Drawer` в `/qr` list (table double-click + card action), A/B variants block мигрирован на PrimeVue DataTable/Column pattern, pending: финальный visual sign-off detail-drawer parity
 - ✅ QR Edit migration: `/qr/[id]/edit` page переведена на PrimeVue controls/patterns
 - ✅ Bulk CSV migration: `/qr/bulk` stepper и шаги 1–5 переведены на PrimeVue pattern
 - ✅ Folders migration: `/folders`, `/folders/[id]` и `FoldersFolderDialog` переведены на PrimeVue pattern
@@ -37,7 +37,7 @@
 - ✅ UI primitives migration: `TagInput` доведён до Sakai token-compatible поведения (surface/text/border vars), улучшена a11y-клавиатурная интеракция и защита контрастности для кастомных цветов тега
 - ✅ Typecheck sweep: `pnpm typecheck` проходит (остаются non-blocking предупреждения по plugin-path/duplicated imports)
 - ✅ Lint sweep: `pnpm lint` проходит без warnings/errors; cleanup завершён для `/settings/*`, `/qr/shared`, `SearchItem`, `Preview`, `PreviewMini`, `StyleEditor`
-- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (35/35); e2e auth bootstrap переведён с жёсткой зависимости от `PLAYWRIGHT_AUTH_COOKIE` на auto-provision cookie через `DATABASE_URL` (fallback на env cookie сохранён), pending: выполнить полный unskip прогон в CI-окружении с доступной БД и зафиксировать critical flow coverage
+- ⚠️ Unit + E2E фиксы in progress: `pnpm test:unit` = pass (35/35); e2e auth bootstrap переведён с жёсткой зависимости от `PLAYWRIGHT_AUTH_COOKIE` на auto-provision cookie через `DATABASE_URL` (fallback на env cookie сохранён), добавлен keyboard/a11y smoke для публичных scan/auth страниц, pending: выполнить полный unskip прогон приватных critical flows в CI-окружении с доступной БД
 - ✅ Scan experience (`error.vue`, `/not-found`, `/expired`) переведён на новый PrimeVue action-pattern
 - ✅ Toast pipeline переведён на PrimeVue (`useA11yToast` -> `primevue/usetoast`, group `app`)
 - ✅ Empty states: `app/components/shared/EmptyState.vue` очищен от Nuxt UI (`UIcon` -> `Icon`)

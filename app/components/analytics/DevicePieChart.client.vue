@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="mb-3 text-sm font-medium text-[color:var(--text-color)]">
+    <h3 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
       {{ title }}
     </h3>
 
