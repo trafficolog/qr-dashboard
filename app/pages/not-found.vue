@@ -18,7 +18,10 @@
       </p>
 
       <div class="mt-6 flex justify-center gap-2">
-        <Button @click="navigateTo('/dashboard')">
+        <Button
+          class="!text-black"
+          @click="navigateTo('/dashboard')"
+        >
           {{ t('errors.goHome') }}
         </Button>
         <Button

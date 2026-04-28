@@ -1,6 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const { isAuthenticated, authResolved, fetchUser } = useAuth()
   const isAuthPage = to.path.startsWith('/auth')
+  const isPublicScanPage = to.path === '/not-found' || to.path === '/expired'
 
   // Для неизвестных маршрутов отдаём управление Nuxt error.vue,
   // чтобы показывать универсальную 404-страницу вместо redirect на login.
@@ -15,7 +16,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // Неавторизованный → перенаправляем на login
-  if (!isAuthenticated.value && !isAuthPage) {
+  if (!isAuthenticated.value && !isAuthPage && !isPublicScanPage) {
     return navigateTo('/auth/login')
   }
 
