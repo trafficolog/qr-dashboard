@@ -61,4 +61,16 @@ test.describe('A11y keyboard smoke', () => {
     await focusByTab(page, () => homeButton.evaluate(el => el === document.activeElement), 10)
     await expect(homeButton).toBeFocused()
   })
+
+  test('login submit button remains disabled for invalid keyboard-entered email', async ({ page }) => {
+    await openLogin(page)
+
+    const emailInput = page.locator('input[type="email"]')
+    const submitButton = page.getByRole('button', { name: /получить код|get code/i })
+
+    await expect(emailInput).toBeVisible()
+    await emailInput.fill('not-an-email')
+
+    await expect(submitButton).toBeDisabled()
+  })
 })
