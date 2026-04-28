@@ -1,13 +1,13 @@
 import { test, expect, type APIRequestContext } from '@playwright/test'
-import { applyAuthCookie, hasAuthCookie, requireAuthCookie } from './helpers/auth'
+import { applyAuthCookie, getAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
-function cookieHeader() {
-  return { Cookie: `session_token=${requireAuthCookie()}` }
+async function cookieHeader() {
+  return { Cookie: `session_token=${await getAuthCookie()}` }
 }
 
 async function createTestQr(request: APIRequestContext, title: string) {
   const response = await request.post('/api/qr', {
-    headers: cookieHeader(),
+    headers: await cookieHeader(),
     data: {
       title,
       destinationUrl: `https://example.com/${title}`,
@@ -23,13 +23,13 @@ async function createTestQr(request: APIRequestContext, title: string) {
 
 async function deleteTestQr(request: APIRequestContext, id: string) {
   await request.delete(`/api/qr/${id}`, {
-    headers: cookieHeader(),
+    headers: await cookieHeader(),
   })
 }
 
 test.describe('Toast Undo — QR delete', () => {
   test.beforeEach(async ({ context }) => {
-    if (!hasAuthCookie()) {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
 

@@ -1,21 +1,13 @@
 import { test, expect } from '@playwright/test'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
-// These tests assume a logged-in session via storageState or cookie fixture.
-// In CI, set PLAYWRIGHT_AUTH_COOKIE to a valid session token.
 test.describe('QR Code List', () => {
-  test.beforeEach(async ({ page }) => {
-    // Skip if no auth cookie is provided — mark as skipped rather than fail
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+  test.beforeEach(async ({ context }) => {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
-    await page.context().addCookies([
-      {
-        name: 'session_token',
-        value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
-        domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname,
-        path: '/',
-      },
-    ])
+
+    await applyAuthCookie(context)
   })
 
   test('displays QR code list page', async ({ page }) => {

@@ -1,17 +1,5 @@
-import { test, expect, type BrowserContext, type APIRequestContext } from '@playwright/test'
-
-const baseHost = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname
-
-async function setSessionCookie(context: BrowserContext, token: string) {
-  await context.addCookies([
-    {
-      name: 'session_token',
-      value: token,
-      domain: baseHost,
-      path: '/',
-    },
-  ])
-}
+import { test, expect, type APIRequestContext } from '@playwright/test'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
 async function getCurrentUserId(request: APIRequestContext) {
   const meResponse = await request.get('/api/auth/me')
@@ -37,11 +25,11 @@ async function createPrivateQr(request: APIRequestContext, title: string) {
 
 test.describe('QR visibility API', () => {
   test.beforeEach(async ({ context }) => {
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
 
-    await setSessionCookie(context, process.env.PLAYWRIGHT_AUTH_COOKIE!)
+    await applyAuthCookie(context)
   })
 
   test('department visibility without departmentId returns 4xx', async ({ request }) => {

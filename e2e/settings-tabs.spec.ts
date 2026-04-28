@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test'
-import { applyAuthCookie, hasAuthCookie } from './helpers/auth'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
 test.describe('Settings navigation', () => {
   test.beforeEach(async ({ context }) => {
-    if (!hasAuthCookie()) {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
 
