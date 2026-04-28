@@ -195,68 +195,54 @@
             />
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="border-b border-[color:var(--border)]">
-                  <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)]">
-                    Вариант
-                  </th>
-                  <th class="py-2 pr-3 text-left text-xs text-[color:var(--text-muted)] hidden sm:table-cell">
-                    URL
-                  </th>
-                  <th class="py-2 pr-3 text-right text-xs text-[color:var(--text-muted)]">
-                    Вес
-                  </th>
-                  <th class="py-2 pr-3 text-right text-xs text-[color:var(--text-muted)]">
-                    Клики
-                  </th>
-                  <th class="py-2 text-right text-xs text-[color:var(--text-muted)]">
-                    %
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(dest, i) in destinations"
-                  :key="dest.id"
-                  class="border-b border-[color:var(--border)]/60 dark:border-[color:var(--border)]/60"
-
-                  :class="!dest.isActive && 'opacity-50'"
+          <DataTable
+            :value="destinations"
+            :row-class="getDestinationRowClass"
+            table-style="min-width: 40rem"
+            class="text-sm"
+          >
+            <Column header="Вариант">
+              <template #body="{ data, index }">
+                <div class="flex items-center gap-2 py-1">
+                  <span
+                    class="inline-block size-2.5 shrink-0 rounded-full"
+                    :style="{ backgroundColor: abColors[index % abColors.length] }"
+                  />
+                  <span class="font-medium text-[color:var(--text-primary)]">
+                    {{ data.label || `Вариант ${index + 1}` }}
+                  </span>
+                </div>
+              </template>
+            </Column>
+            <Column header="URL">
+              <template #body="{ data }">
+                <a
+                  :href="data.url"
+                  target="_blank"
+                  class="block max-w-[240px] truncate text-[color:var(--color-success)] hover:underline"
                 >
-                  <td class="py-2.5 pr-3">
-                    <div class="flex items-center gap-2">
-                      <span
-                        class="inline-block size-2.5 rounded-full shrink-0"
-                        :style="{ backgroundColor: abColors[i % abColors.length] }"
-                      />
-                      <span class="font-medium text-[color:var(--text-primary)]">
-                        {{ dest.label || `Вариант ${i + 1}` }}
-                      </span>
-                    </div>
-                  </td>
-                  <td class="py-2.5 pr-3 hidden sm:table-cell">
-                    <a
-                      :href="dest.url"
-                      target="_blank"
-                      class="block max-w-[200px] truncate text-[color:var(--color-success)] hover:underline"
-                    >
-                      {{ dest.url }}
-                    </a>
-                  </td>
-                  <td class="py-2.5 pr-3 text-right tabular-nums">
-                    {{ dest.weight }}%
-                  </td>
-                  <td class="py-2.5 pr-3 text-right tabular-nums font-medium">
-                    {{ dest.clicks.toLocaleString('ru-RU') }}
-                  </td>
-                  <td class="py-2.5 text-right tabular-nums text-[color:var(--text-muted)]">
-                    {{ totalClicks > 0 ? Math.round((dest.clicks / totalClicks) * 100) : 0 }}%
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                  {{ data.url }}
+                </a>
+              </template>
+            </Column>
+            <Column header="Вес">
+              <template #body="{ data }">
+                <span class="tabular-nums">{{ data.weight }}%</span>
+              </template>
+            </Column>
+            <Column header="Клики">
+              <template #body="{ data }">
+                <span class="tabular-nums font-medium">{{ data.clicks.toLocaleString('ru-RU') }}</span>
+              </template>
+            </Column>
+            <Column header="%">
+              <template #body="{ data }">
+                <span class="tabular-nums text-[color:var(--text-muted)]">
+                  {{ totalClicks > 0 ? Math.round((data.clicks / totalClicks) * 100) : 0 }}%
+                </span>
+              </template>
+            </Column>
+          </DataTable>
         </div>
 
         <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
@@ -350,6 +336,10 @@ const totalActiveWeight = computed(() => destinations.value.filter(d => d.isActi
 function activeWeightBar(dest: Destination) {
   if (totalActiveWeight.value === 0) return 0
   return Math.round((dest.weight / totalActiveWeight.value) * 100)
+}
+
+function getDestinationRowClass(dest: Destination) {
+  return dest.isActive ? '' : 'opacity-50'
 }
 
 // Scan chart

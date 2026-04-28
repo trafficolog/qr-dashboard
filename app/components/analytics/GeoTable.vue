@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-xl border border-[color:var(--border-color)] p-4">
-    <h3 class="mb-3 text-sm font-medium text-[color:var(--text-color)]">
+  <div class="rounded-xl border border-[color:var(--border)] p-4">
+    <h3 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
       {{ $t('analytics.geo.tableTitle') }}
     </h3>
 
@@ -28,7 +28,7 @@
     >
       <table class="min-w-full text-left text-sm">
         <thead>
-          <tr class="border-b border-[color:var(--border-color)] text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+          <tr class="border-b border-[color:var(--border)] text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
             <th class="px-2 py-2">
               <button
                 type="button"
@@ -88,18 +88,18 @@
           <tr
             v-for="city in sortedCities"
             :key="`${city.country}-${city.city}`"
-            class="border-b border-[color:var(--border-color)]/60"
+            class="border-b border-[color:var(--border)]/60"
           >
             <td class="px-2 py-2 text-[color:var(--text-muted)]">
               {{ city.country }}
             </td>
-            <td class="px-2 py-2 font-medium text-[color:var(--text-color)]">
+            <td class="px-2 py-2 font-medium text-[color:var(--text-primary)]">
               {{ city.city }}
             </td>
-            <td class="px-2 py-2 text-right tabular-nums text-[color:var(--text-color)]">
+            <td class="px-2 py-2 text-right tabular-nums text-[color:var(--text-primary)]">
               {{ city.scans.toLocaleString() }}
             </td>
-            <td class="px-2 py-2 text-right tabular-nums text-[color:var(--text-color)]">
+            <td class="px-2 py-2 text-right tabular-nums text-[color:var(--text-primary)]">
               {{ city.uniqueScans.toLocaleString() }}
             </td>
           </tr>

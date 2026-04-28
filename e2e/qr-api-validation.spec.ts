@@ -1,19 +1,13 @@
 import { test, expect } from '@playwright/test'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
 test.describe('QR API payload validation', () => {
   test.beforeEach(async ({ context }) => {
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
 
-    await context.addCookies([
-      {
-        name: 'session_token',
-        value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
-        domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname,
-        path: '/',
-      },
-    ])
+    await applyAuthCookie(context)
   })
 
   test('rejects department visibility payload with invalid department_id', async ({ request }) => {

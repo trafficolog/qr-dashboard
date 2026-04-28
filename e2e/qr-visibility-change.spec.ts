@@ -1,25 +1,13 @@
-import { test, expect, type BrowserContext } from '@playwright/test'
-
-const baseHost = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname
-
-async function setSessionCookie(context: BrowserContext, token: string) {
-  await context.addCookies([
-    {
-      name: 'session_token',
-      value: token,
-      domain: baseHost,
-      path: '/',
-    },
-  ])
-}
+import { test, expect } from '@playwright/test'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
 test.describe('QR visibility change', () => {
   test.beforeEach(async ({ context }) => {
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
+    if (!isAuthBootstrapAvailable()) {
       test.skip()
     }
 
-    await setSessionCookie(context, process.env.PLAYWRIGHT_AUTH_COOKIE!)
+    await applyAuthCookie(context)
   })
 
   test('updates private QR to department visibility with departmentId', async ({ request }) => {
@@ -28,6 +16,7 @@ test.describe('QR visibility change', () => {
     const departmentsPayload = await departmentsResponse.json() as { data: Array<{ id: string, name: string }> }
     if (departmentsPayload.data.length === 0) {
       test.skip()
+      return
     }
 
     const listResponse = await request.get('/api/qr?scope=mine&visibility=private&limit=100')
@@ -35,6 +24,7 @@ test.describe('QR visibility change', () => {
     const listPayload = await listResponse.json() as { data: Array<{ id: string }> }
     if (listPayload.data.length === 0) {
       test.skip()
+      return
     }
 
     const targetQrId = listPayload.data[0]!.id

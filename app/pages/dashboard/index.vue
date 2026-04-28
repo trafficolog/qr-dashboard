@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h1 class="text-2xl font-bold text-[color:var(--text-color)]">
+      <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">
         {{ $t('nav.dashboard') }}
       </h1>
       <div
@@ -107,9 +107,9 @@
 
     <section
       v-else
-      class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-5"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
     >
-      <h2 class="font-semibold text-[color:var(--text-color)]">
+      <h2 class="font-semibold text-[color:var(--text-primary)]">
         Динамика сканирований
       </h2>
       <AnalyticsScanChart
@@ -119,11 +119,11 @@
     </section>
 
     <section
-      class="rounded-xl border border-[color:var(--surface-border)] bg-[color:var(--surface-card)] p-5"
+      class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5"
       data-onboarding="dashboard-top-qr"
     >
       <div class="mb-3 flex items-center justify-between">
-        <h2 class="font-semibold text-[color:var(--text-color)]">
+        <h2 class="font-semibold text-[color:var(--text-primary)]">
           Топ QR-кодов
         </h2>
         <Button
@@ -149,6 +149,52 @@
       />
     </section>
 
+    <section class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-0)] p-5">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="font-semibold text-[color:var(--text-primary)]">
+          Быстрые инсайты
+        </h2>
+        <Button
+          as-child
+          variant="text"
+          size="small"
+        >
+          <NuxtLink
+            to="/analytics"
+            class="inline-flex items-center gap-2"
+          >
+            <span>Открыть аналитику</span>
+            <Icon
+              name="i-lucide-arrow-right"
+              class="size-4"
+            />
+          </NuxtLink>
+        </Button>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <div class="rounded-xl border border-[color:var(--border)] p-4">
+          <h3 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
+            Топ городов
+          </h3>
+          <AnalyticsGeoTable
+            :cities="dashboardGeoCities"
+            :loading="loading"
+          />
+        </div>
+
+        <div class="rounded-xl border border-[color:var(--border)] p-4">
+          <h3 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
+            Устройства
+          </h3>
+          <AnalyticsDeviceBreakdown
+            :items="dashboardDeviceItems"
+            :loading="loading"
+          />
+        </div>
+      </div>
+    </section>
+
     <SharedOnboardingOverlay
       v-if="shouldShow"
       @close="complete"
@@ -159,7 +205,7 @@
 <script setup lang="ts">
 import type { DateRange } from '#shared/types/analytics'
 
-const { overview, timeSeries, topQr, loading, error, fetchAll } = useAnalytics()
+const { overview, timeSeries, topQr, geo, devices, loading, error, fetchAll } = useAnalytics()
 const { shouldShow, complete } = useOnboarding()
 
 const dateRange = ref<DateRange>({
@@ -168,4 +214,7 @@ const dateRange = ref<DateRange>({
 })
 
 watch(dateRange, range => fetchAll(range), { immediate: true })
+
+const dashboardGeoCities = computed(() => geo.value?.cities?.slice(0, 6) ?? [])
+const dashboardDeviceItems = computed(() => devices.value?.devices ?? [])
 </script>

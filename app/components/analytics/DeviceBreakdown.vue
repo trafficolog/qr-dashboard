@@ -34,8 +34,8 @@
           :style="{ backgroundColor: resolveDeviceColor(item.name, index) }"
         />
         <span class="truncate text-[color:var(--text-muted)]">{{ item.name }}</span>
-        <span class="tabular-nums text-[color:var(--text-color)]">{{ item.count.toLocaleString('ru-RU') }}</span>
-        <span class="tabular-nums text-[color:var(--text-color)]">{{ formatPercent(item.percentage) }}</span>
+        <span class="tabular-nums text-[color:var(--text-primary)]">{{ item.count.toLocaleString('ru-RU') }}</span>
+        <span class="tabular-nums text-[color:var(--text-primary)]">{{ formatPercent(item.percentage) }}</span>
       </div>
     </div>
   </div>

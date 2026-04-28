@@ -33,7 +33,7 @@
         role="table"
       >
         <thead>
-          <tr class="border-b border-[color:var(--surface-border)]">
+          <tr class="border-b border-[color:var(--border)]">
             <th
               scope="col"
               class="w-8 py-2 pr-4 text-left font-medium text-[color:var(--text-muted)]"
@@ -64,7 +64,7 @@
           <tr
             v-for="(qr, idx) in data"
             :key="qr.id"
-            class="transition-interactive border-b border-[color:var(--surface-border)]/60 hover:bg-[color:var(--surface-2)]/30"
+            class="transition-interactive border-b border-[color:var(--border)]/60 hover:bg-[color:var(--surface-2)]/30"
           >
             <td class="tabular-nums py-2.5 pr-4 text-[color:var(--text-muted)]">
               {{ idx + 1 }}
@@ -72,7 +72,7 @@
             <td class="py-2.5 pr-4">
               <NuxtLink
                 :to="`/qr/${qr.id}`"
-                class="transition-interactive font-medium text-[color:var(--text-color)] hover:text-[color:var(--color-success)]"
+                class="transition-interactive font-medium text-[color:var(--text-primary)] hover:text-[color:var(--color-success)]"
               >
                 {{ qr.title || qr.shortCode }}
               </NuxtLink>
@@ -80,7 +80,7 @@
                 {{ qr.shortCode }}
               </p>
             </td>
-            <td class="tabular-nums py-2.5 pr-4 text-right font-medium text-[color:var(--text-color)]">
+            <td class="tabular-nums py-2.5 pr-4 text-right font-medium text-[color:var(--text-primary)]">
               {{ qr.totalScans.toLocaleString('ru-RU') }}
             </td>
             <td class="tabular-nums py-2.5 text-right text-[color:var(--text-muted)]">

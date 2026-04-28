@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-xl border border-[color:var(--border-color)] p-4">
-    <h3 class="mb-3 text-sm font-medium text-[color:var(--text-color)]">
+  <div class="rounded-xl border border-[color:var(--border)] p-4">
+    <h3 class="mb-3 text-sm font-medium text-[color:var(--text-primary)]">
       {{ $t('analytics.time.weekday') }}
     </h3>
 

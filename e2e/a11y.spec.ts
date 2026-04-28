@@ -1,7 +1,14 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { applyAuthCookie, isAuthBootstrapAvailable } from './helpers/auth'
 
-const pages = [
+const publicPages = [
+  '/auth/login',
+  '/not-found',
+  '/expired',
+]
+
+const privatePages = [
   '/dashboard',
   '/qr',
   '/qr/create',
@@ -14,43 +21,42 @@ const themes = [
   { name: 'dark', colorScheme: 'dark' as const },
 ]
 
-test.describe('Accessibility smoke (axe)', () => {
-  test.beforeEach(async ({ page }) => {
-    if (!process.env.PLAYWRIGHT_AUTH_COOKIE) {
-      test.skip()
-    }
+async function expectNoBlockingA11yViolations(page: Page, path: string, colorScheme: 'light' | 'dark') {
+  await page.emulateMedia({ colorScheme })
+  await page.goto(path)
+  await page.waitForLoadState('networkidle')
 
-    await page.context().addCookies([
-      {
-        name: 'session_token',
-        value: process.env.PLAYWRIGHT_AUTH_COOKIE!,
-        domain: new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3001').hostname,
-        path: '/',
-      },
-    ])
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze()
+
+  const blockingViolations = results.violations.filter((violation) => {
+    const isHighImpact = violation.impact === 'serious' || violation.impact === 'critical'
+    const isContrastViolation = violation.id === 'color-contrast'
+    return isHighImpact || isContrastViolation
   })
 
-  for (const path of pages) {
+  expect(blockingViolations).toEqual([])
+}
+
+test.describe('Accessibility smoke (axe)', () => {
+  for (const path of publicPages) {
     for (const theme of themes) {
-      test(`${path} (${theme.name}) has no blocking a11y violations`, async ({ page }) => {
-        await page.emulateMedia({ colorScheme: theme.colorScheme })
-        await page.goto(path)
-        await page.waitForLoadState('networkidle')
+      test(`public ${path} (${theme.name}) has no blocking a11y violations`, async ({ page }) => {
+        await expectNoBlockingA11yViolations(page, path, theme.colorScheme)
+      })
+    }
+  }
 
-        const results = await new AxeBuilder({ page })
-          .withTags(['wcag2a', 'wcag2aa'])
-          .analyze()
+  for (const path of privatePages) {
+    for (const theme of themes) {
+      test(`private ${path} (${theme.name}) has no blocking a11y violations`, async ({ page, context }) => {
+        if (!isAuthBootstrapAvailable()) {
+          test.skip()
+        }
 
-        // EPIC-17 gate policy: блокирующими считаются
-        // 1) все serious/critical нарушения,
-        // 2) любые нарушения color-contrast.
-        const blockingViolations = results.violations.filter((violation) => {
-          const isHighImpact = violation.impact === 'serious' || violation.impact === 'critical'
-          const isContrastViolation = violation.id === 'color-contrast'
-          return isHighImpact || isContrastViolation
-        })
-
-        expect(blockingViolations).toEqual([])
+        await applyAuthCookie(context)
+        await expectNoBlockingA11yViolations(page, path, theme.colorScheme)
       })
     }
   }
