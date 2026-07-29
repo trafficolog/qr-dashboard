@@ -10,7 +10,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - name: Download spreadsheet and test redirects
         shell: bash
@@ -18,26 +18,24 @@ jobs:
           python -m pip install --quiet requests openpyxl
           python <<'PY'
           import csv
-          import os
-          import time
+          from concurrent.futures import ThreadPoolExecutor, as_completed
           from urllib.parse import urljoin, urlsplit, urlunsplit
-
           import openpyxl
           import requests
 
           sheet_url = 'https://docs.google.com/spreadsheets/d/1ETiEYdC9kc3t3qXPQT-WhcDgFW0RfSCfot_BTQTKDFE/export?format=xlsx'
-          xlsx_path = 'redirects.xlsx'
-          out_csv = 'redirect-audit-results.csv'
-
-          s = requests.Session()
-          s.headers.update({'User-Agent': 'Mozilla/5.0 RedirectAudit/1.0'})
-          response = s.get(sheet_url, timeout=60)
+          response = requests.get(sheet_url, timeout=60)
           response.raise_for_status()
-          with open(xlsx_path, 'wb') as f:
-              f.write(response.content)
+          open('redirects.xlsx', 'wb').write(response.content)
 
-          wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+          wb = openpyxl.load_workbook('redirects.xlsx', data_only=True)
           ws = wb['Лист2'] if 'Лист2' in wb.sheetnames else wb.active
+          items = []
+          for row in range(2, ws.max_row + 1):
+              source = ws.cell(row, 1).value
+              expected = ws.cell(row, 2).value
+              if source and expected:
+                  items.append((row, str(source).strip(), str(expected).strip()))
 
           def normalize(url):
               p = urlsplit(url.strip())
@@ -46,27 +44,22 @@ jobs:
                   path += '/'
               return urlunsplit((p.scheme.lower(), p.netloc.lower(), path, p.query, ''))
 
-          results = []
-          for row in range(2, ws.max_row + 1):
-              source = ws.cell(row, 1).value
-              expected = ws.cell(row, 2).value
-              if not source or not expected:
-                  continue
-              source = str(source).strip()
-              expected = str(expected).strip()
+          def check(item):
+              row, source, expected = item
               try:
-                  first = s.get(source, allow_redirects=False, timeout=20)
+                  s = requests.Session()
+                  s.headers.update({'User-Agent': 'Mozilla/5.0 RedirectAudit/1.0'})
+                  final = s.get(source, allow_redirects=True, timeout=(8, 15))
+                  history = final.history
+                  first = history[0] if history else final
                   status = first.status_code
                   location = first.headers.get('Location', '')
                   absolute_location = urljoin(source, location) if location else ''
-                  final = s.get(source, allow_redirects=True, timeout=30)
-                  chain = ' -> '.join(str(r.status_code) for r in final.history + [final])
+                  chain = ' -> '.join(str(r.status_code) for r in history + [final])
                   final_url = final.url
-
                   first_ok = status == 301 and normalize(absolute_location) == normalize(expected)
                   final_ok = normalize(final_url) == normalize(expected) and final.status_code < 400
-                  ok = first_ok and final_ok
-                  if ok:
+                  if first_ok and final_ok:
                       verdict = 'Сработал: 301 на ожидаемый URL'
                   elif status not in (301, 302, 303, 307, 308):
                       verdict = f'Не сработал: HTTP {status}, редиректа нет'
@@ -80,15 +73,19 @@ jobs:
                   chain = ''
                   final_url = ''
                   verdict = f'Ошибка проверки: {type(exc).__name__}: {exc}'
+              return [row, source, expected, verdict, status, absolute_location, chain, final_url]
 
-              results.append([row, source, expected, verdict, status, absolute_location, chain, final_url])
-              time.sleep(0.08)
+          results = []
+          with ThreadPoolExecutor(max_workers=20) as pool:
+              futures = [pool.submit(check, item) for item in items]
+              for future in as_completed(futures):
+                  results.append(future.result())
+          results.sort(key=lambda x: x[0])
 
-          with open(out_csv, 'w', newline='', encoding='utf-8-sig') as f:
+          with open('redirect-audit-results.csv', 'w', newline='', encoding='utf-8-sig') as f:
               writer = csv.writer(f, delimiter=';')
               writer.writerow(['row', 'source', 'expected', 'result', 'first_status', 'first_location', 'chain', 'final_url'])
               writer.writerows(results)
-
           print(f'Checked {len(results)} URLs')
           PY
       - name: Upload results
