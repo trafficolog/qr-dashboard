@@ -1,0 +1,99 @@
+name: Temporary redirect audit
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Download spreadsheet and test redirects
+        shell: bash
+        run: |
+          python -m pip install --quiet requests openpyxl
+          python <<'PY'
+          import csv
+          import os
+          import time
+          from urllib.parse import urljoin, urlsplit, urlunsplit
+
+          import openpyxl
+          import requests
+
+          sheet_url = 'https://docs.google.com/spreadsheets/d/1ETiEYdC9kc3t3qXPQT-WhcDgFW0RfSCfot_BTQTKDFE/export?format=xlsx'
+          xlsx_path = 'redirects.xlsx'
+          out_csv = 'redirect-audit-results.csv'
+
+          s = requests.Session()
+          s.headers.update({'User-Agent': 'Mozilla/5.0 RedirectAudit/1.0'})
+          response = s.get(sheet_url, timeout=60)
+          response.raise_for_status()
+          with open(xlsx_path, 'wb') as f:
+              f.write(response.content)
+
+          wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+          ws = wb['Лист2'] if 'Лист2' in wb.sheetnames else wb.active
+
+          def normalize(url):
+              p = urlsplit(url.strip())
+              path = p.path or '/'
+              if path != '/' and not path.endswith('/'):
+                  path += '/'
+              return urlunsplit((p.scheme.lower(), p.netloc.lower(), path, p.query, ''))
+
+          results = []
+          for row in range(2, ws.max_row + 1):
+              source = ws.cell(row, 1).value
+              expected = ws.cell(row, 2).value
+              if not source or not expected:
+                  continue
+              source = str(source).strip()
+              expected = str(expected).strip()
+              try:
+                  first = s.get(source, allow_redirects=False, timeout=20)
+                  status = first.status_code
+                  location = first.headers.get('Location', '')
+                  absolute_location = urljoin(source, location) if location else ''
+                  final = s.get(source, allow_redirects=True, timeout=30)
+                  chain = ' -> '.join(str(r.status_code) for r in final.history + [final])
+                  final_url = final.url
+
+                  first_ok = status == 301 and normalize(absolute_location) == normalize(expected)
+                  final_ok = normalize(final_url) == normalize(expected) and final.status_code < 400
+                  ok = first_ok and final_ok
+                  if ok:
+                      verdict = 'Сработал: 301 на ожидаемый URL'
+                  elif status not in (301, 302, 303, 307, 308):
+                      verdict = f'Не сработал: HTTP {status}, редиректа нет'
+                  elif normalize(absolute_location) != normalize(expected):
+                      verdict = f'Не сработал: редирект на другой URL — {absolute_location}'
+                  else:
+                      verdict = f'Частично: первый редирект верный, итог {final.status_code} — {final_url}'
+              except Exception as exc:
+                  status = ''
+                  absolute_location = ''
+                  chain = ''
+                  final_url = ''
+                  verdict = f'Ошибка проверки: {type(exc).__name__}: {exc}'
+
+              results.append([row, source, expected, verdict, status, absolute_location, chain, final_url])
+              time.sleep(0.08)
+
+          with open(out_csv, 'w', newline='', encoding='utf-8-sig') as f:
+              writer = csv.writer(f, delimiter=';')
+              writer.writerow(['row', 'source', 'expected', 'result', 'first_status', 'first_location', 'chain', 'final_url'])
+              writer.writerows(results)
+
+          print(f'Checked {len(results)} URLs')
+          PY
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: redirect-audit-results
+          path: redirect-audit-results.csv
+          retention-days: 1
